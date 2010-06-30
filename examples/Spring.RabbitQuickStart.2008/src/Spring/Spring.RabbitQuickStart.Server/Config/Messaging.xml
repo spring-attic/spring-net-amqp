@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+
+  <object id="ConnectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit">
+    
+  </object>
+
+  <object name="RabbitTemplate" type="Spring.Messaging.Amqp.Rabbit.Core.RabbitTemplate, Spring.Messaging.Amqp.Rabbit">
+    <property name="ConnectionFactory" ref="ConnectionFactory"/>
+    <property name="DefaultQueueName" value="APP.STOCK.MARKETDATA"/>
+    <property name="MessageConverter" ref="JsonMessageConverter"/>
+  </object>
+
+  <object name="MarketDataGateway" type="Spring.RabbitQuickStart.Server.Gateways.MarketDataServiceGateway, Spring.RabbitQuickStart.Server">
+    <property name="RabbitTemplate" ref="RabbitTemplate"/>
+  </object>
+
+  <!-- Consume messages on queue APP.STOCK.REQUEST -->
+  <!--
+  <nms:listener-container connection-factory="ConnectionFactory" 
+                          concurrency="10">
+    <nms:listener ref="MessageListenerAdapter" destination="APP.STOCK.REQUEST" />
+  </nms:listener-container>
+  -->
+   
+  <!-- Plain object message handler -->
+  <object id="MessageListenerAdapter" type="Spring.Messaging.Amqp.Rabbit.Listener.Adapter.MessageListenerAdapter, Spring.Messaging.Amqp.Rabbit">
+    <property name="HandlerObject" ref="StockAppHandler"/>
+    <property name="DefaultHandlerMethod" value="Handle"/>
+    <property name="MessageConverter" ref="JsonMessageConverter"/>
+  </object>
+
+  <object name="JsonMessageConverter" type="Spring.Messaging.Amqp.Rabbit.Support.Converter.JsonMessageConverter, Spring.Messaging.Amqp.Rabbit">
+    <property name="TypeMapper" ref="TypeMapper"/>
+  </object>
+
+  <object name="TypeMapper" type="Spring.Messaging.Amqp.Rabbit.Support.Converter.TypeMapper, Spring.Messaging.Amqp.Rabbit">
+    <property name="DefaultNamespace" value="Spring.RabbitQuickStart.Common.Data"/>
+    <property name="DefaultAssemblyName" value="Spring.RabbitQuickStart.Common"/>
+  </object>
+
+</objects>

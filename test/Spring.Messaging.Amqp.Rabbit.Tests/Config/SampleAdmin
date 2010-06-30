@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<rabbit-admin>
+  
+  <queues default-passive="true" default-durable="true" default-autodelete="true" default-exclusive="true" >
+    <drop-queue name="q1" if-unused="true" if-empty="true"/>
+    <drop-queue name="q2" if-unused="false" if-empty="false"/>
+  
+    <queue name="q2" passive="true" durable="true" exclusive="true" autodelete="true">
+      <queue-arguments>
+        <map>
+          <entry key="an entry" value="just some string"/>
+          <entry key ="a ref" value-ref="myDataSource"/>
+        </map>
+      </queue-arguments>
+    </queue>
+
+    <queue name="q3" passive="false" durable="false" exclusive="false" autodelete="false">
+      <queue-arguments>
+        <map>
+          <entry key="entry1" value="pong"/>
+          <entry key ="another ref" value-ref="foobar"/>
+        </map>
+      </queue-arguments>
+    </queue>    
+  </queues>
+
+  <routes>
+    <unbind-route queue="q1" exchange="mydirect" routing-key="r1">
+      <route-arguments>
+        <map>
+          <entry key="entry1" value="pong"/>
+          <entry key ="another ref" value-ref="foobar"/>
+        </map>
+      </route-arguments>
+    </unbind-route>
+    <unbind-route queue="q1" exchange="mydirect" routing-key="r1">
+      <route-arguments>
+        <map>
+          <entry key="entry1" value="pong"/>
+          <entry key ="another ref" value-ref="foobar"/>
+        </map>
+      </route-arguments>
+    </unbind-route>
+  </routes>
+
+  <exchanges default-passive="true" default-durable="true" default-autodelete="true">
+    <drop-exchange name="e1" if-unused="true"/>
+    <drop-exchange name="e2" if-unused="false"/>
+
+    <fanout-exchange name="fanout1" passive="true" durable="true" autodelete="false"
+                     route-to-queue="q1,q2,q3">
+      <exchange-arguments>
+        <map>
+          <entry key="entry1" value="pong"/>
+          <entry key ="another ref" value-ref="foobar"/>
+        </map>
+      </exchange-arguments>
+      <!-- if want to specify other routes/binding and arguments-->
+      <routes>
+        <route queue="q3">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+        <route queue="q4">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+      </routes>
+    </fanout-exchange>
+
+    <fanout-exchange name="fanout2" passive="true" durable="true" autodelete="false"
+                  route-to-queue="q1,q2,q3">
+      <exchange-arguments>
+        <map>
+          <entry key="entry1" value="pong"/>
+          <entry key ="another ref" value-ref="foobar"/>
+        </map>
+      </exchange-arguments>
+      <!-- if want to specify other routes/binding and arguments-->
+      <routes>
+        <route queue="q3">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+        <route queue="q4">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+      </routes>
+    </fanout-exchange>
+
+    <direct-exchange name="direct1" passive="true" durable="true" autodelete="false"
+                     route-to-queue="q1,q2,q3" routing-key="r0">
+      <exchange-arguments>
+        <map>
+          <entry key="entry1" value="pong"/>
+          <entry key ="another ref" value-ref="foobar"/>
+        </map>
+      </exchange-arguments>
+      <!-- if want to specify other routes/binding and arguments-->
+      <routes>
+        <route queue="q3" routing-key="r1">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+        <route queue="q4,q5,q6" routing-key="r2">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+      </routes>
+    </direct-exchange>
+
+    <direct-exchange name="direct2" passive="true" durable="true" autodelete="false"
+                 route-to-queue="q1,q2,q3" routing-key="r0">
+      <exchange-arguments>
+        <map>
+          <entry key="entry1" value="pong"/>
+          <entry key ="another ref" value-ref="foobar"/>
+        </map>
+      </exchange-arguments>
+      <!-- if want to specify other routes/binding and arguments-->
+      <routes>
+        <route queue="q3" routing-key="r1">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+        <route queue="q4,q5,q6" routing-key="r2">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+      </routes>
+    </direct-exchange>
+
+
+    
+    <topic-exchange name="topic1" passive="true" durable="true" autodelete="false"
+                    route-to-queue="q1,q2,q3" routing-key="r0.#">
+      <exchange-arguments>
+        <map>
+          <entry key="entry1" value="pong"/>
+          <entry key ="another ref" value-ref="foobar"/>
+        </map>
+      </exchange-arguments>
+      <!-- if want to specify other routes/binding and arguments-->
+      <routes>
+        <route queue="q3" routing-key="r1.#">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+        <route queue="q4,q5,q6" routing-key="r2.*">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+      </routes>
+    </topic-exchange>
+
+    <topic-exchange name="topic2" passive="true" durable="true" autodelete="false"
+                route-to-queue="q1,q2,q3" routing-key="r0.#">
+      <exchange-arguments>
+        <map>
+          <entry key="entry1" value="pong"/>
+          <entry key ="another ref" value-ref="foobar"/>
+        </map>
+      </exchange-arguments>
+      <!-- if want to specify other routes/binding and arguments-->
+      <routes>
+        <route queue="q3" routing-key="r1.#">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+        <route queue="q4,q5,q6" routing-key="r2.*">
+          <route-arguments>
+            <map>
+              <entry key="entry1" value="pong"/>
+              <entry key ="another ref" value-ref="foobar"/>
+            </map>
+          </route-arguments>
+        </route>
+      </routes>
+    </topic-exchange>
+
+  </exchanges>
+
+  <users>
+    <drop-user name="u1"/>
+    <drop-user name="u2"/>
+    <user name="u1" password="p1"/>
+    <user name="u2" password="p1"/>
+  </users>
+
+  <vhosts>
+    <drop-vhost path="path1"/>
+    <drop-vhost path="path2"/>
+    <vhost path="path1"/>
+    <vhost path="path2"/>
+  </vhosts>
+
+  <permissions>
+    <drop-permissions user-name="u1" vhost-path="p1"/>
+    <drop-permissions user-name="u2" vhost-path="p2"/>
+    <grant  configure="regex" write="regex" read="regex" user-name="u1" vhost-path="p1" />
+    <grant  configure="regex2" write="regex2" read="regex2" user-name="u2" vhost-path="p2" />
+  </permissions>
+
+
+
+</rabbit-admin>
