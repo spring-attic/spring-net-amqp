@@ -13,6 +13,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Messaging.Amqp.Qpid-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Messaging.Amqp.Qpid-0-8-0.6.2008", "src\Spring.Messaging.Amqp.Qpid-0-8-0.6\Spring.Messaging.Amqp.Qpid-0-8-0.6\Spring.Messaging.Amqp.Qpid-0-8-0.6.2008.csproj", "{267B71FE-75F6-43DE-8655-7392AB2F3F27}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{5485F738-87A1-4B36-A5EC-4A7350DDE2FF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StockApp", "StockApp", "{0F85FABE-1157-430C-8B31-A3E4F443C495}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.RabbitQuickStart.Common", "examples\Spring.RabbitQuickStart.2008\src\Spring\Spring.RabbitQuickStart.Common\Spring.RabbitQuickStart.Common.csproj", "{DE909872-61DE-48EC-BD1A-8DEE4D993F5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.RabbitQuickStart.Client", "examples\Spring.RabbitQuickStart.2008\src\Spring\Spring.RabbitQuickStart.Client\Spring.RabbitQuickStart.Client.csproj", "{E45BAB1E-7C84-446A-AA5C-2EC6D336960B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.RabbitQuickStart.Server", "examples\Spring.RabbitQuickStart.2008\src\Spring\Spring.RabbitQuickStart.Server\Spring.RabbitQuickStart.Server.csproj", "{44CBEE25-B904-4222-8F42-6DBE90BC37F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,8 +53,26 @@ Global
 		{267B71FE-75F6-43DE-8655-7392AB2F3F27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{267B71FE-75F6-43DE-8655-7392AB2F3F27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{267B71FE-75F6-43DE-8655-7392AB2F3F27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE909872-61DE-48EC-BD1A-8DEE4D993F5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE909872-61DE-48EC-BD1A-8DEE4D993F5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE909872-61DE-48EC-BD1A-8DEE4D993F5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE909872-61DE-48EC-BD1A-8DEE4D993F5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E45BAB1E-7C84-446A-AA5C-2EC6D336960B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E45BAB1E-7C84-446A-AA5C-2EC6D336960B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E45BAB1E-7C84-446A-AA5C-2EC6D336960B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E45BAB1E-7C84-446A-AA5C-2EC6D336960B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44CBEE25-B904-4222-8F42-6DBE90BC37F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44CBEE25-B904-4222-8F42-6DBE90BC37F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44CBEE25-B904-4222-8F42-6DBE90BC37F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44CBEE25-B904-4222-8F42-6DBE90BC37F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0F85FABE-1157-430C-8B31-A3E4F443C495} = {5485F738-87A1-4B36-A5EC-4A7350DDE2FF}
+		{DE909872-61DE-48EC-BD1A-8DEE4D993F5B} = {0F85FABE-1157-430C-8B31-A3E4F443C495}
+		{E45BAB1E-7C84-446A-AA5C-2EC6D336960B} = {0F85FABE-1157-430C-8B31-A3E4F443C495}
+		{44CBEE25-B904-4222-8F42-6DBE90BC37F1} = {0F85FABE-1157-430C-8B31-A3E4F443C495}
 	EndGlobalSection
 EndGlobal

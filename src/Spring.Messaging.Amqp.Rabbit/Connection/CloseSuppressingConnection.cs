@@ -32,12 +32,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     public class CloseSuppressingConnection : IDecoratorConnection
     {
         private IConnection target;
-        private CachingConnectionFactory cachingConnectionFactory;
+        private SingleConnectionFactory singleConnectionFactory;
 
-        public CloseSuppressingConnection(CachingConnectionFactory factory, IConnection connection)
+        public CloseSuppressingConnection(SingleConnectionFactory factory, IConnection connection)
         {
             this.target = connection;
-            this.cachingConnectionFactory = factory;
+            this.singleConnectionFactory = factory;
         }
 
         public IConnection TargetConnection
@@ -58,7 +58,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         public IModel CreateModel()
         {
-            IModel model = this.cachingConnectionFactory.GetChannel(target);
+            IModel model = this.singleConnectionFactory.GetChannel(target);
             if (model != null)
             {
                 return model;

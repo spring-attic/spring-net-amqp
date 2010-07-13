@@ -24,6 +24,7 @@ using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Support.Converter;
 
 namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
 {
@@ -63,7 +64,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
             JsonMessageConverter converter = CreateConverter();
             Message message = template.Execute(delegate(IModel channel)
                                                    {
-                                                       return converter.ToMessage(trade, channel);
+                                                       return converter.ToMessage(trade, new RabbitMessagePropertiesFactory(channel));
                                                    });
 
             object typeIdHeaderObj = message.MessageProperties.Headers[TypeMapper.DEFAULT_TYPEID_FIELD_NAME];
@@ -87,7 +88,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
             JsonMessageConverter converter = CreateConverter();
             Message message = template.Execute(delegate(IModel channel)
             {
-                return converter.ToMessage(hashtable, channel);
+                return converter.ToMessage(hashtable, new RabbitMessagePropertiesFactory(channel));
             });
 
             Hashtable marshalledHashtable = (Hashtable) converter.FromMessage(message);

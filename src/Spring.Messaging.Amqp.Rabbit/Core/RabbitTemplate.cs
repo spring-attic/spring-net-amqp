@@ -26,7 +26,7 @@ using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Support;
-using Spring.Messaging.Amqp.Rabbit.Support.Converter;
+using Spring.Messaging.Amqp.Support.Converter;
 using Spring.Util;
 
 #endregion
@@ -62,7 +62,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         private readonly RabbitTemplateResourceFactory transactionalResourceFactory;
 
         private volatile IMessageConverter messageConverter = new SimpleMessageConverter();
-
+        
         #endregion
 
         #region Constructors
@@ -169,7 +169,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             Send(exchange, routingKey, delegate(IModel channel)
                                            {
-                                               return GetRequiredMessageConverter().ToMessage(message, channel);
+                                               return GetRequiredMessageConverter().ToMessage(message, new RabbitMessagePropertiesFactory(channel));
                                            });                
         }
 
@@ -188,7 +188,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             Send(exchange, routingKey, delegate (IModel channel)
                                         {
 
-                                            Message msg = GetRequiredMessageConverter().ToMessage(message, channel);
+                                            Message msg = GetRequiredMessageConverter().ToMessage(message, new RabbitMessagePropertiesFactory(channel));
                                             return messagePostProcessorDelegate(msg);
                                         });
         }

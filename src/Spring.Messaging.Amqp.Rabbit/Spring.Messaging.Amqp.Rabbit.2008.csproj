@@ -77,6 +77,7 @@
     <Compile Include="Connection\IDecoratorModel.cs" />
     <Compile Include="Connection\IResourceFactory.cs" />
     <Compile Include="Connection\RabbitResourceHolder.cs" />
+    <Compile Include="Connection\SingleConnectionFactory.cs" />
     <Compile Include="Core\ChannelCallbackDelegate.cs" />
     <Compile Include="Core\IChannelAwareMessageListener.cs" />
     <Compile Include="Core\IChannelCallback.cs" />
@@ -84,8 +85,10 @@
     <Compile Include="Core\MessageCreatorDelegate.cs" />
     <Compile Include="Core\MessageProperties.cs" />
     <Compile Include="Core\RabbitAccessor.cs" />
-    <Compile Include="Core\RabbitGatewaySupport.cs" />
+    <Compile Include="Core\RabbitAdmin.cs" />
+    <Compile Include="Core\RabbitMessagePropertiesFactory.cs" />
     <Compile Include="Core\RabbitTemplate.cs" />
+    <Compile Include="Core\Support\RabbitGatewaySupport.cs" />
     <Compile Include="Listener\AbstractMessageListenerContainer.cs" />
     <Compile Include="Listener\AbstractRabbitListeningContainer.cs" />
     <Compile Include="Listener\Adapter\ListenerExecutionFailedException.cs" />
@@ -93,12 +96,6 @@
     <Compile Include="Listener\BlockingQueueConsumer.cs" />
     <Compile Include="Listener\LocallyExposedRabbitResourceHolder.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainer.cs" />
-    <Compile Include="Support\Converter\IMessageConverter.cs" />
-    <Compile Include="Support\Converter\ITypeMapper.cs" />
-    <Compile Include="Support\Converter\JsonMessageConverter.cs" />
-    <Compile Include="Support\Converter\MessageConversionException.cs" />
-    <Compile Include="Support\Converter\SimpleMessageConverter.cs" />
-    <Compile Include="Support\Converter\TypeMapper.cs" />
     <Compile Include="Support\RabbitUtils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="Support\Converter\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -18,19 +18,15 @@
 
 #endregion
 
-using RabbitMQ.Client;
-using Spring.Messaging.Amqp.Core;
-
-namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
+namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
-    /// Convert from 
+    /// Enumeration of exchange types.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public interface IMessageConverter
+    public enum ExchangeType
     {
-        Message ToMessage(object obj, IModel channel);
-
-        object FromMessage(Message message);
+        Fanout, Direct, Topic
     }
+
 }

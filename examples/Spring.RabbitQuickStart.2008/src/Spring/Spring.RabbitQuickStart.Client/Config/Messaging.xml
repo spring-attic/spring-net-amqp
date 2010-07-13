@@ -12,7 +12,7 @@
   
   
   <!-- Rabbit based implementation of technology neutral IStockServiceGateway -->
-  <object name="StockServiceGateway" type="Spring.NmsQuickStart.Client.Gateways.RabbitStockServiceGateway, Spring.RabbitQuickStart.Client">
+  <object name="StockServiceGateway" type="Spring.RabbitQuickStart.Client.Gateways.RabbitStockServiceGateway, Spring.RabbitQuickStart.Client">
     <property name="RabbitTemplate" ref="RabbitTemplate"/>
     <property name="DefaultReplyToQueue" value="APP.STOCK.JOE"/>
   </object>
@@ -47,7 +47,7 @@
   </object>
 
   <!--
-  <object name="XmlMessageConverter" type="Spring.NmsQuickStart.Common.Converters.XmlMessageConverter, Spring.NmsQuickStart.Common">
+  <object name="XmlMessageConverter" type="Spring.RabbitQuickStart.Common.Converters.XmlMessageConverter, Spring.RabbitQuickStart.Common">
     <property name="TypeMapper" ref="TypeMapper"/>
   </object>
   -->
@@ -57,9 +57,9 @@
   </object>
 
   <!--
-  <object name="TypeMapper" type="Spring.NmsQuickStart.Common.Converters.TypeMapper, Spring.NmsQuickStart.Common">
-    <property name="DefaultNamespace" value="Spring.NmsQuickStart.Common.Data"/>
-    <property name="DefaultAssemblyName" value="Spring.NmsQuickStart.Common"/>
+  <object name="TypeMapper" type="Spring.RabbitQuickStart.Common.Converters.TypeMapper, Spring.RabbitQuickStart.Common">
+    <property name="DefaultNamespace" value="Spring.RabbitQuickStart.Common.Data"/>
+    <property name="DefaultAssemblyName" value="Spring.RabbitQuickStart.Common"/>
   </object>
   -->
 

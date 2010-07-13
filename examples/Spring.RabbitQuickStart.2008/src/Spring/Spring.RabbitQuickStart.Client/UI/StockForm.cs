@@ -78,7 +78,7 @@ namespace Spring.RabbitQuickStart.Client.UI
 
         private void OnPortfolioRequest(object sender, EventArgs e)
         {
-            MessageBox.Show("Get Portfolio operation not yet implemented.", "NmsQuickStart");
+            MessageBox.Show("Get Portfolio operation not yet implemented.", "RabbitQuickStart");
         }
 
 

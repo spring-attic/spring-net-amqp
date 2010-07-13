@@ -9,7 +9,7 @@ using Spring.Expressions;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Support;
-using Spring.Messaging.Amqp.Rabbit.Support.Converter;
+using Spring.Messaging.Amqp.Support.Converter;
 using Spring.Util;
 
 
@@ -381,7 +381,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             IMessageConverter converter = MessageConverter;
             if (converter != null)
             {
-                return converter.ToMessage(result, channel);
+                return converter.ToMessage(result, new RabbitMessagePropertiesFactory(channel));
             }
             else
             {

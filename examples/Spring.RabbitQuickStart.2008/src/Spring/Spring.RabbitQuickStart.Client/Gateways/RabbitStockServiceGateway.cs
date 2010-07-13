@@ -3,11 +3,11 @@
 
 using System;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Core.Support;
 using Spring.RabbitQuickStart.Client.Gateways;
 using Spring.RabbitQuickStart.Common.Data;
 
-namespace Spring.NmsQuickStart.Client.Gateways
+namespace Spring.RabbitQuickStart.Client.Gateways
 {
     public class RabbitStockServiceGateway : RabbitGatewaySupport, IStockService
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Threading;
 using Common.Logging;
-using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Core.Support;
 
 namespace Spring.RabbitQuickStart.Server.Gateways
 {

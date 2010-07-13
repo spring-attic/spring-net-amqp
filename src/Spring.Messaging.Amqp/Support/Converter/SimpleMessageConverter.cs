@@ -21,11 +21,9 @@
 using System;
 using System.IO;
 using System.Text;
-using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Core;
 
-namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
+namespace Spring.Messaging.Amqp.Support.Converter
 {
     /// <summary>
     /// Supports converting String and byte[] object types.
@@ -36,24 +34,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
         //TODO is this case sensitive?
         public static readonly string DEFAULT_CHARSET = "utf-8";
 
-	    private volatile string defaultCharset = DEFAULT_CHARSET;
+        private volatile string defaultCharset = DEFAULT_CHARSET;
 
         #region Implementation of IMessageConverter
 
-        public Message ToMessage(object obj, IModel channel)
+        public Message ToMessage(object obj, IMessagePropertiesFactory messagePropertiesFactory)
         {
             byte[] bytes = null;
-            IMessageProperties messageProperties = new MessageProperties(channel.CreateBasicProperties());
+            IMessageProperties messageProperties = messagePropertiesFactory.Create();
             if (obj is string)
             {
                 bytes = Encoding.GetEncoding(DEFAULT_CHARSET).GetBytes((string) obj);
-                messageProperties.ContentType = MessageProperties.CONTENT_TYPE_TEXT_PLAIN;
+                messageProperties.ContentType = ContentType.CONTENT_TYPE_TEXT_PLAIN;
                 messageProperties.ContentEncoding = this.defaultCharset;
 
             } else if (obj is byte[])
             {
                 bytes = (byte[]) obj;
-                messageProperties.ContentType = MessageProperties.CONTENT_TYPE_BYTES;
+                messageProperties.ContentType = ContentType.CONTENT_TYPE_BYTES;
             }
             if (bytes != null)
             {
@@ -107,5 +105,4 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
             return stringMessage;
         }
     }
-
 }

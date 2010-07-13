@@ -31,22 +31,48 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json.Net20, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Newtonsoft.Json.Net20.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Core, Version=1.3.0.20349, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Spring.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\AbstractExchange.cs" />
+    <Compile Include="Core\Address.cs" />
+    <Compile Include="Core\Binding.cs" />
+    <Compile Include="Core\BindingBuilder.cs" />
+    <Compile Include="Core\ContentType.cs" />
+    <Compile Include="Core\DirectExchange.cs" />
+    <Compile Include="Core\ExchangeType.cs" />
+    <Compile Include="Core\FanoutExchange.cs" />
+    <Compile Include="Core\IAmqpAdmin.cs" />
     <Compile Include="Core\IAmqpTemplate.cs" />
+    <Compile Include="Core\IExchange.cs" />
     <Compile Include="Core\IMessageCreator.cs" />
     <Compile Include="Core\IMessageListener.cs" />
+    <Compile Include="Core\IMessagePropertiesFactory.cs" />
     <Compile Include="Core\Message.cs" />
     <Compile Include="Core\MessageDeliveryMode.cs" />
     <Compile Include="Core\IMessageProperties.cs" />
     <Compile Include="Core\MessagePostProcessorDelegate.cs" />
+    <Compile Include="Core\Queue.cs" />
+    <Compile Include="Core\TopicExchange.cs" />
+    <Compile Include="Support\Converter\IMessageConverter.cs" />
+    <Compile Include="Support\Converter\ITypeMapper.cs" />
+    <Compile Include="Support\Converter\JsonMessageConverter.cs" />
+    <Compile Include="Support\Converter\MessageConversionException.cs" />
+    <Compile Include="Support\Converter\SimpleMessageConverter.cs" />
+    <Compile Include="Support\Converter\TypeMapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="Support\Converter\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

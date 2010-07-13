@@ -20,7 +20,7 @@
 
 using System;
 
-namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
+namespace Spring.Messaging.Amqp.Support.Converter
 {
     /// <summary>
     ///  
@@ -60,5 +60,4 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
         #endregion
 
     }
-
 }

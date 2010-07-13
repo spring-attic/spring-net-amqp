@@ -23,7 +23,7 @@ using Common.Logging;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Objects.Factory;
 
-namespace Spring.Messaging.Amqp.Rabbit.Core
+namespace Spring.Messaging.Amqp.Rabbit.Core.Support
 {
     /// <summary>
     /// Convenient super class for application classes that need Rabbit access.
@@ -119,5 +119,4 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         }
     }
-
 }

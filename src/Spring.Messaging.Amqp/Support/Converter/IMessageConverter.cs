@@ -1,9 +1,7 @@
- 
-
 #region License
 
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +18,18 @@
 
 #endregion
 
-using System;
+using Spring.Messaging.Amqp.Core;
 
-namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
+namespace Spring.Messaging.Amqp.Support.Converter
 {
     /// <summary>
-    /// Provides a layer of indirection when adding the 'type' of the object as a message property.
+    /// Convert from 
     /// </summary>
     /// <author>Mark Pollack</author>
-    public interface ITypeMapper
+    public interface IMessageConverter
     {
-        string TypeIdFieldName
-        {
-            get;
-        }
-        
-        string FromType(Type typeOfObjectToConvert);
+        Message ToMessage(object obj, IMessagePropertiesFactory messagePropertiesFactory);
 
-        Type ToType(string typeId);
+        object FromMessage(Message message);
     }
 }

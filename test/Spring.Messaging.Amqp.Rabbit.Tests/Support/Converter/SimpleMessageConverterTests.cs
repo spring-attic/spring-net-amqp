@@ -27,6 +27,7 @@ using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Support.Converter;
 
 #endregion
 
@@ -94,7 +95,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
         public void StringToMessage()
         {
             SimpleMessageConverter converter = new SimpleMessageConverter();
-            Message message = template.Execute(delegate(IModel channel) { return converter.ToMessage("test", channel); });
+            Message message = template.Execute(delegate(IModel channel) { return converter.ToMessage("test", new RabbitMessagePropertiesFactory(channel)); });
             Assert.AreEqual("text/plain", message.MessageProperties.ContentType);
             Assert.AreEqual("test", ConvertToString(message.Body, SimpleMessageConverter.DEFAULT_CHARSET));
         }
@@ -104,7 +105,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
         {
             SimpleMessageConverter converter = new SimpleMessageConverter();
             Message message =
-                template.Execute(delegate(IModel channel) { return converter.ToMessage(new byte[] {1, 2, 3}, channel); });
+                template.Execute(delegate(IModel channel) { return converter.ToMessage(new byte[] { 1, 2, 3 }, new RabbitMessagePropertiesFactory(channel)); });
             string contentType = message.MessageProperties.ContentType;
             byte[] body = message.Body;
 

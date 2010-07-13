@@ -19,15 +19,12 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
-using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Core;
 
-namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
+namespace Spring.Messaging.Amqp.Support.Converter
 {
     /// <summary>
     ///  
@@ -48,17 +45,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
 
         #region Implementation of IMessageConverter
 
-        public Message ToMessage(object obj, IModel channel)
+        public Message ToMessage(object obj, IMessagePropertiesFactory  messagePropertiesFactory)
         {
             byte[] bytes = null;
-            IMessageProperties messageProperties = new MessageProperties(channel.CreateBasicProperties());
+            IMessageProperties messageProperties = messagePropertiesFactory.Create();
 
             //Just a one liner for now.
             string jsonString = JsonConvert.SerializeObject(obj);
             
             
             bytes = Encoding.GetEncoding(DEFAULT_CHARSET).GetBytes(jsonString);
-            messageProperties.ContentType = MessageProperties.CONTENT_TYPE_JSON;
+            messageProperties.ContentType = ContentType.CONTENT_TYPE_JSON;
             messageProperties.ContentEncoding = this.defaultCharset;
             messageProperties.ContentLength = bytes.Length;            
             messageProperties.Headers[typeMapper.TypeIdFieldName] = typeMapper.FromType(obj.GetType());
@@ -97,7 +94,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
                         {
                             throw new MessageConversionException("Failed to convert json-based Message content. TypeIdFieldName not found in headers."); 
                         }
-                            //string stringType = (string) message.MessageProperties.Headers[typeMapper.TypeIdFieldName];
+                        //string stringType = (string) message.MessageProperties.Headers[typeMapper.TypeIdFieldName];
 
                         Type targetType = typeMapper.ToType(typeId);
                         content = ConvertBytesToObject(message.Body, encoding, targetType);
@@ -140,5 +137,4 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
             return result;
         }
     }
-
 }
