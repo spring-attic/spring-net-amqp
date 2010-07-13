@@ -24,7 +24,7 @@ namespace Spring.RabbitQuickStart.Client.Gateways
                                                             {
                                                                 message.MessageProperties.ReplyTo = defaultReplyToQueue;
                                                                 message.MessageProperties.CorrelationId =
-                                                                    new Guid().ToString();
+                                                                    new Guid().ToByteArray();
                                                                 return message;
 
                                                             });           
