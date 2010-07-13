@@ -23,6 +23,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.RabbitQuickStart.Cli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.RabbitQuickStart.Server", "examples\Spring.RabbitQuickStart.2008\src\Spring\Spring.RabbitQuickStart.Server\Spring.RabbitQuickStart.Server.csproj", "{44CBEE25-B904-4222-8F42-6DBE90BC37F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Erlang.2008", "src\Spring.Erlang\Spring.Erlang.2008.csproj", "{2619BBAC-1C37-4AE7-923F-E40EB7805132}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Messaging.Amqp.Rabbit.Admin.2008", "src\Spring.Messaging.Amqp.Rabbit.Admin\Spring.Messaging.Amqp.Rabbit.Admin.2008.csproj", "{EBC1D070-FC8A-4EAD-B2A7-3AC25AB62507}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Messaging.Amqp.Rabbit.Admin.Tests.2008", "test\Spring.Messaging.Amqp.Rabbit.Admin.Tests\Spring.Messaging.Amqp.Rabbit.Admin.Tests.2008.csproj", "{CC100EAE-6668-4E39-977E-CB63D025BCCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Erlang.Tests.2008", "test\Spring.Erlang.Tests\Spring.Erlang.Tests.2008.csproj", "{6BF21894-DDF3-496A-969F-6E3963A12E2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +73,22 @@ Global
 		{44CBEE25-B904-4222-8F42-6DBE90BC37F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44CBEE25-B904-4222-8F42-6DBE90BC37F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44CBEE25-B904-4222-8F42-6DBE90BC37F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2619BBAC-1C37-4AE7-923F-E40EB7805132}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2619BBAC-1C37-4AE7-923F-E40EB7805132}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2619BBAC-1C37-4AE7-923F-E40EB7805132}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2619BBAC-1C37-4AE7-923F-E40EB7805132}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBC1D070-FC8A-4EAD-B2A7-3AC25AB62507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBC1D070-FC8A-4EAD-B2A7-3AC25AB62507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBC1D070-FC8A-4EAD-B2A7-3AC25AB62507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBC1D070-FC8A-4EAD-B2A7-3AC25AB62507}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC100EAE-6668-4E39-977E-CB63D025BCCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC100EAE-6668-4E39-977E-CB63D025BCCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC100EAE-6668-4E39-977E-CB63D025BCCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC100EAE-6668-4E39-977E-CB63D025BCCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

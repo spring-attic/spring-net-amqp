@@ -18,21 +18,36 @@
 
 #endregion
 
-using RabbitMQ.Client;
+using System;
+using Common.Logging;
+using Erlang.NET;
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Erlang.Connection
 {
     /// <summary>
-    /// An interface based ConnectionFactory for creating <see cref="IConnection"/>s.
+    ///  
     /// </summary>
     /// <author>Mark Pollack</author>
-    public interface IConnectionFactory
+    public class ConnectionFactoryUtils
     {
-        IConnection CreateConnection();
+        protected static readonly ILog logger = LogManager.GetLogger(typeof(ConnectionFactoryUtils));
 
-        string HostName { get; }
 
-        string VirtualHost { get; }
+        public static void ReleaseConnection(OtpConnection con, IConnectionFactory cf)
+        {
+            if (con == null)
+            {
+                return;
+            }
+            try
+            {
+                con.close();
+            }
+            catch (Exception ex)
+            {
+                logger.Debug("Could not close Otp Connection", ex);
+            }
+        }
     }
 
 }

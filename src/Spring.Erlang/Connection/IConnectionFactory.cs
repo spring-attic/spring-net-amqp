@@ -18,21 +18,17 @@
 
 #endregion
 
-using RabbitMQ.Client;
+using Erlang.NET;
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Erlang.Connection
 {
     /// <summary>
-    /// An interface based ConnectionFactory for creating <see cref="IConnection"/>s.
+    ///  An interface based ConnectionFactory for creating <see cref="OtpConnection"/>s.
     /// </summary>
     /// <author>Mark Pollack</author>
     public interface IConnectionFactory
     {
-        IConnection CreateConnection();
-
-        string HostName { get; }
-
-        string VirtualHost { get; }
+        OtpConnection CreateConnection();
     }
 
 }

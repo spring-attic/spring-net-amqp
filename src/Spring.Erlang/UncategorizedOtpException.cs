@@ -18,21 +18,26 @@
 
 #endregion
 
-using RabbitMQ.Client;
+using Erlang.NET;
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Erlang
 {
     /// <summary>
-    /// An interface based ConnectionFactory for creating <see cref="IConnection"/>s.
+    /// A "catch-all" exception type within the OtpErlangException hierarchy
+    /// when no more specific cause is known.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public interface IConnectionFactory
+    public class UncategorizedOtpException : OtpErlangException
     {
-        IConnection CreateConnection();
 
-        string HostName { get; }
+        public UncategorizedOtpException()
+            : base()
+        {
+        }
 
-        string VirtualHost { get; }
+        public UncategorizedOtpException(string msg)
+            : base(msg)
+        {
+        }
     }
-
 }

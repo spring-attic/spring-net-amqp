@@ -18,21 +18,17 @@
 
 #endregion
 
-using RabbitMQ.Client;
+using Spring.Erlang.Support.Converter;
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
     /// <summary>
-    /// An interface based ConnectionFactory for creating <see cref="IConnection"/>s.
+    /// Converter that understands the responses from the rabbit control module and related functionality. 
     /// </summary>
     /// <author>Mark Pollack</author>
-    public interface IConnectionFactory
+    public class RabbitControlErlangConverter : SimpleErlangConverter
     {
-        IConnection CreateConnection();
-
-        string HostName { get; }
-
-        string VirtualHost { get; }
+        
     }
 
 }

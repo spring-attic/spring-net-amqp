@@ -18,21 +18,32 @@
 
 #endregion
 
-using RabbitMQ.Client;
+using Erlang.NET;
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Erlang
 {
     /// <summary>
-    /// An interface based ConnectionFactory for creating <see cref="IConnection"/>s.
+    /// Exception thrown when an 'error' is received from an Erlang RPC call. 
     /// </summary>
     /// <author>Mark Pollack</author>
-    public interface IConnectionFactory
+    public class ErlangErrorRpcException : OtpErlangException
     {
-        IConnection CreateConnection();
+        private OtpErlangTuple reasonTuple;
 
-        string HostName { get; }
+        public ErlangErrorRpcException(string reason): base(reason)
+        {
 
-        string VirtualHost { get; }
+        }
+
+        public ErlangErrorRpcException(OtpErlangTuple tuple) : base(tuple.ToString())
+        {
+            this.reasonTuple = tuple;
+        }
+
+        public OtpErlangTuple ReasonTuple
+        {
+            get { return reasonTuple; }
+        }
     }
 
 }

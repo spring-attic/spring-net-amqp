@@ -18,21 +18,15 @@
 
 #endregion
 
-using RabbitMQ.Client;
-
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
     /// <summary>
-    /// An interface based ConnectionFactory for creating <see cref="IConnection"/>s.
+    ///  
     /// </summary>
     /// <author>Mark Pollack</author>
-    public interface IConnectionFactory
+    public class RabbitStatus
     {
-        IConnection CreateConnection();
-
-        string HostName { get; }
-
-        string VirtualHost { get; }
+        
     }
 
 }

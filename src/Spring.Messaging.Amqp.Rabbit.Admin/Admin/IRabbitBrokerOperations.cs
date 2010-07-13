@@ -18,21 +18,18 @@
 
 #endregion
 
-using RabbitMQ.Client;
-
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
     /// <summary>
-    /// An interface based ConnectionFactory for creating <see cref="IConnection"/>s.
+    /// Performs administration tasks for RabbitMQ broker administration.   
     /// </summary>
+    /// <remarks>
+    /// Goal is to support full CRUD of Exchanges, Queues, Bindings, User, VHosts, etc.
+    /// </remarks>
     /// <author>Mark Pollack</author>
-    public interface IConnectionFactory
+    public interface IRabbitBrokerOperations
     {
-        IConnection CreateConnection();
-
-        string HostName { get; }
-
-        string VirtualHost { get; }
+        RabbitStatus Status { get; }
     }
 
 }

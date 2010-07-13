@@ -18,21 +18,24 @@
 
 #endregion
 
-using RabbitMQ.Client;
+using Erlang.NET;
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Erlang.Support.Converter
 {
     /// <summary>
-    /// An interface based ConnectionFactory for creating <see cref="IConnection"/>s.
+    ///  
     /// </summary>
     /// <author>Mark Pollack</author>
-    public interface IConnectionFactory
+    public class ErlangConversionException : OtpErlangException
     {
-        IConnection CreateConnection();
+        
+        public ErlangConversionException() : base()
+        {
+        }
 
-        string HostName { get; }
-
-        string VirtualHost { get; }
+        public ErlangConversionException(string msg) : base(msg)
+        {
+        }
     }
 
 }

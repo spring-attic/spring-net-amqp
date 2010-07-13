@@ -18,21 +18,30 @@
 
 #endregion
 
-using RabbitMQ.Client;
-
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Erlang.Core
 {
     /// <summary>
-    /// An interface based ConnectionFactory for creating <see cref="IConnection"/>s.
+    /// Simple description class for an Erlang node. 
     /// </summary>
     /// <author>Mark Pollack</author>
-    public interface IConnectionFactory
+    public class Node
     {
-        IConnection CreateConnection();
+        private string name;
 
-        string HostName { get; }
+        public Node(string name)
+        {
+            this.name = name;
+        }
 
-        string VirtualHost { get; }
+        public string Name
+        {
+            get { return name; }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Name: {0}", name);
+        }
     }
 
 }
