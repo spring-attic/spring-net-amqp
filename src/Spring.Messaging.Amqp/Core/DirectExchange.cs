@@ -30,6 +30,8 @@ namespace Spring.Messaging.Amqp.Core
     /// <see cref="IAmqpAdmin"/>
     public class DirectExchange : AbstractExchange
     {
+        public static readonly DirectExchange DEFAULT = new DirectExchange("");
+
         public DirectExchange(string name) : base(name)
         {
         }

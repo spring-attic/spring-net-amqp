@@ -29,7 +29,7 @@ namespace Spring.Messaging.Amqp.Core
     /// <author>Mark Fisher</author>
     public class BindingBuilder
     {
-        public static ExchangeConfigurer From(Queue queue)
+        public ExchangeConfigurer From(Queue queue)
         {
             return new ExchangeConfigurer(queue);
         }

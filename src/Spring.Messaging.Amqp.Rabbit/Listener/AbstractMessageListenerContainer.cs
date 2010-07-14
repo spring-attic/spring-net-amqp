@@ -41,7 +41,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         #endregion
 
-        private volatile string queueName;
+        private volatile string queue;
 
         private IErrorHandler errorHandler;
 
@@ -55,20 +55,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// Gets or sets the name of the queue to receive messages from
         /// </summary>
         /// <value>The name of the queue. Can not be null.</value>
-        public string QueueName
+        public string Queue
         {
-            get { return this.queueName; }
+            get { return this.queue; }
             set
             {
-                AssertUtils.ArgumentNotNull(value, "QueueName");
-                this.queueName = value;
+                AssertUtils.ArgumentNotNull(value, "Queue");
+                this.queue = value;
             }
         }
 
         public string RequiredQueueName()
         {
-            AssertUtils.ArgumentNotNull(queueName, "QueueName");
-            return this.queueName;
+            AssertUtils.ArgumentNotNull(queue, "Queue");
+            return this.queue;
         }
 
         public bool AutoAck

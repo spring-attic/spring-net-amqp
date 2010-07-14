@@ -45,7 +45,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
             container.ConnectionFactory = this.connectionFactory;
-            container.QueueName = TestConstants.QUEUE_NAME;
+            container.Queue = TestConstants.QUEUE_NAME;
             container.ConcurrentConsumers = 5;
 
             MessageListenerAdapter adapter = new MessageListenerAdapter();

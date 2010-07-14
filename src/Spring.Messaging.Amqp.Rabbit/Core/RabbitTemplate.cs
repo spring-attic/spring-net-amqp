@@ -34,12 +34,12 @@ using Spring.Util;
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
     /// <summary>
-    ///  
+    /// Helper class that simplifies synchronous RabbitMQ access code. 
     /// </summary>
     /// <author>Mark Pollack</author>
     public class RabbitTemplate : RabbitAccessor, IRabbitOperations
     {
-        private static readonly string DEFAULT_EXCHANGE = "";
+        private static readonly string DEFAULT_EXCHANGE = ""; // alias for amq.direct default exchange
 
         private static readonly string DEFAULT_ROUTING_KEY = "";
 
@@ -47,17 +47,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         protected static readonly ILog logger = LogManager.GetLogger(typeof (RabbitTemplate));
 
-        private volatile string defaultExchange = DEFAULT_EXCHANGE;
+        private volatile string exchange = DEFAULT_EXCHANGE;
 
-        private volatile string defaultRoutingKey = DEFAULT_ROUTING_KEY;
+        private volatile string routingKey = DEFAULT_ROUTING_KEY;
 
-        private volatile String defaultQueueName;
+        /// <summary>
+        /// The default queue name that will be used for synchronous receives.
+        /// </summary>
+        private volatile String queue;
 
         private volatile bool mandatoryPublish;
 
         private volatile bool immediatePublish;
 
-        private volatile bool requireAckOnReceive;
+        private volatile bool requireAck;
 
         private readonly RabbitTemplateResourceFactory transactionalResourceFactory;
 
@@ -81,11 +84,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         #endregion
 
+        #region Properties
 
-        public string DefaultQueueName
+        public string Queue
         {
-            get { return defaultQueueName; }
-            set { defaultQueueName = value; }
+            set { queue = value; }
+        }
+
+        public string Exchange
+        {
+            set { exchange = value; }
+        }
+
+        public string RoutingKey
+        {
+            set { routingKey = value; }
+        }
+
+        public bool RequireAck
+        {
+            set { requireAck = value; }
+        }
+
+        public bool MandatoryPublish
+        {
+            set { mandatoryPublish = value; }
+        }
+
+        public bool ImmediatePublish
+        {          
+            set { immediatePublish = value; }
         }
 
         public IMessageConverter MessageConverter
@@ -94,6 +122,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             set { messageConverter = value; }
         }
 
+        #endregion
+
+        protected virtual void InitDefaultStrategies()
+        {
+            MessageConverter = new SimpleMessageConverter();
+        }
 
         protected virtual IConnection GetConnection(RabbitResourceHolder resourceHolder)
         {
@@ -103,22 +137,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         protected virtual IModel GetChannel(RabbitResourceHolder resourceHolder)
         {
             return resourceHolder.Channel;
-        }
-
-        protected virtual void InitDefaultStrategies()
-        {
-            MessageConverter = new SimpleMessageConverter();
-        }
-
-        public IMessageProperties CreateMessageProperties()
-        {
-            IBasicProperties basicProperties = Execute<IBasicProperties>(delegate(IModel model) 
-                                                                        {
-                                                                            return model.CreateBasicProperties();
-                                                                        });
-
-            return DoCreateMessageProperties(basicProperties);
-  
         }
 
         protected virtual IMessageProperties DoCreateMessageProperties(IBasicProperties basicProperties)
@@ -134,12 +152,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         public void Send(MessageCreatorDelegate messageCreatorDelegate)
         {
-            Send(this.defaultExchange, this.defaultRoutingKey, messageCreatorDelegate);
+            Send(this.exchange, this.routingKey, messageCreatorDelegate);
         }
 
         public void Send(string routingKey, MessageCreatorDelegate messageCreatorDelegate)
         {
-            Send(this.defaultExchange, routingKey, messageCreatorDelegate);
+            Send(this.exchange, routingKey, messageCreatorDelegate);
         }
 
         public void Send(string exchange, string routingKey,
@@ -157,12 +175,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         public void ConvertAndSend(object message)
         {
-            ConvertAndSend(this.defaultExchange, this.defaultRoutingKey, message);
+            ConvertAndSend(this.exchange, this.routingKey, message);
         }
 
         public void ConvertAndSend(string routingKey, object message)
         {
-            ConvertAndSend(this.defaultExchange, routingKey, message);
+            ConvertAndSend(this.exchange, routingKey, message);
         }
 
         public void ConvertAndSend(string exchange, string routingKey, object message)
@@ -175,12 +193,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         public void ConvertAndSend(object message, MessagePostProcessorDelegate messagePostProcessorDelegate)
         {
-            ConvertAndSend(this.defaultExchange, this.defaultRoutingKey, message, messagePostProcessorDelegate);
+            ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessorDelegate);
         }
 
         public void ConvertAndSend(string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate)
         {
-            ConvertAndSend(this.defaultExchange, routingKey, message, messagePostProcessorDelegate);
+            ConvertAndSend(this.exchange, routingKey, message, messagePostProcessorDelegate);
         }
 
         public void ConvertAndSend(string exchange, string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate)
@@ -195,14 +213,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         public Message Receive()
         {
-            return Receive(GetRequiredDefaultQueueName());
+            return Receive(GetRequiredQueue());
         }
 
         public Message Receive(string queueName)
         {
             return Execute<Message>(delegate(IModel model)
                                          {
-                                             BasicGetResult result = model.BasicGet(queueName, !requireAckOnReceive);
+                                             BasicGetResult result = model.BasicGet(queueName, !requireAck);
                                              if (result != null)
                                              {
                                                  IMessageProperties msgProps =
@@ -220,7 +238,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         public object ReceiveAndConvert()
         {
-            return ReceiveAndConvert(GetRequiredDefaultQueueName());
+            return ReceiveAndConvert(GetRequiredQueue());
         }
 
         public object ReceiveAndConvert(string queueName)
@@ -274,6 +292,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return Execute<T>(action.DoInRabbit);
         }
 
+        public IMessageProperties CreateMessageProperties()
+        {
+            IBasicProperties basicProperties = Execute<IBasicProperties>(delegate(IModel model) 
+                                                                             {
+                                                                                 return model.CreateBasicProperties();
+                                                                             });
+
+            return DoCreateMessageProperties(basicProperties);
+  
+        }
+
         #endregion
 
         protected virtual void DoSend(IModel channel, string exchange, string routingKey, IMessageCreator messageCreator,
@@ -292,13 +321,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             }            
             if (exchange == null)
             {
-                // try to send to default exchange
-                exchange = this.defaultExchange;
+                // try to send to the configured exchange
+                exchange = this.exchange;
             }            
             if (routingKey == null)
             {
-                // try to send to default routing key
-                routingKey = this.defaultRoutingKey;
+                // try to send to configured routing key
+                routingKey = this.routingKey;
             }
 
             IBasicProperties bp = RabbitUtils.ExtractBasicProperties(channel, message);
@@ -324,13 +353,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                    && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
         }
 
-        private string GetRequiredDefaultQueueName()
+        private string GetRequiredQueue()
         {
-            String name = this.defaultQueueName;
+            String name = this.queue;
             if (name == null)
             {
                 throw new InvalidOperationException(
-                        "No 'defaultQueueName' specified. Check configuration of RabbitTemplate.");
+                        "No 'queue' specified. Check configuration of RabbitTemplate.");
             }
             return name;
         }

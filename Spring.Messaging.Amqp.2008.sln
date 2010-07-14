@@ -31,6 +31,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Messaging.Amqp.Rabbi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Erlang.Tests.2008", "test\Spring.Erlang.Tests\Spring.Erlang.Tests.2008.csproj", "{6BF21894-DDF3-496A-969F-6E3963A12E2A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HelloWorld", "HelloWorld", "{E65D4223-776C-4C85-9599-827078CEF477}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Amqp.HelloWorld.BrokerConfiguration", "examples\Spring.Amqp.HelloWorld\Spring.Amqp.HelloWorld.BrokerConfiguration\Spring.Amqp.HelloWorld.BrokerConfiguration.csproj", "{5B53C793-9BB7-4B76-AF93-64AB842C95AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Amqp.HelloWorld.Producer", "examples\Spring.Amqp.HelloWorld\Spring.Amqp.HelloWorld.Producer\Spring.Amqp.HelloWorld.Producer.csproj", "{38D42D7E-0571-4E5F-813D-B5AFB06AFC98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Amqp.HelloWorld.Consumer", "examples\Spring.Amqp.HelloWorld\Spring.Amqp.HelloWorld.Consumer\Spring.Amqp.HelloWorld.Consumer.csproj", "{1C76615E-A9C1-4589-93CD-3E28745AD7F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sync", "Sync", "{65819AD4-DA92-45A2-8819-E28B03BC304E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Async", "Async", "{3CDFDF37-6191-4CED-8446-9256FC8D0136}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Amqp.HelloWorld.Producer.Async", "examples\Spring.Amqp.HelloWorld\Spring.Amqp.HelloWorld.Producer.Async\Spring.Amqp.HelloWorld.Producer.Async.csproj", "{D7A715D3-FBBC-4E39-8D66-8F22D06FA463}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Amqp.HelloWorld.Consumer.Async", "examples\Spring.Amqp.HelloWorld.Consumer.Async\Spring.Amqp.HelloWorld.Consumer.Async\Spring.Amqp.HelloWorld.Consumer.Async.csproj", "{E128E9D5-66EA-483B-89C9-42023978F9B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,14 +105,42 @@ Global
 		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B53C793-9BB7-4B76-AF93-64AB842C95AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B53C793-9BB7-4B76-AF93-64AB842C95AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B53C793-9BB7-4B76-AF93-64AB842C95AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B53C793-9BB7-4B76-AF93-64AB842C95AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38D42D7E-0571-4E5F-813D-B5AFB06AFC98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38D42D7E-0571-4E5F-813D-B5AFB06AFC98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38D42D7E-0571-4E5F-813D-B5AFB06AFC98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38D42D7E-0571-4E5F-813D-B5AFB06AFC98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C76615E-A9C1-4589-93CD-3E28745AD7F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C76615E-A9C1-4589-93CD-3E28745AD7F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C76615E-A9C1-4589-93CD-3E28745AD7F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C76615E-A9C1-4589-93CD-3E28745AD7F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7A715D3-FBBC-4E39-8D66-8F22D06FA463}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7A715D3-FBBC-4E39-8D66-8F22D06FA463}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7A715D3-FBBC-4E39-8D66-8F22D06FA463}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7A715D3-FBBC-4E39-8D66-8F22D06FA463}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E128E9D5-66EA-483B-89C9-42023978F9B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E128E9D5-66EA-483B-89C9-42023978F9B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E128E9D5-66EA-483B-89C9-42023978F9B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E128E9D5-66EA-483B-89C9-42023978F9B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0F85FABE-1157-430C-8B31-A3E4F443C495} = {5485F738-87A1-4B36-A5EC-4A7350DDE2FF}
+		{E65D4223-776C-4C85-9599-827078CEF477} = {5485F738-87A1-4B36-A5EC-4A7350DDE2FF}
 		{DE909872-61DE-48EC-BD1A-8DEE4D993F5B} = {0F85FABE-1157-430C-8B31-A3E4F443C495}
 		{E45BAB1E-7C84-446A-AA5C-2EC6D336960B} = {0F85FABE-1157-430C-8B31-A3E4F443C495}
 		{44CBEE25-B904-4222-8F42-6DBE90BC37F1} = {0F85FABE-1157-430C-8B31-A3E4F443C495}
+		{5B53C793-9BB7-4B76-AF93-64AB842C95AD} = {E65D4223-776C-4C85-9599-827078CEF477}
+		{65819AD4-DA92-45A2-8819-E28B03BC304E} = {E65D4223-776C-4C85-9599-827078CEF477}
+		{3CDFDF37-6191-4CED-8446-9256FC8D0136} = {E65D4223-776C-4C85-9599-827078CEF477}
+		{1C76615E-A9C1-4589-93CD-3E28745AD7F0} = {65819AD4-DA92-45A2-8819-E28B03BC304E}
+		{38D42D7E-0571-4E5F-813D-B5AFB06AFC98} = {65819AD4-DA92-45A2-8819-E28B03BC304E}
+		{D7A715D3-FBBC-4E39-8D66-8F22D06FA463} = {3CDFDF37-6191-4CED-8446-9256FC8D0136}
+		{E128E9D5-66EA-483B-89C9-42023978F9B8} = {3CDFDF37-6191-4CED-8446-9256FC8D0136}
 	EndGlobalSection
 EndGlobal

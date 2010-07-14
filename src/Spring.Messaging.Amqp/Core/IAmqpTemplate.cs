@@ -18,11 +18,19 @@
 
 #endregion
 
+using Spring.Messaging.Amqp.Support.Converter;
+
 namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
-    ///  
+    /// Specifies a basic set of AMQP operations
     /// </summary>
+    /// <remarks>
+    /// Provides synchronous send an receive methods.  The ConvertAndSend and ReceiveAndConvert
+    /// methods allow let you send and receive POCO objects.  Implementations are expected to
+    /// delegate to an instance of <see cref="IMessageConverter"/> to perform
+    /// conversion to and from AMQP byte[] payload type.
+    /// </remarks>
     /// <author>Mark Pollack</author>
     public interface IAmqpTemplate
     {

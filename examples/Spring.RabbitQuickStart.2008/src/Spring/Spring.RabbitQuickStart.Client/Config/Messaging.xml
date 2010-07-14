@@ -19,7 +19,7 @@
   
   <object name="RabbitTemplate" type="Spring.Messaging.Amqp.Rabbit.Core.RabbitTemplate, Spring.Messaging.Amqp.Rabbit">
     <property name="ConnectionFactory" ref="ConnectionFactory"/>
-    <property name="DefaultQueueName" value="APP.STOCK.REQUEST"/>
+    <property name="Queue" value="APP.STOCK.REQUEST"/>
     <property name="MessageConverter" ref="JsonMessageConverter"/>
   </object>
 
@@ -32,7 +32,7 @@
 
   <object name="MessageListenerContainer" type="Spring.Messaging.Amqp.Rabbit.Listener.SimpleMessageListenerContainer, Spring.Messaging.Amqp.Rabbit">
     <property name="ConnectionFactory" ref="ConnectionFactory"/>
-    <property name="QueueName" value="APP.STOCK.MARKETDATA"/>
+    <property name="Queue" value="APP.STOCK.MARKETDATA"/>
     <property name="ConcurrentConsumers" value="5"/>
     <property name="MessageListener" ref="MessageListenerAdapter"/>
   </object>

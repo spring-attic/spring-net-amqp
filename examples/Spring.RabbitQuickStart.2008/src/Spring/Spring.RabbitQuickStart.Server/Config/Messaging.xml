@@ -7,7 +7,7 @@
 
   <object name="RabbitTemplate" type="Spring.Messaging.Amqp.Rabbit.Core.RabbitTemplate, Spring.Messaging.Amqp.Rabbit">
     <property name="ConnectionFactory" ref="ConnectionFactory"/>
-    <property name="DefaultQueueName" value="APP.STOCK.MARKETDATA"/>
+    <property name="Queue" value="APP.STOCK.MARKETDATA"/>
     <property name="MessageConverter" ref="JsonMessageConverter"/>
   </object>
 
@@ -22,6 +22,13 @@
     <nms:listener ref="MessageListenerAdapter" destination="APP.STOCK.REQUEST" />
   </nms:listener-container>
   -->
+
+  <object name="MessageListenerContainer" type="Spring.Messaging.Amqp.Rabbit.Listener.SimpleMessageListenerContainer, Spring.Messaging.Amqp.Rabbit">
+    <property name="ConnectionFactory" ref="ConnectionFactory"/>
+    <property name="Queue" value="APP.STOCK.REQUEST"/>
+    <property name="ConcurrentConsumers" value="10"/>
+    <property name="MessageListener" ref="MessageListenerAdapter"/>
+  </object>
    
   <!-- Plain object message handler -->
   <object id="MessageListenerAdapter" type="Spring.Messaging.Amqp.Rabbit.Listener.Adapter.MessageListenerAdapter, Spring.Messaging.Amqp.Rabbit">

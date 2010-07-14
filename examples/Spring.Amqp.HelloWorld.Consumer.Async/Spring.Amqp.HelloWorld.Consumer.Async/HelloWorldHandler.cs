@@ -18,14 +18,16 @@
 
 #endregion
 
-using RabbitMQ.Client;
-using Spring.Messaging.Amqp.Core;
+using System;
 
-namespace Spring.Messaging.Amqp.Rabbit.Core
+namespace Spring.Amqp.HelloWorld.Consumer.Async
 {
-    /// <summary>
-    /// Strategy interface for creating AMQP messages.
-    /// </summary>
-    /// <author>Mark Pollack</author> 
-    public delegate Message MessageCreatorDelegate(IModel channel);
+    public class HelloWorldHandler
+    {
+        public void HandleMessage(string text)
+        {
+            Console.WriteLine("Received: " + text);
+        }
+    }
+
 }

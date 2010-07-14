@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+
+  <object id="ConnectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.SingleConnectionFactory, Spring.Messaging.Amqp.Rabbit">
+
+  </object>
+
+  <object id="RabbitTemplate" type="Spring.Messaging.Amqp.Rabbit.Core.RabbitTemplate, Spring.Messaging.Amqp.Rabbit">
+    <constructor-arg ref="ConnectionFactory"/>
+    <!-- The queue will be bound to the default direct exchange unless specified otherwise -->
+    <property name="Queue" value="hello.world.queue"/>
+    <property name="RoutingKey" value="hello.world.queue"/>
+  </object>
+
+
+</objects>

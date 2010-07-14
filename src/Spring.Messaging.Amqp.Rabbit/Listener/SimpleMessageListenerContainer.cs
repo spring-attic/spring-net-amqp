@@ -54,7 +54,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         private volatile ushort prefetchCount = 1;
 
         //TODO compare in more detail to spring 3.0's SimpleAsyncTaskExecutor
-        private volatile IExecutor taskExector = Executors.NewCachedThreadPool();
+        private volatile IExecutorService taskExector = Executors.NewCachedThreadPool();
 
         private volatile int concurrentConsumers = 1;
 
@@ -87,7 +87,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
-        public IExecutor TaskExector
+        public IExecutorService TaskExector
         {
             set
             {
@@ -138,7 +138,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         protected override void DoShutdown()
-        {
+        {        
+            taskExector.Shutdown();
             if (!this.IsActive)
             {
                 return;

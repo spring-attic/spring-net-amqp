@@ -18,6 +18,7 @@
 
 #endregion
 
+using System;
 using RabbitMQ.Client;
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
@@ -26,7 +27,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// An interface based ConnectionFactory for creating <see cref="IConnection"/>s.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public interface IConnectionFactory
+    public interface IConnectionFactory : IDisposable
     {
         IConnection CreateConnection();
 
