@@ -135,7 +135,8 @@ namespace Spring.Erlang.Core
 
         public object ExecuteAndConvertRpc(string module, string function, params object[] args)
         {
-            throw new NotImplementedException();
+            return erlangConverter.FromErlangRpc(module, function, ExecuteErlangRpc(module, function, (OtpErlangList)erlangConverter.ToErlang(args)));
+	
         }
     }
 

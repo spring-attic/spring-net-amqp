@@ -18,9 +18,11 @@
 
 #endregion
 
-
+using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using RabbitMQ.Client;
+using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
@@ -28,20 +30,62 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     [TestFixture]
     public class RabbitBrokerAdminIntegrationTests
     {
-        protected CachingConnectionFactory connectionFactory;
+        protected SingleConnectionFactory connectionFactory;
 
         private RabbitBrokerAdmin brokerAdmin;
+
         [SetUp]
         public void SetUp()
         {                      
-            connectionFactory = new CachingConnectionFactory();
+            connectionFactory = new SingleConnectionFactory();
             brokerAdmin = new RabbitBrokerAdmin(connectionFactory);
+        }
+
+        [Test]
+        public void UserCrud()
+        {
+            IList<string> users = brokerAdmin.ListUsers();
+            if (users.Contains("joe"))
+            {
+                brokerAdmin.DeleteUser("joe");
+            }
+            brokerAdmin.AddUser("joe", "trader");
+            users = brokerAdmin.ListUsers();
+            Assert.AreEqual("guest", users[0]);
+            Assert.AreEqual("joe", users[1]);
+            brokerAdmin.ChangeUserPassword("joe", "sales");
+            users = brokerAdmin.ListUsers();
+            if (users.Contains("joe"))
+            {
+                brokerAdmin.DeleteUser("joe");
+            }
         }
         
 
         [Test]
         public void TestStatus()
         {
+            RabbitStatus status = brokerAdmin.Status;
+            AssertBrokerAppRunning(status);
+
         }
+
+        [Test]
+        public void GetQueues()
+        {
+            brokerAdmin.DeclareQueue(new Queue("test.queue"));
+            IList<QueueInfo> queues = brokerAdmin.Queues;
+            Assert.AreEqual("test.queue", queues[0].Name);
+            Console.WriteLine(queues[0]);
+
+        }
+
+        private void AssertBrokerAppRunning(RabbitStatus status)
+        {
+            Assert.AreEqual(status.RunningNodes.Count, 1);
+            Assert.IsTrue(status.RunningNodes[0].Name.Contains("rabbit"));
+        }
+
+
     }
 }

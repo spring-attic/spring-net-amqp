@@ -133,9 +133,9 @@
     <!-- copy reference docs -->
     <call target="package.doc" cascade="false"/>
 
-    <!-- build tools -->
-    <copy todir="${package.dir}/tools">
-      <fileset basedir="${root.dir}/tools">
+    <!-- build 3rd party lib -->
+    <copy todir="${package.dir}/lib">
+      <fileset basedir="${root.dir}/lib">
         <include name="**/*"/>
       </fileset>
     </copy>

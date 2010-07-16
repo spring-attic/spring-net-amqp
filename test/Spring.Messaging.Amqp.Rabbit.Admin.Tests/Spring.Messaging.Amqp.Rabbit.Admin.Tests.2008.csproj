@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Erlang, Version=0.9.0.20193, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Erlang.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.5.0.9015, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\nunit.framework.dll</HintPath>
@@ -52,6 +56,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Spring.Erlang\Spring.Erlang.2008.csproj">
+      <Project>{2619BBAC-1C37-4AE7-923F-E40EB7805132}</Project>
+      <Name>Spring.Erlang.2008</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Spring.Messaging.Amqp.Rabbit.Admin\Spring.Messaging.Amqp.Rabbit.Admin.2008.csproj">
       <Project>{EBC1D070-FC8A-4EAD-B2A7-3AC25AB62507}</Project>
       <Name>Spring.Messaging.Amqp.Rabbit.Admin.2008</Name>
@@ -59,6 +67,10 @@
     <ProjectReference Include="..\..\src\Spring.Messaging.Amqp.Rabbit\Spring.Messaging.Amqp.Rabbit.2008.csproj">
       <Project>{1B1394DA-24D3-47FE-84CA-7E33B077F686}</Project>
       <Name>Spring.Messaging.Amqp.Rabbit.2008</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Spring.Messaging.Amqp\Spring.Messaging.Amqp.2008.csproj">
+      <Project>{96CD9010-9DDF-4D13-892A-5D60F01F3C90}</Project>
+      <Name>Spring.Messaging.Amqp.2008</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

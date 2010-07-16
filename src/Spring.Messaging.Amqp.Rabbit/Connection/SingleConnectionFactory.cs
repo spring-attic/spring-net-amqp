@@ -19,6 +19,7 @@
 #endregion
 
 using System;
+using System.Net;
 using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Rabbit.Support;
@@ -45,10 +46,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         //TODO need to sync on ConnectionFactory properties between Java/.NET 
         //Note .NET is multi-protocol client (IProtocol parameters)
 
-        private string host = "localhost:" + RabbitUtils.DEFAULT_PORT;
-
-        private volatile int port = RabbitUtils.DEFAULT_PORT;
-        
         private ConnectionFactory rabbitConnectionFactory;
 
         /// <summary>
@@ -69,7 +66,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         public SingleConnectionFactory()
         {
             rabbitConnectionFactory = new ConnectionFactory();
-            this.host = "localhost";
+            rabbitConnectionFactory.HostName = Dns.GetHostName();
+        }
+
+        public SingleConnectionFactory(string hostname)
+        {
+            AssertUtils.ArgumentNotNull(hostname, "hostname");
+            rabbitConnectionFactory = new ConnectionFactory();
+            rabbitConnectionFactory.HostName = hostname;
         }
 
         /// <summary>
@@ -82,14 +86,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             AssertUtils.ArgumentNotNull(connectionFactory, "connectionFactory", "Target ConnectionFactory must not be null");
             AssertUtils.ArgumentHasText(hostName, "host", "Address must not be null or empty.");
             this.rabbitConnectionFactory = connectionFactory;
-            this.host = hostName;
+            this.rabbitConnectionFactory.HostName = hostName;
         }
 
         #region Implementation of IConnectionFactory
 
         public string Host
         {
-            get { return host; }
+            get { return rabbitConnectionFactory.HostName; }
         }
 
         public string VirtualHost
@@ -99,8 +103,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         public int Port
         {
-            get { return port; }
+            get { return rabbitConnectionFactory.Port; }
             set { rabbitConnectionFactory.Port = value; }
+        }
+
+        public string UserName
+        {
+            set { rabbitConnectionFactory.UserName = value; }
+        }
+
+        public string Password
+        {
+            set { rabbitConnectionFactory.Password = value; }
         }
 
         #endregion
@@ -221,17 +235,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         protected virtual IConnection DoCreateConnection()
         {
-            if (this.host != null )
-            {
-                rabbitConnectionFactory.HostName = host;
-            }
             return rabbitConnectionFactory.CreateConnection();
         }
 
 
         protected virtual void PrepareConnection(IConnection connection)
         {
-            rabbitConnectionFactory.HostName = host;
             // Potentially configure shutdown exceptions, investigate reconnection exceptions.
         }
 
@@ -263,7 +272,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         public override string ToString()
         {
-            return "SingleConnectionFactory [host=" + host + ", port=" + port + "]";
+            return "SingleConnectionFactory [host=" + this.rabbitConnectionFactory.HostName + ", port=" + this.rabbitConnectionFactory.Port + "]";
         }
     }
 

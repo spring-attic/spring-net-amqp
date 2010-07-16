@@ -1,42 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 <chapter id="erlang">
   <title>Erlang integration</title>
 
   <section id="erlang-introduction">
     <title>Introduction</title>
 
-    <para>JInterface ease of use issues. </para>
+    <para>There is an open source project located on github called Erlang.NET.
+    It provides to .NET what JInterface provides to Java users, namely a means
+    to communicate with an Erlang process. The API is very low level and
+    rather tedious to use. The Spring Elang project makes accessing functions
+    in Erlang from .NET easy, often they can be one liners. </para>
   </section>
 
   <section>
     <title>Communicating with Erlang processes</title>
 
-    <para>Introduction.... </para>
-
-    <section>
-      <title>Connection Management</title>
-
-      <para>ConnectionFactory</para>
-    </section>
+    <para>TODO</para>
 
     <section>
       <title>Executing RPC</title>
 
-      <para></para>
+      <para>The interface IErlangOperations is the high level API for
+      interacting with an Erlang process. </para>
+
+      <programlisting>    public interface IErlangOperations
+    {
+        T Execute&lt;T&gt;(ConnectionCallbackDelegate&lt;T&gt; action);
+
+        OtpErlangObject ExecuteErlangRpc(string module, string function, OtpErlangList args);
+
+        OtpErlangObject ExecuteErlangRpc(string module, string function, params OtpErlangObject[] args);
+
+        OtpErlangObject ExecuteRpc(string module, string function, params object[] args);
+
+        object ExecuteAndConvertRpc(string module, string function, IErlangConverter converterToUse,
+                                    params object[] args);
+
+        // Sweet!
+        <emphasis role="bold">object ExecuteAndConvertRpc(string module, string function, params object[] args);</emphasis>
+    }</programlisting>
+
+      <para>The class that implements this interface is called ErlangTemplate.
+      There are a few convenience methods, most notably ExecuteAndConvertRpc,
+      as well as the Execute method which gives you access to the 'native' API
+      of the Erlang.NET project. For simple functions, you can invoke
+      ExecuteAndConvertRpc with the appropriate Erlang module name, function,
+      and arguments in a one-liner. For example, here is the implementation of
+      the RabbitBrokerAdmin method 'DeleteUser'</para>
+
+      <programlisting>        public void DeleteUser(string username)
+        {
+            erlangTemplate.ExecuteAndConvertRpc("rabbit_access_control", "delete_user", encoding.GetBytes(username));
+        }</programlisting>
+
+      <para>The 'encoding' field is simply and instance of
+      ASCIIEncoding.</para>
+
+      <para>As the Erlang.NET library uses specific classes such as
+      OtpErlangDouble, OtpErlangString to represent the primitive types in
+      Erlang RPC calls, there is a converter class that works in concert with
+      ErlangTemplate that knows how to translate from .NET primitive types to
+      their Erlang class equivalents. You can also create custom converters
+      and register them with the ErlangTemplate to handle more complex data
+      format translations.</para>
     </section>
 
     <section>
       <title>ErlangConverter</title>
 
-      <para>ErlangConverter</para>
+      <para>The IErlangConverter interface is shown below</para>
+
+      <programlisting>    public interface IErlangConverter
+    {
+        /// &lt;summary&gt;
+        /// Convert a .NET object to a Erlang data type.
+        /// &lt;/summary&gt;
+        OtpErlangObject ToErlang(object objectToConvert);
+
+        /// &lt;summary&gt;
+        /// Convert from an Erlang data type to a .NET data type.
+        /// &lt;/summary&gt;
+        object FromErlang(OtpErlangObject erlangObject);
+
+        /// &lt;summary&gt;
+        /// The return value from executing the Erlang RPC.
+        /// &lt;/summary&gt;
+        object FromErlangRpc(string module, string function, OtpErlangObject erlangObject);
+    }</programlisting>
+
+      <para>The provided implementation is SimpleErlangConverter which is used
+      by default with ErlangTemplate and handles all basic types.</para>
     </section>
-  </section>
-
-  <section>
-    <title>Exceptions</title>
-
-    <para>Runtime exception hierarchy</para>
-
-    <para></para>
   </section>
 </chapter>

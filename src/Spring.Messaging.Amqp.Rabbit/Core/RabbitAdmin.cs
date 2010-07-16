@@ -22,6 +22,7 @@ using System;
 using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Objects.Factory;
 using Spring.Util;
 
@@ -35,6 +36,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     {
         protected static readonly ILog logger = LogManager.GetLogger(typeof(RabbitAdmin));
 
+        private IConnectionFactory connectionFactory;
+
         private RabbitTemplate rabbitTemplate;
 
         /// <summary>
@@ -42,6 +45,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </summary>
         public RabbitAdmin()
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RabbitAdmin"/> class.
+        /// </summary>
+        /// <param name="connectionFactory">The connection factory.</param>
+        public RabbitAdmin(IConnectionFactory connectionFactory)
+        {
+            this.connectionFactory = connectionFactory;
+            AssertUtils.ArgumentNotNull(connectionFactory, "ConnectionFactory is required");
+            this.rabbitTemplate = new RabbitTemplate(connectionFactory);
+
         }
 
         /// <summary>
@@ -89,6 +104,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 channel.ExchangeDelete(exchangeName, false, false);
                 return null;
             });
+        }
+
+
+        /// <summary>
+        /// Declares the queue.
+        /// </summary>
+        /// <param name="queue">The queue.</param>
+        public Queue DeclareQueue()
+        {
+            string queueName = rabbitTemplate.Execute<string>(delegate(IModel channel)
+            {
+                channel.QueueDeclare();
+                return null;
+            });
+            Queue q = new Queue(queueName);
+            q.Exclusive = true;
+            q.AutoDelete = true;
+            q.Durable = false;
+            return q;
         }
 
         /// <summary>
@@ -162,7 +196,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         public void AfterPropertiesSet()
         {
-            AssertUtils.ArgumentNotNull(RabbitTemplate, "RabbitTemplate is required");
+            if (connectionFactory == null)
+            {
+                throw new InvalidOperationException("'ConnectionFactory' is required.");
+            }
+            this.rabbitTemplate = new RabbitTemplate(connectionFactory);           
         }
 
         #endregion

@@ -100,6 +100,15 @@ namespace Spring.Messaging.Amqp.Qpid.Core
             }
         }
 
+        public void SetHeader(string key, object val)
+        {
+            messagePropreties.GetApplicationHeaders().Add(key,val);
+        }
+
+        public object GetHeader(string key)
+        {
+            return messagePropreties.GetApplicationHeaders()[key];
+        }
 
         public uint MessageCount
         {

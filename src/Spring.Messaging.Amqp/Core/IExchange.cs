@@ -42,7 +42,6 @@ namespace Spring.Messaging.Amqp.Core
 
         IDictionary Arguments { get;  }
 
-
     }
 
 }

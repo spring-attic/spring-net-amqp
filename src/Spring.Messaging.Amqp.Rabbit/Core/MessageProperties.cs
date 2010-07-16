@@ -211,7 +211,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 {
                     dict.Add(o.Key, o.Value);
                 }
+                basicProperties.Headers = dict;
             }
+        }
+
+        public void SetHeader(string key, object val)
+        {
+            basicProperties.Headers.Add(key, val);
+        }
+
+        public object GetHeader(string key)
+        {
+            return basicProperties.Headers[key] as string;
         }
 
         public uint MessageCount

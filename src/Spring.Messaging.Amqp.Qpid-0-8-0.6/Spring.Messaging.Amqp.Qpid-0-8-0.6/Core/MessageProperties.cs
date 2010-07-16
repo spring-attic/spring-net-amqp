@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Apache.Qpid.Messaging;
 using Spring.Messaging.Amqp.Core;
 
@@ -112,8 +113,18 @@ namespace Spring.Messaging.Amqp.Qpid.Core
             }
             set
             {
-                
+                throw new NotSupportedException();
             }
+        }
+
+        public void SetHeader(string key, object val)
+        {
+            headersDictionary.Add(key, val);
+        }
+
+        public object GetHeader(string key)
+        {
+            return headersDictionary[key];
         }
 
         public uint MessageCount

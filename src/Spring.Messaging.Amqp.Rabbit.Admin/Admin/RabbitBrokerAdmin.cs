@@ -19,11 +19,17 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
 using Common.Logging;
+using RabbitMQ.Client;
 using Spring.Erlang.Connection;
 using Spring.Erlang.Core;
+using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using IConnectionFactory=Spring.Messaging.Amqp.Rabbit.Connection.IConnectionFactory;
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
@@ -47,7 +53,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         private ErlangTemplate erlangTemplate;
 
-        public RabbitBrokerAdmin(CachingConnectionFactory connectionFactory)
+        private ASCIIEncoding encoding = new ASCIIEncoding();
+
+        public RabbitBrokerAdmin(IConnectionFactory connectionFactory)
         {
             this.virtualHost = connectionFactory.VirtualHost;
             this.rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -73,12 +81,202 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         #region Implementation of IRabbitBrokerOperations
 
+        public void RemoveBinding(Binding binding)
+        {
+            rabbitTemplate.Execute<object>(delegate(IModel model)
+                                               {
+                                                   model.QueueUnbind(binding.Queue, binding.Exchange, binding.RoutingKey,
+                                                                     binding.Arguments);
+                                                   return null;
+                                               });
+        }
+
         public RabbitStatus Status
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return (RabbitStatus)erlangTemplate.ExecuteAndConvertRpc("rabbit", "status");
+            }
+        }
+
+        public IList<QueueInfo> Queues
+        {
+            get {
+                return
+                    (IList<QueueInfo>)
+                    erlangTemplate.ExecuteAndConvertRpc("rabbit_amqqueue", "info_all", encoding.GetBytes(virtualHost)); }
+        }
+
+        public void AddUser(string username, string password)
+        {
+            erlangTemplate.ExecuteAndConvertRpc("rabbit_access_control", "add_user", encoding.GetBytes(username), encoding.GetBytes(password));
+        }
+
+        public void DeleteUser(string username)
+        {
+            erlangTemplate.ExecuteAndConvertRpc("rabbit_access_control", "delete_user", encoding.GetBytes(username));
+        }
+
+        public void ChangeUserPassword(string username, string newPassword)
+        {
+            erlangTemplate.ExecuteAndConvertRpc("rabbit_access_control", "change_password", encoding.GetBytes(username),
+                                                encoding.GetBytes(newPassword));		
+
+        }
+
+        public IList<string> ListUsers()
+        {
+            return (IList<string>)erlangTemplate.ExecuteAndConvertRpc("rabbit_access_control", "list_users");
         }
 
         #endregion
+
+        public void DeclareExchange(IExchange exchange)
+        {
+            rabbitAdmin.DeclareExchange(exchange);
+        }
+
+        public void DeleteExchange(string exchangeName)
+        {
+            rabbitAdmin.DeleteExchange(exchangeName);
+        }
+
+        public Queue DeclareQueue()
+        {
+            return rabbitAdmin.DeclareQueue();
+        }
+
+        public void DeclareQueue(Queue queue)
+        {
+            rabbitAdmin.DeclareQueue(queue);
+        }
+
+        public void DeleteQueue(string queueName)
+        {
+            rabbitAdmin.DeleteQueue(queueName);
+        }
+
+        public void DeleteQueue(string queueName, bool unused, bool empty)
+        {
+            rabbitAdmin.DeleteQueue(queueName, unused, empty);
+        }
+
+        public void PurgeQueue(string queueName, bool noWait)
+        {
+            rabbitAdmin.PurgeQueue(queueName, noWait);
+        }
+
+        public void DeclareBinding(Binding binding)
+        {
+            rabbitAdmin.DeclareBinding(binding);
+        }
+
+        public void StartBrokerApplication()
+        {
+            erlangTemplate.ExecuteAndConvertRpc("rabbit", "start");
+        }
+
+        public void StopBrokerApplication()
+        {
+            erlangTemplate.ExecuteAndConvertRpc("rabbit", "stop");
+        }
+
+        /// <summary>
+        /// Starts the node. NOT YET IMPLEMENTED!
+        /// </summary>
+        /// Starts the Erlang node where RabbitMQ is running by shelling out to the directory specified by RABBIT_HOME and
+        /// executing the standard named start script.  It spawns the shell command execution into its own thread.
+        public void StartNode()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopNode()
+        {
+            erlangTemplate.ExecuteAndConvertRpc("rabbit", "stop_and_halt");
+        }
+
+        public void ResetNode()
+        {
+            erlangTemplate.ExecuteAndConvertRpc("rabbit_mnesia", "reset");
+        }
+
+        public void ForceResetNode()
+        {
+            erlangTemplate.ExecuteAndConvertRpc("rabbit_mnesia", "force_reset");
+        }
+
+        /// <summary>
+        /// Not yet implemented
+        /// </summary>
+        public int AddVhost(string vhostPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Not yet implemented
+        /// </summary>
+        public int DeleteVhost(string vhostPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Not yet implemented
+        /// </summary>
+        public void SetPermissions(string username, Regex configure, Regex read, Regex write)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Not yet implemented
+        /// </summary>
+        public void SetPermissions(string username, Regex configure, Regex read, Regex write, string vhostPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Not yet implemented
+        /// </summary>
+        public void ClearPermissions(string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Not yet implemented
+        /// </summary>
+        public void ClearPermissions(string username, string vhostPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Not yet implemented
+        /// </summary>
+        public List<string> ListPermissions()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Not yet implemented
+        /// </summary>
+        public List<string> ListPermissions(string vhostPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Not yet implemented
+        /// </summary>
+        public List<string> ListUserPermissions(string username)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

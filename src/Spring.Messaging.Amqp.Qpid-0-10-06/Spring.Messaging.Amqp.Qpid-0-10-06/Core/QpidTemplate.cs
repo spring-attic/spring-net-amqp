@@ -43,12 +43,12 @@ namespace Spring.Messaging.Amqp.Qpid.Core
 
         protected static readonly ILog logger = LogManager.GetLogger(typeof(QpidTemplate));
 
-        private volatile string defaultExchange = DEFAULT_EXCHANGE;
+        private volatile string exchange = DEFAULT_EXCHANGE;
 
   
-        private volatile string defaultRoutingKey = DEFAULT_ROUTING_KEY;
+        private volatile string routingKey = DEFAULT_ROUTING_KEY;
 
-        private volatile String defaultQueueName;
+        private volatile String queue;
 
         private volatile bool mandatoryPublish;
 
@@ -63,16 +63,16 @@ namespace Spring.Messaging.Amqp.Qpid.Core
 
 
 
-        public string DefaultQueueName
+        public string Queue
         {
-            get { return defaultQueueName; }
-            set { defaultQueueName = value; }
+            get { return queue; }
+            set { queue = value; }
         }
 
-        public string DefaultRoutingKey
+        public string RoutingKey
         {
-            get { return defaultRoutingKey; }
-            set { defaultRoutingKey = value; }
+            get { return routingKey; }
+            set { routingKey = value; }
         }
 
 
@@ -88,14 +88,14 @@ namespace Spring.Messaging.Amqp.Qpid.Core
 
         #region Implementation of IAmqpTemplate
 
-        public void Send(MessageCreatorDelegate messageCreator)
+        public void Send(MessageCreatorDelegate messageCreatorDelegate)
         {
-            throw new NotImplementedException();
+            Send(this.exchange, this.routingKey, messageCreatorDelegate);
         }
 
-        public void Send(string routingkey, MessageCreatorDelegate messageCreator)
+        public void Send(string routingkey, MessageCreatorDelegate messageCreatorDelegate)
         {
-            throw new NotImplementedException();
+            Send(this.exchange, routingKey, messageCreatorDelegate);
         }
 
         public void Send(string exchange, string routingKey, MessageCreatorDelegate messageCreatorDelegate)
@@ -125,12 +125,12 @@ namespace Spring.Messaging.Amqp.Qpid.Core
             if (exchange == null)
             {
                 // try to send to default exchange
-                exchange = this.defaultExchange;
+                exchange = this.exchange;
             }
             if (routingKey == null)
             {
                 // try to send to default routing key
-                routingKey = this.defaultRoutingKey;
+                routingKey = this.routingKey;
             }
 
             /*   org.apache.qpid.client.IMessage message = new org.apache.qpid.client.Message();
@@ -168,12 +168,12 @@ namespace Spring.Messaging.Amqp.Qpid.Core
 
         public void ConvertAndSend(object message)
         {
-            throw new NotImplementedException();
+            ConvertAndSend(this.exchange, this.routingKey, message);
         }
 
         public void ConvertAndSend(string routingKey, object message)
         {
-            throw new NotImplementedException();
+            ConvertAndSend(this.exchange, routingKey, message);
         }
 
         public void ConvertAndSend(string exchange, string routingKey, object message)
@@ -198,7 +198,7 @@ namespace Spring.Messaging.Amqp.Qpid.Core
 
         public Message Receive()
         {
-            throw new NotImplementedException();
+            return Receive(GetRequiredQueue());
         }
 
         public Message Receive(string queueName)
@@ -313,6 +313,17 @@ namespace Spring.Messaging.Amqp.Qpid.Core
         {
             return ChannelTransacted
                    && !ClientFactoryUtils.IsChannelTransactional(channel, ClientFactory);
+        }
+
+        private string GetRequiredQueue()
+        {
+            String name = this.queue;
+            if (name == null)
+            {
+                throw new InvalidOperationException(
+                        "No 'queue' specified. Check configuration of RabbitTemplate.");
+            }
+            return name;
         }
     }
 

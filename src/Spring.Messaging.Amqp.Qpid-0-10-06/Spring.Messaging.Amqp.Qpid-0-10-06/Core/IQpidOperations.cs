@@ -6,7 +6,7 @@ namespace Spring.Messaging.Amqp.Qpid.Core
     {
         void Send(MessageCreatorDelegate messageCreator);
 
-        void Send(string routingkey, MessageCreatorDelegate messageCreator);
+        void Send(string routingkey, MessageCreatorDelegate messageCreatorDelegate);
 
         void Send(string exchange, string routingKey, MessageCreatorDelegate messageCreatorDelegate);
 

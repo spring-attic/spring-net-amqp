@@ -33,6 +33,13 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>
         /// Declares the queue.
         /// </summary>
+        /// <returns></returns>
+        Queue DeclareQueue();
+
+        /// <summary>
+        /// Declares a queue whose name is automatically named.  It is created with
+	    /// exclusive = true, autoDelete=true, and durable = false.
+        /// </summary>
         /// <param name="queue">The queue.</param>
         void DeclareQueue(Queue queue);
 

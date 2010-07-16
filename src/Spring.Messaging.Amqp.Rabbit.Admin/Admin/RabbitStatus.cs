@@ -18,15 +18,49 @@
 
 #endregion
 
+using System.Collections.Generic;
+using Spring.Erlang.Core;
+
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
     /// <summary>
-    ///  
+    ///  The status object returned from querying the broker
     /// </summary>
     /// <author>Mark Pollack</author>
     public class RabbitStatus
     {
-        
+        private IList<Application> runningApplications;
+
+        private IList<Node> nodes;
+
+        private IList<Node> runningNodes;
+
+        public RabbitStatus(IList<Application> runningApplications, IList<Node> nodes, IList<Node> runningNodes)
+        {
+            this.runningApplications = runningApplications;
+            this.nodes = nodes;
+            this.runningNodes = runningNodes;
+        }
+
+        public IList<Application> RunningApplications
+        {
+            get { return runningApplications; }
+        }
+
+        public IList<Node> Nodes
+        {
+            get { return nodes; }
+        }
+
+        public IList<Node> RunningNodes
+        {
+            get { return runningNodes; }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("RunningApplications: {0}, Nodes: {1}, RunningNodes: {2}", runningApplications, nodes, runningNodes);
+        }
     }
 
 }

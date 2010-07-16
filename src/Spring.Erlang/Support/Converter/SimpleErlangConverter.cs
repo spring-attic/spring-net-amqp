@@ -42,7 +42,7 @@ namespace Spring.Erlang.Support.Converter
         /// <param name="objectToConvert">The object to convert.</param>
         /// <returns>the Erlang data type</returns>
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
-        public OtpErlangObject ToErlang(object objectToConvert)
+        public virtual OtpErlangObject ToErlang(object objectToConvert)
         {
             if (objectToConvert is OtpErlangObject)
             {
@@ -129,7 +129,7 @@ namespace Spring.Erlang.Support.Converter
         /// <param name="erlangObject">The erlang object.</param>
         /// <returns>The converted .NET object</returns>
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
-        public object FromErlang(OtpErlangObject erlangObject)
+        public virtual object FromErlang(OtpErlangObject erlangObject)
         {
             //TODO support arrays
             return ConvertErlangToBasicType(erlangObject);
@@ -215,7 +215,7 @@ namespace Spring.Erlang.Support.Converter
         /// <param name="erlangObject">The erlang object that is passed in as a parameter</param>
         /// <returns>The converted .NET object return value from the RPC call.</returns>
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception> 
-        public object FromErlangRpc(string module, string function, OtpErlangObject erlangObject)
+        public virtual object FromErlangRpc(string module, string function, OtpErlangObject erlangObject)
         {
             return FromErlang(erlangObject);
         }

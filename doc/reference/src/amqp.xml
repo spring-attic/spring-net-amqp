@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 <chapter id="amqp">
   <title>Using Spring AMQP</title>
 
@@ -8,19 +10,17 @@
   <sect1>
     <title>AMQP Abstractions</title>
 
-    <para>The Spring AMQP project consists of a handful of modules, each
-    represented by a JAR in the distribution. These modules are:
-    spring-amqp-core, spring-rabbit, spring-otp, and spring-rabbit-admin. The
-    'spring-amqp-core' module contains the org.springframework.amqp.core
-    package. Within that package, you will find the classes that represent the
-    core AMQP "model". Our intention is to provide generic abstractions that
-    do not rely on any particular AMQP broker implementation or client
-    library. End user code will be more portable across vendor implementations
-    as it can be devfeloped against the abstraction layer only. These
-    abstractions are then used implemented by broker-specific modules, such as
-    'spring-rabbit'. For the M1 release there is only a RabbitMQ
-    implementation however the abstractions have been vetted in .NET using
-    Apache Qpid in addition to RabbitMQ.</para>
+    <para>The Spring AMQP project consists of a few assemblies. The assembly
+    <literal>Spring.Messaging.Amqp</literal> contains the the classes that
+    represent the core AMQP "model". Our intention is to provide generic
+    abstractions that do not rely on any particular AMQP broker implementation
+    or client library. As a result, end user code will be more portable across
+    vendor implementations as it can be devfeloped against the abstraction
+    layer only. These abstractions are then used implemented by
+    broker-specific modules, such as
+    '<literal>Spring.Messaging.Amqp.Rabbit</literal>'. For the M1 release
+    RabbitMQ and Apache Qpid (2 versions) have been used to vet these base
+    abstractions.</para>
 
     <para>The overview here assumes that you are already familiar with the
     basics of the AMQP specification already. If you are not, then have a look
@@ -38,71 +38,76 @@
       defines a Message class as part of a more general AMQP domain model
       representation. The purpose of the Message class is to simply
       encapsulate the body and properties within a single instance so that the
-      API can in turn be simpler. The Message class definition is quite
-      straightforward.</para>
+      rest of the API can in turn be simpler. The Message class definition is
+      quite straightforward.</para>
 
-      <programlisting language="java">public class Message {
+      <programlisting language="java">    public class Message 
+    {
+        private readonly IMessageProperties messageProperties;
 
-    private final MessageProperties messageProperties;
+        private readonly byte[] body;
 
-    private final byte[] body;
+        public Message(byte[] body, IMessageProperties messageProperties)
+        {
+            this.body = body;
+            this.messageProperties = messageProperties;
+        }
 
-    public Message(byte[] body, MessageProperties messageProperties) {
-        this.body = body;
-        this.messageProperties = messageProperties;
-    }
+        public byte[] Body
+        {
+            get { return body; }
+        }
 
-    public byte[] getBody() {
-        return this.body;
-    }
+        public IMessageProperties MessageProperties
+        {
+            get { return messageProperties; }           
+        }
 
-    public MessageProperties getMessageProperties() {
-        return this.messageProperties;
-}</programlisting>
+    }</programlisting>
 
-      <para>The <interfacename>MessageProperties</interfacename> interface
+      <para>The <interfacename>IMessageProperties</interfacename> interface
       defines several common properties such as 'messageId', 'timestamp',
       'contentType', and several more. Those properties can also be extended
-      with user-defined 'headers' by calling the <methodname>setHeader(String
-      key, Object value)</methodname> method.</para>
+      with user-defined 'headers' by calling the <methodname>SetHeader(string
+      key, object val)</methodname> method.</para>
     </sect2>
 
     <sect2>
       <title>Exchange</title>
 
-      <para>The <interfacename>Exchange</interfacename> interface represents
+      <para>The <interfacename>IExchange</interfacename> interface represents
       an AMQP Exchange, which is what a Message Producer sends to. Each
       Exchange within a virtual host of a broker will have a unique name as
       well as a few other properties:</para>
 
-      <programlisting language="java">public interface Exchange {
+      <programlisting language="java">    public interface IExchange
+    {
+        string Name { get; }
 
-    String getName();
+        ExchangeType ExchangeType { get; }
 
-    ExchangeType getExchangeType();
+        bool Durable { get; }
 
-    boolean isDurable();
+        bool AutoDelete { get;  }
 
-    boolean isAutoDelete();
+        IDictionary Arguments { get;  }
 
-    Map&lt;String, Object&gt; getArguments();
-
-}</programlisting>
+    }</programlisting>
 
       <para>As you can see, an Exchange also has a 'type' represented by the
       enumeration <classname>ExchangeType</classname>. The basic types are:
       <literal>Direct</literal>, <literal>Topic</literal> and
       <literal>Fanout</literal>. In the core package you will find
-      implementations of the <interfacename>Exchange</interfacename> interface
-      for each of those types. The behavior varies across these Exchange types
-      in terms of how they handle bindings to Queues. A Direct exchange allows
-      for a Queue to be bound by a fixed routing key (often the Queue's name).
-      A Topic exchange supports bindings with routing patterns that may
-      include the '*' and '#' wildcards for 'exactly-one' and 'zero-or-more',
-      respectively. The Fanout exchange publishes to all Queues that are bound
-      to it without taking any routing key into consideration. For much more
-      information about Exchange types, check out <xref
-      linkend="resources" />.</para>
+      implementations of the <interfacename>IExchange</interfacename>
+      interface for each of those types. The behavior varies across these
+      Exchange types in terms of how they handle bindings to Queues. A Direct
+      exchange allows for a Queue to be bound by a fixed routing key (often
+      the Queue's name). A Topic exchange supports bindings with routing
+      patterns that may include the '*' and '#' wildcards for 'exactly-one'
+      and 'zero-or-more', respectively. The Fanout exchange publishes to all
+      Queues that are bound to it without taking any routing key into
+      consideration. For much more information about Exchange types, check out
+      <xref linkend="resources" />.</para>
 
       <note>
         <para>The AMQP specification also requires that any broker provide a
@@ -123,22 +128,23 @@
 
       <programlisting language="java">public class Queue  {
 
-    private final String name;
+   private readonly string name;
 
-    private volatile boolean durable;
+   private volatile bool durable;
 
-    private volatile boolean exclusive;
+   private volatile bool exclusive;
 
-    private volatile boolean autoDelete;
+   private volatile bool autoDelete;
 
-    private volatile Map&lt;String, Object&gt; arguments;
+   private volatile IDictionary arguments;
 
-    public Queue(String name) {
-        this.name = name;
-    }
+   public Queue(string name)
+   {
+       this.name = name;
+   }
 
-    // Getters and Setters omitted for brevity
-
+   // Property setter and getters  omitted for brevity
+}
 </programlisting>
 
       <para>Notice that the constructor takes the Queue name. Depending on the
@@ -177,32 +183,20 @@
       <para>We also provide a <classname>BindingBuilder</classname> to
       facilitate a "fluent API" style.</para>
 
-      <programlisting language="java">Binding b = BindingBuilder.from(someQueue).to(someTopicExchange).with("foo.*");</programlisting>
-
-      <note>
-        <para>The BindingBuilder class is shown above for clarity, but this
-        style works well when using a static import for the 'from()'
-        method.</para>
-      </note>
+      <programlisting language="java">Binding b = BindingBuilder.From(someQueue).To(someTopicExchange).With("foo.*");</programlisting>
 
       <para>By itself, an instance of the Binding class is just holding the
       data about a connection. In other words, it is not an "active"
       component. However, as you will see later in <xref
       linkend="broker-configuration" />, Binding instances can be used by the
-      <interfacename>AmqpAdmin</interfacename> class to actually trigger the
-      binding actions on the broker. Also, as you will see in that same
-      section, the Binding instances can be defined using Spring's
-      <literal>@Bean</literal>-style within <literal>@Configuration</literal>
-      classes. There is also a convenient base class which further simplifies
-      that approach for generating AMQP-related bean definitions and
-      recognizes the Queues, Exchanges, and Bindings so that they will all be
-      declared on the AMQP broker upon application startup.</para>
+      <interfacename>IAmqpAdmin</interfacename> interface to actually trigger
+      the binding actions on the broker.</para>
     </sect2>
 
-    <para>The <interfacename>AmqpTemplate</interfacename> is also defined
-    within the core package. As one of the main components involved in actual
-    AMQP messaging, it is discussed in detail in its own section (see <xref
-    linkend="amqp-template" />).</para>
+    <para>The interface <interfacename>IAmqpTemplate</interfacename> is also
+    defined within the Spring.Messaging.Amqp assembly. As one of the main
+    components involved in actual AMQP messaging, it is discussed in detail in
+    its own section (see <xref linkend="amqp-template" />).</para>
   </sect1>
 
   <sect1>
@@ -212,42 +206,42 @@
     generic and applicable to all implementations, when we get into the
     management of resources, the details are specific to the broker
     implementation. Therefore, in this section, we will be focusing on code
-    that exists only within our "spring-rabbit" module since at this point,
-    RabbitMQ is the only supported implementation. </para>
+    that exists only within the Spring.Messaging.Amqp.Rabbit assembly since at
+    this point, RabbitMQ is the only supported implementation.</para>
 
     <para>The central component for managing a connection to the RabbitMQ
-    broker is the <interfacename>ConnectionFactory</interfacename> interface.
-    The responsibility of a <interfacename>ConnectionFactory</interfacename>
+    broker is the <interfacename>IConnectionFactory</interfacename> interface.
+    The responsibility of a <interfacename>IConnectionFactory</interfacename>
     implementation is to provide an instance of
-    <classname>com.rabbitmq.client.Connection</classname>. The simplest
+    <classname>RabbitMQ.Client.Connection</classname>. The simplest
     implementation we provide is
     <classname>SingleConnectionFactory</classname> which establishes a single
     connection that can be shared by the application. Sharing of the
     connection is possible since the "unit of work" for messaging with AMQP is
     actually a "channel" (in some ways, this is similar to the relationship
     between a Connection and a Session in JMS). As you can imagine, the
-    connection instance provides a <methodname>createChannel</methodname>
+    connection instance provides a <methodname>CreateChannel</methodname>
     method. When creating an instance of
     <classname>SingleConnectionFactory</classname>, the 'hostname' can be
     provided via the constructor. The 'username' and 'password' properties
     should be provided as well.</para>
 
     <programlisting language="java">SingleConnectionFactory connectionFactory = new SingleConnectionFactory("somehost");
-connectionFactory.setUsername("guest");
-connectionFactory.setPassword("guest");
+connectionFactory.UserName = "guest";
+connectionFactory.Password = "guest";
 
-Connection connection = connectionFactory.createConnection();</programlisting>
+IConnection connection = connectionFactory.CreateConnection();</programlisting>
 
     <para>When using XML, the configuration might look like this:</para>
 
-    <programlisting language="xml">&lt;bean id="connectionFactory" class="org.springframework.amqp.rabbit.connection.SingleConnectionFactory"&gt;
-    &lt;constructor-arg value="somehost"/&gt;
-    &lt;property name="username" value="guest"/&gt;
-    &lt;property name="password" value="guest"/&gt;
-&lt;/bean&gt;</programlisting>
+    <programlisting language="xml">&lt;object id="ConnectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.SingleConnectionFactory, Spring.Messaging.Amqp.Rabbit"&gt;
+  &lt;property name="Username" value="guest"/&gt;
+  &lt;property name="Password" value="guest"/&gt;
+&lt;/object&gt;
+</programlisting>
 
     <para><note>
-        You may also discover the 
+         You may also discover the 
 
         <classname>CachingConnectionFactory</classname>
 
@@ -255,11 +249,11 @@ Connection connection = connectionFactory.createConnection();</programlisting>
 
         <emphasis>experimental</emphasis>
 
-        . We recommend sticking with 
+         . We recommend sticking with 
 
         <classname>SingleConnectionFactory</classname>
 
-         for now as the caching implemention will most likely evolve.  Support for failover of connections is also planned.
+         for now as the caching implemention will most likely evolve. Support for failover of connections is also planned. 
       </note></para>
   </sect1>
 
@@ -269,25 +263,28 @@ Connection connection = connectionFactory.createConnection();</programlisting>
     <para>As with many other high-level abstractions provided by the Spring
     Framework and related projects, Spring AMQP provides a "template" that
     plays a central role. The interface that defines the main operations is
-    called <interfacename>AmqpTemplate</interfacename>. Those operations cover
-    the general behavior for sending and receiving Messages. In other words,
-    they are not unique to any implementation, hence the "AMQP" in the name.
-    On the other hand, there are implementations of that interface that are
-    tied to implementations of the AMQP protocol. Unlike JMS, which is an
+    called <interfacename>IAmqpTemplate</interfacename>. Those operations
+    cover the general behavior for sending and receiving Messages. In other
+    words, they are not unique to any implementation, hence the "AMQP" in the
+    name. On the other hand, there are implementations of that interface that
+    are tied to implementations of the AMQP protocol. Unlike JMS, which is an
     interface-level API itself, AMQP is a wire-level protocol. The
     implementations of that protocol provide their own client libraries, so
     each implementation of the template interface will depend on a particular
-    client library. Currently, there is only a single implementation:
-    <classname>RabbitTemplate</classname>. In the examples that follow, you
-    will often see usage of an "AmqpTemplate", but when you look at the
+    client library. Currently, there is only one complete implementation:
+    <classname>RabbitTemplate</classname> but the QpidTemplate has some of its
+    methods implemented in M1. In the examples that follow, you will often see
+    usage of an "<literal>IAmqpTemplate</literal>", but when you look at the
     configuration examples, or any code excerpts where the template is
     instantiated and/or setters are invoked, you will see the implementation
     type (e.g. "RabbitTemplate").</para>
 
-    <para>As mentioned above, the <interfacename>AmqpTemplate</interfacename>
+    <para>As mentioned above, the <interfacename>IAmqpTemplate</interfacename>
     interface defines all of the basic operations for sending and receiving
     Messages. We will explore Message sending and reception, respectively, in
-    the two sections that follow.</para>
+    the two sections that follow. The IRabbitOperations interface contains
+    additonal send and execute methods that rely on specific RabbitMQ AMQP
+    channel classes.</para>
   </sect1>
 
   <sect1>
@@ -296,11 +293,11 @@ Connection connection = connectionFactory.createConnection();</programlisting>
     <para>When sending a Message, one can use any of the following
     methods:</para>
 
-    <programlisting language="xml">void send(MessageCreator messageCreator) throws AmqpException;
+    <programlisting language="xml">void Send(MessageCreatorDelegate messageCreator);
 
-void send(String routingKey, MessageCreator messageCreator) throws AmqpException;
+void Send(string routingkey, MessageCreatorDelegate messageCreator);
 
-void send(String exchange, String routingKey, MessageCreator messageCreator) throws AmqpException;</programlisting>
+void Send(string exchange, string routingKey, MessageCreatorDelegate messageCreatorDelegate);</programlisting>
 
     <para>We can begin our discussion with the last method listed above since
     it is actually the most explicit. It allows an AMQP Exchange name to be
@@ -309,11 +306,7 @@ void send(String exchange, String routingKey, MessageCreator messageCreator) thr
     An example of using this method to send a Message might look this
     this:</para>
 
-    <programlisting language="java">amqpTemplate.send("marketData.topic", "quotes.nasdaq.FOO", new MessageCreator() {
-    public Message createMessage() {
-        return new Message("12.34".getBytes(), someProperties);
-    }
-});</programlisting>
+    <programlisting language="java">template.Send("marketData.topic", "quotes.nasdaq.FOO", channel =&gt; new Message(Encoding.UTF8.GetBytes("12.34"), someProperties) );</programlisting>
 
     <para>The "exchange" property can be set on the template itself if you
     plan to use that template instance to send to the same exchange most or
@@ -321,24 +314,16 @@ void send(String exchange, String routingKey, MessageCreator messageCreator) thr
     instead. The following example is functionally equivalent to the previous
     one:</para>
 
-    <programlisting language="java">amqpTemplate.setExchange("marketData.topic");
-amqpTemplate.send("quotes.nasdaq.FOO", new MessageCreator() {
-    public Message createMessage() {
-        return new Message("12.34".getBytes(), someProperties);
-    }
-});</programlisting>
+    <programlisting language="java">amqpTemplate.Exchange = "marketData.topic";
+amqpTemplate.Send("quotes.nasdaq.FOO", channel =&gt; new Message(Encoding.UTF8.GetBytes("12.34"), someProperties) );</programlisting>
 
     <para>If both the "exchange" and "routingKey" properties are set on the
     template, then the method accepting only the
     <interfacename>MessageCreator</interfacename> may be used:</para>
 
-    <programlisting language="java">amqpTemplate.setExchange("marketData.topic");
-amqpTemplate.setRoutingKey("quotes.nasdaq.FOO");
-amqpTemplate.send(new MessageCreator() {
-    public Message createMessage() {
-        return new Message("12.34".getBytes(), someProperties);
-    }
-});</programlisting>
+    <programlisting language="java">amqpTemplate.Exchange = "marketData.topic";
+amqpTemplate.RoutingKey ="quotes.nasdaq.FOO";
+amqpTemplate.Send(channel =&gt; new Message(Encoding.UTF8.GetBytes("12.34"), someProperties) );</programlisting>
 
     <para>A better way of thinking about the exchange and routing key
     properties is that the explicit method parameters will always override the
@@ -358,24 +343,16 @@ amqpTemplate.send(new MessageCreator() {
     default Exchange. Simply provide the queue name as the "routingKey" -
     either by providing the method parameter at runtime:</para>
 
-    <programlisting language="java">RabbitTemplate template = new RabbitTemplate(); // using default no-name Exchange
-template.send("queue.helloWorld", new MessageCreator() {
-    public Message createMessage() {
-        return new Message("Hello World".getBytes(), someProperties);
-    }
-});</programlisting>
+    <programlisting language="java">RabbitTemplate template = new RabbitTemplate(new SingleConnectionFactory()); // using default no-name Exchange
+template.Send("queue.helloWorld", channel =&gt; new Message("Hello World".getBytes(), someProperties) );</programlisting>
 
     <para>Or, if you prefer to create a template that will be used for
     publishing primarily or exclusively to a single Queue, the following is
     perfectly reasonable:</para>
 
     <programlisting language="java">RabbitTemplate template = new RabbitTemplate(); // using default no-name Exchange
-template.setRoutingKey("queue.helloWorld"); // but we'll always send to this Queue
-template.send(new MessageCreator() {
-    public Message createMessage() {
-        return new Message("Hello World".getBytes(), someProperties);
-    }
-});</programlisting>
+template.RoutingKey = "queue.helloWorld";       // but we'll always send to this Queue
+template.Send(channel =&gt; new Message(Encoding.UTF8.GetBytes("Hello World"), someProperties) );</programlisting>
   </sect1>
 
   <sect1>
@@ -391,16 +368,16 @@ template.send(new MessageCreator() {
     <sect2>
       <title>Synchronous Reception</title>
 
-      <para>The <interfacename>AmqpTemplate</interfacename> itself can be used
-      for synchronous Message reception. There are two 'receive' methods
+      <para>The <interfacename>IAmqpTemplate</interfacename> itself can be
+      used for synchronous Message reception. There are two 'receive' methods
       available. As with the Exchange on the sending side, there is a method
       that requires a queue property having been set directly on the template
       itself, and there is a method that accepts a queue parameter at
       runtime.</para>
 
-      <programlisting language="java">Message receive() throws AmqpException;
+      <programlisting language="java">Message Receive();
 
-Message receive(String queueName) throws AmqpException;</programlisting>
+Message Receive(string queueName);</programlisting>
     </sect2>
 
     <sect2>
@@ -421,39 +398,37 @@ Message receive(String queueName) throws AmqpException;</programlisting>
 
        
 
-      <programlisting language="java">public interface MessageListener {
-
-    void onMessage(Message message);
-
-}</programlisting>
+      <programlisting language="java">    public interface IMessageListener
+    {
+        void OnMessage(Message message);
+    }</programlisting>
 
        
 
       <para>If your callback logic depends upon the AMQP Channel instance for
       any reason, you may instead use the
-      <interfacename>ChannelAwareMessageListener</interfacename>. It looks
+      <interfacename>IChannelAwareMessageListener</interfacename>. It looks
       similar but with an extra parameter:</para>
 
        
 
-      <programlisting language="java">public interface ChannelAwareMessageListener&lt;M extends Message&gt; {
-
-    void onMessage(M message, Channel channel) throws Exception;
-
-}</programlisting>
+      <programlisting language="java">    public interface IChannelAwareMessageListener
+    {
+        void OnMessage(Message message, IModel model);
+    }</programlisting>
 
        
 
       <para>If you prefer to maintain a stricter separation between your
       application logic and the messaging API, you can rely upon an adapter
       implementation that is provided by the framework. This is often referred
-      to as "Message-driven POJO" support. When using the adapter, you only
+      to as "Message-driven POCO" support. When using the adapter, you only
       need to provide a reference to the instance that the adapter itself
       should invoke.</para>
 
        
 
-      <programlisting language="java">MessageListener listener = new MessageListenerAdapter(somePojo);</programlisting>
+      <programlisting language="java">IMessageListener listener = new MessageListenerAdapter(somePojo);</programlisting>
 
        Now that you've seen the various options for the Message-listening callback, we can turn our attention to the container. Basically, the container handles the "active" responsibilities so that the listener callback can remain passive. The container is an example of a "lifecycle" component. It provides methods for starting and stopping. When configuring the container, you are essentially bridging the gap between an AMQP Queue and the 
 
@@ -467,52 +442,21 @@ Message receive(String queueName) throws AmqpException;</programlisting>
 
       <classname>SimpleMessageListenerContainer</classname>
 
-      : 
+       : 
 
       <programlisting language="java">SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-container.setConnectionFactory(rabbitConnectionFactory);
-container.setQueueName("some.queue");
-container.setMessageListener(someListener);</programlisting>
+container.ConnectionFactory = rabbitConnectionFactory;
+container.Queue = "some.queue";
+container.MessageListener = someListener;</programlisting>
 
        As an "active" component, it's most common to create the listener container with a bean definition so that it can simply run in the background. This can be done via XML: 
 
-      <programlisting language="xml">&lt;bean class="org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer"&gt;
-    &lt;property name="connectionFactory" ref="rabbitConnectionFactory"/&gt;
-    &lt;property name="queueName" value="some.queue"/&gt;
-    &lt;property name="messageListener" ref="someListener"/&gt;
-&lt;/bean&gt;</programlisting>
-
-       Or, you may prefer to use the @Configuration style which will look very similar to the actual code snippet above: 
-
-      <programlisting language="java">@Configuration
-public class ExampleAmqpConfiguration {
-
-    @Bean
-    public MessageListenerContainer messageListenerContainer { 
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(rabbitConnectionFactory());
-        container.setQueueName("some.queue");
-        container.setMessageListener(exampleListener());
-        return container;
-    }
-
-    @Bean
-    public ConnectionFactory rabbitConnectionFactory() {
-        SingleConnectionFactory connectionFactory = new SingleConnectionFactory("localhost");
-        connectionFactory.setUsername("guest");
-        connectionFactory.setPassword("guest");
-        return connectionFactory;
-    }
-
-    @Bean
-    public MessageListener exampleListener() {
-        return new MessageListener() {
-            public void onMessage(Message message) {
-                System.out.println("received: " + message)
-            }
-        }
-    }
-}</programlisting>
+      <programlisting language="xml">  &lt;object name="MessageListenerContainer" type="Spring.Messaging.Amqp.Rabbit.Listener.SimpleMessageListenerContainer, Spring.Messaging.Amqp.Rabbit"&gt;
+    &lt;property name="ConnectionFactory" ref="RabbitConnectionFactory"/&gt;
+    &lt;property name="Queue" value="some.queue"/&gt;
+    &lt;property name="MessageListener" ref="SomeListener"/&gt;
+  &lt;/object&gt;
+</programlisting>
 
        
     </sect2>
@@ -531,13 +475,12 @@ public class ExampleAmqpConfiguration {
     Message, you may also provide properties in addition to the object. The
     "object" parameter typically corresponds to the Message body.</para>
 
-    <programlisting language="java">public interface MessageConverter {
+    <programlisting language="java">    public interface IMessageConverter
+    {
+        Message ToMessage(object obj, IMessagePropertiesFactory messagePropertiesFactory);
 
-    Message toMessage(Object object, MessageProperties messageProperties) throws MessageConversionException;
-
-    Object fromMessage(Message message) throws MessageConversionException;
-
-}</programlisting>
+        object FromMessage(Message message);
+    }</programlisting>
 
     <para>The relevant Message-sending methods on the
     <interfacename>AmqpTemplate</interfacename> are listed below. They are
@@ -547,31 +490,34 @@ public class ExampleAmqpConfiguration {
     to the byte array for the Message body and then adding any provided
     MessageProperties.</para>
 
-    <programlisting language="java">void convertAndSend(Object message) throws AmqpException;
+    <programlisting language="java">        void ConvertAndSend(object message);
 
-void convertAndSend(String routingKey, Object message) throws AmqpException;
+        void ConvertAndSend(string routingKey, object message);
 
-void convertAndSend(String exchange, String routingKey, Object message) throws AmqpException;
+        void ConvertAndSend(string exchange, string routingKey, object message);
 
-void convertAndSend(Object message, MessagePostProcessor messagePostProcessor) throws AmqpException;
+        void ConvertAndSend(object message, MessagePostProcessorDelegate messagePostProcessorDelegate);
 
-void convertAndSend(String routingKey, Object message, MessagePostProcessor messagePostProcessor) throws AmqpException;
+        void ConvertAndSend(string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate);
 
-void convertAndSend(String exchange, String routingKey, Object message, MessagePostProcessor messagePostProcessor) throws AmqpException;</programlisting>
+        void ConvertAndSend(string exchange, string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate);
+
+</programlisting>
 
     <para>On the receiving side, there are only two methods: one that accepts
     the queue name and one that relies on the template's "queue" property
     having been set.</para>
 
-    <programlisting language="java">Object receiveAndConvert() throws AmqpException;
+    <programlisting language="java">        object ReceiveAndConvert();
 
-Object receiveAndConvert(String queueName) throws AmqpException;</programlisting>
+        object ReceiveAndConvert(string queueName);
+</programlisting>
 
     <sect2>
       <title>SimpleMessageConverter</title>
 
       <para>The default implementation of the
-      <interfacename>MessageConverter</interfacename> strategy is called
+      <interfacename>IMessageConverter</interfacename> strategy is called
       <classname>SimpleMessageConverter</classname>. This is the converter
       that will be used by an instance of RabbitTemplate if you do not
       explicitly configure an alternative. It handles text-based content,
@@ -633,40 +579,15 @@ Object receiveAndConvert(String queueName) throws AmqpException;</programlisting
       <classname>RabbitTemplate</classname> instance to override its usage of
       the <classname>SimpleMessageConverter</classname> default.</para>
 
-      <programlisting language="xml">&lt;bean class="org.springframework.amqp.rabbit.core.RabbitTemplate"&gt;
-    &lt;property name="connectionFactory" ref="rabbitConnectionFactory"/&gt;
-    &lt;property name="messageConverter"&gt;
-        &lt;bean class="org.springframework.amqp.support.converter.JsonMessageConverter"&gt;
-            &lt;!-- if necessary, override the DefaultClassMapper --&gt;
-            &lt;property name="classMapper" ref="customClassMapper"/&gt;
-        &lt;/bean&gt;
+      <programlisting language="xml">  &lt;object name="RabbitTemplate" type="Spring.Messaging.Amqp.Rabbit.Core.RabbitTemplate, Spring.Messaging.Amqp.Rabbit"&gt;
+    &lt;property name="ConnectionFactory" ref="ConnectionFactory"/&gt;
+    &lt;property name="MessageConverter"&gt;
+      &lt;object type="Spring.Messaging.Amqp.Support.Converter.JsonMessageConverter, Spring.Messaging.Amqp"&gt;
+        &lt;property name="TypeMapper" ref="CustomTypeMapper"/&gt;
+      &lt;/object&gt;
     &lt;/property&gt;
-&lt;/bean&gt;</programlisting>
-    </sect2>
-
-    <sect2>
-      <title>MarshallingMessageConverter</title>
-
-      <para>Yet another option is the
-      <classname>MarshallingMessageConverter</classname>. It delegates to the
-      Spring OXM library's implementations of the
-      <interfacename>Marshaller</interfacename> and
-      <interfacename>Unmarshaller</interfacename> strategy interfaces. You can
-      read more about that library <ulink
-      url="http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/oxm.html">here</ulink>.
-      In terms of configuration, it's most common to provide the constructor
-      argument only since most implementations of
-      <interfacename>Marshaller</interfacename> will also implement
-      <interfacename>Unmarshaller</interfacename>.</para>
-
-      <programlisting language="xml">&lt;bean class="org.springframework.amqp.rabbit.core.RabbitTemplate"&gt;
-    &lt;property name="connectionFactory" ref="rabbitConnectionFactory"/&gt;
-    &lt;property name="messageConverter"&gt;
-        &lt;bean class="org.springframework.amqp.support.converter.MarshallingMessageConverter"&gt;
-            &lt;constructor-arg ref="someImplemenationOfMarshallerAndUnmarshaller"/&gt;
-        &lt;/bean&gt;
-    &lt;/property&gt;
-&lt;/bean&gt;</programlisting>
+  &lt;/object&gt;
+</programlisting>
     </sect2>
   </sect1>
 
@@ -682,38 +603,33 @@ Object receiveAndConvert(String queueName) throws AmqpException;</programlisting
     management functions are broker specific and not included in the AMQP
     specification, the interface RabbitBrokerOperations and its implementation
     RabbitBrokerAdmin located in the org.springframework.amqp.rabbit.admin
-    package is provided to fill that gap. </para>
+    package is provided to fill that gap.</para>
 
     <para>The AmqpAdmin interface is based on using the Spring AMQP domain
     abstractions and is shown below:</para>
 
-    <programlisting>public interface AmqpAdmin {
+    <programlisting>    public interface IAmqpAdmin
+    {
 
-    // Exchange Operations 
+        void DeclareExchange(IExchange exchange);
 
-    void declareExchange(Exchange exchange);
+        void DeleteExchange(string exchangeName);
 
-    void deleteExchange(String exchangeName);
+        Queue DeclareQueue();
 
-    // Queue Operations
+        void DeclareQueue(Queue queue);
 
-    Queue declareQueue();
+        void DeleteQueue(string queueName);
 
-    void declareQueue(Queue queue);
+        void DeleteQueue(string queueName, bool unused, bool empty);
 
-    void deleteQueue(String queueName);
+        void PurgeQueue(string queueName, bool noWait);
 
-    void deleteQueue(String queueName, boolean unused, boolean empty);
+        void DeclareBinding(Binding binding);
 
-    void purgeQueue(String queueName, boolean noWait);
+    }</programlisting>
 
-    // Binding Operations
-
-    void declareBinding(Binding binding);
-
-}</programlisting>
-
-    <para>The declareQueue() method defined a queue on the broker whose name
+    <para>The DeclareQueue() method defined a queue on the broker whose name
     is automatically created. The additional properties of this auto-generated
     queue are exclusive=true, autoDelete=true, and durable=false.<note>
         <para>Removing a binding was not introduced until the 0.9 version of
@@ -721,155 +637,88 @@ Object receiveAndConvert(String queueName) throws AmqpException;</programlisting
       </note></para>
 
     <para>The RabbitMQ implementation of this interface is RabbitAdmin which
-    when configured using Spring XML would look liek this:<programlisting>&lt;bean id="connectionFactory" class="org.springframework.amqp.rabbit.connection.SingleConnectionFactory"&gt;
+    when configured using Spring XML would look lik this:<programlisting>&lt;object id="ConnectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.SingleConnectionFactory, Spring.Messaging.Amqp.Rabbit"&gt;
     &lt;constructor-arg value="localhost"/&gt;
     &lt;property name="username" value="guest"/&gt;
     &lt;property name="password" value="guest"/&gt;
-&lt;/bean&gt;
-
-&lt;bean id="amqpAdmin" class="org.springframework.amqp.rabbit.core.RabbitAdmin"&gt;
-    &lt;constructor-arg ref="connectionFactory"/&gt;
-&lt;/bean&gt;</programlisting></para>
-
-    <para>The class AbstractAmqpConfiguration can also be used to configure an
-    instance of the AmqpAmin interface. The base class
-    AbstractAmqpConfiguration is located in the package
-    org.springframework.amqp.config and is shown in part below.</para>
-
-    <programlisting>@Configuration
-public abstract class AbstractAmqpConfiguration implements ApplicationContextAware, SmartLifecycle {
-
-  @Bean
-  public abstract AmqpAdmin amqpAdmin();
-
-  // the rest omitted for brevity.
-}</programlisting>
-
-    <para>The part that is omitted is related to the implementation of
-    SmartLifecycle which is responsbile for querying the container for all
-    Queues, Exchanges, and Bindings that are defined in the DI container and
-    declaring them to the broker. Thus if you are using the @Configuration
-    style of configuration, you can simply create Queue, Exchange, and Binding
-    bean definitions and they will be declared to the broker once the
-    application has started.</para>
-
-    <para>If you are using RabbitMQ as your broker, the additional abstract
-    @Configuration class can be used to bootstrap an implementation of
-    AmqpAdmin as shown below</para>
-
-    <programlisting>@Configuration
-public abstract class AbstractRabbitConfiguration extends AbstractAmqpConfiguration {
-
-  @Bean 
-  public abstract RabbitTemplate rabbitTemplate();
-
-  @Bean
-  public AmqpAdmin amqpAdmin() {
-    this.amqpAdmin = new RabbitAdmin(rabbitTemplate().getConnectionFactory());
-    return this.amqpAdmin;
-  }
-}</programlisting>
-
-    <para>This leaves it up to you to provide an implementation of the
-    rabbitTemplate method in your application specific subclass. For example,
-    using the Stock sample application, there is the @Configuration class
-    AbstractStockRabbitConfiguration which in turn has
-    RabbitClientConfiguration and RabbitServerConfiguration subclasses. The
-    code for AbstractStockRabbitConfiguration is show below</para>
-
-    <programlisting>@Configuration
-public abstract class AbstractStockAppRabbitConfiguration extends AbstractRabbitConfiguration {
+&lt;/object&gt;
 
 
- @Bean
- public ConnectionFactory connectionFactory() {
-		//TODO make it possible to customize in subclasses.
-		SingleConnectionFactory connectionFactory = new SingleConnectionFactory("localhost");
-		connectionFactory.setUsername("guest");
-		connectionFactory.setPassword("guest");
-		return connectionFactory;
-	}
+&lt;object name="AmqpAdmin" type="Spring.Messaging.Amqp.Rabbit.Core.RabbitAdmin, Spring.Messaging.Amqp.Rabbit"&gt;
+  &lt;property name="ConnectionFactory" ref="ConnectionFactory"/&gt;
+&lt;/object&gt;</programlisting></para>
 
-	@Bean 
-	public RabbitTemplate rabbitTemplate() {
-		RabbitTemplate template = new RabbitTemplate(connectionFactory());
-		template.setMessageConverter(jsonMessageConverter());
-		configureRabbitTemplate(template);
-		return template;
-	}
+    <para>There is also a more extensive set of administration operations
+    available that are specific to the RabbitMQ broker. Thesse are in the
+    interface IRabbitBrokerOperations and are implemented in the class
+    RabbitBrokerAdmin. The implementation uses an Erlang interopability
+    library to make Erlang RPC calls to the server. The functionality mimics
+    what is available in rabbitmqctl.bat. </para>
 
-	@Bean
-	public MessageConverter jsonMessageConverter() {
-		return new JsonMessageConverter();
-	}
+    <programlisting>    public interface IRabbitBrokerOperations : IAmqpAdmin
+    {
 
-	@Bean
-	public TopicExchange marketDataExchange() {
-		return new TopicExchange("app.stock.marketdata");
-	}
+        void RemoveBinding(Binding binding);
 
- // additional code omitted for brevity
+        RabbitStatus Status { get; }
 
-}</programlisting>
+        IList&lt;QueueInfo&gt; Queues { get; }
 
-    <para>In the Stock application, the server is configured using the
-    following @Configuration class</para>
+        // User management
 
-    <programlisting>@Configuration
-public class RabbitServerConfiguration extends AbstractStockAppRabbitConfiguration  {
+        void AddUser(string username, string password);
 
-	@Bean
-	public Queue stockRequestQueue() {		
-		return new Queue("app.stock.request");	
-	}
-}</programlisting>
+        void DeleteUser(string username);
 
-    <para>This is the end of the whole inheritance chain of @Configuration
-    classes. The end resutl is the the TopicExchange and Queue will be
-    declared to the broker upon applicaton startup. There is no binding of the
-    TopicExchange to a queue in the server configuration, as that is done in
-    the client application. The stock request queue however is automatically
-    bound to the AMQP default exchange - this behavior is defined by the
-    specification.</para>
+        void ChangeUserPassword(string username, string newPassword);
 
-    <para>The client @Configuration class is a little more interesting and is
-    show below</para>
+        IList&lt;string&gt; ListUsers();
 
-    <programlisting>@Configuration
-public class RabbitClientConfiguration extends AbstractStockAppRabbitConfiguration {
+        void StartBrokerApplication();
 
-	@Value("${stocks.quote.pattern}")
-	private String marketDataRoutingKey;
+        void StopBrokerApplication();
 
-	@Bean
-	public Queue marketDataQueue() {		
-		return amqpAdmin().declareQueue();
-	}
-	
-	/**
-	 * Binds to the market data exchange. Interested in any stock quotes.
-	 * @return
-	 */	
-	@Bean
-	public Binding marketDataBinding() {		
-		return BindingBuilder.from(marketDataQueue()).to(marketDataExchange()).with(marketDataRoutingKey);
-	}
- // additional code omitted for brevity
+        /// &lt;summary&gt;
+        /// Starts the node. NOT YET IMPLEMENTED!
+        /// &lt;/summary&gt;
+        void StartNode();
 
-}</programlisting>
+        void StopNode();
+     
+        void ResetNode();
 
-    <para>The client is declaring another queue via the method</para>
-  </sect1>
+        void ForceResetNode();
 
-  <sect1>
-    <title>Exception Handling</title>
+        // NOTE THE OPERATIONS BELOW ARE NOT YET IMPLEMENTED IN M1
 
-    <para>TODO: Runtime exception hierarchy.</para>
-  </sect1>
+        // VHost management
 
-  <sect1>
-    <title>JMX Monitoring</title>
+        int AddVhost(string vhostPath);
 
-    <para>TODO: RabbitAdminTemplate</para>
+        int DeleteVhost(string vhostPath);
+
+        // permissions
+
+        void SetPermissions(string username, Regex configure, Regex read, Regex write);
+
+        void SetPermissions(string username, Regex configure, Regex read, Regex write, string vhostPath);
+
+        void ClearPermissions(string username);
+
+        void ClearPermissions(string username, string vhostPath);
+
+        List&lt;string&gt; ListPermissions();
+
+        List&lt;string&gt; ListPermissions(string vhostPath);
+
+        List&lt;string&gt; ListUserPermissions(string username);
+    }</programlisting>
+
+    <para>You instantiate an instance of
+    <classname>RabbitBrokerAdmin</classname> by passing an Spring Rabbit
+    <interfacename>IConnectionFactory</interfacename> reference to its
+    constructor. Please refer to the API docs for the contents of the
+    <classname>RabbitStatus</classname> and <classname>QueueInfo</classname>
+    classes.</para>
   </sect1>
 </chapter>

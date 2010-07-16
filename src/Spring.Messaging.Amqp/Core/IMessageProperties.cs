@@ -56,6 +56,10 @@ namespace Spring.Messaging.Amqp.Core
         
         IDictionary<string, object> Headers { get; set; }
 
+        void SetHeader(string key, object val);
+
+        object GetHeader(string key);
+
         uint MessageCount { get; }
 
         string MessageId { get; set; }

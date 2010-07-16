@@ -53,6 +53,7 @@ namespace Spring.Messaging.Amqp.Core
         object ReceiveAndConvert();
 
         object ReceiveAndConvert(string queueName);
+
         IMessageProperties CreateMessageProperties();
     }
 

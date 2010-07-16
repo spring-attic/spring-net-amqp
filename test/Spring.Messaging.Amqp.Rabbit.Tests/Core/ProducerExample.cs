@@ -80,6 +80,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                                                        Console.WriteLine("sending...");
                                                        return msg;
                                                    });
+
+            //template.Send("amq.direct", "foo", channel => new Message(Encoding.UTF8.GetBytes("testing"), messageProperties));
         }
     }
 
