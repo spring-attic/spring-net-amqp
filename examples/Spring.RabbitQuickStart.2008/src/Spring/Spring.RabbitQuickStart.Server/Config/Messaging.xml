@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <objects xmlns="http://www.springframework.net">
 
-  <object id="ConnectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit">
+  <object id="ConnectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.SingleConnectionFactory, Spring.Messaging.Amqp.Rabbit">
     
   </object>
 
@@ -16,17 +16,10 @@
   </object>
 
   <!-- Consume messages on queue APP.STOCK.REQUEST -->
-  <!--
-  <nms:listener-container connection-factory="ConnectionFactory" 
-                          concurrency="10">
-    <nms:listener ref="MessageListenerAdapter" destination="APP.STOCK.REQUEST" />
-  </nms:listener-container>
-  -->
-
   <object name="MessageListenerContainer" type="Spring.Messaging.Amqp.Rabbit.Listener.SimpleMessageListenerContainer, Spring.Messaging.Amqp.Rabbit">
     <property name="ConnectionFactory" ref="ConnectionFactory"/>
     <property name="Queue" value="APP.STOCK.REQUEST"/>
-    <property name="ConcurrentConsumers" value="10"/>
+    <property name="ConcurrentConsumers" value="5"/>
     <property name="MessageListener" ref="MessageListenerAdapter"/>
   </object>
    
@@ -37,11 +30,11 @@
     <property name="MessageConverter" ref="JsonMessageConverter"/>
   </object>
 
-  <object name="JsonMessageConverter" type="Spring.Messaging.Amqp.Rabbit.Support.Converter.JsonMessageConverter, Spring.Messaging.Amqp.Rabbit">
+  <object name="JsonMessageConverter" type="Spring.Messaging.Amqp.Support.Converter.JsonMessageConverter, Spring.Messaging.Amqp">
     <property name="TypeMapper" ref="TypeMapper"/>
   </object>
 
-  <object name="TypeMapper" type="Spring.Messaging.Amqp.Rabbit.Support.Converter.TypeMapper, Spring.Messaging.Amqp.Rabbit">
+  <object name="TypeMapper" type="Spring.Messaging.Amqp.Support.Converter.TypeMapper, Spring.Messaging.Amqp">
     <property name="DefaultNamespace" value="Spring.RabbitQuickStart.Common.Data"/>
     <property name="DefaultAssemblyName" value="Spring.RabbitQuickStart.Common"/>
   </object>

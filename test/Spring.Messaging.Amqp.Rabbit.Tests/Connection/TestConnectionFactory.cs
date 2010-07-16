@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             createConnectionCount++;
             return new TestConnection();
         }
-
+        /*
         public override IConnection CreateConnection(int maxRedirects, params AmqpTcpEndpoint[] endpoints)
         {
             createConnectionCount++;
@@ -48,7 +48,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         {
             createConnectionCount++;
             return new TestConnection();
-        }
+        }*/
 
         public int CreateConnectionCount
         {

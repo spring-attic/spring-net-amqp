@@ -54,16 +54,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             
         }
 
-        public CachingConnectionFactory(ConnectionParameters connectionParameters)
-            : this(connectionParameters, "localhost:" + RabbitUtils.DEFAULT_PORT)
-        {
-            
-        }
-
-        public CachingConnectionFactory(ConnectionParameters connectionParameters, string address) : base (new ConnectionFactory(), address )
-        {
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class.
         /// </summary>

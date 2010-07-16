@@ -254,6 +254,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             throw new NotImplementedException();
         }
 
+        public IBasicConsumer DefaultConsumer
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
         public ShutdownEventArgs CloseReason
         {
             get { throw new NotImplementedException(); }

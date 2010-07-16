@@ -76,13 +76,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                                  string receivedRoutingKey,
                                  bool redelivered,
                                  ulong deliveryTag,
-                                 uint messageCount) : this(basicProperties)
+                                 uint messageCount)
         {
             this.receivedExchange = receivedExchange;
             this.receivedRoutingKey = receivedRoutingKey;
             this.redelivered = redelivered;
             this.deliveryTag = deliveryTag;
             this.messageCount = messageCount;
+            this.basicProperties = basicProperties;
             InitializeHeadersIfNecessary(basicProperties);
         }
 
@@ -97,9 +98,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             if (basicProperties.Headers == null)
             {
                 basicProperties.Headers = new Dictionary<string, object>();
-            } else
-            {
-                //TODO ensure storage is of type Dictionary<string, object> to ensure casts will work.
             }
         }
 
@@ -192,12 +190,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             get
             {
                
-                return basicProperties.Headers as Dictionary<string, object>;
+                Dictionary<string, object> dictionary = basicProperties.Headers as Dictionary<string, object>;
+                //this is not efficient of course...
+                //Might need to fallbcak to just direct access of IDictionary but then qpid impl would suffer...
+                if (dictionary == null)
+                {
+                    dictionary = new Dictionary<string, object>();
+                    foreach (DictionaryEntry dictionaryEntry in basicProperties.Headers)
+                    {
+                        dictionary.Add(dictionaryEntry.Key.ToString(), dictionaryEntry.Value);                            
+                    }
+                }
+                return dictionary;
             }
             set
             {
                 //TODO convert IDictionary<string,objecxt> to Dictionary explicitly if cast fails
-                basicProperties.Headers = value as IDictionary;
+                IDictionary dict = new Hashtable();
+                foreach (KeyValuePair<string, object> o in value)
+                {
+                    dict.Add(o.Key, o.Value);
+                }
             }
         }
 

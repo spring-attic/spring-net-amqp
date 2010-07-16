@@ -1,12 +1,20 @@
 
 
 using System;
+using System.Threading;
+using Common.Logging;
 using Spring.RabbitQuickStart.Common.Data;
 
 namespace Spring.RabbitQuickStart.Server.Services.Stubs
 {
     public class ExecutionVenueServiceStub : IExecutionVenueService
     {
+        #region Logging
+
+        private readonly ILog logger = LogManager.GetLogger(typeof(ExecutionVenueServiceStub));
+
+        #endregion
+
         public TradeResponse ExecuteTradeRequest(TradeRequest request)
         {
             TradeResponse response = new TradeResponse();
@@ -15,6 +23,9 @@ namespace Spring.RabbitQuickStart.Server.Services.Stubs
             response.Quantity = request.Quantity;
             response.Ticker = request.Ticker;
             response.ConfirmationNumber = new Guid().ToString();
+
+            logger.Info("Sleeping 2 seconds to simulate processing...");
+            Thread.Sleep(2000);
             return response;
         }
 

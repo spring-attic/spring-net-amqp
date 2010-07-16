@@ -57,7 +57,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         private void InitializeDefaultErlangTemplate(RabbitTemplate template)
         {
-            string peerNodeName = "rabbit@" + template.ConnectionFactory.HostName;
+            string peerNodeName = "rabbit@" + template.ConnectionFactory.Host;
             LOG.Debug("Creating Erlang.NET connection with peerNodeName = [" + peerNodeName + "]");
             SimpleConnectionFactory otpCf = new SimpleConnectionFactory("rabbit-spring-monitor-net", peerNodeName);
             otpCf.AfterPropertiesSet();

@@ -72,8 +72,10 @@ namespace Spring.RabbitQuickStart.Client
             template.Execute<object>(delegate(IModel model)
             {
                 model.QueueDeclare("APP.STOCK.MARKETDATA");
-                //TODO Bind XSD needs to take into accout parameters nowait and 'Dictionary' args
                 model.QueueBind("APP.STOCK.MARKETDATA", "", "", false, null);
+
+                //This queue does not need a binding, since it relies on the default exchange.
+                model.QueueDeclare("APP.STOCK.JOE");
                 return null;
             });
         }

@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Spring.Erlang.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,6 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Connection\ConnectionFactoryUtils.cs" />
     <Compile Include="Connection\IConnectionFactory.cs" />
     <Compile Include="Connection\SimpleConnectionFactory.cs" />
@@ -61,12 +65,14 @@
     <Compile Include="Core\IErlangOperations.cs" />
     <Compile Include="Core\Node.cs" />
     <Compile Include="ErlangBadRpcException.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\Converter\ErlangConversionException.cs" />
     <Compile Include="Support\Converter\IErlangConverter.cs" />
     <Compile Include="Support\Converter\SimpleErlangConverter.cs" />
     <Compile Include="Support\ErlangUtils.cs" />
     <Compile Include="UncategorizedOtpException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

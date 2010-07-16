@@ -111,11 +111,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             get { throw new NotImplementedException(); }
         }
 
-        public ConnectionParameters Parameters
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         public ushort ChannelMax
         {
             get { throw new NotImplementedException(); }
@@ -127,6 +122,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         public ushort Heartbeat
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public IDictionary ClientProperties
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public IDictionary ServerProperties
         {
             get { throw new NotImplementedException(); }
         }

@@ -41,9 +41,16 @@ namespace Spring.RabbitQuickStart.Server
             RabbitTemplate template = ContextRegistry.GetContext().GetObject("RabbitTemplate") as RabbitTemplate;
             template.Execute<object>(delegate(IModel model)
             {
-                model.QueueDeclare("APP.STOCK.MARKETDATA");
-                //TODO Bind XSD needs to take into accout parameters nowait and 'Dictionary' args
+                model.QueueDeclare("APP.STOCK.MARKETDATA");                
+
                 model.QueueBind("APP.STOCK.MARKETDATA", "", "", false, null);
+
+                //We don't need to define any binding for the stock request queue, since it's relying
+                //on the default (no-name) direct exchange to which every queue is implicitly bound.
+                model.QueueDeclare("APP.STOCK.REQUEST");
+
+                //This queue does not need a binding, since it relies on the default exchange.
+                model.QueueDeclare("APP.STOCK.JOE");
                 return null;
             });
         }

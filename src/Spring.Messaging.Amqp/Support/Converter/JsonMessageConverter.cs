@@ -81,7 +81,15 @@ namespace Spring.Messaging.Amqp.Support.Converter
                     {
                         object typeIdFieldNameValue = message.MessageProperties.Headers[typeMapper.TypeIdFieldName];
                         string typeId = null;
-                        //TODO this is a string when the message has not yet been marshalled across the wire.
+                        if (typeIdFieldNameValue != null)
+                        {
+                            typeId = typeIdFieldNameValue.ToString();
+                        }
+                        if (typeId == null)
+                        {
+                            throw new MessageConversionException("Failed to convert json-based Message content. TypeIdFieldName not found in headers.");
+                        }
+                        
                         if (typeIdFieldNameValue is string)
                         {
                             typeId = (string) typeIdFieldNameValue;
@@ -90,12 +98,9 @@ namespace Spring.Messaging.Amqp.Support.Converter
                         {
                             typeId = ConvertBytesToString((byte[])typeIdFieldNameValue, encoding);
                         }
-                        if (typeId == null)
-                        {
-                            throw new MessageConversionException("Failed to convert json-based Message content. TypeIdFieldName not found in headers."); 
-                        }
+                        
                         //string stringType = (string) message.MessageProperties.Headers[typeMapper.TypeIdFieldName];
-
+                        
                         Type targetType = typeMapper.ToType(typeId);
                         content = ConvertBytesToObject(message.Body, encoding, targetType);
                     } catch (Exception e)

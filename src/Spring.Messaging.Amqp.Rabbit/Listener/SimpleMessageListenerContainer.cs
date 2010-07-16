@@ -195,11 +195,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             // Set basicQoS before calling basicConsume
             channel.BasicQos(0, this.prefetchCount, false);
-            string queueName = RequiredQueueName();
-            channel.QueueDeclare(queueName);
-            //TODO what is the IDictionary argument (currently null) that is a filter of some kind.
-            string consumerTag = channel.BasicConsume(queueName, autoAck, null, consumer);
-            consumer.ConsumerTag = consumerTag;
+            string queueNames = RequiredQueueName();
+
+            string[] queue = StringUtils.CommaDelimitedListToStringArray(queueNames);
+            foreach (string name in queue)
+            {
+                channel.QueueDeclare(name);
+                string consumerTag = channel.BasicConsume(name, autoAck, null, consumer);
+                consumer.ConsumerTag = consumerTag;   
+            }          
             return consumer;
         }
 

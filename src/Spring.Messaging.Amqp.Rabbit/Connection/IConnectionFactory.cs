@@ -31,7 +31,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     {
         IConnection CreateConnection();
 
-        string HostName { get; }
+        string Host { get; }
 
         string VirtualHost { get; }
     }

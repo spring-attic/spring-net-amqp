@@ -62,6 +62,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// </summary>
         public static string ORIGINAL_DEFAULT_HANDLER_METHOD = "HandleMessage";
 
+        private static string DEFAULT_RESPONSE_EXCHANGE = "";
+
         #region Fields
 
         private object handlerObject;
@@ -452,8 +454,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         protected virtual void SendResponse(IModel channel, String replyTo, Message message)
         {
             //TODO need a strategy for extracdting exchange/routing key
-            string exchange = message.MessageProperties.ReceivedExchange;
-
+            string exchange = MessageListenerAdapter.DEFAULT_RESPONSE_EXCHANGE;           
+            string receivedExchange = message.MessageProperties.ReceivedExchange;
+            if (receivedExchange != null)
+            {
+                logger.Debug("Overriding defaultResponseExchange and using exchange of received message.");
+                exchange = receivedExchange;
+            }
             PostProcessChannel(channel, message);
 
             //TODO parameterize out defalut encoding

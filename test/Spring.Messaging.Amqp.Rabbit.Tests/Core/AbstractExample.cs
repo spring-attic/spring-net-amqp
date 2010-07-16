@@ -33,15 +33,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         protected RabbitTemplate InitializeAndCreateTemplate()
         {
-            ConnectionParameters parameters = new ConnectionParameters();
-            parameters.UserName = ConnectionParameters.DefaultUser;
-            parameters.Password = ConnectionParameters.DefaultPass;
-            parameters.VirtualHost = ConnectionParameters.DefaultVHost;
-            /* TODO - put in calls to determine protocol in CachingConnectionFactory, e.g.
-            IProtocol protocol = Protocols.DefaultProtocol;
-            IConnection conn = factory.CreateConnection(protocol, hostName, portNumber);
-            */
-            connectionFactory = new CachingConnectionFactory(parameters);
+            connectionFactory = new CachingConnectionFactory();
 
 
             RabbitTemplate template = new RabbitTemplate();
@@ -53,7 +45,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             template.Execute<object>(delegate(IModel model)
                                          {
                                              model.QueueDeclare(TestConstants.QUEUE_NAME);
-                                             //TODO Bind XSD needs to take into accout parameters nowait and 'Dictionary' args
+                        
                                              model.QueueBind(TestConstants.QUEUE_NAME, TestConstants.EXCHANGE_NAME, TestConstants.ROUTING_KEY, false, null);
                                              return null;
                                          });

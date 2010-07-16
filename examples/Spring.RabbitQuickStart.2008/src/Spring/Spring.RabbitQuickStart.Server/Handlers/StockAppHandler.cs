@@ -1,6 +1,7 @@
 
 
 using System.Collections;
+using Common.Logging;
 using Spring.RabbitQuickStart.Common.Data;
 using Spring.RabbitQuickStart.Server.Services;
 using Spring.Util;
@@ -9,6 +10,11 @@ namespace Spring.RabbitQuickStart.Server.Handlers
 {
     public class StockAppHandler
     {
+        #region Logging
+
+        private readonly ILog logger = LogManager.GetLogger(typeof(StockAppHandler));
+
+        #endregion
         private IExecutionVenueService executionVenueService;
 
         private ICreditCheckService creditCheckService;
@@ -24,6 +30,7 @@ namespace Spring.RabbitQuickStart.Server.Handlers
 
         public TradeResponse Handle(TradeRequest tradeRequest)
         {
+            logger.Info("Recieved trade request");
             TradeResponse tradeResponse;
             ArrayList errors = new ArrayList();
             if (creditCheckService.CanExecute(tradeRequest, errors))

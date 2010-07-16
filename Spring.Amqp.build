@@ -6,6 +6,15 @@
     <property name="build.dir" value="${root.dir}/build" />
     <property name="tool.dir" value="${root.dir}/tools" />
     <property name="lib.dir" value="${root.dir}/lib" />
+    <property name="package.dir" value="${root.dir}/package" />
+    <property name="doc.dir" value="${root.dir}/doc" />
+
+    <property name="project.majorversion" value="1.0" />
+    <property name="project.patchversion" value="0" overwrite="false" />
+    <property name="project.buildnumber" value="${math::abs(math::floor(timespan::get-total-days(datetime::now() - datetime::parse('01/01/2000'))))}" />
+    <property name="project.version" value="${project.majorversion}.${project.patchversion}.${project.buildnumber}" overwrite="false" />
+    <!-- dev / alpha / beta# / rc# / release -->
+    <property name="project.releasetype" value="dev" overwrite="false" />
 
     <readregistry property="net35.install.dir" key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5\InstallPath" hive="LocalMachine" failonerror="true"/>
     <property name="msbuild.exe" value="${net35.install.dir}\msbuild.exe"/>
@@ -30,7 +39,39 @@
     </target>
 
     <target name="build" depends="clean">
+        <call target="update-common-assemblyinfo" />
         <call target="RebuildAllSolutions" />
+    </target>
+
+    <target name="update-common-assemblyinfo">
+
+      <!-- ensure src/CommonAssemblyInfo.cs is writable if it already exists -->
+      <attrib file="${root.dir}/src/CommonAssemblyInfo.cs" readonly="false" if="${file::exists('${root.dir}/src/CommonAssemblyInfo.cs')}" />
+      <!-- generate the source file holding the common assembly-level attributes -->
+      <asminfo output="${root.dir}/src/CommonAssemblyInfo.cs" language="CSharp">
+        <imports>
+          <import namespace="System" />
+          <import namespace="System.Reflection" />
+          <import namespace="System.Runtime.InteropServices" />
+          <import namespace="System.Security" />
+          <import namespace="System.Security.Permissions" />
+        </imports>
+        <attributes>
+          <attribute type="CLSCompliantAttribute" value="true" />
+          <attribute type="ComVisibleAttribute" value="false" />
+          <attribute type="AllowPartiallyTrustedCallersAttribute" asis="true"/>
+          <!-- attribute type="SecurityTransparentAttribute" asis="true"/ -->
+          <attribute type="SecurityPermissionAttribute" value="SecurityAction.RequestMinimum" asis="true"/>
+          <attribute type="AssemblyCompanyAttribute" value="http://springsource.org/spring-amqp/" />
+          <attribute type="AssemblyCopyrightAttribute" value="Copyright 2010 SpringSource." />
+          <attribute type="AssemblyTrademarkAttribute" value="Apache License, Version 2.0" />
+          <attribute type="AssemblyCultureAttribute" value="" />
+          <attribute type="AssemblyVersionAttribute" value="${project.version}" />
+          <attribute type="AssemblyConfigurationAttribute" value="${framework::get-target-framework()}.${platform::get-name()}; ${project.releasetype}" />
+          <attribute type="AssemblyInformationalVersionAttribute" value="${project.version}; ${framework::get-target-framework()}.${platform::get-name()}; ${project.releasetype}" />
+          <attribute type="AssemblyDelaySignAttribute" value="false" />
+        </attributes>
+      </asminfo>
     </target>
 
     <target name="test" depends="build">
@@ -66,6 +107,125 @@
             </do>
         </foreach>
     </target>
+
+
+  <target name="package-zip" depends="package" description="Build Package distribution as .zip file">
+    <property name="project.zip-path" value="${package.dir}/Common.Logging-${project.version}.zip"/>
+    <zip zipfile="${project.zip-path}">
+      <fileset basedir="${package.dir}">
+        <include name="**/*"/>
+        <exclude name="*.zip"/>
+      </fileset>
+    </zip>
+  </target>
+
+  <target name="package" description="Builds all modules and documentation">
+
+    <!-- clean package dir -->
+    <delete dir="${package.dir}" failonerror="true" />
+
+    <!-- build and copy binaries -->
+    <call target="package.binaries" cascade="false" />
+
+    <!-- copy sources -->
+    <call target="package.sources" cascade="false" />
+
+    <!-- copy reference docs -->
+    <call target="package.doc" cascade="false"/>
+
+    <!-- build tools -->
+    <copy todir="${package.dir}/tools">
+      <fileset basedir="${root.dir}/tools">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+
+    <!-- copy over readme etc. -->
+    <copy todir="${package.dir}" file="${root.dir}/readme.txt"/>
+    <copy todir="${package.dir}" file="${root.dir}/license.txt"/>
+    <copy todir="${package.dir}" file="${root.dir}/changelog.txt"/>
+
+    <!-- TODO: JUST FOR TESTING! -->
+    <!-- copy todir="${package.dir}\modules" file="${project.basedir}/modules/Common.Net.snk"/ -->
+    <!-- copy todir="${package.dir}\modules">
+      <fileset basedir="${project.basedir}\modules">
+        <include name="**/lib/**/Microsoft.*"/>
+      </fileset>
+    </copy -->
+
+  </target>
+
+  <target name="package.binaries" depends1="build">
+      <echo message="hello ${package.dir}/bin/net/2.0/debug"/>
+      <copy todir="${package.dir}/bin/net/2.0/debug" flatten="true" verbose="true">
+        <fileset>
+          <include name="src/Spring.Messaging.Amqp.*/**/Debug/Spring.Messaging.Amqp*.???"/>
+          <include name="src/Spring.Erlang/bin/Debug/Spring.Erlang.???"/>
+          <exclude name="**/*Test*"/>
+          <exclude name="**/*FileListAbsolute*"/>
+        </fileset>
+      </copy>
+  </target>
+
+  <target name="package.sources">
+    <!-- Copy global solution + build files -->
+    <copy todir="${package.dir}">
+      <fileset basedir="${root.dir}">
+        <include name="Spring.Messaging.Amqp.*"/>
+        <exclude name="*.snk"/>
+        <exclude name="*.suo"/>
+        <exclude name="*.user"/>
+        <exclude name="*.cache"/>
+      </fileset>
+    </copy>
+
+    <!-- Copy shared module files -->
+    <copy tofile="${package.dir}/src/CommonAssemblyInfo.cs"
+          file="${root.dir}/src/CommonAssemblyInfo.cs.template"/>
+
+    <!-- Copy Common.Logging sources -->
+    <copy todir="${package.dir}" failonerror="true" >
+      <fileset basedir="${root.dir}">
+        <include name="src/**/*.*"/>
+        <include name="test/**/*.*"/>
+        <include name="examples/**/*.*"/>
+        <exclude name="**/*.user"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="package.doc">
+    <!-- copy reference docs -->
+    <call target="doc" cascade="false"/>
+    <copy todir="${package.dir}/doc/reference/">
+      <fileset basedir="${doc.dir}/reference/target/">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+
+    <!-- copy sdk docs -->
+    <copy todir="${package.dir}/doc/api/html">
+      <fileset basedir="${root.dir}/bin/DocumentX/">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+    <copy todir="${package.dir}/doc/api/htmlhelp">
+      <fileset basedir="${root.dir}/bin/">
+        <include name="*.chm"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="doc">
+    <call target="doc-reference" cascade="false" />
+    <!--
+    <call target="doc-sdk" cascade="false" />
+    -->
+  </target>
+
+  <target name="doc-reference">
+    <nant buildfile="${doc.dir}/reference/docbook.build" target="all" />
+  </target>
 
     <target name="common.run-tests">
         <call target="common.run-tests.nunit" />

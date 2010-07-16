@@ -35,12 +35,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
 
         [TestFixtureSetUp]
         public void FixtureSetup()
-        {
-            ConnectionParameters parameters = new ConnectionParameters();
-            parameters.UserName = ConnectionParameters.DefaultUser;
-            parameters.Password = ConnectionParameters.DefaultPass;
-            parameters.VirtualHost = ConnectionParameters.DefaultVHost;
-            IConnectionFactory connectionFactory = new CachingConnectionFactory(parameters);
+        {            
+            IConnectionFactory connectionFactory = new CachingConnectionFactory();
 
 
             template = new RabbitTemplate();

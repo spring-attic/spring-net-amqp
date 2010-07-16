@@ -1,0 +1,19 @@
+SPRING AMQP .NET CHANGELOG
+==================================
+http://springsource.org/spring-amqp
+
+Release Version 1.0.0 M1 July 15, 2010
+
+Release Notes - Spring AMQP .NET - Version 1.0.0 M1
+
+New Feature
+    AMQP domain abstractions
+    Erlang Helper library
+    Rabbit Connection Factory
+    RabbitTemplate 
+    MessageListenerContainer
+    Rabbit Broker Administration
+
+
+
+

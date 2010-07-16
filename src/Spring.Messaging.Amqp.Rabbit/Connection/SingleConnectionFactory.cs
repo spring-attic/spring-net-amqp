@@ -45,9 +45,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         //TODO need to sync on ConnectionFactory properties between Java/.NET 
         //Note .NET is multi-protocol client (IProtocol parameters)
 
-        private string hostName = "localhost:" + RabbitUtils.DEFAULT_PORT;
+        private string host = "localhost:" + RabbitUtils.DEFAULT_PORT;
 
-        private volatile int portNumber = RabbitUtils.DEFAULT_PORT;
+        private volatile int port = RabbitUtils.DEFAULT_PORT;
         
         private ConnectionFactory rabbitConnectionFactory;
 
@@ -69,49 +69,38 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         public SingleConnectionFactory()
         {
             rabbitConnectionFactory = new ConnectionFactory();
-        }
-
-        public SingleConnectionFactory(ConnectionParameters connectionParameters)
-            : this(connectionParameters, "localhost:" + RabbitUtils.DEFAULT_PORT)
-        {
-            
-        }
-
-        public SingleConnectionFactory(ConnectionParameters connectionParameters, string address)
-            : this(new ConnectionFactory(), address)
-        {
-            rabbitConnectionFactory.Parameters.Password = connectionParameters.Password;
-            rabbitConnectionFactory.Parameters.RequestedChannelMax = connectionParameters.RequestedChannelMax;
-            rabbitConnectionFactory.Parameters.RequestedFrameMax = connectionParameters.RequestedFrameMax;
-            rabbitConnectionFactory.Parameters.RequestedHeartbeat = connectionParameters.RequestedHeartbeat;
-            rabbitConnectionFactory.Parameters.Ssl = connectionParameters.Ssl;
-            rabbitConnectionFactory.Parameters.UserName = connectionParameters.UserName;
-            rabbitConnectionFactory.Parameters.VirtualHost = connectionParameters.VirtualHost;
+            this.host = "localhost";
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class.
         /// </summary>
         /// <param name="connectionFactory">The connection factory.</param>
-        /// <param name="hostName">The hostName.</param>
+        /// <param name="hostName">The host.</param>
         public SingleConnectionFactory(ConnectionFactory connectionFactory, string hostName)
         {
             AssertUtils.ArgumentNotNull(connectionFactory, "connectionFactory", "Target ConnectionFactory must not be null");
-            AssertUtils.ArgumentHasText(hostName, "hostName", "Address must not be null or empty.");
+            AssertUtils.ArgumentHasText(hostName, "host", "Address must not be null or empty.");
             this.rabbitConnectionFactory = connectionFactory;
-            this.hostName = hostName;
+            this.host = hostName;
         }
 
         #region Implementation of IConnectionFactory
 
-        public string HostName
+        public string Host
         {
-            get { return hostName; }
+            get { return host; }
         }
 
         public string VirtualHost
         {
-            get { return rabbitConnectionFactory.Parameters.VirtualHost; }
+            get { return rabbitConnectionFactory.VirtualHost; }
+        }
+
+        public int Port
+        {
+            get { return port; }
+            set { rabbitConnectionFactory.Port = value; }
         }
 
         #endregion
@@ -132,7 +121,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         {
             //TODO Add Protocols.FromEnvironment
 
-            //return rabbitConnectionFactory.CreateConnection(hostName);           
+            //return rabbitConnectionFactory.CreateConnection(host);           
             lock (connectionMonitor)
             {
                 if (connection == null)
@@ -232,12 +221,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         protected virtual IConnection DoCreateConnection()
         {
-            return rabbitConnectionFactory.CreateConnection(hostName);
+            if (this.host != null )
+            {
+                rabbitConnectionFactory.HostName = host;
+            }
+            return rabbitConnectionFactory.CreateConnection();
         }
 
 
         protected virtual void PrepareConnection(IConnection connection)
         {
+            rabbitConnectionFactory.HostName = host;
             // Potentially configure shutdown exceptions, investigate reconnection exceptions.
         }
 
@@ -269,7 +263,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         public override string ToString()
         {
-            return "SingleConnectionFactory [hostName=" + hostName + ", portNumber=" + portNumber + "]";
+            return "SingleConnectionFactory [host=" + host + ", port=" + port + "]";
         }
     }
 

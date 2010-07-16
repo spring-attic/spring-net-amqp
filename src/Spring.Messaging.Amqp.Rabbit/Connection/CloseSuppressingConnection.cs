@@ -116,11 +116,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             get { return target.Protocol; }
         }
 
-        public ConnectionParameters Parameters
-        {
-            get { return target.Parameters; }
-        }
-
         public ushort ChannelMax
         {
             get { return target.ChannelMax; }
@@ -134,6 +129,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         public ushort Heartbeat
         {
             get { return target.Heartbeat; }
+        }
+
+        public IDictionary ClientProperties
+        {
+            get { return target.ClientProperties; }
+        }
+
+        public IDictionary ServerProperties
+        {
+            get { return target.ServerProperties; }
         }
 
         public AmqpTcpEndpoint[] KnownHosts

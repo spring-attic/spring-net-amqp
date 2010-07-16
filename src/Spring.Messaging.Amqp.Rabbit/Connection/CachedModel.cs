@@ -338,6 +338,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             target.Abort(replyCode, replyText);
         }
 
+        public IBasicConsumer DefaultConsumer
+        {
+            get { return target.DefaultConsumer; }
+            set { target.DefaultConsumer = value; }
+        }
+
         public ShutdownEventArgs CloseReason
         {
             get { return target.CloseReason; }

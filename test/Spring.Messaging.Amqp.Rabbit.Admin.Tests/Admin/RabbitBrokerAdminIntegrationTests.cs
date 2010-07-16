@@ -33,12 +33,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         private RabbitBrokerAdmin brokerAdmin;
         [SetUp]
         public void SetUp()
-        {
-            ConnectionParameters parameters = new ConnectionParameters();
-            parameters.UserName = ConnectionParameters.DefaultUser;
-            parameters.Password = ConnectionParameters.DefaultPass;
-            parameters.VirtualHost = ConnectionParameters.DefaultVHost;            
-            connectionFactory = new CachingConnectionFactory(parameters);
+        {                      
+            connectionFactory = new CachingConnectionFactory();
             brokerAdmin = new RabbitBrokerAdmin(connectionFactory);
         }
         
