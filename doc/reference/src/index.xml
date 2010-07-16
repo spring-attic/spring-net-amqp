@@ -55,7 +55,6 @@
                 Spring AMQP and the underlying concepts.
             </para>
         </partintro>
-	&quick-tour;
     </part>
     <part>
         <title>Reference</title>

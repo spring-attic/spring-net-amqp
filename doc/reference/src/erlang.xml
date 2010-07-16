@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 <chapter id="erlang">
   <title>Erlang integration</title>
 
@@ -25,7 +23,7 @@
       <para>The interface IErlangOperations is the high level API for
       interacting with an Erlang process. </para>
 
-      <programlisting>    public interface IErlangOperations
+      <programlisting language="csharp">    public interface IErlangOperations
     {
         T Execute&lt;T&gt;(ConnectionCallbackDelegate&lt;T&gt; action);
 
@@ -50,7 +48,7 @@
       and arguments in a one-liner. For example, here is the implementation of
       the RabbitBrokerAdmin method 'DeleteUser'</para>
 
-      <programlisting>        public void DeleteUser(string username)
+      <programlisting language="csharp">        public void DeleteUser(string username)
         {
             erlangTemplate.ExecuteAndConvertRpc("rabbit_access_control", "delete_user", encoding.GetBytes(username));
         }</programlisting>
@@ -72,7 +70,7 @@
 
       <para>The IErlangConverter interface is shown below</para>
 
-      <programlisting>    public interface IErlangConverter
+      <programlisting language="csharp">    public interface IErlangConverter
     {
         /// &lt;summary&gt;
         /// Convert a .NET object to a Erlang data type.

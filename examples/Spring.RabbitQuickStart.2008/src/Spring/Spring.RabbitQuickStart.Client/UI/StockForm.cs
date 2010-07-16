@@ -75,12 +75,5 @@ namespace Spring.RabbitQuickStart.Client.UI
                                marketDataListBox.Items.Add(marketDataDict["TICKER"] + " " + marketDataDict["PRICE"]);
                            }));
         }
-
-        private void OnPortfolioRequest(object sender, EventArgs e)
-        {
-            MessageBox.Show("Get Portfolio operation not yet implemented.", "RabbitQuickStart");
-        }
-
-
     }
 }
