@@ -1,2 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DocumentXComments Version="5.00" DocType="dx.Net" Moniker="L:\projects\spring-amqp-net\bin\Spring.Messaging.Amqp.Rabbit.Admin.dll" ShowInherited="False" Template="" LoadPrivate="False" LoadOnDemand="True" RelatedProject="Spring.Messaging.Amqp-1.0.dxp"/>
+<DocumentXComments Version="5.0" Moniker="L:\projects\spring-amqp-net\bin\Spring.Messaging.Amqp.Rabbit.Admin.dll" DocType="dx.Net" Template="" ShowInherited="False" SpellLastCheckDateTime="30/12/1899 00:00:00" TreePath="Spring.Messaging.Amqp.Rabbit.Admin" RelatedProject="Spring.Messaging.Amqp-1.0.dxp" RelatedHSProject="" LoadIncludeFilter="" LoadExcludeFilter="" LoadPrivate="False" LoadOnDemand="True" LoadSourceComments="False">
+    <IgnoreWordList/>
+<UserData>
+    <InPlaceEditor>
+        <dtscrollpos>0</dtscrollpos>
+        <inheritedMembers>on</inheritedMembers>
+        <protectedMembers>on</protectedMembers>
+    </InPlaceEditor>
+</UserData>
+<c eid="Spring.Messaging.Amqp.Rabbit.Admin" tid="##SUMMARY" q="" cd="40375.5592939815"><![CDATA[This package provides generic RabbitMQ administrative support classes to&nbsp;provide an API for functionality contained in rabbitmqctl.bat]]></c>
+<c eid="Spring.Messaging.Amqp.Rabbit.Admin~Spring.Messaging.Amqp.Rabbit.Admin_namespace" tid="##SUMMARY" q="" cd="40375.5594791667">Core package of the RabbitMQ Admin support</c>
+    </DocumentXComments>

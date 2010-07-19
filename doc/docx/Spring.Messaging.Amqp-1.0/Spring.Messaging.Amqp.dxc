@@ -1,2 +1,16 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DocumentXComments Version="5.00" DocType="dx.Net" Moniker="L:\projects\spring-amqp-net\bin\Spring.Messaging.Amqp.dll" ShowInherited="False" Template="" LoadPrivate="False" LoadOnDemand="True" RelatedProject="Spring.Messaging.Amqp-1.0.dxp"/>
+<DocumentXComments Version="5.0" Moniker="L:\projects\spring-amqp-net\bin\Spring.Messaging.Amqp.dll" DocType="dx.Net" Template="" ShowInherited="False" SpellLastCheckDateTime="30/12/1899 00:00:00" TreePath="Spring.Messaging.Amqp" RelatedProject="Spring.Messaging.Amqp-1.0.dxp" RelatedHSProject="" LoadIncludeFilter="" LoadExcludeFilter="" LoadPrivate="False" LoadOnDemand="True" LoadSourceComments="False">
+    <IgnoreWordList/>
+<UserData>
+    <InPlaceEditor>
+        <dtscrollpos>0</dtscrollpos>
+        <inheritedMembers>on</inheritedMembers>
+        <protectedMembers>on</protectedMembers>
+    </InPlaceEditor>
+</UserData>
+<c eid="Spring.Messaging.Amqp" tid="##SUMMARY" q="" cd="40375.5552430556">This assembly contains integration classes for AMQP, providing classes that represent the core AMQP model that do not rely an any particular AMQP broker implementation or client library.</c>
+<c eid="Spring.Messaging.Amqp" tid="##PROJECT_INTRODUCTION" q="" cd="40375.5553935185"><![CDATA[The assembly <FONT color=#000000><CODE class=literal>Spring.Messaging.Amqp</CODE> contains the classes that represent the core AMQP "model". Our intention is to provide generic abstractions that do not rely on any particular AMQP broker implementation or client library. As a result, end user code will be more portable across vendor implementations as it can be developed against the abstraction layer only. These abstractions are then used implemented by broker-specific modules, such as '<CODE class=literal>Spring.Messaging.Amqp.Rabbit</CODE>'. For the M1 release RabbitMQ and Apache Qpid (2 versions) have been used to vet these base abstractions.</FONT>]]></c>
+<c eid="Spring.Messaging.Amqp" tid="##PROJECT_GETTINGSTARTED" q="" cd="40375.5555208333">Please refer to the reference documentation and the sample applications.</c>
+<c eid="Spring.Messaging.Amqp~Spring.Messaging.Amqp.Core_namespace" tid="##SUMMARY" q="" cd="40375.5557291667">Core package of the AMQP support</c>
+<c eid="Spring.Messaging.Amqp~Spring.Messaging.Amqp.Support.Converter_namespace" tid="##SUMMARY" q="" cd="40375.5559837963">Provide a MessageConverter abstraction to convert between .NET objects and AMQP payloads.</c>
+    </DocumentXComments>

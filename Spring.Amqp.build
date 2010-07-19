@@ -183,7 +183,7 @@
     <copy tofile="${package.dir}/src/CommonAssemblyInfo.cs"
           file="${root.dir}/src/CommonAssemblyInfo.cs.template"/>
 
-    <!-- Copy Common.Logging sources -->
+    <!-- Copy sources -->
     <copy todir="${package.dir}" failonerror="true" >
       <fileset basedir="${root.dir}">
         <include name="src/**/*.*"/>

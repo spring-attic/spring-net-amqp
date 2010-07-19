@@ -83,9 +83,9 @@
         <exclude name="*.chm"/>
       </fileset>
     </delete>
-    <delete file="${project.targetdir}\htmlhelp\spring-net-reference.chm"/>
+    <delete file="${project.targetdir}\htmlhelp\spring-amqp-reference.chm"/>
     <move file="${project.targetdir}\htmlhelp\htmlhelp.chm"
-	  tofile="${project.targetdir}\htmlhelp\spring-net-reference.chm" verbose="true"/>
+	  tofile="${project.targetdir}\htmlhelp\spring-amqp-reference.chm" verbose="true"/>
   </target>
 
   <target name="pdf">
@@ -94,7 +94,7 @@
     <!-- docbook -> fop -->
     <exec workingdir="${project.targetdir}" program="java" commandline='-cp "..\lib\saxon6-5-5\saxon.jar;..\lib\xslthl-2.0.0\xslthl-2.0.0.jar" com.icl.saxon.StyleSheet -o pdf/spring-net-reference.fo ../src/index.xml "..\lib\docbook-xsl-snapshot\fo\springnet.xsl" highlight.xslthl.config="file:///${project.basedir}/lib/docbook-xsl-snapshot/highlighting/xslthl-config.xml"'/>
     <!-- fop -> pdf -->
-    <exec program="${project.basedir}\lib\fop-0.95\fop.bat" commandline='-fo "${project.targetdir}\pdf\spring-net-reference.fo" -pdf "${project.targetdir}\pdf\spring-net-reference.pdf"'/>
+    <exec program="${project.basedir}\lib\fop-0.95\fop.bat" commandline='-fo "${project.targetdir}\pdf\spring-net-reference.fo" -pdf "${project.targetdir}\pdf\spring-amqp-reference.pdf"'/>
     <!-- Delete temporary fop file -->
     <delete file="${project.targetdir}\pdf\spring-net-reference.fo"/>
   </target>

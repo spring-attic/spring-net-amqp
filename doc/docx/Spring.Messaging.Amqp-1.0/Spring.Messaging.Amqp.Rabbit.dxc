@@ -1,2 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DocumentXComments Version="5.00" DocType="dx.Net" Moniker="L:\projects\spring-amqp-net\bin\Spring.Messaging.Amqp.Rabbit.dll" ShowInherited="False" Template="" LoadPrivate="False" LoadOnDemand="True" RelatedProject="Spring.Messaging.Amqp-1.0.dxp"/>
+<DocumentXComments Version="5.0" Moniker="L:\projects\spring-amqp-net\bin\Spring.Messaging.Amqp.Rabbit.dll" DocType="dx.Net" Template="" ShowInherited="False" SpellLastCheckDateTime="30/12/1899 00:00:00" TreePath="Spring.Messaging.Amqp.Rabbit" RelatedProject="Spring.Messaging.Amqp-1.0.dxp" RelatedHSProject="" LoadIncludeFilter="" LoadExcludeFilter="" LoadPrivate="False" LoadOnDemand="True" LoadSourceComments="False">
+    <IgnoreWordList/>
+<UserData>
+    <InPlaceEditor>
+        <dtscrollpos>0</dtscrollpos>
+        <inheritedMembers>on</inheritedMembers>
+        <protectedMembers>on</protectedMembers>
+    </InPlaceEditor>
+</UserData>
+<c eid="Spring.Messaging.Amqp.Rabbit" tid="##SUMMARY" q="" cd="40375.5586111111">This assembly contains integration classes for RabbitMQ, allowing for Spring-style AMQP access.</c>
+<c eid="Spring.Messaging.Amqp.Rabbit" tid="##PROJECT_GETTINGSTARTED" q="" cd="40375.5580671296">Please refer to the reference documentation and sample applications.</c>
+<c eid="Spring.Messaging.Amqp.Rabbit~Spring.Messaging.Amqp.Rabbit.Connection_namespace" tid="##SUMMARY" q="" cd="40375.5571643518"><![CDATA[Provides a interface for a&nbsp;RabbitMQ&nbsp;ConnectionFactory, and a SingleConnectionFactory implementaion.]]></c>
+<c eid="Spring.Messaging.Amqp.Rabbit~Spring.Messaging.Amqp.Rabbit.Core_namespace" tid="##SUMMARY" q="" cd="40375.5587152778">Core package of the RabbitMQ support.</c>
+<c eid="Spring.Messaging.Amqp.Rabbit~Spring.Messaging.Amqp.Rabbit.Core.Support_namespace" tid="##SUMMARY" q="" cd="40375.5574421296">Classes supporting the Spring.Messaging.Amqp.Rabbit.Core namespace</c>
+<c eid="Spring.Messaging.Amqp.Rabbit~Spring.Messaging.Amqp.Rabbit.Listener_namespace" tid="##SUMMARY" q="" cd="40375.5576041667">This namespace contains the base message listener container facility.</c>
+<c eid="Spring.Messaging.Amqp.Rabbit~Spring.Messaging.Amqp.Rabbit.Listener.Adapter_namespace" tid="##SUMMARY" q="" cd="40375.5575694444">Message listener adapter mechanism that delegates to target listener methods, converting messages to appropriate message content types (such as String or byte array) that get passed into listener methods.</c>
+<c eid="Spring.Messaging.Amqp.Rabbit~Spring.Messaging.Amqp.Rabbit.Support_namespace" tid="##SUMMARY" q="" cd="40375.5578009259">This package provides generic RabbitMQ support classes, to be used by higher-level classes like RabbitTemplate.</c>
+    </DocumentXComments>

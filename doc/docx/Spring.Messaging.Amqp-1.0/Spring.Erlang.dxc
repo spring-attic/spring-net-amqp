@@ -1,2 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DocumentXComments Version="5.00" DocType="dx.Net" Moniker="L:\projects\spring-amqp-net\bin\Spring.Erlang.dll" ShowInherited="False" Template="" LoadPrivate="False" LoadOnDemand="True" RelatedProject="Spring.Messaging.Amqp-1.0.dxp"/>
+<DocumentXComments Version="5.0" Moniker="L:\projects\spring-amqp-net\bin\Spring.Erlang.dll" DocType="dx.Net" Template="" ShowInherited="False" SpellLastCheckDateTime="30/12/1899 00:00:00" TreePath="Spring.Erlang" RelatedProject="Spring.Messaging.Amqp-1.0.dxp" RelatedHSProject="" LoadIncludeFilter="" LoadExcludeFilter="" LoadPrivate="False" LoadOnDemand="True" LoadSourceComments="False">
+    <IgnoreWordList/>
+<UserData>
+    <InPlaceEditor>
+        <dtscrollpos>0</dtscrollpos>
+        <inheritedMembers>on</inheritedMembers>
+        <protectedMembers>on</protectedMembers>
+    </InPlaceEditor>
+</UserData>
+<c eid="Spring.Erlang" tid="##SUMMARY" q="" cd="40375.5527893519"><![CDATA[The class in this assembly make is easier to interact with&nbsp;Erlang processes and reduce the likelihood of common errors.]]></c>
+<c eid="Spring.Erlang" tid="##PROJECT_GETTINGSTARTED" q="" cd="40375.5543518519">Please read the reference documentation and look into the implementation of RabbitBroker admin for usage.</c>
+<c eid="Spring.Erlang" tid="##PROJECT_INTRODUCTION" q="" cd="40375.5544560185"><![CDATA[The class in this assembly make is easier to interact with&nbsp;Erlang processes and reduce the likelihood of common errors.]]></c>
+<c eid="Spring.Erlang~Spring.Erlang_namespace" tid="##SUMMARY" q="" cd="40375.5529398148">Common exceptions</c>
+<c eid="Spring.Erlang~Spring.Erlang.Connection_namespace" tid="##SUMMARY" q="" cd="40375.553125">Utility classes for easy connection management</c>
+<c eid="Spring.Erlang~Spring.Erlang.Core_namespace" tid="##SUMMARY" q="" cd="40375.5534027778">Provides the core of the Erlang framework, based on ErlangTemplate and its associated callback interface and helper objects.</c>
+<c eid="Spring.Erlang~Spring.Erlang.Support_namespace" tid="##SUMMARY" q="" cd="40375.5535532407">Classes supporting the Spring.Erlang.Core namespace.</c>
+<c eid="Spring.Erlang~Spring.Erlang.Support.Converter_namespace" tid="##SUMMARY" q="" cd="40375.5538310185">Provides a converter abstraction to convert between .NET and Erlang data types.</c>
+    </DocumentXComments>

@@ -9,10 +9,12 @@ The 1.0.0 M1 release of Spring AMQP for NET contains
 
      * An AMQP implementation agnostic Message API for use across multiple implementations
      * A RabbitTemplate implementation for synchronous sending and receiving and supporting conversion to and from POJO to Rabbit's byte[] payload type.
-     * Conversion of runtime exceptions thrown in Rabbit APIs to Spring unchecked exception hierarchy
-     * A CachingConnectionFactory implementation that manages a single connection to the broker and maintains a cache of Channels
-     * A mutithreaded MessageListnerContainer supporting message driven POJOs.
-     * MessageConverter implementations that support String, byte[], and serialized objects
+     * A ConnectionFactory abstraction manages a single connection to the broker and an experimental implementation that supports a
+       cache of Channels
+     * A mutithreaded MessageListnerContainer supporting message driven POCOs.
+     * MessageConverter implementations that support String and byte[].
+     * Erlang Helper Library
+     * RabbitMQ Administrative API
 
 2. SUPPORTED .NET FRAMEWORK VERSIONS
 
@@ -33,7 +35,6 @@ Release contents:
 * "lib/Rabbit" contains the Rabbit dlls
 * "doc" contains reference documentation, MSDN-style API help, and the Spring AMQP for .NET xsd.
 * "examples" contains sample applications.
-* "build-support" contains additonal applications need to build
 
 debug build is done using /DEBUG:full and release build using /DEBUG:pdbonly flags.
 
@@ -47,18 +48,12 @@ Spring AMQP for .NET is released under the terms of the Apache Software License 
 5. DISTRIBUTION DLLs
 
 The "bin" directory contains the following distinct dll files for use in applications. Dependencies are those other than on the .NET BCL.
-
-* "Spring.Messaging.Amqp" (~615 KB)
-- Contents: Spring support for AMQP and RabbitMQ.
-- Dependencies: Common.Logging
-
 6. WHERE TO START?
 
 Documentation can be found in the "docs" directory:
 * The Spring for AMQP reference documentation
 
 Documented sample applications can be found in "examples":
-* RabbitQuickStart - Sample application using RabbitMQ
 
 7. How to build
 
@@ -73,11 +68,11 @@ The is a solution file for different version of VS.NET
 The user forums at http://forum.springframework.net/ are available for you to submit questions, support requests,
 and interact with other Spring.NET users.
 
-Bug and issue tracking can be found at http://jira.springframework.org/browse/SEAMQPNET
+Bug and issue tracking can be found at https://jira.springsource.org/browse/AMQPNET
 
 A Fisheye repository browser is located at
 
-To get the sources, check them out at the Subversion repository at https://src.springsource.org/svn/se-amqp-net/
+To get the sources, check them out at the git repository at git@git.springsource.org:spring-amqp/spring-amqp-net.git
 
 We are always happy to receive your feedback on the forums. If you think you found a bug, have an improvement suggestion
 or feature request, please submit a ticket in JIRA (see link above).
