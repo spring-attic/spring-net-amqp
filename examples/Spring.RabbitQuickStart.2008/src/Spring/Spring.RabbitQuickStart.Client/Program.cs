@@ -48,7 +48,6 @@ namespace Spring.RabbitQuickStart.Client
                 Application.SetCompatibleTextRenderingDefault(false);
                 using (IApplicationContext ctx = ContextRegistry.GetContext())
                 {
-                    InitializeRabbitQueues();
                     StockForm stockForm = new StockForm();
                     Application.ThreadException += ThreadException;
                     Application.Run(stockForm);
@@ -64,20 +63,6 @@ namespace Spring.RabbitQuickStart.Client
         {
             log.Error("Uncaught application exception.", e.Exception);
             Application.Exit();
-        }
-
-        private static void InitializeRabbitQueues()
-        {
-            RabbitTemplate template = ContextRegistry.GetContext().GetObject("RabbitTemplate") as RabbitTemplate;
-            template.Execute<object>(delegate(IModel model)
-            {
-                model.QueueDeclare("APP.STOCK.MARKETDATA");
-                model.QueueBind("APP.STOCK.MARKETDATA", "", "", false, null);
-
-                //This queue does not need a binding, since it relies on the default exchange.
-                model.QueueDeclare("APP.STOCK.JOE");
-                return null;
-            });
         }
     }
 }

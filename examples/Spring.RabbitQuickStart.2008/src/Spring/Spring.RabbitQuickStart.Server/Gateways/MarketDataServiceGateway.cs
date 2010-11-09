@@ -30,7 +30,9 @@ namespace Spring.RabbitQuickStart.Server.Gateways
             {
                 IDictionary data = GenerateFakeMarketData();
                 log.Info("Sending market data.");
-                RabbitTemplate.ConvertAndSend(data);
+                //String routingKey = "app.stock.quotes.nasdaq." + data["TICKER"];
+                String routingKey = "APP.STOCK.MARKETDATA";
+                RabbitTemplate.ConvertAndSend(routingKey, data);
                 log.Info("Sleeping " + sleepTimeInSeconds + " seconds before sending more market data.");
                 Thread.Sleep(sleepTimeInSeconds);
             }
