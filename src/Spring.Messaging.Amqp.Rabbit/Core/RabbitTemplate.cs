@@ -220,7 +220,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             return Execute<Message>(delegate(IModel model)
                                          {
-                                             BasicGetResult result = model.BasicGet(queueName, !requireAck);
+                                             BasicGetResult result = model.BasicGet(queueName, !requireAck);                                             
                                              if (result != null)
                                              {
                                                  IMessageProperties msgProps =

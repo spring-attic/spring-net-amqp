@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Core
     /// </summary>
     /// <author>Mark Pollack</author>
     public enum ExchangeType
-    {
+    {       
         Fanout, Direct, Topic
     }
 

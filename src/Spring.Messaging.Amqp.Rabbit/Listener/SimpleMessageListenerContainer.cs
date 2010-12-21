@@ -200,7 +200,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             string[] queue = StringUtils.CommaDelimitedListToStringArray(queueNames);
             foreach (string name in queue)
             {
-                channel.QueueDeclare(name);
+                if (!name.StartsWith("amq."))
+                {              
+                    //TODO look into declare passive
+                    channel.QueueDeclare(name);
+                }
                 string consumerTag = channel.BasicConsume(name, autoAck, null, consumer);
                 consumer.ConsumerTag = consumerTag;   
             }          

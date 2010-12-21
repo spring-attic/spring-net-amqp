@@ -83,7 +83,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             rabbitTemplate.Execute<object>(delegate(IModel channel)
                                                {
-                                                   channel.ExchangeDeclare(exchange.Name, exchange.ExchangeType.ToString(), false, exchange.Durable, exchange.AutoDelete, false, false, exchange.Arguments);
+                                                   channel.ExchangeDeclare(exchange.Name, exchange.ExchangeType.ToString().ToLower().Trim(), false, exchange.Durable, exchange.AutoDelete, false, false, exchange.Arguments);
                                                    return null;
                                                });
         }
@@ -115,8 +115,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             string queueName = rabbitTemplate.Execute<string>(delegate(IModel channel)
             {
-                channel.QueueDeclare();
-                return null;
+                return channel.QueueDeclare();                
             });
             Queue q = new Queue(queueName);
             q.Exclusive = true;

@@ -176,6 +176,9 @@
         <exclude name="*.suo"/>
         <exclude name="*.user"/>
         <exclude name="*.cache"/>
+        <exclude name="src/**/bin" />
+        <exclude name="test/**/bin" />
+        <exclude name="example/**/bin" />
       </fileset>
     </copy>
 

@@ -1,5 +1,7 @@
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
+using Spring.Util;
 
 namespace Spring.Messaging.Amqp.Core
 {
@@ -13,10 +15,9 @@ namespace Spring.Messaging.Amqp.Core
     /// <author>Mark Pollack</author>
     public class Address
     {
-        public static readonly Regex PSEUDO_URI_PARSER = new Regex("^([^:]+)://([^/]*)/(.*)$");
+        //	private static final Pattern pattern = Pattern.compile("^([^:]+)://([^/]*)/?(.*)$");
+        public static readonly Regex PSEUDO_URI_PARSER = new Regex("^([^:]+)://([^/]*)/?(.*)$");
 
-
-        private string unstructuredAddress;
 
         private ExchangeType exchangeType;
 
@@ -24,16 +25,34 @@ namespace Spring.Messaging.Amqp.Core
 
         private string routingKey;
 
-        private bool structured;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Address"/> class from an unstructured string
         /// </summary>
-        /// <param name="unstructuredAddress">The unstructured address.</param>
-        public Address(string unstructuredAddress)
+        /// <param name="address">The unstructured address.</param>
+        public Address(string address)
         {
-            this.unstructuredAddress = unstructuredAddress;
+            if (address == null)
+            {
+                exchangeType = ExchangeType.Direct;                                
+                exchangeName = "";
+                routingKey = "";
+            } else
+            {
+                Match match = PSEUDO_URI_PARSER.Match(address);
+                if (match.Success)
+                {
+                    string exchangeTypeAsString = match.Groups[1].Value;
+                    exchangeType = (ExchangeType)Enum.Parse(typeof(ExchangeType), exchangeTypeAsString, true);
+                    exchangeName = match.Groups[2].Value;
+                    routingKey = match.Groups[3].Value;
+                } else
+                {
+                    exchangeType = ExchangeType.Direct;
+                    exchangeName = "";
+                    routingKey = address;
+                }
+            }
         }
 
         /// <summary>
@@ -48,18 +67,6 @@ namespace Spring.Messaging.Amqp.Core
             this.exchangeType = exchangeType;
             this.exchangeName = exchangeName;
             this.routingKey = routingKey;
-        }
-
-        public static Address Parse(string address)
-        {
-            Match match = PSEUDO_URI_PARSER.Match(address);
-            if (match.Success)
-            {
-                string exchangeTypeAsString = match.Groups[1].Value;
-                ExchangeType exchangeType = (ExchangeType) Enum.Parse(typeof (ExchangeType), exchangeTypeAsString, true);
-                return new Address(exchangeType, match.Groups[2].Value, match.Groups[3].Value);
-            }
-            return null;
         }
 
         public ExchangeType ExchangeType
@@ -77,14 +84,14 @@ namespace Spring.Messaging.Amqp.Core
             get { return routingKey; }
         }
 
-        public bool Structured
-        {
-            get { return structured; }
-        }
-
         public override string ToString()
         {
-            return string.Format("ExchangeType: {0}, ExchangeName: {1}, RoutingKey: {2}, Structured: {3}, UnstructuredAddress: {4}", exchangeType, exchangeName, routingKey, structured, unstructuredAddress);
+            StringBuilder sb = new StringBuilder(exchangeType.ToString().ToLower() + "://" + this.exchangeName + "/");
+            if (StringUtils.HasText(routingKey))
+            {
+                sb.Append(routingKey);
+            }
+            return sb.ToString();
         }
     }
 }

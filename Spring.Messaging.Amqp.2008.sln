@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Amqp.HelloWorld.Cons
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.RabbitQuickStart.BrokerConfiguration", "examples\Spring.RabbitQuickStart.2008\src\Spring\Spring.RabbitQuickStart.BrokerConfiguration\Spring.RabbitQuickStart.BrokerConfiguration.csproj", "{DE9CA141-7F53-4469-A286-49AE5D3C36CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Messaging.Amqp.Tests.2008", "test\Spring.Messaging.Amqp.Tests\Spring.Messaging.Amqp.Tests.2008.csproj", "{C5A985A0-45B6-499B-B8B9-A29A2BBE524A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +133,10 @@ Global
 		{DE9CA141-7F53-4469-A286-49AE5D3C36CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE9CA141-7F53-4469-A286-49AE5D3C36CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE9CA141-7F53-4469-A286-49AE5D3C36CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5A985A0-45B6-499B-B8B9-A29A2BBE524A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5A985A0-45B6-499B-B8B9-A29A2BBE524A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5A985A0-45B6-499B-B8B9-A29A2BBE524A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5A985A0-45B6-499B-B8B9-A29A2BBE524A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
