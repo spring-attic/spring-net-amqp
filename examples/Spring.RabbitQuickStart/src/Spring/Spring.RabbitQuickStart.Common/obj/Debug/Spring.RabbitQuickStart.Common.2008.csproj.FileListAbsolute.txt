@@ -1,5 +1,0 @@
-C:\Code\Software\spring-net-amqp\examples\Spring.RabbitQuickStart\src\Spring\Spring.RabbitQuickStart.Common\bin\Debug\Spring.RabbitQuickStart.Common.dll
-C:\Code\Software\spring-net-amqp\examples\Spring.RabbitQuickStart\src\Spring\Spring.RabbitQuickStart.Common\bin\Debug\Spring.RabbitQuickStart.Common.pdb
-C:\Code\Software\spring-net-amqp\examples\Spring.RabbitQuickStart\src\Spring\Spring.RabbitQuickStart.Common\obj\Debug\ResolveAssemblyReference.cache
-C:\Code\Software\spring-net-amqp\examples\Spring.RabbitQuickStart\src\Spring\Spring.RabbitQuickStart.Common\obj\Debug\Spring.RabbitQuickStart.Common.dll
-C:\Code\Software\spring-net-amqp\examples\Spring.RabbitQuickStart\src\Spring\Spring.RabbitQuickStart.Common\obj\Debug\Spring.RabbitQuickStart.Common.pdb
