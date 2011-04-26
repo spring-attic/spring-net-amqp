@@ -266,7 +266,7 @@
       </in>
       <do>
         <property name="test.assemblyname" value="${path::get-file-name(filename)}" />
-        <exec program="${tools.dir}\NUnit\net-2.0\nunit-console-x86.exe" workingdir="${project.buildoutputdir}" verbose="true">
+        <exec program="${tools.dir}\NUnit\bin\net-2.0\nunit-console-x86.exe" workingdir="${project.buildoutputdir}" verbose="true">
           <arg line="${test.assemblyname}" />
           <arg value="/xml:${test.assemblyname}-TestResults.xml" />
           <arg value="/nologo" />
