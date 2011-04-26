@@ -44,9 +44,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             //Declare queue and bind to a specific exchange.
             template.Execute<object>(delegate(IModel model)
                                          {
-                                             model.QueueDeclare(TestConstants.QUEUE_NAME);
+                                             model.QueueDeclarePassive(TestConstants.QUEUE_NAME);
                         
-                                             model.QueueBind(TestConstants.QUEUE_NAME, TestConstants.EXCHANGE_NAME, TestConstants.ROUTING_KEY, false, null);
+                                             model.QueueBind(TestConstants.QUEUE_NAME, TestConstants.EXCHANGE_NAME, TestConstants.ROUTING_KEY, null);
                                              return null;
                                          });
             return template;

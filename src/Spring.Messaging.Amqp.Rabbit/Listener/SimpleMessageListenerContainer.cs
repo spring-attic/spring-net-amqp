@@ -133,7 +133,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             InitializeConsumers();
             foreach (QueueingBasicConsumer consumer in consumers)
             {
-                this.taskExector.Execute(new AsyncMessageProcessingConsumer(consumer, this));
+                //this.taskExector.Execute(new AsyncMessageProcessingConsumer(consumer, this));
             }
         }
 
@@ -202,8 +202,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 if (!name.StartsWith("amq."))
                 {              
-                    //TODO look into declare passive
-                    channel.QueueDeclare(name);
+                    //TODO validate that QueueDeclarePassive is the right approach
+                    channel.QueueDeclarePassive(name);
                 }
                 string consumerTag = channel.BasicConsume(name, autoAck, null, consumer);
                 consumer.ConsumerTag = consumerTag;   

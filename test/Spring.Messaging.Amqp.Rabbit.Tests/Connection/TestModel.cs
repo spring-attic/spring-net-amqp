@@ -84,12 +84,52 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             throw new NotImplementedException();
         }
 
+        public void ExchangeDeclare(string exchange, string type, bool durable, bool autoDelete, IDictionary arguments)
+        {
+            throw new NotImplementedException();
+        }
+
         public void ExchangeDeclare(string exchange, string type, bool durable)
         {
             throw new NotImplementedException();
         }
 
         public void ExchangeDeclare(string exchange, string type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ExchangeDeclarePassive(string exchange)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ExchangeDelete(string exchange, bool ifUnused)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ExchangeDelete(string exchange)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ExchangeBind(string destination, string source, string routingKey, IDictionary arguments)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ExchangeBind(string destination, string source, string routingKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ExchangeUnbind(string destination, string source, string routingKey, IDictionary arguments)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ExchangeUnbind(string destination, string source, string routingKey)
         {
             throw new NotImplementedException();
         }
@@ -105,6 +145,26 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         public string QueueDeclare()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string QueueDeclarePassive(string queue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary arguments)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueueBind(string queue, string exchange, string routingKey, IDictionary arguments)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueueBind(string queue, string exchange, string routingKey)
         {
             throw new NotImplementedException();
         }
@@ -130,6 +190,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         public void QueueUnbind(string queue, string exchange, string routingKey, IDictionary arguments)
+        {
+            throw new NotImplementedException();
+        }
+
+        public uint QueuePurge(string queue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public uint QueueDelete(string queue, bool ifUnused, bool ifEmpty)
+        {
+            throw new NotImplementedException();
+        }
+
+        public uint QueueDelete(string queue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ConfirmSelect()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string BasicConsume(string queue, bool noAck, IBasicConsumer consumer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string BasicConsume(string queue, bool noAck, string consumerTag, IBasicConsumer consumer)
         {
             throw new NotImplementedException();
         }
@@ -199,7 +289,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             throw new NotImplementedException();
         }
 
+        public void BasicNack(ulong deliveryTag, bool multiple, bool requeue)
+        {
+            throw new NotImplementedException();
+        }
+
         public void BasicRecover(bool requeue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void BasicRecoverAsync(bool requeue)
         {
             throw new NotImplementedException();
         }
@@ -270,9 +370,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             get { throw new NotImplementedException(); }
         }
 
+        public ulong NextPublishSeqNo
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public event ModelShutdownEventHandler ModelShutdown;
         public event BasicReturnEventHandler BasicReturn;
+        public event BasicAckEventHandler BasicAcks;
+        public event BasicNackEventHandler BasicNacks;
         public event CallbackExceptionEventHandler CallbackException;
+        public event FlowControlEventHandler FlowControl;
+        public event BasicRecoverOkEventHandler BasicRecoverOk;
 
         #endregion
     }

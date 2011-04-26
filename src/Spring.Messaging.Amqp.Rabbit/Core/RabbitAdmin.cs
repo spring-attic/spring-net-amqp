@@ -83,7 +83,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             rabbitTemplate.Execute<object>(delegate(IModel channel)
                                                {
-                                                   channel.ExchangeDeclare(exchange.Name, exchange.ExchangeType.ToString().ToLower().Trim(), false, exchange.Durable, exchange.AutoDelete, false, false, exchange.Arguments);
+                                                   channel.ExchangeDeclare(exchange.Name, exchange.ExchangeType.ToString().ToLower().Trim(), exchange.Durable, exchange.AutoDelete, exchange.Arguments);
                                                    return null;
                                                });
         }
@@ -101,7 +101,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             rabbitTemplate.Execute<object>(delegate(IModel channel)
             {
                 // TODO: verify default settings
-                channel.ExchangeDelete(exchangeName, false, false);
+                channel.ExchangeDelete(exchangeName, false);
                 return null;
             });
         }
@@ -132,8 +132,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             rabbitTemplate.Execute<object>(delegate(IModel channel)
             {
-                channel.QueueDeclare(queue.Name, false, queue.Durable, queue.Exclusive, queue.AutoDelete, false,
-                                     queue.Arguments);
+                channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments);
                 return null;
             });
         }
@@ -146,7 +145,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             rabbitTemplate.Execute<object>(delegate(IModel channel)
             {
-                channel.QueueDelete(queueName, false, false, false);
+                channel.QueueDelete(queueName, false, false);
                 return null;
             });
         }
@@ -161,7 +160,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             rabbitTemplate.Execute<object>(delegate(IModel channel)
             {
-                channel.QueueDelete(queueName, unused, empty, false);
+                channel.QueueDelete(queueName, unused, empty);
                 return null;
             });
         }
@@ -175,7 +174,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             rabbitTemplate.Execute<object>(delegate(IModel channel)
             {
-                channel.QueuePurge(queueName, noWait);
+                channel.QueuePurge(queueName);
                 return null;
             });
         }
@@ -184,7 +183,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             rabbitTemplate.Execute<object>(delegate(IModel channel)
             {
-                channel.QueueBind(binding.Queue, binding.Exchange, binding.RoutingKey, false, binding.Arguments);
+                channel.QueueBind(binding.Queue, binding.Exchange, binding.RoutingKey, binding.Arguments);
                 return null;
             });
         }

@@ -50,7 +50,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         public CachedModel(IModel targetModel, LinkedList<IModel> modelList, CachingConnectionFactory ccf)
         {
-            target = targetModel;
+            this.target = targetModel;
             this.modelList = modelList;
             this.modelCacheSize = ccf.ChannelCacheSize;
             this.ccf = ccf;
@@ -170,6 +170,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             target.ChannelFlow(active);
         }
 
+        public void ExchangeDeclare(string exchange, string type, bool durable, bool autoDelete, IDictionary arguments)
+        {
+            target.ExchangeDeclare(exchange, type, durable, autoDelete, arguments);
+        }
+
         public void ExchangeDeclare(string exchange, string type, bool durable)
         {
             target.ExchangeDeclare(exchange, type, durable);
@@ -180,18 +185,39 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             target.ExchangeDeclare(exchange, type);
         }
 
-        public void ExchangeDeclare(string exchange, string type, bool passive,
-                                    bool durable, bool autoDelete, bool isInternal,
-                                    bool nowait, IDictionary arguments)
+        public void ExchangeDeclarePassive(string exchange)
         {
-            target.ExchangeDeclare(exchange, type, passive,
-                                   durable, autoDelete, isInternal,
-                                   nowait, arguments);
+            target.ExchangeDeclarePassive(exchange);
         }
 
-        public void ExchangeDelete(string exchange, bool ifUnused, bool nowait)
+        public void ExchangeDelete(string exchange, bool ifUnused)
         {
-            target.ExchangeDelete(exchange, ifUnused, nowait);
+            target.ExchangeDelete(exchange, ifUnused);
+        }
+
+        public void ExchangeDelete(string exchange)
+        {
+            target.ExchangeDelete(exchange);
+        }
+
+        public void ExchangeBind(string destination, string source, string routingKey, IDictionary arguments)
+        {
+            target.ExchangeBind(destination, source, routingKey, arguments);
+        }
+
+        public void ExchangeBind(string destination, string source, string routingKey)
+        {
+            target.ExchangeBind(destination, source, routingKey);
+        }
+
+        public void ExchangeUnbind(string destination, string source, string routingKey, IDictionary arguments)
+        {
+            target.ExchangeUnbind(destination, source, routingKey, arguments);
+        }
+
+        public void ExchangeUnbind(string destination, string source, string routingKey)
+        {
+            target.ExchangeUnbind(destination, source, routingKey);
         }
 
         public string QueueDeclare()
@@ -199,25 +225,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             return target.QueueDeclare();
         }
 
-        public string QueueDeclare(string queue)
+        public string QueueDeclarePassive(string queue)
         {
-            return target.QueueDeclare(queue);
+            return target.QueueDeclarePassive(queue);
         }
 
-        public string QueueDeclare(string queue, bool durable)
+        public string QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary arguments)
         {
-            return target.QueueDeclare(queue, durable);
+            return target.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
         }
 
-        public string QueueDeclare(string queue, bool passive, bool durable, bool exclusive, bool autoDelete,
-                                   bool nowait, IDictionary arguments)
+        public void QueueBind(string queue, string exchange, string routingKey, IDictionary arguments)
         {
-            return target.QueueDeclare(queue, passive, durable, exclusive, autoDelete, nowait, arguments);
+            target.QueueBind(queue, exchange, routingKey, arguments);
         }
 
-        public void QueueBind(string queue, string exchange, string routingKey, bool nowait, IDictionary arguments)
+        public void QueueBind(string queue, string exchange, string routingKey)
         {
-            target.QueueBind(queue, exchange, routingKey, nowait, arguments);
+            target.QueueBind(queue, exchange, routingKey);
         }
 
         public void QueueUnbind(string queue, string exchange, string routingKey, IDictionary arguments)
@@ -225,36 +250,44 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             target.QueueUnbind(queue, exchange, routingKey, arguments);
         }
 
-        public uint QueuePurge(string queue, bool nowait)
+        public uint QueuePurge(string queue)
         {
-            return target.QueuePurge(queue, nowait);
+            return target.QueuePurge(queue);
         }
 
-        public uint QueueDelete(string queue, bool ifUnused, bool ifEmpty, bool nowait)
+        public uint QueueDelete(string queue, bool ifUnused, bool ifEmpty)
         {
-            return target.QueueDelete(queue, ifUnused, ifEmpty, nowait);
+            return target.QueueDelete(queue, ifUnused, ifEmpty);
         }
 
-        public string BasicConsume(string queue, IDictionary filter, IBasicConsumer consumer)
+        public uint QueueDelete(string queue)
         {
-            return target.BasicConsume(queue, filter, consumer);
+            return target.QueueDelete(queue);
         }
 
-        public string BasicConsume(string queue, bool noAck, IDictionary filter, IBasicConsumer consumer)
+        public void ConfirmSelect()
         {
-            return target.BasicConsume(queue, noAck, filter, consumer);
+            target.ConfirmSelect();
         }
 
-        public string BasicConsume(string queue, bool noAck, string consumerTag, IDictionary filter,
-                                   IBasicConsumer consumer)
+        public string BasicConsume(string queue, bool noAck, IBasicConsumer consumer)
         {
-            return target.BasicConsume(queue, noAck, consumerTag, filter, consumer);
+            return target.BasicConsume(queue, noAck, consumer);
         }
 
-        public string BasicConsume(string queue, bool noAck, string consumerTag, bool noLocal, bool exclusive,
-                                   IDictionary filter, IBasicConsumer consumer)
+        public string BasicConsume(string queue, bool noAck, string consumerTag, IBasicConsumer consumer)
         {
-            return target.BasicConsume(queue, noAck, consumerTag, noLocal, exclusive, filter, consumer);
+            return target.BasicConsume(queue, noAck, consumerTag, consumer);
+        }
+
+        public string BasicConsume(string queue, bool noAck, string consumerTag, IDictionary arguments, IBasicConsumer consumer)
+        {
+            return target.BasicConsume(queue, noAck, consumerTag, arguments, consumer);
+        }
+
+        public string BasicConsume(string queue, bool noAck, string consumerTag, bool noLocal, bool exclusive, IDictionary arguments, IBasicConsumer consumer)
+        {
+            return target.BasicConsume(queue, noAck, consumerTag, noLocal, exclusive, arguments, consumer);
         }
 
         public void BasicCancel(string consumerTag)
@@ -277,8 +310,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             target.BasicPublish(exchange, routingKey, basicProperties, body);
         }
 
-        public void BasicPublish(string exchange, string routingKey, bool mandatory, bool immediate,
-                                 IBasicProperties basicProperties, byte[] body)
+        public void BasicPublish(string exchange, string routingKey, bool mandatory, bool immediate, IBasicProperties basicProperties, byte[] body)
         {
             target.BasicPublish(exchange, routingKey, mandatory, immediate, basicProperties, body);
         }
@@ -293,9 +325,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             target.BasicReject(deliveryTag, requeue);
         }
 
+        public void BasicNack(ulong deliveryTag, bool multiple, bool requeue)
+        {
+            target.BasicNack(deliveryTag, multiple, requeue);
+        }
+
         public void BasicRecover(bool requeue)
         {
             target.BasicRecover(requeue);
+        }
+
+        public void BasicRecoverAsync(bool requeue)
+        {
+            target.BasicRecoverAsync(requeue);
         }
 
         public BasicGetResult BasicGet(string queue, bool noAck)
@@ -305,17 +347,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         public void TxSelect()
         {
-            target.TxSelect();            
+            target.TxSelect();
         }
 
         public void TxCommit()
         {
-            target.TxCommit();            
+            target.TxCommit();
         }
 
         public void TxRollback()
         {
-            target.TxRollback();            
+            target.TxRollback();
         }
 
         public void DtxSelect()
@@ -333,7 +375,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             target.Abort();
         }
 
-        public void Abort(ushort replyCode, string replyText)
+		public void Abort(ushort replyCode, string replyText)
         {
             target.Abort(replyCode, replyText);
         }
@@ -352,6 +394,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         public bool IsOpen
         {
             get { return target.IsOpen; }
+        }
+
+        public ulong NextPublishSeqNo
+        {
+            get { return target.NextPublishSeqNo; }
         }
 
         public event ModelShutdownEventHandler ModelShutdown
@@ -377,6 +424,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 BasicReturn -= value;
             }
         }
+
+        public event BasicAckEventHandler BasicAcks;
+        public event BasicNackEventHandler BasicNacks;
+
         public event CallbackExceptionEventHandler CallbackException
         {
             add
@@ -388,6 +439,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 CallbackException -= value;
             }
         }
+
+        public event FlowControlEventHandler FlowControl;
+        public event BasicRecoverOkEventHandler BasicRecoverOk;
 
         #endregion
 

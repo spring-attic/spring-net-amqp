@@ -104,7 +104,7 @@
       <Project>{96CD9010-9DDF-4D13-892A-5D60F01F3C90}</Project>
       <Name>Spring.Messaging.Amqp.2008</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Spring.RabbitQuickStart.Common\Spring.RabbitQuickStart.Common.csproj">
+    <ProjectReference Include="..\Spring.RabbitQuickStart.Common\Spring.RabbitQuickStart.Common.2008.csproj">
       <Project>{DE909872-61DE-48EC-BD1A-8DEE4D993F5B}</Project>
       <Name>Spring.RabbitQuickStart.Common</Name>
     </ProjectReference>
