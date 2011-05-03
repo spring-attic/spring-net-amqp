@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// </summary>
     /// <note>Headers will be created on demand if they are null in the underlying IBasicProperties instance.</note>
     /// <author>Mark Pollack</author>
-    public class MessageProperties : IMessageProperties
+    public class MessageProperties : Amqp.Core.MessageProperties
     {
         private static readonly Encoding DEFAULT_ENCODING = Encoding.UTF8;
 

@@ -97,13 +97,13 @@
     <Compile Include="Connection\IDecoratorModel.cs" />
     <Compile Include="Connection\IResourceFactory.cs" />
     <Compile Include="Connection\RabbitResourceHolder.cs" />
+    <Compile Include="Connection\RabbitUtils.cs" />
     <Compile Include="Connection\SingleConnectionFactory.cs" />
     <Compile Include="Core\ChannelCallbackDelegate.cs" />
     <Compile Include="Core\IChannelAwareMessageListener.cs" />
     <Compile Include="Core\IChannelCallback.cs" />
     <Compile Include="Core\IRabbitOperations.cs" />
     <Compile Include="Core\MessageCreatorDelegate.cs" />
-    <Compile Include="Core\MessageProperties.cs" />
     <Compile Include="Core\RabbitAccessor.cs" />
     <Compile Include="Core\RabbitAdmin.cs" />
     <Compile Include="Core\RabbitMessagePropertiesFactory.cs" />
@@ -116,7 +116,6 @@
     <Compile Include="Listener\BlockingQueueConsumer.cs" />
     <Compile Include="Listener\LocallyExposedRabbitResourceHolder.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainer.cs" />
-    <Compile Include="Support\RabbitUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Spring.Messaging.Amqp\Spring.Messaging.Amqp.2010.csproj">
