@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -19,6 +20,7 @@
 #endregion
 
 using System;
+using Spring.Messaging.Amqp.Core;
 
 namespace Spring.Messaging.Amqp.Support.Converter
 {
@@ -28,13 +30,34 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// <author>Mark Pollack</author>
     public interface ITypeMapper
     {
+        /// <summary>
+        /// Gets TypeIdFieldName.
+        /// </summary>
         string TypeIdFieldName
         {
             get;
         }
-        
-        string FromType(Type typeOfObjectToConvert);
 
-        Type ToType(string typeId);
+        /// <summary>
+        /// Convert from Type to string
+        /// </summary>
+        /// <param name="typeOfObjectToConvert">
+        /// The type of object to convert.
+        /// </param>
+        /// <returns>
+        /// The string.
+        /// </returns>
+        void FromType(Type typeOfObjectToConvert, MessageProperties properties);
+
+        /// <summary>
+        /// Convert from string to Type.
+        /// </summary>
+        /// <param name="typeId">
+        /// The type id.
+        /// </param>
+        /// <returns>
+        /// The type.
+        /// </returns>
+        Type ToType(MessageProperties properties);
     }
 }

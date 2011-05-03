@@ -1,4 +1,4 @@
-
+﻿
 #region License
 
 /*
@@ -24,32 +24,22 @@ using System.Collections;
 namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
-    /// Simple container collecting information to describe a direct exchange.
+    /// A headers exchange.
     /// </summary>
-    /// <remarks>
-    /// Used in conjunction with administrative operations.
-    /// </remarks>
-    /// <author>Mark Pollack</author>
-    /// <see cref="IAmqpAdmin"/>
-    public class DirectExchange : AbstractExchange
+    public class HeadersExchange : AbstractExchange
     {
         /// <summary>
-        /// The default direct exchange.
-        /// </summary>
-        public static readonly DirectExchange DEFAULT = new DirectExchange(string.Empty);
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DirectExchange"/> class.
+        /// Initializes a new instance of the <see cref="HeadersExchange"/> class.
         /// </summary>
         /// <param name="name">
         /// The name.
         /// </param>
-        public DirectExchange(string name) : base(name)
+        public HeadersExchange(string name) : base(name)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectExchange"/> class.
+        /// Initializes a new instance of the <see cref="HeadersExchange"/> class.
         /// </summary>
         /// <param name="name">
         /// The name.
@@ -60,12 +50,12 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="autoDelete">
         /// The auto delete.
         /// </param>
-        public DirectExchange(string name, bool durable, bool autoDelete) : base(name, durable, autoDelete)
+        public HeadersExchange(string name, bool durable, bool autoDelete) : base(name, durable, autoDelete)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectExchange"/> class.
+        /// Initializes a new instance of the <see cref="HeadersExchange"/> class.
         /// </summary>
         /// <param name="name">
         /// The name.
@@ -79,14 +69,16 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="arguments">
         /// The arguments.
         /// </param>
-        public DirectExchange(string name, bool durable, bool autoDelete, IDictionary arguments) : base(name, durable, autoDelete, arguments)
+        public HeadersExchange(string name, bool durable, bool autoDelete, IDictionary arguments) : base(name, durable, autoDelete, arguments)
         {
         }
 
+        /// <summary>
+        /// Gets ExchangeType.
+        /// </summary>
         public override string ExchangeType
         {
-            get { return ExchangeTypes.Direct; }
+            get { return ExchangeTypes.Headers; }
         }
     }
-
 }

@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -27,10 +28,20 @@ namespace Spring.Messaging.Amqp.Core
     /// <author>Mark Pollack</author>
     public enum MessageDeliveryMode
     {
+        /// <summary>
+        /// None
+        /// </summary>
         None = 0,
-        NON_PERSISTENT = 1,
-        PERSISTENT = 2
 
+        /// <summary>
+        /// Non-Persistent
+        /// </summary>
+        NON_PERSISTENT = 1,
+
+        /// <summary>
+        /// Persistent
+        /// </summary>
+        PERSISTENT = 2
     }
 
 }

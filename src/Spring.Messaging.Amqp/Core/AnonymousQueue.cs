@@ -1,4 +1,4 @@
-
+﻿
 #region License
 
 /*
@@ -19,45 +19,34 @@
 
 #endregion
 
+using System;
 using System.Collections;
 
 namespace Spring.Messaging.Amqp.Core
 {
+
     /// <summary>
-    /// Common properties that describe all exchange types.  
+    /// An anonymous queue.
     /// </summary>
-    /// <remarks>
-    /// Implementations of this interface are typically used with administrative 
-    /// operations that declare an exchange.
-    /// </remarks>
-    /// <author>Mark Pollack</author>
-    public interface IExchange
+    /// <author>Joe Fitzgerald</author>
+    public class AnonymousQueue : Queue 
     {
         /// <summary>
-        /// Gets Name.
+        /// Initializes a new instance of the <see cref="AnonymousQueue"/> class.
         /// </summary>
-        string Name { get; }
+        public AnonymousQueue() : base(null)
+        {
+        }
 
         /// <summary>
-        /// Gets ExchangeType.
+        /// Initializes a new instance of the <see cref="AnonymousQueue"/> class.
         /// </summary>
-        string ExchangeType { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether Durable.
-        /// </summary>
-        bool Durable { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether AutoDelete.
-        /// </summary>
-        bool AutoDelete { get;  }
-
-        /// <summary>
-        /// Gets Arguments.
-        /// </summary>
-        IDictionary Arguments { get;  }
-
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
+        public AnonymousQueue(IDictionary arguments) : base(Guid.NewGuid().ToString(), false, true, true, arguments)
+        {
+        }
     }
-
 }
+

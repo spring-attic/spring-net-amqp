@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -18,7 +19,6 @@
 
 #endregion
 
-using System;
 using System.Collections;
 
 namespace Spring.Messaging.Amqp.Core
@@ -30,82 +30,113 @@ namespace Spring.Messaging.Amqp.Core
     /// <author>Mark Pollack</author>
     public class Binding
     {
-        private string queue;
+        /// <summary>
+        /// The queue.
+        /// </summary>
+        private readonly string destination;
 
-        private string exchange;
+        /// <summary>
+        /// The exchange.
+        /// </summary>
+        private readonly string exchange;
 
-        private string routingKey;
+        /// <summary>
+        /// The routing key.
+        /// </summary>
+        private readonly string routingKey;
 
-        private IDictionary arguments;
+        /// <summary>
+        /// The arguments.
+        /// </summary>
+        private readonly IDictionary arguments;
 
-        public static Binding CreateBinding(Queue queue, IExchange exchange, string routingKey)
+        /// <summary>
+        /// The destination type.
+        /// </summary>
+        private readonly DestinationType destinationType;
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Binding"/> class.
+        /// </summary>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
+        /// <param name="destinationType">
+        /// The destination type.
+        /// </param>
+        /// <param name="exchange">
+        /// The exchange.
+        /// </param>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
+        public Binding(string destination, DestinationType destinationType, string exchange, string routingKey, IDictionary arguments)
         {
-            return new Binding(queue, exchange, routingKey);
-        }
-
-        internal Binding(Queue queue, IExchange exchange, string routingKey)
-        {
-            this.queue = queue.Name;
-            this.exchange = exchange.Name;
+            this.destination = destination;
+            this.destinationType = destinationType;
+            this.exchange = exchange;
             this.routingKey = routingKey;
+            this.arguments = arguments;
         }
 
-        public Binding(Queue queue, FanoutExchange exchange)
+        /// <summary>
+        /// Binding destination types.
+        /// </summary>
+        public enum DestinationType
         {
-            this.queue = queue.Name;
-            this.exchange = exchange.Name;
-            this.routingKey = "";
+            /// <summary>
+            /// Queue destination type.
+            /// </summary>
+            Queue,
+
+            /// <summary>
+            /// Exchange destination type.
+            /// </summary>
+            Exchange
         }
 
-        public Binding(Queue queue, DirectExchange exchange, String routingKey)
+        /// <summary>
+        /// Gets the destination.
+        /// </summary>
+        public string Destination
         {
-            this.queue = queue.Name;
-            this.exchange = exchange.Name;
-            this.routingKey = routingKey;
+            get { return this.destination; }
         }
 
-        public Binding(Queue queue, DirectExchange exchange)
-        {
-            this.queue = queue.Name;
-            this.exchange = exchange.Name;
-            this.routingKey = "";
-        }
-
-
-        public Binding(Queue queue, TopicExchange exchange, String routingKey)
-        {
-            this.queue = queue.Name;
-            this.exchange = exchange.Name;
-            this.routingKey = routingKey;
-        }
-
-        public Binding(Queue queue, TopicExchange exchange)
-        {
-            this.queue = queue.Name;
-            this.exchange = exchange.Name;
-            this.routingKey = "";
-        }
-
-        public string Queue
-        {
-            get { return queue; }
-        }
-
+        /// <summary>
+        /// Gets Exchange.
+        /// </summary>
         public string Exchange
         {
-            get { return exchange; }
+            get { return this.exchange; }
         }
 
+        /// <summary>
+        /// Gets RoutingKey.
+        /// </summary>
         public string RoutingKey
         {
-            get { return routingKey; }
+            get { return this.routingKey; }
         }
 
+        /// <summary>
+        /// Gets Arguments.
+        /// </summary>
         public IDictionary Arguments
         {
-            set { this.arguments = value; }
-            get { return arguments; }
+            get { return this.arguments; }
+        }
+
+        /// <summary>
+        /// Gets DestinationType.
+        /// </summary>
+        public DestinationType BindingDestinationType
+        {
+            get { return this.destinationType; }
         }
     }
-
 }

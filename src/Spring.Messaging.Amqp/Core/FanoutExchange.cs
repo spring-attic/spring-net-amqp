@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -18,6 +19,8 @@
 
 #endregion
 
+using System.Collections;
+
 namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
@@ -30,17 +33,57 @@ namespace Spring.Messaging.Amqp.Core
     /// <see cref="IAmqpAdmin"/>
     public class FanoutExchange : AbstractExchange
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FanoutExchange"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
         public FanoutExchange(string name) : base(name)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FanoutExchange"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="durable">
+        /// The durable.
+        /// </param>
+        /// <param name="autoDelete">
+        /// The auto delete.
+        /// </param>
         public FanoutExchange(string name, bool durable, bool autoDelete) : base(name, durable, autoDelete)
         {
         }
 
-        public override ExchangeType ExchangeType
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FanoutExchange"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="durable">
+        /// The durable.
+        /// </param>
+        /// <param name="autoDelete">
+        /// The auto delete.
+        /// </param>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
+        public FanoutExchange(string name, bool durable, bool autoDelete, IDictionary arguments) : base(name, durable, autoDelete, arguments)
         {
-            get { return ExchangeType.Fanout; }
+        }
+
+        /// <summary>
+        /// Gets ExchangeType.
+        /// </summary>
+        public override string ExchangeType
+        {
+            get { return ExchangeTypes.Fanout; }
         }
     }
 

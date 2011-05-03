@@ -1,4 +1,4 @@
-
+﻿
 #region License
 
 /*
@@ -19,45 +19,27 @@
 
 #endregion
 
-using System.Collections;
-
 namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
-    /// Common properties that describe all exchange types.  
+    /// Enumeration of Acknowledge Modes
     /// </summary>
-    /// <remarks>
-    /// Implementations of this interface are typically used with administrative 
-    /// operations that declare an exchange.
-    /// </remarks>
-    /// <author>Mark Pollack</author>
-    public interface IExchange
+    /// <author>Joe Fitzgerald</author>
+    public enum AcknowledgeMode
     {
         /// <summary>
-        /// Gets Name.
+        /// AUTO Acnowledge Mode
         /// </summary>
-        string Name { get; }
+        TransactionAllowed, 
 
         /// <summary>
-        /// Gets ExchangeType.
+        /// NONE Acnowledge Mode
         /// </summary>
-        string ExchangeType { get; }
+        AutoAck, 
 
         /// <summary>
-        /// Gets a value indicating whether Durable.
+        /// MANUAL Acnowledge Mode
         /// </summary>
-        bool Durable { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether AutoDelete.
-        /// </summary>
-        bool AutoDelete { get;  }
-
-        /// <summary>
-        /// Gets Arguments.
-        /// </summary>
-        IDictionary Arguments { get;  }
-
+        Manual
     }
-
 }

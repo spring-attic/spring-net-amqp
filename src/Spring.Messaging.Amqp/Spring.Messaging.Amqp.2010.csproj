@@ -73,29 +73,36 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Core\AbstractExchange.cs" />
+    <Compile Include="Core\AcknowledgeMode.cs" />
     <Compile Include="Core\Address.cs" />
+    <Compile Include="Core\AnonymousQueue.cs" />
     <Compile Include="Core\Binding.cs" />
     <Compile Include="Core\BindingBuilder.cs" />
     <Compile Include="Core\ContentType.cs" />
+    <Compile Include="Core\CustomExchange.cs" />
     <Compile Include="Core\DirectExchange.cs" />
     <Compile Include="Core\ExchangeType.cs" />
     <Compile Include="Core\FanoutExchange.cs" />
+    <Compile Include="Core\HeadersExchange.cs" />
     <Compile Include="Core\IAmqpAdmin.cs" />
     <Compile Include="Core\IAmqpTemplate.cs" />
     <Compile Include="Core\IExchange.cs" />
     <Compile Include="Core\IMessageCreator.cs" />
     <Compile Include="Core\IMessageListener.cs" />
-    <Compile Include="Core\IMessagePropertiesFactory.cs" />
     <Compile Include="Core\Message.cs" />
     <Compile Include="Core\MessageDeliveryMode.cs" />
-    <Compile Include="Core\IMessageProperties.cs" />
+    <Compile Include="Core\MessageProperties.cs" />
     <Compile Include="Core\MessagePostProcessorDelegate.cs" />
     <Compile Include="Core\Queue.cs" />
     <Compile Include="Core\TopicExchange.cs" />
-    <Compile Include="Support\Converter\IMessageConverter.cs" />
+    <Compile Include="Support\Converter\AbstractMessageConverter.cs" />
+    <Compile Include="Support\Converter\IMessageConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Support\Converter\ITypeMapper.cs" />
     <Compile Include="Support\Converter\JsonMessageConverter.cs" />
     <Compile Include="Support\Converter\MessageConversionException.cs" />
+    <Compile Include="Utils\SerializationUtils.cs" />
     <Compile Include="Support\Converter\SimpleMessageConverter.cs" />
     <Compile Include="Support\Converter\TypeMapper.cs" />
   </ItemGroup>

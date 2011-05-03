@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -21,12 +22,34 @@
 namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
-    /// Enumeration of exchange types.
+    /// Constants representing exchange types.
     /// </summary>
-    /// <author>Mark Pollack</author>
-    public enum ExchangeType
-    {       
-        Fanout, Direct, Topic
-    }
+    /// <author>Joe Fitzgerald</author>
+    public abstract class ExchangeTypes 
+    {
+        /// <summary>
+        /// Direct Exchange Type
+        /// </summary>
+        public const string Direct = "direct";
 
+        /// <summary>
+        /// Topic Exchange Type
+        /// </summary>
+        public const string Topic = "topic";
+
+        /// <summary>
+        /// Fanout Exchange Type
+        /// </summary>
+        public const string Fanout = "fanout";
+
+        /// <summary>
+        /// Headers Exchange Type
+        /// </summary>
+        public const string Headers = "headers";
+
+        /// <summary>
+        /// System Exchange Type
+        /// </summary>
+        public const string System = "system";
+    }
 }
