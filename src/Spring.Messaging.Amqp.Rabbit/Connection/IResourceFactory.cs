@@ -28,15 +28,51 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <author>Mark Pollack</author>
     public interface IResourceFactory
     {
+        /// <summary>
+        /// Get the channel.
+        /// </summary>
+        /// <param name="holder">
+        /// The holder.
+        /// </param>
+        /// <returns>
+        /// The channel.
+        /// </returns>
         IModel GetChannel(RabbitResourceHolder holder);
 
+        /// <summary>
+        /// Get the connection.
+        /// </summary>
+        /// <param name="rabbitResourceHolder">
+        /// The rabbit resource holder.
+        /// </param>
+        /// <returns>
+        /// The connection.
+        /// </returns>
         IConnection GetConnection(RabbitResourceHolder rabbitResourceHolder);
 
+        /// <summary>
+        /// Create the connection.
+        /// </summary>
+        /// <returns>
+        /// The connection.
+        /// </returns>
         IConnection CreateConnection();
 
+        /// <summary>
+        /// Create the channel.
+        /// </summary>
+        /// <param name="connection">
+        /// The connection.
+        /// </param>
+        /// <returns>
+        /// The channel.
+        /// </returns>
         IModel CreateChannel(IConnection connection);
 
-        bool IsSynchedLocalTransactionAllowed { get;  }
+        /// <summary>
+        /// Gets a value indicating whether IsSynchedLocalTransactionAllowed.
+        /// </summary>
+        bool IsSynchedLocalTransactionAllowed { get; }
     }
 
 }

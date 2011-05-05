@@ -19,108 +19,33 @@
 #endregion
 
 using System;
+using System.Collections;
+using System.IO;
+using System.Text;
 using Common.Logging;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Impl;
+using RabbitMQ.Client.Exceptions;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Utils;
 using Spring.Util;
 
-namespace Spring.Messaging.Amqp.Rabbit.Support
+namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
     /// <summary>
-    ///  
+    /// Utility methods for conversion between Amqp.Core and RabbitMQ
     /// </summary>
     /// <author>Mark Pollack</author>
     public class RabbitUtils
     {
+        /// <summary>
+        /// The default port.
+        /// </summary>
+        public static readonly int DEFAULT_PORT = RabbitMQ.Client.Protocols.DefaultProtocol.DefaultPort;
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
         private static readonly ILog logger = LogManager.GetLogger(typeof(RabbitUtils));
-
-        public static int DEFAULT_PORT = 5672;
-
-        public static void CloseChannel(IModel channel)
-        {
-            if (channel != null)
-            {
-                try
-                {
-                    channel.Close();
-                }
-                //TODO should this really be trace level?
-                catch (Exception ex)
-                {
-                    logger.Trace("Unexpected exception on closing RabbitMQ Channel", ex);
-                }
-            }
-        }
-
-        public static void CommitIfNecessary(IModel channel){
-            AssertUtils.ArgumentNotNull(channel, "Channel must not be null");
-		    channel.TxCommit();
-        }
-
-        public static IBasicProperties ExtractBasicProperties(IModel channel, Message message)
-        {
-            MessageProperties properties = (MessageProperties) message.MessageProperties;
-            return properties.BasicProperties;
-            /*
-            IBasicProperties bp = channel.CreateBasicProperties();
-            IMessageProperties messageProperties = message.MessageProperties;
-
-            if (messageProperties.AppId != null)
-            {
-                bp.AppId = messageProperties.AppId;
-            }
-            if (messageProperties.ContentEncoding != null)
-            {
-                bp.ContentEncoding = messageProperties.ContentEncoding;
-            }
-            if (messageProperties.ContentType != null)
-            {
-                bp.ContentType = messageProperties.ContentType;
-            }
-            if (messageProperties.CorrelationId != null)
-            {
-                bp.CorrelationId = messageProperties.CorrelationId;
-            }
-            if (messageProperties.DeliveryMode != null)
-            {
-                bp.DeliveryMode = messageProperties.DeliveryMode.GetValueOrDefault();
-            }
-            if (messageProperties.Expiration != null)
-            {
-                bp.Expiration = messageProperties.Expiration;
-            }
-            if (messageProperties.Headers != null)
-            {
-                bp.Headers = messageProperties.Headers;
-            }
-            if (messageProperties.Id != null)
-            {
-                bp.MessageId = messageProperties.Id;
-            }
-            if (messageProperties.Priority != null)
-            {
-                bp.Priority = messageProperties.Priority.GetValueOrDefault();
-            }
-            if (messageProperties.ReplyTo != null)
-            {
-                bp.ReplyTo = messageProperties.ReplyTo;
-            }
-
-            if (messageProperties.UserId != null)
-            {
-                bp.UserId = messageProperties.UserId;
-            }
-            */
-            //TODO - copy in ClusterId and Type properties
-
-            /*
-            StringBuilder sb = new StringBuilder();
-            bp.AppendPropertyDebugStringTo(sb);
-            Console.WriteLine(sb.ToString());*/
-            //return bp;
-        }
 
         /// <summary>
         /// Closes the given Rabbit Connection and ignore any thrown exception.
@@ -135,7 +60,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
                 try
                 {
                     connection.Close();
-                } catch (Exception ex)
+                }
+                catch (AlreadyClosedException acex)
+                {
+                    logger.Debug("Connection is already closed.", acex);
+                }
+                catch (Exception ex)
                 {
                     logger.Debug("Ignoring Connection exception - assuming already closed: ", ex);
                 }
@@ -144,23 +74,318 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             }
         }
 
+        /// <summary>
+        /// Close the channel.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        public static void CloseChannel(IModel channel)
+        {
+            if (channel != null && channel.IsOpen)
+            {
+                try
+                {
+                    channel.Close();
+                }
+                catch (IOException ioex)
+                {
+                    logger.Debug("Could not close RabbitMQ Channel", ioex);
+                }
+                catch (Exception ex)
+                {
+                    logger.Debug("Unexpected exception on closing RabbitMQ Channel", ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Commit the transaction if necessary.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <exception cref="AmqpException">
+        /// </exception>
+        /// <exception cref="AmqpIOException">
+        /// </exception>
+        public static void CommitIfNecessary(IModel channel)
+        {
+            AssertUtils.ArgumentNotNull(channel, "Channel must not be null");
+            try
+            {
+                channel.TxCommit();
+            }
+            catch (OperationInterruptedException oiex)
+            {
+                throw new AmqpException("An error occurred committing the transaction.", oiex);
+            }
+            catch (IOException ioex)
+            {
+                throw new AmqpIOException("An error occurred committing the transaction.", ioex);
+            }
+        }
+
+        /// <summary>
+        /// Rollback the transaction if necessary.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <exception cref="AmqpException">
+        /// </exception>
+        /// <exception cref="AmqpIOException">
+        /// </exception>
         public static void RollbackIfNecessary(IModel channel)
         {
             AssertUtils.ArgumentNotNull(channel, "Channel must not be null");
             try
             {
                 channel.TxRollback();
-                //TODO investiage if a more specific exception is thrown
-            } catch (Exception ex)
+            }
+            catch (OperationInterruptedException oiex)
             {
-                logger.Error("Could not rollback Rabbit Channel", ex);
+                throw new AmqpException("An error occurred rolling back the transaction.", oiex);
+            }
+            catch (IOException ex)
+            {
+                throw new AmqpIOException("An error occurred rolling back the transaction.", ex);
             }
         }
 
-        public static void CloseMessageConsumer(IModel channel, string consumerTag)
+        /// <summary>
+        /// Convert Rabbit Exceptions to Amqp Exceptions.
+        /// </summary>
+        /// <param name="ex">
+        /// The ex.
+        /// </param>
+        /// <returns>
+        /// The Exception.
+        /// </returns>
+        public static SystemException ConvertRabbitAccessException(Exception ex)
         {
-            channel.BasicCancel(consumerTag);            
+            AssertUtils.ArgumentNotNull(ex, "Exception must not be null");
+            if (ex is AmqpException)
+            {
+                return (AmqpException)ex;
+            }
+
+            if (ex is IOException)
+            {
+                return new AmqpIOException(string.Empty, (IOException)ex);
+            }
+
+            /*
+            if (ex is ShutdownSignalException)
+            {
+                return new AmqpConnectException((ShutdownSignalException)ex);
+            }
+            
+            if (ex is ConnectException)
+            {
+                return new AmqpConnectException((ConnectException)ex);
+            }
+            
+            if (ex is UnsupportedEncodingException)
+            {
+                return new AmqpUnsupportedEncodingException(ex);
+            }
+            */
+
+            // fallback
+            return new UncategorizedAmqpException(string.Empty, ex);
+        }
+
+
+        /// <summary>
+        /// Close the message consumer.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="consumerTag">
+        /// The consumer tag.
+        /// </param>
+        /// <param name="transactional">
+        /// The transactional.
+        /// </param>
+        /// <exception cref="SystemException">
+        /// </exception>
+        public static void CloseMessageConsumer(IModel channel, string consumerTag, bool transactional)
+        {
+            if (!channel.IsOpen)
+            {
+                return;
+            }
+
+            try
+            {
+                channel.BasicCancel(consumerTag);
+                if (transactional)
+                {
+                    /*
+                     * Re-queue in-flight messages if any (after the consumer is cancelled to prevent the broker from simply
+                     * sending them back to us). Does not require a tx.commit.
+                     */
+                    channel.BasicRecover(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ConvertRabbitAccessException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Create MessageProperties.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="envelope">
+        /// The envelope.
+        /// </param>
+        /// <param name="charset">
+        /// The charset.
+        /// </param>
+        /// <returns>
+        /// The MessageProperties.
+        /// </returns>
+        /// <exception cref="AmqpUnsupportedEncodingException">
+        /// </exception>
+        public static MessageProperties CreateMessageProperties(IBasicProperties source, BasicGetResult envelope, string charset)
+        {
+            var target = new MessageProperties();
+            var headers = source.Headers;
+            if (!CollectionUtils.IsEmpty(headers))
+            {
+                foreach (DictionaryEntry entry in headers)
+                {
+                    target.Headers[entry.Key] = entry.Value;
+                }
+            }
+
+            target.Timestamp = source.Timestamp.ToDateTime();
+            target.MessageId = source.MessageId;
+            target.UserId = source.UserId;
+            target.AppId = source.AppId;
+            target.ClusterId = source.ClusterId;
+            target.Type = source.Type;
+            target.DeliveryMode = (MessageDeliveryMode)source.DeliveryMode;
+            target.Expiration = source.Expiration;
+            target.Priority = source.Priority;
+            target.ContentType = source.ContentType;
+            target.ContentEncoding = source.ContentEncoding;
+            var correlationId = source.CorrelationId;
+            if (correlationId != null)
+            {
+                try
+                {
+                    // TODO: Get the encoding from the ContentEncoding string.
+                    target.CorrelationId = Encoding.UTF8.GetBytes(source.CorrelationId);
+                }
+                catch (Exception ex)
+                {
+                    throw new AmqpUnsupportedEncodingException(ex);
+                }
+            }
+
+            var replyTo = source.ReplyTo;
+            if (replyTo != null)
+            {
+                target.ReplyTo = new Address(replyTo);
+            }
+
+            if (envelope != null)
+            {
+                target.ReceivedExchange = envelope.Exchange;
+                target.ReceivedRoutingKey = envelope.RoutingKey;
+                target.Redelivered = envelope.Redelivered;
+                target.DeliveryTag = (long)envelope.DeliveryTag;
+            }
+
+            return target;
+        }
+
+        /// <summary>
+        /// Extract BasicProperties from Message MessageProperties.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="charset">
+        /// The charset.
+        /// </param>
+        /// <returns>
+        /// The BasicProperties.
+        /// </returns>
+        /// <exception cref="AmqpUnsupportedEncodingException">
+        /// </exception>
+        public static IBasicProperties ExtractBasicProperties(IModel channel, Message message, string charset)
+        {
+            if (message == null || message.MessageProperties == null)
+            {
+                return null;
+            }
+
+            var source = message.MessageProperties;
+            
+            var target = channel.CreateBasicProperties();
+            target.Headers = source.Headers;
+            target.Timestamp = source.Timestamp.ToAmqpTimestamp();
+            target.MessageId = source.MessageId;
+            target.UserId = source.UserId;
+            target.AppId = source.AppId;
+            target.ClusterId = source.ClusterId;
+            target.Type = source.Type;
+            target.DeliveryMode = (byte)((int)source.DeliveryMode);
+            target.Expiration = source.Expiration;
+            target.Priority = (byte)source.Priority;
+            target.ContentType = source.ContentType;
+            target.ContentEncoding = source.ContentEncoding;
+            var correlationId = source.CorrelationId;
+            if (correlationId != null && correlationId.Length > 0)
+            {
+                try
+                {
+                    target.CorrelationId = SerializationUtils.DeserializeString(correlationId, charset);
+                }
+                catch (Exception ex)
+                {
+                    throw new AmqpUnsupportedEncodingException(ex);
+                }
+            }
+
+            var replyTo = source.ReplyTo;
+            if (replyTo != null)
+            {
+                target.ReplyTo = replyTo.ToString();
+            }
+
+            return target;
+        }
+
+        /// <summary>
+        /// Declare to that broker that a channel is going to be used transactionally, and convert exceptions that arise.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel to use.
+        /// </param>
+        /// <exception cref="SystemException">
+        /// </exception>
+        public static void DeclareTransactional(IModel channel)
+        {
+            try
+            {
+                channel.TxSelect();
+            }
+            catch (Exception e)
+            {
+                throw RabbitUtils.ConvertRabbitAccessException(e);
+            }
         }
     }
-
 }

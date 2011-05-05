@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -18,6 +19,7 @@
 
 #endregion
 
+using System;
 using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Rabbit.Connection;
@@ -27,57 +29,118 @@ using Spring.Util;
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
     /// <summary>
-    ///  
+    /// Base implementation of a RabbitAccessor.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class RabbitAccessor : IInitializingObject
+    public abstract class RabbitAccessor : IInitializingObject
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(RabbitAccessor));
+        /// <summary>
+        /// Logger available to subclasses.
+        /// </summary>
+        protected readonly ILog logger = LogManager.GetLogger(typeof(RabbitAccessor));
 
+        /// <summary>
+        /// The connection factory.
+        /// </summary>
+        private IConnectionFactory connectionFactory;
 
-        private volatile IConnectionFactory connectionFactory;
+        /// <summary>
+        /// The transactional flag.
+        /// </summary>
+        private bool transactional;
 
-        private volatile bool channelTransacted;
-
+        /// <summary>
+        /// Gets or sets ConnectionFactory.
+        /// </summary>
         public IConnectionFactory ConnectionFactory
         {
-            get { return connectionFactory; }
-            set { connectionFactory = value; }
+            get { return this.connectionFactory; }
+            set { this.connectionFactory = value; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether ChannelTransacted.
+        /// </summary>
         public bool ChannelTransacted
         {
-            get { return channelTransacted; }
-            set { channelTransacted = value; }
+            get { return this.transactional; }
+            set { this.transactional = value; }
         }
 
         #region Implementation of IInitializingObject
 
+        /// <summary>
+        /// Runs after properties are set.
+        /// </summary>
         public virtual void AfterPropertiesSet()
         {
-            AssertUtils.ArgumentNotNull(ConnectionFactory, "ConnectionFactory is required");
+            AssertUtils.ArgumentNotNull(this.ConnectionFactory, "ConnectionFactory is required");
         }
 
         #endregion
 
+        /// <summary>
+        /// Create a RabbitMQ Connection via this template's ConnectionFactory and its host and port values.
+        /// </summary>
+        /// <returns>
+        /// The connection.
+        /// </returns>
         protected IConnection CreateConnection()
         {
-            return ConnectionFactory.CreateConnection();
+            return this.ConnectionFactory.CreateConnection();
         }
 
-        protected IModel CreateChannel(IConnection connection)
+        /// <summary>
+        /// Fetch an appropriate Connection from the given RabbitResourceHolder.
+        /// </summary>
+        /// <param name="holder">
+        /// The holder.
+        /// </param>
+        /// <returns>
+        /// The connection.
+        /// </returns>
+        protected IConnection GetConnection(RabbitResourceHolder holder)
         {
-            AssertUtils.ArgumentNotNull(connection, "connection must not be null");
-            IModel channel = connection.CreateModel();
-            if (ChannelTransacted)
-            {
-                channel.TxSelect();
-            }
-            return channel;
+            return holder.Connection;
         }
 
-        //TODO is there a root RabbitException?
-        //protected AmqException convertRabbitAccessException(Exception ex) {
-    }
+        /// <summary>
+        /// Create the channel.
+        /// </summary>
+        /// <param name="holder">
+        /// The rabbit resource holder.
+        /// </param>
+        /// <returns>
+        /// The channel.
+        /// </returns>
+        protected IModel GetChannel(RabbitResourceHolder holder)
+        {
+            return holder.Channel;
+        }
 
+        /// <summary>
+        /// Get a transactional resource holder.
+        /// </summary>
+        /// <returns>
+        /// The rabbit resource holder.
+        /// </returns>
+        protected RabbitResourceHolder GetTransactionalResourceHolder()
+        {
+            return ConnectionFactoryUtils.GetTransactionalResourceHolder(this.connectionFactory, this.ChannelTransacted);
+        }
+
+        /// <summary>
+        /// Converts a rabbit access exception.
+        /// </summary>
+        /// <param name="ex">
+        /// The ex.
+        /// </param>
+        /// <returns>
+        /// The system exception.
+        /// </returns>
+        protected SystemException ConvertRabbitAccessException(Exception ex)
+        {
+            return RabbitUtils.ConvertRabbitAccessException(ex);
+        }
+    }
 }

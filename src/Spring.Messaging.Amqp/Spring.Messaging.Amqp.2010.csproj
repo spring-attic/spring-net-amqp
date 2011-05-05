@@ -72,6 +72,10 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AmqpConnectException.cs" />
+    <Compile Include="AmqpException.cs" />
+    <Compile Include="AmqpIOException.cs" />
+    <Compile Include="AmqpUnsupportedEncodingException.cs" />
     <Compile Include="Core\AbstractExchange.cs" />
     <Compile Include="Core\AcknowledgeMode.cs" />
     <Compile Include="Core\Address.cs" />
@@ -102,6 +106,7 @@
     <Compile Include="Support\Converter\ITypeMapper.cs" />
     <Compile Include="Support\Converter\JsonMessageConverter.cs" />
     <Compile Include="Support\Converter\MessageConversionException.cs" />
+    <Compile Include="UncategorizedAmqpException.cs" />
     <Compile Include="Utils\SerializationUtils.cs" />
     <Compile Include="Support\Converter\SimpleMessageConverter.cs" />
     <Compile Include="Support\Converter\TypeMapper.cs" />

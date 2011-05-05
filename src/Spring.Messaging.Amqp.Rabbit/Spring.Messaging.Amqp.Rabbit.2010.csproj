@@ -74,7 +74,7 @@
     </Reference>
     <Reference Include="Spring.Data, Version=1.3.0.20349, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\2.0\Spring.Data.dll</HintPath>
+      <HintPath>..\..\lib\net\4.0\Spring.Data.dll</HintPath>
     </Reference>
     <Reference Include="Spring.Threading, Version=1.1.2.20125, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -93,11 +93,15 @@
     <Compile Include="Connection\CloseSuppressingConnection.cs" />
     <Compile Include="Connection\ConnectionFactoryUtils.cs" />
     <Compile Include="Connection\IConnectionFactory.cs" />
+    <Compile Include="Connection\IConnectionListener.cs" />
+    <Compile Include="Connection\IConnectionProxy.cs" />
     <Compile Include="Connection\IDecoratorConnection.cs" />
     <Compile Include="Connection\IDecoratorModel.cs" />
     <Compile Include="Connection\IResourceFactory.cs" />
     <Compile Include="Connection\RabbitResourceHolder.cs" />
+    <Compile Include="Connection\RabbitResourceSynchronization.cs" />
     <Compile Include="Connection\RabbitUtils.cs" />
+    <Compile Include="Connection\ResourceFactory.cs" />
     <Compile Include="Connection\SingleConnectionFactory.cs" />
     <Compile Include="Core\ChannelCallbackDelegate.cs" />
     <Compile Include="Core\IChannelAwareMessageListener.cs" />
@@ -106,7 +110,6 @@
     <Compile Include="Core\MessageCreatorDelegate.cs" />
     <Compile Include="Core\RabbitAccessor.cs" />
     <Compile Include="Core\RabbitAdmin.cs" />
-    <Compile Include="Core\RabbitMessagePropertiesFactory.cs" />
     <Compile Include="Core\RabbitTemplate.cs" />
     <Compile Include="Core\Support\RabbitGatewaySupport.cs" />
     <Compile Include="Listener\AbstractMessageListenerContainer.cs" />
@@ -116,6 +119,7 @@
     <Compile Include="Listener\BlockingQueueConsumer.cs" />
     <Compile Include="Listener\LocallyExposedRabbitResourceHolder.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainer.cs" />
+    <Compile Include="Support\DateExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Spring.Messaging.Amqp\Spring.Messaging.Amqp.2010.csproj">

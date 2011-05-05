@@ -39,40 +39,37 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// <author>Mark Pollack</author>
     public class RabbitTemplate : RabbitAccessor, IRabbitOperations
     {
-        private static readonly string DEFAULT_EXCHANGE = ""; // alias for amq.direct default exchange
+        protected static readonly ILog logger = LogManager.GetLogger(typeof(RabbitTemplate));
 
-        private static readonly string DEFAULT_ROUTING_KEY = "";
+        private static readonly string DEFAULT_EXCHANGE = string.Empty; // alias for amq.direct default exchange
+
+        private static readonly string DEFAULT_ROUTING_KEY = string.Empty;
+
+        private static readonly long DEFAULT_REPLY_TIMEOUT = 5000;
+
+        private static readonly string DEFAULT_ENCODING = "UTF-8";
 
         #region Fields
+        private string exchange = DEFAULT_EXCHANGE;
 
-        protected static readonly ILog logger = LogManager.GetLogger(typeof (RabbitTemplate));
-
-        private volatile string exchange = DEFAULT_EXCHANGE;
-
-        private volatile string routingKey = DEFAULT_ROUTING_KEY;
+        private string routingKey = DEFAULT_ROUTING_KEY;
 
         /// <summary>
         /// The default queue name that will be used for synchronous receives.
         /// </summary>
-        private volatile String queue;
+        private string queue;
 
-        private volatile bool mandatoryPublish;
+        private long replyTimeout = DEFAULT_REPLY_TIMEOUT;
 
-        private volatile bool immediatePublish;
+        private IMessageConverter messageConverter = new SimpleMessageConverter();
 
-        private volatile bool requireAck;
-
-        private readonly RabbitTemplateResourceFactory transactionalResourceFactory;
-
-        private volatile IMessageConverter messageConverter = new SimpleMessageConverter();
-        
+        private string encoding = DEFAULT_ENCODING;
         #endregion
-
+        
         #region Constructors
 
         public RabbitTemplate()
         {
-            transactionalResourceFactory = new RabbitTemplateResourceFactory(this);
             InitDefaultStrategies();
         }
 
@@ -86,40 +83,45 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         #region Properties
 
+        /// <summary>
+        /// Sets Queue.
+        /// </summary>
         public string Queue
         {
-            set { queue = value; }
+            set { this.queue = value; }
         }
 
+        /// <summary>
+        /// Sets Exchange.
+        /// </summary>
         public string Exchange
         {
-            set { exchange = value; }
+            set { this.exchange = value; }
         }
 
+        /// <summary>
+        /// Sets RoutingKey.
+        /// </summary>
         public string RoutingKey
         {
-            set { routingKey = value; }
+            set { this.routingKey = value; }
         }
 
-        public bool RequireAck
+        /// <summary>
+        /// Sets Encoding.
+        /// </summary>
+        public string Encoding
         {
-            set { requireAck = value; }
+            set { this.encoding = value; }
         }
 
-        public bool MandatoryPublish
-        {
-            set { mandatoryPublish = value; }
-        }
-
-        public bool ImmediatePublish
-        {          
-            set { immediatePublish = value; }
-        }
-
+        /// <summary>
+        /// Gets or sets MessageConverter.
+        /// </summary>
         public IMessageConverter MessageConverter
         {
-            get { return messageConverter; }
-            set { messageConverter = value; }
+            get { return this.messageConverter; }
+            set { this.messageConverter = value; }
         }
 
         #endregion
@@ -139,39 +141,42 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return resourceHolder.Channel;
         }
 
-        protected virtual IMessageProperties DoCreateMessageProperties(IBasicProperties basicProperties)
-        {
-            IMessageProperties messageProperties = new MessageProperties(basicProperties);
-            messageProperties.ContentType = MessageProperties.CONTENT_TYPE_BYTES;
-            messageProperties.DeliveryMode = MessageDeliveryMode.PERSISTENT;
-            messageProperties.Priority = 0;
-            return messageProperties;
-        }
-
         #region Implementation of IRabbitOperations
 
+        /// <summary>
+        /// Send a message.
+        /// </summary>
+        /// <param name="messageCreatorDelegate">
+        /// The message creator delegate.
+        /// </param>
         public void Send(MessageCreatorDelegate messageCreatorDelegate)
         {
             Send(this.exchange, this.routingKey, messageCreatorDelegate);
         }
 
+        /// <summary>
+        /// Send a message, given a routing key.
+        /// </summary>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="messageCreatorDelegate">
+        /// The message creator delegate.
+        /// </param>
         public void Send(string routingKey, MessageCreatorDelegate messageCreatorDelegate)
         {
             Send(this.exchange, routingKey, messageCreatorDelegate);
         }
 
-        public void Send(string exchange, string routingKey,
-                         MessageCreatorDelegate messageCreatorDelegate)
+        public void Send(string exchange, string routingKey, MessageCreatorDelegate messageCreatorDelegate)
         {
             AssertUtils.ArgumentNotNull(messageCreatorDelegate, "MessageCreatorDelegate must not be null");
-            Execute<object>(delegate(IModel model)
+            Execute<object>(delegate(IModel channel)
                                 {
-                                    DoSend(model, exchange, routingKey, null, messageCreatorDelegate);
+                                    DoSend(channel, exchange, routingKey, null, messageCreatorDelegate);
                                     return null;
                                 });
         }
-
-       
 
         public void ConvertAndSend(object message)
         {
@@ -223,7 +228,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                                              BasicGetResult result = model.BasicGet(queueName, !requireAck);                                             
                                              if (result != null)
                                              {
-                                                 IMessageProperties msgProps =
+                                                 MessageProperties msgProps =
                                                      new MessageProperties(result.BasicProperties, result.Exchange, result.RoutingKey, result.Redelivered, result.DeliveryTag, result.MessageCount);
                                                  
                                                  //TODO check to copy over other properties such as DeliveryTag...
@@ -262,7 +267,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             {
                 IModel channelToUse = ConnectionFactoryUtils
                     .DoGetTransactionalChannel(ConnectionFactory,
-                                               this.transactionalResourceFactory);
+                                               this.TransactionalResourceFactory);
                 if (channelToUse == null)
                 {
                     conToClose = CreateConnection();
@@ -292,7 +297,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return Execute<T>(action.DoInRabbit);
         }
 
-        public IMessageProperties CreateMessageProperties()
+        public MessageProperties CreateMessageProperties()
         {
             IBasicProperties basicProperties = Execute<IBasicProperties>(delegate(IModel model) 
                                                                              {
@@ -330,12 +335,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 routingKey = this.routingKey;
             }
 
-            IBasicProperties bp = RabbitUtils.ExtractBasicProperties(channel, message);
-            channel.BasicPublish(exchange, routingKey,
-                                 this.mandatoryPublish,
-                                 this.immediatePublish,
-                                 bp,                                 
-                                 message.Body);
+            IBasicProperties bp = RabbitUtils.ExtractBasicProperties(channel, message, this.encoding);
+            channel.BasicPublish(exchange, routingKey, bp, message.Body);
 
             // Check commit - avoid commit call within a JTA transaction.
             // TODO: should we be able to do (via wrapper) something like:
@@ -372,52 +373,4 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 		}
 		return converter;
 	}
-
-        #region ResourceFactory Helper Class
-
-        private class RabbitTemplateResourceFactory : IResourceFactory
-        {
-            private RabbitTemplate outer;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="T:System.Object"/> class.
-            /// </summary>
-            public RabbitTemplateResourceFactory(RabbitTemplate outer)
-            {
-                this.outer = outer;
-            }
-
-            #region Implementation of IResourceFactory
-
-            public IModel GetChannel(RabbitResourceHolder holder)
-            {
-                return outer.GetChannel(holder);
-            }
-
-            public IConnection GetConnection(RabbitResourceHolder rabbitResourceHolder)
-            {
-                return outer.GetConnection(rabbitResourceHolder);
-            }
-
-            public IConnection CreateConnection()
-            {
-                return outer.CreateConnection();
-            }
-
-            public IModel CreateChannel(IConnection connection)
-            {
-                return outer.CreateChannel(connection);
-            }
-
-            public bool IsSynchedLocalTransactionAllowed
-            {
-                get { return outer.ChannelTransacted; }
-            }
-
-            #endregion
-        }
-
-        #endregion
-
-    }
 }
