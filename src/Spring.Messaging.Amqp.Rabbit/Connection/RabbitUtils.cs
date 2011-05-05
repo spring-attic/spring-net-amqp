@@ -35,6 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// Utility methods for conversion between Amqp.Core and RabbitMQ
     /// </summary>
     /// <author>Mark Pollack</author>
+	/// <author>Joe Fitzgerald</author>
     public class RabbitUtils
     {
         /// <summary>
