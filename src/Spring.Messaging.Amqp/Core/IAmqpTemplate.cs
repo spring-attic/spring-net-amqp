@@ -196,15 +196,6 @@ namespace Spring.Messaging.Amqp.Core
 
         #endregion
 
-        /// <summary>
-        /// Not sure what this is for. TODO
-        /// </summary>
-        /// <returns>
-        /// Message Properties.
-        /// </returns>
-        [System.Obsolete("Do we need this?", true)]
-        MessageProperties CreateMessageProperties();
-
         #region Send and receive methods for messages
 
         /// <summary>

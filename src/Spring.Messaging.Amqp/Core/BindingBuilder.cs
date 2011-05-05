@@ -18,7 +18,7 @@ namespace Spring.Messaging.Amqp.Core
     /// <summary>
     /// The binding builder.
     /// </summary>
-    public static class BindingBuilder
+    public sealed class BindingBuilder
     {
         /// <summary>
         /// The bind.
