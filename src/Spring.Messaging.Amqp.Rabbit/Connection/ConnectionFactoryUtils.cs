@@ -106,20 +106,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             return holder;
         }
 
-        public static IModel GetTransactionalChannel(
-            IConnectionFactory cf, IConnection existingCon, bool synchedLocalTransactionAllowed)
-        {
-            //TODO implement
-            return null;
-        }
-
-        /**
- * Obtain a RabbitMQ Channel that is synchronized with the current transaction, if any.
- * @param connectionFactory the RabbitMQ ConnectionFactory to bind for (used as TransactionSynchronizationManager
- * key)
- * @param resourceFactory the ResourceFactory to use for extracting or creating RabbitMQ resources
- * @return the transactional Channel, or <code>null</code> if none found
- */
+        /// <summary>
+        /// Obtain a RabbitMQ Channel that is synchronized with the current transaction, if any.
+        /// </summary>
+        /// <param name="connectionFactory">
+        /// The connection factory.
+        /// </param>
+        /// <param name="resourceFactory">
+        /// The resource factory.
+        /// </param>
+        /// <returns>
+        /// The transactional Channel, or null if none found.
+        /// </returns>
+        /// <exception cref="AmqpException">
+        /// </exception>
         private static RabbitResourceHolder DoGetTransactionalResourceHolder(IConnectionFactory connectionFactory, IResourceFactory resourceFactory)
         {
             AssertUtils.ArgumentNotNull(connectionFactory, "ConnectionFactory must not be null");
@@ -171,6 +171,22 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         /// <summary>
+        /// Release the resources.
+        /// </summary>
+        /// <param name="resourceHolder">
+        /// The resource holder.
+        /// </param>
+        public static void ReleaseResources(RabbitResourceHolder resourceHolder)
+        {
+            if (resourceHolder == null || resourceHolder.SynchronizedWithTransaction)
+            {
+                return;
+            }
+            RabbitUtils.CloseChannel(resourceHolder.Channel);
+            ReleaseConnection(resourceHolder.Connection);
+        }
+
+        /// <summary>
         /// Bind a resource to a transaction.
         /// </summary>
         /// <param name="resourceHolder">
@@ -197,44 +213,29 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
-        public static IModel DoGetTransactionalChannel(IConnectionFactory connectionFactory, IResourceFactory resourceFactory)
-        {
-            //TODO implement
-            return null;
-        }
 
         /// <summary>
-        /// Return the innermost target IModel of the given IModel. If the given
-        /// IModel is a decorated model, it will be unwrapped until a non-decorated
-        /// IModel is found. Otherwise, the passed-in IModel will be returned as-is.
+        /// Register a delivery tag.
         /// </summary>
-        /// <param name="model">The model to unwrap</param>
-        /// <returns>The innermost target IModel, or the passed-in one if no decorator</returns>
-        public static IModel GetTargetModel(IModel model)
+        /// <param name="connectionFactory">
+        /// The connection factory.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="tag">
+        /// The tag.
+        /// </param>
+        public static void RegisterDeliveryTag(ConnectionFactory connectionFactory, IModel channel, long tag)
         {
-            IModel modelToUse = model;
-            while (modelToUse is IDecoratorModel)
-            {
-                modelToUse = ((IDecoratorModel)modelToUse).TargetModel;
-            }
-            return modelToUse;
-        }
 
-        /// <summary>
-        /// Return the innermost target IConnection of the given IConnection. If the given
-        /// IConnection is a decorated connection, it will be unwrapped until a non-decorated
-        /// IConnection is found. Otherwise, the passed-in IConnection will be returned as-is.
-        /// </summary>
-        /// <param name="model">The connection to unwrap</param>
-        /// <returns>The innermost target IConnection, or the passed-in one if no decorator</returns>
-        public static IConnection GetTargetConnection(IConnection connection)
-        {
-            IConnection connectionToUse = connection;
-            while (connectionToUse is IDecoratorConnection)
+            AssertUtils.ArgumentNotNull(connectionFactory, "ConnectionFactory must not be null");
+
+            var resourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory);
+            if (resourceHolder != null)
             {
-                connectionToUse = ((IDecoratorConnection)connectionToUse).TargetConnection;
+                resourceHolder.AddDeliveryTag(channel, tag);
             }
-            return connectionToUse;
         }
     }
 }
