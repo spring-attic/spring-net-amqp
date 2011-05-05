@@ -226,7 +226,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <param name="tag">
         /// The tag.
         /// </param>
-        public static void RegisterDeliveryTag(ConnectionFactory connectionFactory, IModel channel, long tag)
+        public static void RegisterDeliveryTag(IConnectionFactory connectionFactory, IModel channel, long tag)
         {
 
             AssertUtils.ArgumentNotNull(connectionFactory, "ConnectionFactory must not be null");

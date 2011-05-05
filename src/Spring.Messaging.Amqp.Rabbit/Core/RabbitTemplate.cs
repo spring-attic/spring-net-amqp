@@ -28,6 +28,7 @@ using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Support.Converter;
 using Spring.Util;
+using System.Collections.Generic;
 
 #endregion
 
@@ -65,7 +66,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         private string encoding = DEFAULT_ENCODING;
         #endregion
-        
+
         #region Constructors
 
         public RabbitTemplate()
@@ -73,7 +74,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             InitDefaultStrategies();
         }
 
-        public RabbitTemplate(IConnectionFactory connectionFactory) : this()
+        public RabbitTemplate(IConnectionFactory connectionFactory)
+            : this()
         {
             ConnectionFactory = connectionFactory;
             AfterPropertiesSet();
@@ -171,7 +173,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         public void Send(string exchange, string routingKey, MessageCreatorDelegate messageCreatorDelegate)
         {
             AssertUtils.ArgumentNotNull(messageCreatorDelegate, "MessageCreatorDelegate must not be null");
-            Execute<object>(delegate(IModel channel)
+            Execute<object>(channel =>
                                 {
                                     DoSend(channel, exchange, routingKey, null, messageCreatorDelegate);
                                     return null;
@@ -180,60 +182,66 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         public void ConvertAndSend(object message)
         {
-            ConvertAndSend(this.exchange, this.routingKey, message);
+            this.ConvertAndSend(this.exchange, this.routingKey, message);
         }
 
         public void ConvertAndSend(string routingKey, object message)
         {
-            ConvertAndSend(this.exchange, routingKey, message);
+            this.ConvertAndSend(this.exchange, routingKey, message);
         }
 
         public void ConvertAndSend(string exchange, string routingKey, object message)
         {
-            Send(exchange, routingKey, delegate(IModel channel)
-                                           {
-                                               return GetRequiredMessageConverter().ToMessage(message, new RabbitMessagePropertiesFactory(channel));
-                                           });                
+            this.Send(exchange, routingKey, channel => GetRequiredMessageConverter().ToMessage(message, new MessageProperties()));
         }
 
         public void ConvertAndSend(object message, MessagePostProcessorDelegate messagePostProcessorDelegate)
         {
-            ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessorDelegate);
+            this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessorDelegate);
         }
 
         public void ConvertAndSend(string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate)
         {
-            ConvertAndSend(this.exchange, routingKey, message, messagePostProcessorDelegate);
+            this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessorDelegate);
         }
 
         public void ConvertAndSend(string exchange, string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate)
         {
-            Send(exchange, routingKey, delegate (IModel channel)
+            this.Send(exchange, routingKey, channel =>
                                         {
-
-                                            Message msg = GetRequiredMessageConverter().ToMessage(message, new RabbitMessagePropertiesFactory(channel));
-                                            return messagePostProcessorDelegate(msg);
+                                            Message messageToSend = GetRequiredMessageConverter().ToMessage(message, new MessageProperties());
+                                            return messagePostProcessorDelegate(messageToSend);
                                         });
         }
 
         public Message Receive()
         {
-            return Receive(GetRequiredQueue());
+            return this.Receive(this.GetRequiredQueue());
         }
 
         public Message Receive(string queueName)
         {
-            return Execute<Message>(delegate(IModel model)
+            return Execute<Message>(channel =>
                                          {
-                                             BasicGetResult result = model.BasicGet(queueName, !requireAck);                                             
-                                             if (result != null)
+                                             var response = channel.BasicGet(queueName, !ChannelTransacted);
+                                             // Response can be null is the case that there is no message on the queue.
+                                             if (response != null)
                                              {
-                                                 MessageProperties msgProps =
-                                                     new MessageProperties(result.BasicProperties, result.Exchange, result.RoutingKey, result.Redelivered, result.DeliveryTag, result.MessageCount);
-                                                 
-                                                 //TODO check to copy over other properties such as DeliveryTag...
-                                                 Message msg = new Message(result.Body, msgProps);
-                                                 return msg;
+                                                 var deliveryTag = response.DeliveryTag;
+                                                 if (ChannelLocallyTransacted(channel))
+                                                 {
+                                                     channel.BasicAck(deliveryTag, false);
+                                                     channel.TxCommit();
+                                                 }
+                                                 else if (ChannelTransacted)
+                                                 {
+                                                     // Not locally transacted but it is transacted so it
+                                                     // could be synchronized with an external transaction
+                                                     ConnectionFactoryUtils.RegisterDeliveryTag(ConnectionFactory, channel, (long)deliveryTag);
+                                                 }
+                                                 MessageProperties messageProps = RabbitUtils.CreateMessageProperties(response.BasicProperties, response, encoding);
+                                                 messageProps.MessageCount = (int)response.MessageCount;
+                                                 return new Message(response.Body, messageProps);
                                              }
                                              return null;
                                          });
@@ -243,12 +251,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         public object ReceiveAndConvert()
         {
-            return ReceiveAndConvert(GetRequiredQueue());
+            return ReceiveAndConvert(this.GetRequiredQueue());
         }
 
         public object ReceiveAndConvert(string queueName)
         {
-            Message response = Receive(queueName);
+            var response = Receive(queueName);
             if (response != null)
             {
                 return GetRequiredMessageConverter().FromMessage(response);
@@ -256,39 +264,110 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return null;
         }
 
+
+        public Message SendAndReceive(Message message)
+        {
+            return this.DoSendAndReceive(this.exchange, this.routingKey, message);
+        }
+
+        public Message SendAndReceive(string routingKey, Message message)
+        {
+            return this.DoSendAndReceive(this.exchange, routingKey, message);
+        }
+
+        public Message SendAndReceive(string exchange, string routingKey, Message message)
+        {
+            return this.DoSendAndReceive(exchange, routingKey, message);
+        }
+
+        public object ConvertSendAndReceive(object message)
+        {
+            return this.ConvertSendAndReceive(this.exchange, this.routingKey, message);
+        }
+
+        public object ConvertSendAndReceive(string routingKey, object message)
+        {
+            return this.ConvertSendAndReceive(this.exchange, routingKey, message);
+        }
+
+        public object ConvertSendAndReceive(string exchange, string routingKey, object message)
+        {
+            var messageProperties = new MessageProperties();
+            var requestMessage = GetRequiredMessageConverter().ToMessage(message, messageProperties);
+            var replyMessage = this.DoSendAndReceive(exchange, routingKey, requestMessage);
+            if (replyMessage == null)
+            {
+                return null;
+            }
+
+            return this.GetRequiredMessageConverter().FromMessage(replyMessage);
+        }
+
+        private Message DoSendAndReceive(string exchange, string routingKey, Message message)
+        {
+            throw new NotImplementedException();
+            //Message replyMessage = this.Execute<Message>(channel =>
+            //    readonly Queue<Message> replyHandoff = new Queue<Message>();
+
+            //    AssertUtils.IsTrue(message.MessageProperties.ReplyTo == null, "Send-and-receive methods can only be used if the Message does not already have a replyTo property.");
+            //    DeclareOk queueDeclaration = channel.QueueDeclare();
+            //    Address replyToAddress = new Address(ExchangeTypes.Direct, DEFAULT_EXCHANGE, queueDeclaration.Queue);
+            //    message.MessageProperties.ReplyTo = replyToAddress;
+
+            //    var noAck = false;
+            //    var consumerTag = Guid.NewGuid().ToString();
+            //    var noLocal = true;
+            //    var exclusive = true;
+            //DefaultConsumer consumer = new DefaultConsumer(channel) {
+
+            //    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+            //            byte[] body) throws IOException {
+            //        MessageProperties messageProperties = RabbitUtils.createMessageProperties(properties, envelope,
+            //                encoding);
+            //        Message reply = new Message(body, messageProperties);
+            //        try {
+            //            replyHandoff.put(reply);
+            //        } catch (InterruptedException e) {
+            //            Thread.currentThread().interrupt();
+            //        }
+            //    }
+            //};
+            //channel.basicConsume(replyToAddress.getRoutingKey(), noAck, consumerTag, noLocal, exclusive, null, consumer);
+            //DoSend(channel, exchange, routingKey, message);
+            //Message reply = (replyTimeout < 0) ? replyHandoff.Take() : replyHandoff.Poll(replyTimeout,TimeUnit.MILLISECONDS);
+            //channel.basicCancel(consumerTag);
+            //return reply;
+            //);
+
+            //return replyMessage;
+        }
         #endregion
 
         public T Execute<T>(ChannelCallbackDelegate<T> action)
         {
             AssertUtils.ArgumentNotNull(action, "Callback object must not be null");
-            IConnection conToClose = null;
-            IModel channelToClose = null;
+            var resourceHolder = GetTransactionalResourceHolder();
+            var channel = resourceHolder.Channel;
+
             try
             {
-                IModel channelToUse = ConnectionFactoryUtils
-                    .DoGetTransactionalChannel(ConnectionFactory,
-                                               this.TransactionalResourceFactory);
-                if (channelToUse == null)
-                {
-                    conToClose = CreateConnection();
-                    channelToClose = CreateChannel(conToClose);
-                    channelToUse = channelToClose;
-                }
                 if (logger.IsDebugEnabled)
                 {
-                    logger.Debug("Executing callback on RabbitMQ Channel: " + channelToUse);
+                    logger.Debug("Executing callback on RabbitMQ Channel: " + channel);
                 }
-                return action(channelToUse);
+                return action(channel);
             }
             catch (Exception ex)
             {
-                throw;
-                //TOOD convertRabbitAccessException(ex) ?
+                if (ChannelLocallyTransacted(channel))
+                {
+                    resourceHolder.RollbackAll();
+                }
+                throw ConvertRabbitAccessException(ex);
             }
             finally
             {
-                RabbitUtils.CloseChannel(channelToClose);
-                ConnectionFactoryUtils.ReleaseConnection(conToClose, ConnectionFactory);
+                ConnectionFactoryUtils.ReleaseResources(resourceHolder);
             }
         }
 
@@ -297,25 +376,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return Execute<T>(action.DoInRabbit);
         }
 
-        public MessageProperties CreateMessageProperties()
-        {
-            IBasicProperties basicProperties = Execute<IBasicProperties>(delegate(IModel model) 
-                                                                             {
-                                                                                 return model.CreateBasicProperties();
-                                                                             });
-
-            return DoCreateMessageProperties(basicProperties);
-  
-        }
-
         #endregion
 
         protected virtual void DoSend(IModel channel, string exchange, string routingKey, IMessageCreator messageCreator,
                                       MessageCreatorDelegate messageCreatorDelegate)
         {
-            AssertUtils.IsTrue( (messageCreator == null && messageCreatorDelegate != null) ||
-                                (messageCreator != null && messageCreatorDelegate == null) , "Must provide a MessageCreatorDelegate or IMessageCreator instance.");
-            Message message;            
+            AssertUtils.IsTrue((messageCreator == null && messageCreatorDelegate != null) ||
+                                (messageCreator != null && messageCreatorDelegate == null), "Must provide a MessageCreatorDelegate or IMessageCreator instance.");
+            Message message;
             if (messageCreator != null)
             {
                 message = messageCreator.CreateMessage();
@@ -323,12 +391,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             else
             {
                 message = messageCreatorDelegate(channel);
-            }            
+            }
             if (exchange == null)
             {
                 // try to send to the configured exchange
                 exchange = this.exchange;
-            }            
+            }
             if (routingKey == null)
             {
                 // try to send to configured routing key
@@ -348,29 +416,95 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             }
         }
 
-        protected bool ChannelLocallyTransacted(IModel channel)
+        private void DoSend(IModel channel, string exchange, string routingKey, Message message)
         {
-            return ChannelTransacted
-                   && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
+            if (logger.IsDebugEnabled)
+            {
+                logger.Debug("Publishing message on exchange [" + exchange + "], routingKey = [" + routingKey + "]");
+            }
+
+            if (exchange == null)
+            {
+                // try to send to configured exchange
+                exchange = this.exchange;
+            }
+
+            if (routingKey == null)
+            {
+                // try to send to configured routing key
+                routingKey = this.routingKey;
+            }
+
+            channel.BasicPublish(exchange, routingKey, false, false, RabbitUtils.ExtractBasicProperties(channel, message, encoding), message.Body);
+            // Check commit - avoid commit call within a JTA transaction.
+            if (ChannelLocallyTransacted(channel))
+            {
+                // Transacted channel created by this template -> commit.
+                RabbitUtils.CommitIfNecessary(channel);
+            }
         }
 
+        protected bool ChannelLocallyTransacted(IModel channel)
+        {
+            return ChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
+        }
+
+        /// <summary>
+        /// Get the required message converter.
+        /// </summary>
+        /// <returns>
+        /// The message converter.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// </exception>
+        private IMessageConverter GetRequiredMessageConverter()
+        {
+		    var converter = this.MessageConverter;
+		    if (converter == null) 
+            {
+			    throw new InvalidOperationException("No 'messageConverter' specified. Check configuration of RabbitTemplate.");
+		    }
+
+		    return converter;
+	    }
+
+        /// <summary>
+        /// Get the required queue.
+        /// </summary>
+        /// <returns>
+        /// The name of the queue.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// </exception>
         private string GetRequiredQueue()
         {
-            String name = this.queue;
-            if (name == null)
+            var name = this.queue;
+            if (name == null) 
             {
-                throw new InvalidOperationException(
-                        "No 'queue' specified. Check configuration of RabbitTemplate.");
+                throw new InvalidOperationException("No 'queue' specified. Check configuration of RabbitTemplate.");
             }
+
             return name;
         }
 
-        private IMessageConverter GetRequiredMessageConverter(){
-            IMessageConverter converter = MessageConverter;
-		    if (converter == null) {
-                throw new InvalidOperationException(
-					"No 'messageConverter' specified. Check configuration of RabbitTemplate.");
-		}
-		return converter;
-	}
+        public void Send(Message message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Send(string routingKey, Message message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Send(string exchange, string routingKey, Message message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MessageProperties CreateMessageProperties()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
