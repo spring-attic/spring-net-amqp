@@ -44,14 +44,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         #endregion
 
         private IModel target;
-        private LinkedList<IModel> modelList;
+        private LinkedList<IChannelProxy> modelList;
+        private readonly object targetMonitor = new object();
+        private readonly bool transactional;
+
         private int modelCacheSize;
         private CachingConnectionFactory ccf;
 
-        public CachedModel(IModel targetModel, LinkedList<IModel> modelList, CachingConnectionFactory ccf)
+        public CachedModel(IModel targetModel, LinkedList<IChannelProxy> channelList, bool transactional, CachingConnectionFactory ccf)
         {
             this.target = targetModel;
-            this.modelList = modelList;
+            this.modelList = channelList;
+            this.transactional = transactional;
             this.modelCacheSize = ccf.ChannelCacheSize;
             this.ccf = ccf;
         }
@@ -59,7 +63,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         #region Implementation of IChannelProxy
 
         /// <summary>
-        /// Gets the target, for testing purposes.
+        /// Gets the target, return underlying channel.
         /// </summary>
         /// <value>The target.</value>
         public IModel GetTargetChannel()
@@ -109,8 +113,29 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             PhysicalClose();
         }
 
+        public void TxSelect()
+        {
+            if (!this.transactional)
+            {
+                throw new InvalidOperationException("Cannot start transaction on non-transactional channel");
+            }
+            target.TxSelect();
+        }
+
         private void LogicalClose()
         {
+            if (!this.target.IsOpen)
+            {
+                lock (targetMonitor)
+                {
+                    if (!this.target.IsOpen)
+                    {
+                        this.target = null;
+                        return;
+                    }
+                }
+            }
+
             // Allow for multiple close calls...
             if (!modelList.Contains(this))
             {
@@ -134,7 +159,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 LOG.Debug("Closing cached Model: " + this.target);
             }
-            target.Close();
+            if (this.target == null)
+            {
+                return;
+            }
+            if (this.target.IsOpen)
+            {
+                lock (targetMonitor)
+                {
+                    if (this.target.IsOpen)
+                    {
+                        this.target.Close();
+                    }
+                    this.target = null;
+                }
+            }
         }
 
         private void PhysicalClose(ushort replyCode, string replyText)
@@ -143,242 +182,320 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 LOG.Debug("Closing cached Model: " + this.target);
             }
-            target.Close(replyCode, replyText);
+            if (this.target == null)
+            {
+                return;
+            }
+            if (this.target.IsOpen)
+            {
+                lock (targetMonitor)
+                {
+                    if (this.target.IsOpen)
+                    {
+                        this.target.Close(replyCode, replyText);
+                    }
+                    this.target = null;
+                }
+            }
         }
 
         #endregion
 
-        #region Pass through implementations of IModel
+        private T InvokeFunctionWithReconnect<T>(Func<T> func)
+        {
+            try
+            {
+                lock (targetMonitor)
+                {
+                    if (target == null)
+                    {
+                        target = ccf.CreateBareChannel(transactional);
+                    }
+                }
+                return func.Invoke();
+            }
+            catch (Exception e)
+            {
+                if (!this.target.IsOpen)
+                {
+                    // Basic re-connection logic
+                    LOG.Debug("Detected closed channel on exception.  Re-initializing: " + target);
+                }
+                lock (targetMonitor)
+                {
+                    if (!this.target.IsOpen)
+                    {
+                        this.target = ccf.CreateBareChannel(transactional);
+                    }
+                }
+                throw;
+            }
+        }
+
+        private void InvokeActionWithReconnect(Action action)
+        {
+            try
+            {
+                lock (targetMonitor)
+                {
+                    if (target == null)
+                    {
+                        target = ccf.CreateBareChannel(transactional);
+                    }
+                }
+                action.Invoke();
+            }
+            catch (Exception e)
+            {
+                if (!this.target.IsOpen)
+                {
+                    // Basic re-connection logic
+                    LOG.Debug("Detected closed channel on exception.  Re-initializing: " + target);
+                }
+                lock (targetMonitor)
+                {
+                    if (!this.target.IsOpen)
+                    {
+                        this.target = ccf.CreateBareChannel(transactional);
+                    }
+                }
+                throw;
+            }
+        }
+
+        #region Wrapped invocations of IModel methods to perform reconnect logic
 
         public IBasicProperties CreateBasicProperties()
         {
-            return target.CreateBasicProperties();
+            return InvokeFunctionWithReconnect( () => target.CreateBasicProperties());        
         }
 
         public IFileProperties CreateFileProperties()
         {
-            return target.CreateFileProperties();
+            return InvokeFunctionWithReconnect(() => target.CreateFileProperties());
         }
 
         public IStreamProperties CreateStreamProperties()
         {
-            return target.CreateStreamProperties();
+            return InvokeFunctionWithReconnect(() => target.CreateStreamProperties());
         }
 
         public void ChannelFlow(bool active)
         {
-            target.ChannelFlow(active);
+            InvokeActionWithReconnect(() => target.ChannelFlow(active));
         }
 
         public void ExchangeDeclare(string exchange, string type, bool durable, bool autoDelete, IDictionary arguments)
         {
-            target.ExchangeDeclare(exchange, type, durable, autoDelete, arguments);
+            InvokeActionWithReconnect(() => target.ExchangeDeclare(exchange, type, durable, autoDelete, arguments));
         }
+
 
         public void ExchangeDeclare(string exchange, string type, bool durable)
         {
-            target.ExchangeDeclare(exchange, type, durable);
+            InvokeActionWithReconnect(() => target.ExchangeDeclare(exchange, type, durable));
         }
 
         public void ExchangeDeclare(string exchange, string type)
         {
-            target.ExchangeDeclare(exchange, type);
+            InvokeActionWithReconnect(() => target.ExchangeDeclare(exchange, type));
         }
 
         public void ExchangeDeclarePassive(string exchange)
         {
-            target.ExchangeDeclarePassive(exchange);
+            InvokeActionWithReconnect(() => target.ExchangeDeclarePassive(exchange));
         }
 
         public void ExchangeDelete(string exchange, bool ifUnused)
         {
-            target.ExchangeDelete(exchange, ifUnused);
+            InvokeActionWithReconnect(() => target.ExchangeDelete(exchange, ifUnused));
         }
 
         public void ExchangeDelete(string exchange)
         {
-            target.ExchangeDelete(exchange);
+            InvokeActionWithReconnect(() => target.ExchangeDelete(exchange));
         }
 
         public void ExchangeBind(string destination, string source, string routingKey, IDictionary arguments)
         {
-            target.ExchangeBind(destination, source, routingKey, arguments);
+            InvokeActionWithReconnect(() => target.ExchangeBind(destination, source, routingKey, arguments));
         }
 
         public void ExchangeBind(string destination, string source, string routingKey)
         {
-            target.ExchangeBind(destination, source, routingKey);
+            InvokeActionWithReconnect(() => target.ExchangeBind(destination, source, routingKey));
         }
 
         public void ExchangeUnbind(string destination, string source, string routingKey, IDictionary arguments)
         {
-            target.ExchangeUnbind(destination, source, routingKey, arguments);
+            InvokeActionWithReconnect(() => target.ExchangeUnbind(destination, source, routingKey, arguments));
         }
 
         public void ExchangeUnbind(string destination, string source, string routingKey)
         {
-            target.ExchangeUnbind(destination, source, routingKey);
+            InvokeActionWithReconnect(() => target.ExchangeUnbind(destination, source, routingKey));
         }
 
         public string QueueDeclare()
         {
-            return target.QueueDeclare();
+            return InvokeFunctionWithReconnect(() => target.QueueDeclare());
         }
 
         public string QueueDeclarePassive(string queue)
         {
-            return target.QueueDeclarePassive(queue);
+            return InvokeFunctionWithReconnect(() => target.QueueDeclarePassive(queue));
         }
 
         public string QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary arguments)
         {
-            return target.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
+            return
+                InvokeFunctionWithReconnect(() => target.QueueDeclare(queue, durable, exclusive, autoDelete, arguments));
         }
 
         public void QueueBind(string queue, string exchange, string routingKey, IDictionary arguments)
         {
-            target.QueueBind(queue, exchange, routingKey, arguments);
+            InvokeActionWithReconnect(() => target.QueueBind(queue, exchange, routingKey, arguments));
         }
 
         public void QueueBind(string queue, string exchange, string routingKey)
         {
-            target.QueueBind(queue, exchange, routingKey);
+            InvokeActionWithReconnect(() => target.QueueBind(queue, exchange, routingKey));
         }
 
         public void QueueUnbind(string queue, string exchange, string routingKey, IDictionary arguments)
         {
-            target.QueueUnbind(queue, exchange, routingKey, arguments);
+            InvokeActionWithReconnect(() => target.QueueUnbind(queue, exchange, routingKey, arguments));
         }
 
         public uint QueuePurge(string queue)
         {
-            return target.QueuePurge(queue);
+            return InvokeFunctionWithReconnect(() => target.QueuePurge(queue));
         }
 
         public uint QueueDelete(string queue, bool ifUnused, bool ifEmpty)
         {
-            return target.QueueDelete(queue, ifUnused, ifEmpty);
+            return InvokeFunctionWithReconnect(() => target.QueueDelete(queue, ifUnused, ifEmpty));
         }
 
         public uint QueueDelete(string queue)
         {
-            return target.QueueDelete(queue);
+            return InvokeFunctionWithReconnect(() => target.QueueDelete(queue));
         }
 
         public void ConfirmSelect()
         {
-            target.ConfirmSelect();
+            InvokeActionWithReconnect(() => target.ConfirmSelect());
         }
 
         public string BasicConsume(string queue, bool noAck, IBasicConsumer consumer)
         {
-            return target.BasicConsume(queue, noAck, consumer);
+            return InvokeFunctionWithReconnect(() => target.BasicConsume(queue, noAck, consumer));
         }
 
         public string BasicConsume(string queue, bool noAck, string consumerTag, IBasicConsumer consumer)
         {
-            return target.BasicConsume(queue, noAck, consumerTag, consumer);
+            return InvokeFunctionWithReconnect(() => target.BasicConsume(queue, noAck, consumerTag, consumer));
         }
 
         public string BasicConsume(string queue, bool noAck, string consumerTag, IDictionary arguments, IBasicConsumer consumer)
         {
-            return target.BasicConsume(queue, noAck, consumerTag, arguments, consumer);
+            return InvokeFunctionWithReconnect(() => target.BasicConsume(queue, noAck, consumerTag, arguments, consumer));
         }
 
         public string BasicConsume(string queue, bool noAck, string consumerTag, bool noLocal, bool exclusive, IDictionary arguments, IBasicConsumer consumer)
         {
-            return target.BasicConsume(queue, noAck, consumerTag, noLocal, exclusive, arguments, consumer);
+            return
+                InvokeFunctionWithReconnect(
+                    () => target.BasicConsume(queue, noAck, consumerTag, noLocal, exclusive, arguments, consumer));
         }
 
         public void BasicCancel(string consumerTag)
         {
-            target.BasicCancel(consumerTag);
+            InvokeActionWithReconnect(() => target.BasicCancel(consumerTag));
         }
 
         public void BasicQos(uint prefetchSize, ushort prefetchCount, bool global)
         {
-            target.BasicQos(prefetchSize, prefetchCount, global);
+            InvokeActionWithReconnect(() => target.BasicQos(prefetchSize, prefetchCount, global));
         }
 
         public void BasicPublish(PublicationAddress addr, IBasicProperties basicProperties, byte[] body)
         {
-            target.BasicPublish(addr, basicProperties, body);
+            InvokeActionWithReconnect(() => target.BasicPublish(addr, basicProperties, body));
         }
 
         public void BasicPublish(string exchange, string routingKey, IBasicProperties basicProperties, byte[] body)
         {
-            target.BasicPublish(exchange, routingKey, basicProperties, body);
+            InvokeActionWithReconnect(() => target.BasicPublish(exchange, routingKey, basicProperties, body));
         }
 
         public void BasicPublish(string exchange, string routingKey, bool mandatory, bool immediate, IBasicProperties basicProperties, byte[] body)
         {
-            target.BasicPublish(exchange, routingKey, mandatory, immediate, basicProperties, body);
+            InvokeActionWithReconnect(
+                () => target.BasicPublish(exchange, routingKey, mandatory, immediate, basicProperties, body));
         }
 
         public void BasicAck(ulong deliveryTag, bool multiple)
         {
-            target.BasicAck(deliveryTag, multiple);
+            InvokeActionWithReconnect(() => target.BasicAck(deliveryTag, multiple));
         }
 
         public void BasicReject(ulong deliveryTag, bool requeue)
         {
-            target.BasicReject(deliveryTag, requeue);
+            InvokeActionWithReconnect(() => target.BasicReject(deliveryTag, requeue));
         }
 
         public void BasicNack(ulong deliveryTag, bool multiple, bool requeue)
         {
-            target.BasicNack(deliveryTag, multiple, requeue);
+            InvokeActionWithReconnect(() => target.BasicNack(deliveryTag, multiple, requeue));
         }
 
         public void BasicRecover(bool requeue)
         {
-            target.BasicRecover(requeue);
+            InvokeActionWithReconnect(() => target.BasicRecover(requeue));
         }
 
         public void BasicRecoverAsync(bool requeue)
         {
-            target.BasicRecoverAsync(requeue);
+            InvokeActionWithReconnect(() => target.BasicRecoverAsync(requeue));
         }
 
         public BasicGetResult BasicGet(string queue, bool noAck)
         {
-            return target.BasicGet(queue, noAck);
-        }
-
-        public void TxSelect()
-        {
-            target.TxSelect();
+            return InvokeFunctionWithReconnect(() => target.BasicGet(queue, noAck));
         }
 
         public void TxCommit()
         {
-            target.TxCommit();
+            InvokeActionWithReconnect(() => target.TxCommit());
         }
 
         public void TxRollback()
         {
-            target.TxRollback();
+            InvokeActionWithReconnect(() => target.TxRollback());
         }
 
         public void DtxSelect()
         {
-            target.DtxSelect();
+            InvokeActionWithReconnect(() => target.DtxSelect());
         }
 
         public void DtxStart(string dtxIdentifier)
         {
-            target.DtxStart(dtxIdentifier);
+            InvokeActionWithReconnect(() => target.DtxStart(dtxIdentifier));
         }
 
         public void Abort()
         {
-            target.Abort();
+            InvokeActionWithReconnect(() => target.Abort());
         }
 
 		public void Abort(ushort replyCode, string replyText)
-        {
-            target.Abort(replyCode, replyText);
-        }
+		{
+		    InvokeActionWithReconnect(() => target.Abort(replyCode, replyText));
+		}
+
+        // TODO - wrap the rest with InvokeAction/Function
 
         public IBasicConsumer DefaultConsumer
         {
@@ -447,7 +564,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         public void Dispose()
         {
-            target.Dispose();
+            InvokeActionWithReconnect(() => target.Dispose());
         }
     }
 }

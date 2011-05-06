@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using AopAlliance.Intercept;
 using Common.Logging;
+using RabbitMQ.Client;
 using Spring.Aop.Framework;
 using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Util;
@@ -54,7 +55,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
      */
 
     /// <summary>
-    /// A caching connection factory implementation.
+    /// A caching connection factory implementation.  The default channel cache size is 1, please modify to 
+    /// meet your scaling needs.
     /// </summary>
     /// <author>Mark Pollack</author>
     public class CachingConnectionFactory : SingleConnectionFactory, IDisposable
@@ -69,7 +71,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         #endregion
 
         /// <summary>
-        /// The channel cache size.
+        /// The channel cache size.  Default size is 1
         /// </summary>
         private int channelCacheSize = 1;
 
@@ -94,14 +96,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         private ChannelCachingConnectionProxy targetConnection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class.
+        /// Initializes a new instance of the <see cref="SingleConnectionFactory"/> class 
+        /// initializing the hostname to be the value returned from Dns.GetHostName() or "localhost"
+        /// if Dns.GetHostName() throws an exception.
         /// </summary>
         public CachingConnectionFactory() : base()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class.
+        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class given a host name and port
         /// </summary>
         /// <param name="hostName">
         /// The host name.
@@ -114,7 +118,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class.
+        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class given a port
         /// </summary>
         /// <param name="port">
         /// The port.
@@ -124,7 +128,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class.
+        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class given a host name
         /// </summary>
         /// <param name="hostName">
         /// The host name.
@@ -144,16 +148,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class.
-        /// </summary>
-        /// <param name="connectionFactory">The connection factory.</param>
-        /// <param name="address">The address.</param>
-        public CachingConnectionFactory(RabbitMQ.Client.ConnectionFactory connectionFactory, string address)
-            : base(connectionFactory)
-        {
-        }
-
-        /// <summary>
         /// Gets or sets ChannelCacheSize.
         /// </summary>
         public int ChannelCacheSize
@@ -168,6 +162,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 AssertUtils.IsTrue(value >= 1, "Channel cache size must be 1 or higher");
                 this.channelCacheSize = value;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="CachingConnectionFactory"/> is active.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if active; otherwise, <c>false</c>.
+        /// </value>
+        public bool Active
+        {
+            get { return active; }
+            set { active = value; }
         }
 
         /// <summary>
@@ -194,17 +200,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             if (channel != null)
             {
+                #region Logging
                 if (logger.IsDebugEnabled)
                 {
                     logger.Debug("Found cached Rabbit Channel");
-                }
+                } 
+                #endregion
             }
             else
             {
+                #region Logging
                 if (logger.IsDebugEnabled)
                 {
                     logger.Debug("Creating cached Rabbit Channel");
-                }
+                } 
+                #endregion
                 channel = this.GetCachedModelWrapper(channelList, transactional);
             }
 
@@ -219,13 +229,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <param name="targetModel">The original Model to wrap.</param>
         /// <param name="modelList">The List of cached Model that the given Model belongs to.</param>
         /// <returns>The wrapped Model</returns>
-        protected virtual IChannelProxy GetCachedModelWrapper(LinkedList<IChannelProxy> modelList, bool transactional)
+        protected virtual IChannelProxy GetCachedModelWrapper(LinkedList<IChannelProxy> channelList, bool transactional)
         {
-            // TODO: For Mark
-            //RabbitMQ.Client.IModel targetModel = // Create target model here.
-            //return new CachedModel(targetModel, modelList, this);
-            // Remove next line soon!
-            return null;
+            IModel targetModel = CreateBareChannel(transactional);
+            #region Logging
+            if (logger.IsDebugEnabled)
+            {
+                logger.Debug("Creating cached Rabbit Channel from " + targetModel);
+            } 
+            #endregion
+            return new CachedModel(targetModel, channelList, transactional, this);
+
         }
 
         #region For Proxy Approach
@@ -275,7 +289,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <returns>
         /// The bare channel.
         /// </returns>
-        private RabbitMQ.Client.IModel CreateBareChannel(bool transactional)
+        public RabbitMQ.Client.IModel CreateBareChannel(bool transactional)
         {
             return this.targetConnection.CreateBareChannel(transactional);
         }

@@ -15,13 +15,26 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         private IList<IConnectionListener> delegates = new List<IConnectionListener>();
 
+
+
         /// <summary>
-        /// Gets or sets Delegates.
+        /// Sets the delegates.
         /// </summary>
+        /// <value>
+        /// The delegates.
+        /// </value>
         public IList<IConnectionListener> Delegates
         {
-            get { return this.delegates; }
             set { this.delegates = value; }
+        }        
+
+        /// <summary>
+        /// Adds the delegate.
+        /// </summary>
+        /// <param name="connectionListener">The connection listener.</param>
+        public void AddDelegate(IConnectionListener connectionListener)
+        {
+            this.delegates.Add(connectionListener);
         }
 
         /// <summary>
