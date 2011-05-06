@@ -19,11 +19,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using Common.Logging;
 using RabbitMQ.Client;
-using Spring.Messaging.Amqp.Rabbit.Support;
-using Spring.Objects.Factory;
 using Spring.Util;
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
@@ -34,7 +33,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <see cref="IConnection.Close()"/>
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class SingleConnectionFactory : IConnectionFactory, IInitializingObject
+    public class SingleConnectionFactory : IConnectionFactory
     {
         #region Logging Definition
 
@@ -69,7 +68,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         private readonly CompositeConnectionListener listener = new CompositeConnectionListener();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SingleConnectionFactory"/> class.
+        /// Initializes a new instance of the <see cref="SingleConnectionFactory"/> class 
+        /// initializing the hostname to be the value returned from Dns.GetHostName() or "localhost"
+        /// if Dns.GetHostName() throws an exception.
         /// </summary>
         public SingleConnectionFactory() : this(string.Empty)
         {
@@ -172,14 +173,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         /// <summary>
+        /// Sets the connection listeners.
+        /// </summary>
+        /// <value>
+        /// The connection listeners.
+        /// </value>
+        public IList<IConnectionListener> ConnectionListeners
+        {
+            set { this.listener.Delegates = value; }
+        }    
+
+        /// <summary>
         /// Add a connection listener.
         /// </summary>
-        /// <param name="listener">
+        /// <param name="connectionListener">
         /// The listener.
         /// </param>
-        public void AddConnectionListener(IConnectionListener listener)
+        public void AddConnectionListener(IConnectionListener connectionListener)
         {
-            this.listener.Delegates.Add(listener);
+            this.listener.AddDelegate(connectionListener);
 
             // If the connection is already alive we assume that the new listener wants to be notified
             if (this.connection != null)
@@ -225,22 +237,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </remarks>
         public virtual void Dispose()
         {
-            this.ResetConnection();
-        }
-
-        /// <summary>
-        /// Reset the connection.
-        /// </summary>
-        public virtual void ResetConnection()
-        {
             lock (this.connectionMonitor)
             {
                 if (this.connection != null)
                 {
+                    #region Logging
                     if (logger.IsDebugEnabled)
                     {
                         logger.Debug("Closing shared RabbitMQ Connection: " + this.connection);
-                    }
+                    } 
+                    #endregion
 
                     try
                     {
@@ -255,21 +261,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
                 this.connection = null;
             }
+            Reset();
         }
 
         #endregion
 
-        #region Implementation of IInitializingObject
 
         /// <summary>
-        /// Action to perform after properties are set.
+        /// Default implementation does nothing.  Called on <see cref="Dispose"/>.
         /// </summary>
-        public void AfterPropertiesSet()
+        public virtual void Reset()
         {
-            AssertUtils.ArgumentNotNull(this.rabbitConnectionFactory, "RabbitMQ.Client.ConnectionFactory is required");
+            
         }
-
-        #endregion
 
         /// <summary>
         /// Create a Connection. This implementation just delegates to the underlying Rabbit ConnectionFactory. Subclasses
@@ -280,7 +284,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </returns>
         protected virtual IConnection DoCreateConnection()
         {
-            var con = this.CreateBareConnection();
+            IConnection con = this.CreateBareConnection();
             return con;
         }
 
@@ -341,7 +345,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     }
 
     /// <summary>
-    /// A shared connection proxy.
     /// Wrap a raw Connection with a proxy that delegates every method call to it but suppresses close calls. This is
     /// useful for allowing application code to handle a special framework Connection just like an ordinary Connection
     /// from a Rabbit ConnectionFactory.
@@ -422,7 +425,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         /// <summary>
-        /// WARNING: You must close the connection explicitly, and manually.
+        /// Suppresses call to close.
         /// </summary>
         public void Close()
         {
@@ -523,7 +526,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <returns>
         /// String representation of the object.
         /// </returns>
-        public new string ToString()
+        public override string ToString()
         {
             return "Shared Rabbit Connection: " + this.target;
         }
