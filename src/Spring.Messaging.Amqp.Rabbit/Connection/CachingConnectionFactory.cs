@@ -20,7 +20,9 @@
 
 using System;
 using System.Collections.Generic;
+using AopAlliance.Intercept;
 using Common.Logging;
+using Spring.Aop.Framework;
 using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Util;
 
@@ -66,12 +68,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         #endregion
 
+        /// <summary>
+        /// The channel cache size.
+        /// </summary>
         private int channelCacheSize = 1;
 
         /// <summary>
         /// The cached channels.
         /// </summary>
-        private readonly LinkedList<IChannelProxy> cachedChannels = new LinkedList<IChannelProxy>();
+        private readonly LinkedList<IChannelProxy> cachedChannelsNonTransactional = new LinkedList<IChannelProxy>();
 
         /// <summary>
         /// The caches transactional channels.
@@ -135,7 +140,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// The rabbit connection factory.
         /// </param>
         public CachingConnectionFactory(RabbitMQ.Client.ConnectionFactory rabbitConnectionFactory) : base(rabbitConnectionFactory)
-        { 
+        {
         }
 
         /// <summary>
@@ -143,29 +148,40 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <param name="address">The address.</param>
-        public CachingConnectionFactory(RabbitMQ.Client.ConnectionFactory connectionFactory, string address) : base(connectionFactory)
+        public CachingConnectionFactory(RabbitMQ.Client.ConnectionFactory connectionFactory, string address)
+            : base(connectionFactory)
         {
         }
 
-        public bool Active
-        {
-            get { return active; }
-            set { active = value; }
-        }
-
+        /// <summary>
+        /// Gets or sets ChannelCacheSize.
+        /// </summary>
         public int ChannelCacheSize
         {
-            get { return channelCacheSize; }
+            get
+            {
+                return this.channelCacheSize;
+            }
+
             set
             {
                 AssertUtils.IsTrue(value >= 1, "Channel cache size must be 1 or higher");
-                channelCacheSize = value;
+                this.channelCacheSize = value;
             }
         }
 
-        public override RabbitMQ.Client.IModel GetChannel(IConnection connection)
+        /// <summary>
+        /// Get a channel, given a flag indicating whether it should be transactional or not.
+        /// </summary>
+        /// <param name="transactional">
+        /// The transactional.
+        /// </param>
+        /// <returns>
+        /// The channel.
+        /// </returns>
+        internal RabbitMQ.Client.IModel GetChannel(bool transactional)
         {
-            LinkedList<RabbitMQ.Client.IModel> channelList = this.cachedChannels;
+            var channelList = transactional ? this.cachedChannelsTransactional : this.cachedChannelsNonTransactional;
             RabbitMQ.Client.IModel channel = null;
             lock (channelList)
             {
@@ -175,6 +191,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                     channelList.RemoveFirst();
                 }
             }
+
             if (channel != null)
             {
                 if (logger.IsDebugEnabled)
@@ -184,13 +201,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
             else
             {
-                RabbitMQ.Client.IModel targetModel = base.CreateModel(connection);
                 if (logger.IsDebugEnabled)
                 {
                     logger.Debug("Creating cached Rabbit Channel");
                 }
-                channel = GetCachedModelWrapper(targetModel, channelList);
+                channel = this.GetCachedModelWrapper(channelList, transactional);
             }
+
             return channel;
         }
 
@@ -202,35 +219,228 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <param name="targetModel">The original Model to wrap.</param>
         /// <param name="modelList">The List of cached Model that the given Model belongs to.</param>
         /// <returns>The wrapped Model</returns>
-        protected virtual RabbitMQ.Client.IModel GetCachedModelWrapper(RabbitMQ.Client.IModel targetModel, LinkedList<RabbitMQ.Client.IModel> modelList)
+        protected virtual IChannelProxy GetCachedModelWrapper(LinkedList<IChannelProxy> modelList, bool transactional)
         {
-            return new CachedModel(targetModel, modelList, this);
+            // TODO: For Mark
+            //RabbitMQ.Client.IModel targetModel = // Create target model here.
+            //return new CachedModel(targetModel, modelList, this);
+            // Remove next line soon!
+            return null;
         }
 
+        #region For Proxy Approach
+        /*/// <summary>
+        /// Get a cached channel proxy.
+        /// </summary>
+        /// <param name="channelList">
+        /// The channel list.
+        /// </param>
+        /// <param name="transactional">
+        /// The transactional.
+        /// </param>
+        /// <returns>
+        /// The channel proxy.
+        /// </returns>
+        private IChannelProxy GetCachedChannelProxy(LinkedList<IChannelProxy> channelList, bool transactional)
+        {
+            // #1 Wrapper Implementation
+            
 
-        public override void ResetConnection()
+            // #2 Alternate (Proxy) Implementation.
+            var targetChannel = CreateBareChannel(transactional);
+            if (logger.IsDebugEnabled)
+            {
+                logger.Debug("Creating cached Rabbit Channel from " + targetChannel);
+            }
+
+            //ProxyFactory factory = new ProxyFactory(myBusinessInterfaceImpl);
+            //factory.AddAdvice(myMethodInterceptor);
+            //factory.AddAdvisor(myAdvisor);
+            //return (IChannelProxy)factory.GetProxy();
+            // TODO: FIx this!
+            //return (IChannelProxy) Proxy.NewProxyInstance(IChannelProxy.class.getClassLoader(),
+            //new Class[] { ChannelProxy.class }, new CachedChannelInvocationHandler(targetChannel, channelList,
+            //        transactional));
+            // TODO: Remove return null!!
+            return null;
+        }*/
+        #endregion
+        
+        /// <summary>
+        /// Create a bare channel.
+        /// </summary>
+        /// <param name="transactional">
+        /// The transactional.
+        /// </param>
+        /// <returns>
+        /// The bare channel.
+        /// </returns>
+        private RabbitMQ.Client.IModel CreateBareChannel(bool transactional)
+        {
+            return this.targetConnection.CreateBareChannel(transactional);
+        }
+
+        /// <summary>
+        /// Create a connection.
+        /// </summary>
+        /// <returns>
+        /// The connection.
+        /// </returns>
+        protected override IConnection DoCreateConnection()
+        {
+            targetConnection = new ChannelCachingConnectionProxy(base.DoCreateConnection(), this);
+            return targetConnection;
+        }
+
+        /// <summary>
+        /// Reset the Channel cache and underlying shared Connection, to be reinitialized on next access.
+        /// </summary>
+        public override void Dispose()
         {
             this.active = false;
-            lock (this.cachedChannels)
+            lock (this.cachedChannelsNonTransactional)
             {
-                foreach (RabbitMQ.Client.IModel channel in cachedChannels)
+                foreach (var channel in cachedChannelsNonTransactional)
                 {
                     try
                     {
-                        channel.Close();
+                        channel.GetTargetChannel().Close();
                     }
                     catch (Exception ex)
                     {
                         logger.Trace("Could not close cached Rabbit Channel", ex);
                     }
                 }
+                this.cachedChannelsNonTransactional.Clear();
             }
-            this.cachedChannels.Clear();
-
             this.active = true;
-            base.ResetConnection();
+            base.Dispose();
+            this.targetConnection = null;
+        }
+
+        /// <summary>
+        /// Convert object to string representation.
+        /// </summary>
+        /// <returns>
+        /// String representation of the object.
+        /// </returns>
+        public override string ToString()
+        {
+            return "CachingConnectionFactory [channelCacheSize=" + this.channelCacheSize + ", host=" + this.Host + ", port=" +
+                   this.Port + ", active=" + this.active + "]";
         }
     }
+
+    #region CachedChannelInvocationHandler - For a Rainy Day
+
+    /*internal class CachedChannelInvocationHandler : IInterceptor {
+
+		private volatile RabbitMQ.Client.IModel target;
+
+		private readonly LinkedList<IChannelProxy> channelList;
+
+		private readonly static object targetMonitor = new object();
+
+		private readonly bool transactional;
+
+		public CachedChannelInvocationHandler(RabbitMQ.Client.IModel target, LinkedList<IChannelProxy> channelList, bool transactional) 
+        {
+			this.target = target;
+			this.channelList = channelList;
+			this.transactional = transactional;
+		}
+
+		public object Invoke(Object proxy, Method method, Object[] args)
+        {
+			string methodName = method.Name;
+			if (methodName.equals("txSelect") && !this.transactional) {
+				throw new UnsupportedOperationException("Cannot start transaction on non-transactional channel");
+			}
+			if (methodName.equals("equals")) {
+				// Only consider equal when proxies are identical.
+				return (proxy == args[0]);
+			} else if (methodName.equals("hashCode")) {
+				// Use hashCode of Channel proxy.
+				return System.identityHashCode(proxy);
+			} else if (methodName.equals("toString")) {
+				return "Cached Rabbit Channel: " + this.target;
+			} else if (methodName.equals("close")) {
+				// Handle close method: don't pass the call on.
+				if (active) {
+					synchronized (this.channelList) {
+						if (this.channelList.size() < getChannelCacheSize()) {
+							logicalClose((ChannelProxy) proxy);
+							// Remain open in the channel list.
+							return null;
+						}
+					}
+				}
+
+				// If we get here, we're supposed to shut down.
+				physicalClose();
+				return null;
+			} else if (methodName.equals("getTargetChannel")) {
+				// Handle getTargetChannel method: return underlying Channel.
+				return this.target;
+			}
+			try {
+				synchronized (targetMonitor) {
+					if (this.target == null) {
+						this.target = createBareChannel(transactional);
+					}
+				}
+				return method.invoke(this.target, args);
+			} catch (InvocationTargetException ex) {
+				if (!this.target.isOpen()) {
+					// Basic re-connection logic...
+					logger.debug("Detected closed channel on exception.  Re-initializing: " + target);
+					synchronized (targetMonitor) {
+						if (!this.target.isOpen()) {
+							this.target = createBareChannel(transactional);
+						}
+					}
+				}
+				throw ex.getTargetException();
+			}
+		}
+
+		private void logicalClose(ChannelProxy proxy) throws Exception {
+			if (!this.target.isOpen()) {
+				synchronized (targetMonitor) {
+					if (!this.target.isOpen()) {
+						this.target = null;
+						return;
+					}
+				}
+			}
+			// Allow for multiple close calls...
+			if (!this.channelList.contains(proxy)) {
+				if (logger.isTraceEnabled()) {
+					logger.trace("Returning cached Channel: " + this.target);
+				}
+				this.channelList.addLast(proxy);
+			}
+		}
+
+		private void physicalClose() throws Exception {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Closing cached Channel: " + this.target);
+			}
+			if (this.target == null) {
+				return;
+			}
+			if (this.target.isOpen()) {
+				synchronized (targetMonitor) {
+					if (this.target.isOpen()) {
+						this.target.close();
+					}
+					this.target = null;
+				}
+			}
+		}
+
+	}*/
+    #endregion
 
     /// <summary>
     /// A channel caching connection proxy.
@@ -265,7 +475,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <returns>
         /// The channel.
         /// </returns>
-        private RabbitMQ.Client.IModel CreateBareChannel(bool transactional)
+        internal RabbitMQ.Client.IModel CreateBareChannel(bool transactional)
         {
             return this.target.CreateChannel(transactional);
         }
@@ -281,7 +491,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </returns>
         public RabbitMQ.Client.IModel CreateChannel(bool transactional)
         {
-            var channel = outer.GetChannel(transactional);
+            var channel = this.outer.GetChannel(transactional);
             return channel;
         }
 
@@ -321,7 +531,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <returns>
         /// The hash code.
         /// </returns>
-        public new int GetHashCode()
+        public override int GetHashCode()
         {
             return 31 + ((this.target == null) ? 0 : this.target.GetHashCode());
         }
@@ -374,7 +584,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <returns>
         /// String representation of object.
         /// </returns>
-        public new string ToString()
+        public override string ToString()
         {
             return "Shared Rabbit Connection: " + this.target;
         }

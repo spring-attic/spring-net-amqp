@@ -34,7 +34,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <see cref="IConnection.Close()"/>
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class SingleConnectionFactory : ConnectionFactory, IInitializingObject
+    public class SingleConnectionFactory : IConnectionFactory, IInitializingObject
     {
         #region Logging Definition
 
@@ -223,7 +223,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// As this bean implements IDisposable, the application context will
         /// automatically invoke this on destruction of its cached singletons.
         /// </remarks>
-        public void Dispose()
+        public virtual void Dispose()
         {
             this.ResetConnection();
         }
@@ -278,12 +278,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <returns>
         /// The connection.
         /// </returns>
-        protected IConnection DoCreateConnection()
+        protected virtual IConnection DoCreateConnection()
         {
-            var connection = this.CreateBareConnection();
-            return connection;
+            var con = this.CreateBareConnection();
+            return con;
         }
 
+        /// <summary>
+        /// Create a bare connection.
+        /// </summary>
+        /// <returns>
+        /// The connection.
+        /// </returns>
+        /// <exception cref="SystemException">
+        /// </exception>
         internal IConnection CreateBareConnection()
         {   
             try
