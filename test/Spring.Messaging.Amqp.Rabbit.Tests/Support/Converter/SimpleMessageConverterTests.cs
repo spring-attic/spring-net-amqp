@@ -47,7 +47,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support.Converter
 
             template = new RabbitTemplate();
             template.ConnectionFactory = connectionFactory;
-            template.ChannelTransacted = true;
+            template.IsChannelTransacted = true;
             template.AfterPropertiesSet();
         }
 

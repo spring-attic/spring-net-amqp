@@ -23,6 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var unixTime = (datetime.ToUniversalTime() - epoch).TotalSeconds;
             var timestamp = new AmqpTimestamp((long)unixTime);
+            return timestamp;
         }
 
         /// <summary>
@@ -38,6 +39,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
         {
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             return epoch.AddSeconds(timestamp.UnixTime).ToLocalTime();
+        }
+
+        internal static long ToMilliseconds(this DateTime datetime)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var unixTime = (datetime.ToUniversalTime() - epoch).TotalMilliseconds;
+            return (long)unixTime;
         }
     }
 }

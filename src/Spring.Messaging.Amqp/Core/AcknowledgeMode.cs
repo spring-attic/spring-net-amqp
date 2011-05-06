@@ -22,24 +22,75 @@
 namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
-    /// Enumeration of Acknowledge Modes
+    /// Acknowledge Mode Utilities
     /// </summary>
     /// <author>Joe Fitzgerald</author>
-    public enum AcknowledgeMode
+    public static class AcknowledgeModeUtils
     {
         /// <summary>
-        /// AUTO Acnowledge Mode
+        /// Enumeration of Acknowledge Modes
         /// </summary>
-        TransactionAllowed, 
+        /// <author>Joe Fitzgerald</author>
+        public enum AcknowledgeMode
+        {
+            ///<summary>
+            /// NONE AcknowledgeMode
+            ///</summary>
+            NONE, 
+                    /// <summary>
+            /// NONE Acnowledge Mode
+            /// </summary>
+            MANUAL, 
+
+            /// <summary>
+            /// MANUAL Acnowledge Mode
+            /// </summary>, 
+            AUTO
+        }
 
         /// <summary>
-        /// NONE Acnowledge Mode
+        /// Determine if the acknowledge mode is transaction allowed.
         /// </summary>
-        AutoAck, 
+        /// <param name="mode">
+        /// The mode.
+        /// </param>
+        /// <returns>
+        /// True if transaction allowed, else false.
+        /// </returns>
+        public static bool TransactionAllowed(this AcknowledgeMode mode)
+        {
+            return mode == AcknowledgeMode.AUTO || mode == AcknowledgeMode.MANUAL;
+        }
+
 
         /// <summary>
-        /// MANUAL Acnowledge Mode
+        /// Determine if the acknowledge mode is auto ack.
         /// </summary>
-        Manual
+        /// <param name="mode">
+        /// The mode.
+        /// </param>
+        /// <returns>
+        /// True if auto ack, else false.
+        /// </returns>
+        public static bool IsAutoAck(this AcknowledgeMode mode)
+        {
+        	return mode == AcknowledgeMode.NONE;
+        }
+
+
+
+        /// <summary>
+        /// Determine if the acknowledge mode is manual.
+        /// </summary>
+        /// <param name="mode">
+        /// The mode.
+        /// </param>
+        /// <returns>
+        /// True if manual, else false.
+        /// </returns>
+        public static bool IsManual(this AcknowledgeMode mode)
+        {
+            return mode == AcknowledgeMode.MANUAL;
+        }
     }
 }

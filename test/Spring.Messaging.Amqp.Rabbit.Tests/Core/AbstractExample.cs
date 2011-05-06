@@ -38,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
             RabbitTemplate template = new RabbitTemplate();
             template.ConnectionFactory = connectionFactory;
-            template.ChannelTransacted = true;
+            template.IsChannelTransacted = true;
             template.AfterPropertiesSet();
 
             //Declare queue and bind to a specific exchange.

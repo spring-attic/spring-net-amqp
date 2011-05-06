@@ -114,7 +114,7 @@
     <Compile Include="Core\RabbitTemplate.cs" />
     <Compile Include="Core\Support\RabbitGatewaySupport.cs" />
     <Compile Include="Listener\AbstractMessageListenerContainer.cs" />
-    <Compile Include="Listener\AbstractRabbitListeningContainer.cs" />
+    <Compile Include="Listener\ActiveObjectListener.cs" />
     <Compile Include="Listener\Adapter\ListenerExecutionFailedException.cs" />
     <Compile Include="Listener\Adapter\MessageListenerAdapter.cs" />
     <Compile Include="Listener\BlockingQueueConsumer.cs" />

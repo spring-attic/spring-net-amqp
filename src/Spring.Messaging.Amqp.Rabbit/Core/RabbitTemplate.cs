@@ -336,7 +336,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             return Execute<Message>(channel =>
                                          {
-                                             var response = channel.BasicGet(queueName, !ChannelTransacted);
+                                             var response = channel.BasicGet(queueName, !IsChannelTransacted);
 
                                              // Response can be null is the case that there is no message on the queue.
                                              if (response != null)
@@ -347,7 +347,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                                                      channel.BasicAck(deliveryTag, false);
                                                      channel.TxCommit();
                                                  }
-                                                 else if (ChannelTransacted)
+                                                 else if (IsChannelTransacted)
                                                  {
                                                      // Not locally transacted but it is transacted so it
                                                      // could be synchronized with an external transaction
@@ -756,7 +756,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             // Check commit - avoid commit call within a JTA transaction.
             // TODO: should we be able to do (via wrapper) something like:
             // channel.getTransacted()?
-            if (this.ChannelTransacted && this.ChannelLocallyTransacted(channel))
+            if (this.IsChannelTransacted && this.ChannelLocallyTransacted(channel))
             {
                 // Transacted channel created by this template -> commit.
                 RabbitUtils.CommitIfNecessary(channel);
@@ -817,7 +817,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </returns>
         protected bool ChannelLocallyTransacted(RabbitMQ.Client.IModel channel)
         {
-            return ChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
+            return IsChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
         }
 
         /// <summary>

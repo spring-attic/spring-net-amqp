@@ -26,6 +26,7 @@ using Common.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Utils;
 using Spring.Util;
 

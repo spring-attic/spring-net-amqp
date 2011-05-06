@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -29,7 +30,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
     /// <author>Mark Pollack (.NET)</author>
     public class ListenerExecutionFailedException : Exception
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ListenerExecutionFailedException"/> class, with the specified message
         /// </summary>
@@ -44,10 +44,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="innerException">The inner exception.</param>
-        public ListenerExecutionFailedException(string message, Exception innerException)
-            : base(message, innerException)
+        public ListenerExecutionFailedException(string message, Exception innerException) : base(message, innerException)
         {
-            
         }
     }
 }

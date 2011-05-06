@@ -111,8 +111,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         #region Overrides of AbstractRabbitListeningContainer
-
-        protected override bool SharedConnectionEnabled
+        // TODO: This was marked as override - shoudl it be?
+        protected bool SharedConnectionEnabled
         {
             get { return true; }
         }

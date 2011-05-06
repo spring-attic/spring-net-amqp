@@ -288,8 +288,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </returns>
         protected override IConnection DoCreateConnection()
         {
-            targetConnection = new ChannelCachingConnectionProxy(base.DoCreateConnection(), this);
-            return targetConnection;
+            this.targetConnection = new ChannelCachingConnectionProxy(base.DoCreateConnection(), this);
+            return this.targetConnection;
         }
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.active = false;
             lock (this.cachedChannelsNonTransactional)
             {
-                foreach (var channel in cachedChannelsNonTransactional)
+                foreach (var channel in this.cachedChannelsNonTransactional)
                 {
                     try
                     {
@@ -313,6 +313,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 }
                 this.cachedChannelsNonTransactional.Clear();
             }
+
             this.active = true;
             base.Dispose();
             this.targetConnection = null;
