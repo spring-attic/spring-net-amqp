@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     ///  
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class CachedModel : IDecoratorModel
+    public class CachedModel : IChannelProxy
     {
         #region Logging Definition
 
@@ -56,15 +56,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.ccf = ccf;
         }
 
-        #region Implementation of IDecoratorModel
+        #region Implementation of IChannelProxy
 
         /// <summary>
         /// Gets the target, for testing purposes.
         /// </summary>
         /// <value>The target.</value>
-        public IModel TargetModel
+        public IModel GetTargetChannel()
         {
-            get { return target; }
+            return target;
         }
 
         #endregion

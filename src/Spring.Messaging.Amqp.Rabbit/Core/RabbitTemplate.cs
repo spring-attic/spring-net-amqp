@@ -21,7 +21,6 @@
 
 using System;
 using Common.Logging;
-using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Support.Converter;
@@ -703,7 +702,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <returns>
         /// The channel.
         /// </returns>
-        protected new virtual IModel GetChannel(RabbitResourceHolder resourceHolder)
+        protected new virtual RabbitMQ.Client.IModel GetChannel(RabbitResourceHolder resourceHolder)
         {
             return resourceHolder.Channel;
         }
@@ -726,7 +725,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="messageCreatorDelegate">
         /// The message creator delegate.
         /// </param>
-        protected virtual void DoSend(IModel channel, string exchange, string routingKey, IMessageCreator messageCreator, MessageCreatorDelegate messageCreatorDelegate)
+        protected virtual void DoSend(RabbitMQ.Client.IModel channel, string exchange, string routingKey, IMessageCreator messageCreator, MessageCreatorDelegate messageCreatorDelegate)
         {
             AssertUtils.IsTrue((messageCreator == null && messageCreatorDelegate != null) || (messageCreator != null && messageCreatorDelegate == null), "Must provide a MessageCreatorDelegate or IMessageCreator instance.");
             Message message;
@@ -779,7 +778,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="message">
         /// The message.
         /// </param>
-        private void DoSend(IModel channel, string exchange, string routingKey, Message message)
+        private void DoSend(RabbitMQ.Client.IModel channel, string exchange, string routingKey, Message message)
         {
             if (logger.IsDebugEnabled)
             {
@@ -816,7 +815,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <returns>
         /// True if locally transacted, else false.
         /// </returns>
-        protected bool ChannelLocallyTransacted(IModel channel)
+        protected bool ChannelLocallyTransacted(RabbitMQ.Client.IModel channel)
         {
             return ChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
         }

@@ -21,7 +21,6 @@
 
 using System;
 using Common.Logging;
-using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Objects.Factory;
 using Spring.Util;
@@ -113,7 +112,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <returns>
         /// The channel.
         /// </returns>
-        protected IModel GetChannel(RabbitResourceHolder holder)
+        protected RabbitMQ.Client.IModel GetChannel(RabbitResourceHolder holder)
         {
             return holder.Channel;
         }
