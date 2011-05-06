@@ -32,7 +32,7 @@ namespace Spring.Messaging.Amqp.Core
         #region Queue Operations
 
         /// <summary>
-        /// Declares a queue whose name is automatically named.  It is created with
+        /// Declares a queue whose name is automatically named by the server.  It is created with
         /// exclusive = true, autoDelete=true, and durable = false.
         /// </summary>
         /// <returns>The queue.</returns>

@@ -81,11 +81,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="exchange">The exchange.</param>
         public void DeclareExchange(IExchange exchange)
         {
-            rabbitTemplate.Execute<object>(delegate(IModel channel)
-                                               {
-                                                   channel.ExchangeDeclare(exchange.Name, exchange.ExchangeType.ToString().ToLower().Trim(), exchange.Durable, exchange.AutoDelete, exchange.Arguments);
-                                                   return null;
-                                               });
+            rabbitTemplate.Execute<object>(delegate(IModel channel) {
+                DeclareExchanges(channel, exchange);
+                return null;
+            });
         }
 
         /// <summary>
@@ -96,31 +95,38 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// for RabbitMQ this will delete the exchange without regard for whether it is in use or not.
         /// </remarks>
         /// <param name="exchangeName">Name of the exchange.</param>
-        public void DeleteExchange(string exchangeName)
+        public bool DeleteExchange(string exchangeName)
         {
-            rabbitTemplate.Execute<object>(delegate(IModel channel)
+            return rabbitTemplate.Execute(delegate(IModel channel)
             {
-                // TODO: verify default settings
-                channel.ExchangeDelete(exchangeName, false);
-                return null;
+                try
+                {
+                    channel.ExchangeDelete(exchangeName, false);
+                } catch (Exception e)
+                {
+                    if (logger.IsDebugEnabled)
+                    {
+                        logger.Debug("Could not delete exchange [" + exchangeName + "]", e);
+                    }
+                    return false;
+                }
+                return true;
             });
         }
 
 
         /// <summary>
-        /// Declares the queue.
+        /// Declares a queue whose name is automatically named by the server.  It is created with
+        /// exclusive = true, autoDelete=true, and durable = false.
         /// </summary>
-        /// <param name="queue">The queue.</param>
+        /// <returns>The queue.</returns>
         public Queue DeclareQueue()
         {
             string queueName = rabbitTemplate.Execute<string>(delegate(IModel channel)
             {
                 return channel.QueueDeclare();                
             });
-            Queue q = new Queue(queueName);
-            q.Exclusive = true;
-            q.AutoDelete = true;
-            q.Durable = false;
+            Queue q = new Queue(queueName, true, true, false);            
             return q;
         }
 
@@ -130,9 +136,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="queue">The queue.</param>
         public void DeclareQueue(Queue queue)
         {
-            rabbitTemplate.Execute<object>(delegate(IModel channel)
-            {
-                channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments);
+            rabbitTemplate.Execute<object>(delegate(IModel channel) {
+                DeclareQueues(channel, queue);
                 return null;
             });
         }
@@ -141,12 +146,22 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// Deletes the queue, without regard for whether it is in use or has messages on it 
         /// </summary>
         /// <param name="queueName">Name of the queue.</param>
-        public void DeleteQueue(string queueName)
+        public bool DeleteQueue(string queueName)
         {
-            rabbitTemplate.Execute<object>(delegate(IModel channel)
+            return rabbitTemplate.Execute(delegate(IModel channel)
             {
-                channel.QueueDelete(queueName, false, false);
-                return null;
+                try
+                {
+                    channel.QueueDelete(queueName, false, false);
+                } catch (Exception e)
+                {
+                    if (logger.IsDebugEnabled)
+                    {
+                        logger.Debug("Could not delete queue [" + queueName + "]", e);
+                    }
+                    return false;
+                }
+                return true;
             });
         }
 
@@ -181,10 +196,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         public void DeclareBinding(Binding binding)
         {
-            rabbitTemplate.Execute<object>(delegate(IModel channel)
-            {
-                channel.QueueBind(binding.Queue, binding.Exchange, binding.RoutingKey, binding.Arguments);
+            rabbitTemplate.Execute<object>(delegate(IModel channel) {
+                DeclareBindings(channel, binding);
                 return null;
+            });
+        }
+
+        /// <summary>
+        /// Remove a binding of a queue to an exchange. Note unbindQueue/removeBinding was not introduced until 0.9 of the
+        /// specification.
+        /// </summary>
+        /// <param name="binding">Binding to remove.</param>
+        public void RemoveBinding(Binding binding)
+        {
+            rabbitTemplate.Execute<object>(delegate(IModel channel) {
+                if (binding.IsDestinationQueue())
+                {
+                    channel.QueueUnbind(binding.Destination, binding.Exchange, binding.RoutingKey, binding.Arguments);                                   
+                } else
+                {
+                    channel.ExchangeUnbind(binding.Destination, binding.Exchange, binding.RoutingKey, binding.Arguments);                                   
+                }
+                return null;                                                   
             });
         }
 
@@ -202,6 +235,66 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         }
 
         #endregion
+
+        private void DeclareExchanges(IModel channel, params IExchange[] exchanges)
+        {
+            foreach (IExchange exchange in exchanges)
+            {
+                #region Logging
+                if (logger.IsDebugEnabled)
+                {
+                    logger.Debug("declaring Exchange '" + exchange.Name + "'");
+                } 
+                #endregion
+                channel.ExchangeDeclare(exchange.Name, exchange.ExchangeType, exchange.Durable, exchange.AutoDelete, exchange.Arguments);
+            }                        
+        }
+
+        private void DeclareQueues(IModel channel, params Queue[] queues)
+        {
+            foreach (Queue queue in queues)
+            {
+                if (!queue.Name.StartsWith("amq."))
+                {
+                    #region Logging
+                    if (logger.IsDebugEnabled)
+                    {
+                        logger.Debug("Declaring Queue '" + queue.Name + "'");
+                    } 
+                    #endregion
+                    channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments);
+                }
+                #region Logging
+
+                else if (logger.IsDebugEnabled)
+                {
+                    logger.Debug("Queue with name that starts with 'amq.' cannot be declared.");
+                } 
+                #endregion
+            }
+        }
+
+        private void DeclareBindings(IModel channel, params Binding[] bindings)
+        {
+            foreach (Binding binding in bindings)
+            {
+                #region Logging
+                if (logger.IsDebugEnabled)
+                {
+                    logger.Debug("Binding destination [" + binding.Destination + " (" + binding.BindingDestinationType
+                        + ")] to exchange [" + binding.Exchange + "] with routing key [" + binding.RoutingKey
+                        + "]");
+                } 
+                #endregion
+                if (binding.IsDestinationQueue())
+                {
+                    channel.QueueBind(binding.Destination, binding.Exchange, binding.RoutingKey, binding.Arguments);
+                } else
+                {
+                    channel.ExchangeBind(binding.Destination, binding.Exchange, binding.RoutingKey, binding.Arguments);
+                }
+            }
+        }
     }
 
 }

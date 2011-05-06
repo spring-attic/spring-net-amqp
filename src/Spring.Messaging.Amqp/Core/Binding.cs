@@ -136,7 +136,17 @@ namespace Spring.Messaging.Amqp.Core
         /// </summary>
         public DestinationType BindingDestinationType
         {
+            //TODO consider renaming enum or moving outside of class to make this property 'DestinationType'
             get { return this.destinationType; }
+        }
+
+        /// <summary>
+        /// Is the destination a Queue (as compared to an Exchange as specified by the DestinationType enumeration)
+        /// </summary>
+        /// <returns>true if the destination is a Queue, false otherwise</returns>
+        public bool IsDestinationQueue()
+        {
+            return DestinationType.Queue == destinationType;
         }
     }
 }
