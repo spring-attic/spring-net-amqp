@@ -210,17 +210,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             if (channel != null)
             {
+                #region Logging
                 if (logger.IsDebugEnabled)
                 {
                     logger.Debug("Found cached Rabbit Channel");
-                }
+                } 
+                #endregion
             }
             else
             {
+                #region Logging
                 if (logger.IsDebugEnabled)
                 {
                     logger.Debug("Creating cached Rabbit Channel");
-                }
+                } 
+                #endregion
                 channel = this.GetCachedModelWrapper(channelList, transactional);
             }
 
