@@ -23,7 +23,7 @@ using RabbitMQ.Client;
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
     /// <summary>
-    ///  
+    /// A rabbit resource factory interface.
     /// </summary>
     /// <author>Mark Pollack</author>
     public interface IResourceFactory

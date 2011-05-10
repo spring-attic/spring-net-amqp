@@ -76,9 +76,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\4.0\Spring.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Spring.Threading, Version=1.1.2.20125, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\2.0\Spring.Threading.dll</HintPath>
+    <Reference Include="Spring.Threading">
+      <HintPath>..\..\lib\net\3.5\Spring.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -118,6 +117,8 @@
     <Compile Include="Listener\Adapter\ListenerExecutionFailedException.cs" />
     <Compile Include="Listener\Adapter\MessageListenerAdapter.cs" />
     <Compile Include="Listener\BlockingQueueConsumer.cs" />
+    <Compile Include="Listener\FatalListenerExecutionException.cs" />
+    <Compile Include="Listener\FatalListenerStartupException.cs" />
     <Compile Include="Listener\LocallyExposedRabbitResourceHolder.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainer.cs" />
     <Compile Include="Support\DateExtensions.cs" />

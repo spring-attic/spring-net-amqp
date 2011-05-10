@@ -95,7 +95,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </returns>
         public IModel CreateChannel(IConnection connection)
         {
-            return connection.CreateModel();
+            return connection.CreateChannel(this.IsSynchedLocalTransactionAllowed);
         }
     }
 }

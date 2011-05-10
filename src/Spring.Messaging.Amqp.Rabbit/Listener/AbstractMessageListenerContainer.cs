@@ -39,7 +39,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     ///  An abstract message listener container.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public abstract class AbstractMessageListenerContainer : RabbitAccessor, IDisposable
+    public abstract class AbstractMessageListenerContainer : RabbitAccessor, IDisposable, IContainerDelegate
     {
         #region Private Members
         #region Logging
@@ -596,7 +596,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="channel">The channel to operate on.</param>
         /// <param name="message">The received message.</param>
         /// <see cref="MessageListener"/>
-        protected virtual void InvokeListener(IModel channel, Message message)
+        public virtual void InvokeListener(IModel channel, Message message)
         {
             var listener = this.MessageListener;
             if (listener is IChannelAwareMessageListener)
@@ -648,7 +648,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception e)
                 {
-                    throw WrapToListenerExecutionFailedExceptionIfNeeded(e);
+                    throw this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
                 }
             }
             finally
@@ -672,7 +672,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             catch (Exception e)
             {
-                throw WrapToListenerExecutionFailedExceptionIfNeeded(e);
+                throw this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
             }
         }
 
@@ -803,7 +803,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </remarks>
         /// <param name="channel">The channel to check.</param>
         /// <returns>
-        /// 	<c>true</c> if the is channel locally transacted; otherwise, <c>false</c>.
+        /// <c>true</c> if the is channel locally transacted; otherwise, <c>false</c>.
         /// </returns>
         /// <see cref="RabbitAccessor.IsChannelTransacted"/>
         protected virtual bool IsChannelLocallyTransacted(IModel channel)
@@ -829,17 +829,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 return;
             }
 
-            if (IsActive)
+            if (this.IsActive)
             {
                 // Regular case: failed while active.
                 // Invoke ErrorHandler if available.
-                InvokeErrorHandler(ex);
+                this.InvokeErrorHandler(ex);
             }
             else
             {
                 // Rare case: listener thread failed after container shutdown.
                 // Log at debug level, to avoid spamming the shutdown log.
-                logger.Debug("Listener exception after container shutdown", ex);
+                this.logger.Debug("Listener exception after container shutdown", ex);
             }
         }
 
@@ -884,8 +884,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// Initializes a new instance of the <see cref="SharedConnectionNotInitializedException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public SharedConnectionNotInitializedException(string message)
-            : base(message)
+        public SharedConnectionNotInitializedException(string message) : base(message)
         {
         }
     }

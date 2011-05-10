@@ -63,7 +63,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
 	    internal readonly AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode;
 
-	    private readonly ConnectionFactory connectionFactory;
+	    private readonly IConnectionFactory connectionFactory;
 
 	    internal readonly ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter;
 
@@ -92,7 +92,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="queues">
         /// The queues.
         /// </param>
-        public BlockingQueueConsumer(ConnectionFactory connectionFactory, ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode, bool transactional, int prefetchCount, int prefetchSize, params string[] queues)
+        public BlockingQueueConsumer(IConnectionFactory connectionFactory, ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode, bool transactional, int prefetchCount, int prefetchSize, params string[] queues)
         {
             this.connectionFactory = connectionFactory;
             this.activeObjectCounter = activeObjectCounter;

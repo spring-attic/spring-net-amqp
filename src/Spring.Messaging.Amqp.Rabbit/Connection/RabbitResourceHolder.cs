@@ -36,18 +36,39 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <author>Joe Fitzgerald</author>
     public class RabbitResourceHolder : ResourceHolderSupport
     {
+        /// <summary>
+        /// The logger.
+        /// </summary>
         private static readonly ILog logger = LogManager.GetLogger(typeof(ResourceHolderSupport));
 
+        /// <summary>
+        /// The frozen flag.
+        /// </summary>
         private bool frozen = false;
 
+        /// <summary>
+        /// The connections.
+        /// </summary>
         private readonly IList<IConnection> connections = new List<IConnection>();
 
+        /// <summary>
+        /// The channels.
+        /// </summary>
         private readonly IList<IModel> channels = new List<IModel>();
 
+        /// <summary>
+        /// The channels per connection.
+        /// </summary>
         private readonly IDictionary<IConnection, List<IModel>> channelsPerConnection = new Dictionary<IConnection, List<IModel>>();
 
+        /// <summary>
+        /// The delivery tags.
+        /// </summary>
         private readonly IDictionary<IModel, List<long>> deliveryTags = new Dictionary<IModel, List<long>>();
 
+        /// <summary>
+        /// The transactional flag.
+        /// </summary>
         private bool transactional;
 
         /// <summary>
