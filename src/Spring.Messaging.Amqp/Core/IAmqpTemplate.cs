@@ -106,48 +106,6 @@ namespace Spring.Messaging.Amqp.Core
         /// The message.
         /// </param>
         void ConvertAndSend(string exchange, string routingKey, object message);
-
-        /// <summary>
-        /// Send a message with conversion.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="messagePostProcessorDelegate">
-        /// The message post processor delegate.
-        /// </param>
-        void ConvertAndSend(object message, MessagePostProcessorDelegate messagePostProcessorDelegate);
-
-        /// <summary>
-        /// Send a message with conversion.
-        /// </summary>
-        /// <param name="routingKey">
-        /// The routing key.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="messagePostProcessorDelegate">
-        /// The message post processor delegate.
-        /// </param>
-        void ConvertAndSend(string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate);
-
-        /// <summary>
-        /// Send a message with conversion.
-        /// </summary>
-        /// <param name="exchange">
-        /// The exchange.
-        /// </param>
-        /// <param name="routingKey">
-        /// The routing key.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="messagePostProcessorDelegate">
-        /// The message post processor delegate.
-        /// </param>
-        void ConvertAndSend(string exchange, string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate);
         #endregion
 
         #region Receive methods for messages

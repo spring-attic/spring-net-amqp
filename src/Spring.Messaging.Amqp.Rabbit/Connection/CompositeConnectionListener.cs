@@ -15,8 +15,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         private IList<IConnectionListener> delegates = new List<IConnectionListener>();
 
-
-
         /// <summary>
         /// Sets the delegates.
         /// </summary>

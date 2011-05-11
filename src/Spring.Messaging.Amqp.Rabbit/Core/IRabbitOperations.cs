@@ -32,39 +32,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     public interface IRabbitOperations : IAmqpTemplate
     {
         /// <summary>
-        /// Send a message.
-        /// </summary>
-        /// <param name="messageCreator">
-        /// The message creator.
-        /// </param>
-        void Send(MessageCreatorDelegate messageCreator);
-
-        /// <summary>
-        /// Send a message given a routing key.
-        /// </summary>
-        /// <param name="routingkey">
-        /// The routingkey.
-        /// </param>
-        /// <param name="messageCreator">
-        /// The message creator.
-        /// </param>
-        void Send(string routingkey, MessageCreatorDelegate messageCreator);
-
-        /// <summary>
-        /// Send a message given an exchange and a routing key.
-        /// </summary>
-        /// <param name="exchange">
-        /// The exchange.
-        /// </param>
-        /// <param name="routingKey">
-        /// The routing key.
-        /// </param>
-        /// <param name="messageCreatorDelegate">
-        /// The message creator delegate.
-        /// </param>
-        void Send(string exchange, string routingKey, MessageCreatorDelegate messageCreatorDelegate);
-
-        /// <summary>
         /// Execute the action.
         /// </summary>
         /// <param name="action">

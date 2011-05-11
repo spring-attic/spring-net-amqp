@@ -620,35 +620,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             return true;
         }
-
-        /// <summary>
-        /// Process a message.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        public void ProcessMessage(Message message, IModel channel)
-        {
-            var exposeResource = this.ExposeListenerChannel;
-            if (exposeResource)
-            {
-                TransactionSynchronizationManager.BindResource(ConnectionFactory, new LocallyExposedRabbitResourceHolder(channel));
-            }
-            try
-            {
-                ExecuteListener(channel, message);
-            }
-            finally
-            {
-                if (exposeResource)
-                {
-                    TransactionSynchronizationManager.UnbindResource(ConnectionFactory);
-                }
-            }
-        }
     }
 
     /// <summary>

@@ -20,11 +20,16 @@
 #endregion
 
 using System;
+using System.Threading;
 using Common.Logging;
+using RabbitMQ.Client;
+using Spring.Collections.Generic;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Support.Converter;
+using Spring.Threading.Collections.Generic;
 using Spring.Util;
+using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;
 
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
@@ -251,65 +256,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </param>
         public void ConvertAndSend(string exchange, string routingKey, object message)
         {
-            this.Send(exchange, routingKey, channel => GetRequiredMessageConverter().ToMessage(message, new MessageProperties()));
-        }
-
-        /// <summary>
-        /// Convert and send a message, given the message and a post processor.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="messagePostProcessorDelegate">
-        /// The message post processor delegate.
-        /// </param>
-        public void ConvertAndSend(object message, MessagePostProcessorDelegate messagePostProcessorDelegate)
-        {
-            this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessorDelegate);
-        }
-
-        /// <summary>
-        /// Convert and send a message, given a routing key, the message, and a post processor.
-        /// </summary>
-        /// <param name="routingKey">
-        /// The routing key.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="messagePostProcessorDelegate">
-        /// The message post processor delegate.
-        /// </param>
-        public void ConvertAndSend(string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate)
-        {
-            this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessorDelegate);
-        }
-
-        /// <summary>
-        /// Convert and send a message, given an exchange, a routing key, the message, and a post processor.
-        /// </summary>
-        /// <param name="exchange">
-        /// The exchange.
-        /// </param>
-        /// <param name="routingKey">
-        /// The routing key.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="messagePostProcessorDelegate">
-        /// The message post processor delegate.
-        /// </param>
-        public void ConvertAndSend(string exchange, string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate)
-        {
-            this.Send(
-                exchange, 
-                routingKey, 
-                channel =>
-                                        {
-                                            var messageToSend = GetRequiredMessageConverter().ToMessage(message, new MessageProperties());
-                                            return messagePostProcessorDelegate(messageToSend);
-                                        });
+            this.Send(exchange, routingKey, Execute<Message>(channel => this.GetRequiredMessageConverter().ToMessage(message, new MessageProperties())));
         }
 
         /// <summary>
@@ -362,7 +309,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                                              return null;
                                          });
         }
-        
+
         /// <summary>
         /// Receive and convert a message.
         /// </summary>
@@ -523,93 +470,43 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </exception>
         private Message DoSendAndReceive(string exchange, string routingKey, Message message)
         {
-            throw new NotImplementedException();
-            //Message replyMessage = this.Execute<Message>(channel =>
-            //    readonly Queue<Message> replyHandoff = new Queue<Message>();
+            var replyMessage = this.Execute<Message>(delegate(IModel channel)
+                                                             {
+                                                                 var replyHandoff = new SynchronousQueue<Message>();
 
-            //    AssertUtils.IsTrue(message.MessageProperties.ReplyTo == null, "Send-and-receive methods can only be used if the Message does not already have a replyTo property.");
-            //    DeclareOk queueDeclaration = channel.QueueDeclare();
-            //    Address replyToAddress = new Address(ExchangeTypes.Direct, DEFAULT_EXCHANGE, queueDeclaration.Queue);
-            //    message.MessageProperties.ReplyTo = replyToAddress;
+                                                                 AssertUtils.IsTrue(message.MessageProperties.ReplyTo == null, "Send-and-receive methods can only be used if the Message does not already have a replyTo property.");
+                                                                 var queueDeclaration = channel.QueueDeclare();
+                                                                 var replyToAddress = new Address(ExchangeTypes.Direct, DEFAULT_EXCHANGE, queueDeclaration);
+                                                                 message.MessageProperties.ReplyTo = replyToAddress;
 
-            //    var noAck = false;
-            //    var consumerTag = Guid.NewGuid().ToString();
-            //    var noLocal = true;
-            //    var exclusive = true;
-            //DefaultConsumer consumer = new DefaultConsumer(channel) {
+                                                                 var noAck = false;
+                                                                 var consumerTag = Guid.NewGuid().ToString();
+                                                                 var noLocal = true;
+                                                                 var exclusive = true;
+                                                                 var consumer = new AdminDefaultBasicConsumer(channel, replyHandoff, this.encoding);
+                                                                 channel.BasicConsume(replyToAddress.RoutingKey, noAck, consumerTag, noLocal, exclusive, null, consumer);
+                                                                 DoSend(channel, exchange, routingKey, message);
+                                                                 Message reply;
 
-            //    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
-            //            byte[] body) throws IOException {
-            //        MessageProperties messageProperties = RabbitUtils.createMessageProperties(properties, envelope,
-            //                encoding);
-            //        Message reply = new Message(body, messageProperties);
-            //        try {
-            //            replyHandoff.put(reply);
-            //        } catch (InterruptedException e) {
-            //            Thread.currentThread().interrupt();
-            //        }
-            //    }
-            //};
-            //channel.basicConsume(replyToAddress.getRoutingKey(), noAck, consumerTag, noLocal, exclusive, null, consumer);
-            //DoSend(channel, exchange, routingKey, message);
-            //Message reply = (replyTimeout < 0) ? replyHandoff.Take() : replyHandoff.Poll(replyTimeout,TimeUnit.MILLISECONDS);
-            //channel.basicCancel(consumerTag);
-            //return reply;
-            //);
+                                                                 if (this.replyTimeout < 0)
+                                                                 {
+                                                                     reply = replyHandoff.Take();
+                                                                 }
+                                                                 else
+                                                                 {
+                                                                     replyHandoff.Poll(new TimeSpan(0, 0, 0, 0, (int)this.replyTimeout), out reply);
+                                                                 }
 
-            //return replyMessage;
+                                                                 channel.BasicCancel(consumerTag);
+                                                                 return reply;
+                                                             });
+
+            return replyMessage;
         }
         #endregion
 
         #region Implementation of IRabbitOperations
-
-        /// <summary>
-        /// Send a message.
-        /// </summary>
-        /// <param name="messageCreatorDelegate">
-        /// The message creator delegate.
-        /// </param>
-        public void Send(MessageCreatorDelegate messageCreatorDelegate)
-        {
-            Send(this.exchange, this.routingKey, messageCreatorDelegate);
-        }
-
-        /// <summary>
-        /// Send a message, given a routing key.
-        /// </summary>
-        /// <param name="routingKey">
-        /// The routing key.
-        /// </param>
-        /// <param name="messageCreatorDelegate">
-        /// The message creator delegate.
-        /// </param>
-        public void Send(string routingKey, MessageCreatorDelegate messageCreatorDelegate)
-        {
-            Send(this.exchange, routingKey, messageCreatorDelegate);
-        }
-
-        /// <summary>
-        /// Send a message, given an exchange and a routing key.
-        /// </summary>
-        /// <param name="exchange">
-        /// The exchange.
-        /// </param>
-        /// <param name="routingKey">
-        /// The routing key.
-        /// </param>
-        /// <param name="messageCreatorDelegate">
-        /// The message creator delegate.
-        /// </param>
-        public void Send(string exchange, string routingKey, MessageCreatorDelegate messageCreatorDelegate)
-        {
-            AssertUtils.ArgumentNotNull(messageCreatorDelegate, "MessageCreatorDelegate must not be null");
-            Execute<object>(channel =>
-            {
-                DoSend(channel, exchange, routingKey, null, messageCreatorDelegate);
-                return null;
-            });
-        }
-
+        
         /// <summary>
         /// Execute an action.
         /// </summary>
@@ -636,11 +533,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 {
                     logger.Debug("Executing callback on RabbitMQ Channel: " + channel);
                 }
+
                 return action(channel);
             }
             catch (Exception ex)
             {
-                if (ChannelLocallyTransacted(channel))
+                if (this.ChannelLocallyTransacted(channel))
                 {
                     resourceHolder.RollbackAll();
                 }
@@ -719,62 +617,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="routingKey">
         /// The routing key.
         /// </param>
-        /// <param name="messageCreator">
-        /// The message creator.
-        /// </param>
-        /// <param name="messageCreatorDelegate">
-        /// The message creator delegate.
-        /// </param>
-        protected virtual void DoSend(RabbitMQ.Client.IModel channel, string exchange, string routingKey, IMessageCreator messageCreator, MessageCreatorDelegate messageCreatorDelegate)
-        {
-            AssertUtils.IsTrue((messageCreator == null && messageCreatorDelegate != null) || (messageCreator != null && messageCreatorDelegate == null), "Must provide a MessageCreatorDelegate or IMessageCreator instance.");
-            Message message;
-            if (messageCreator != null)
-            {
-                message = messageCreator.CreateMessage();
-            }
-            else
-            {
-                message = messageCreatorDelegate(channel);
-            }
-
-            if (exchange == null)
-            {
-                // try to send to the configured exchange
-                exchange = this.exchange;
-            }
-
-            if (routingKey == null)
-            {
-                // try to send to configured routing key
-                routingKey = this.routingKey;
-            }
-
-            var bp = RabbitUtils.ExtractBasicProperties(channel, message, this.encoding);
-            channel.BasicPublish(exchange, routingKey, bp, message.Body);
-
-            // Check commit - avoid commit call within a JTA transaction.
-            // TODO: should we be able to do (via wrapper) something like:
-            // channel.getTransacted()?
-            if (this.IsChannelTransacted && this.ChannelLocallyTransacted(channel))
-            {
-                // Transacted channel created by this template -> commit.
-                RabbitUtils.CommitIfNecessary(channel);
-            }
-        }
-
-        /// <summary>
-        /// Do the send operation.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="exchange">
-        /// The exchange.
-        /// </param>
-        /// <param name="routingKey">
-        /// The routing key.
-        /// </param>
         /// <param name="message">
         /// The message.
         /// </param>
@@ -797,9 +639,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 routingKey = this.routingKey;
             }
 
-            channel.BasicPublish(exchange, routingKey, false, false, RabbitUtils.ExtractBasicProperties(channel, message, encoding), message.Body);
+            channel.BasicPublish(exchange, routingKey, false, false, RabbitUtils.ExtractBasicProperties(channel, message, this.encoding), message.Body);
+
             // Check commit - avoid commit call within a JTA transaction.
-            if (ChannelLocallyTransacted(channel))
+            if (this.ChannelLocallyTransacted(channel))
             {
                 // Transacted channel created by this template -> commit.
                 RabbitUtils.CommitIfNecessary(channel);
@@ -856,6 +699,99 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             }
 
             return name;
+        }
+    }
+
+    /// <summary>
+    /// The admin default basic consumer.
+    /// </summary>
+    internal class AdminDefaultBasicConsumer : DefaultBasicConsumer
+    {
+        /// <summary>
+        /// The reply handoff.
+        /// </summary>
+        private readonly SynchronousQueue<Message> replyHandoff;
+
+        /// <summary>
+        /// The encoding.
+        /// </summary>
+        private readonly string encoding;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdminDefaultBasicConsumer"/> class.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="replyHandoff">
+        /// The reply handoff.
+        /// </param>
+        /// <param name="encoding">
+        /// The encoding.
+        /// </param>
+        public AdminDefaultBasicConsumer(IModel channel, SynchronousQueue<Message> replyHandoff, string encoding) : base(channel)
+        {
+            this.replyHandoff = replyHandoff;
+            this.encoding = encoding;
+        }
+
+        /// <summary>
+        /// Handle delivery.
+        /// </summary>
+        /// <param name="consumerTag">
+        /// The consumer tag.
+        /// </param>
+        /// <param name="envelope">
+        /// The envelope.
+        /// </param>
+        /// <param name="properties">
+        /// The properties.
+        /// </param>
+        /// <param name="body">
+        /// The body.
+        /// </param>
+        public void HandleDelivery(string consumerTag, BasicGetResult envelope, IBasicProperties properties, byte[] body)
+        {
+            var messageProperties = RabbitUtils.CreateMessageProperties(properties, envelope, this.encoding);
+            var reply = new Message(body, messageProperties);
+            try
+            {
+                this.replyHandoff.Put(reply);
+            }
+            catch (ThreadInterruptedException e)
+            {
+                Thread.CurrentThread.Interrupt();
+            }
+        }
+
+        /// <summary>
+        /// Handle basic deliver.
+        /// </summary>
+        /// <param name="consumerTag">
+        /// The consumer tag.
+        /// </param>
+        /// <param name="deliveryTag">
+        /// The delivery tag.
+        /// </param>
+        /// <param name="redelivered">
+        /// The redelivered.
+        /// </param>
+        /// <param name="exchange">
+        /// The exchange.
+        /// </param>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="properties">
+        /// The properties.
+        /// </param>
+        /// <param name="body">
+        /// The body.
+        /// </param>
+        public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, byte[] body)
+        {
+            var envelope = new BasicGetResult(deliveryTag, redelivered, exchange, routingKey, 1, properties, body);
+            this.HandleDelivery(consumerTag, envelope, properties, body);
         }
     }
 }

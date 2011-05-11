@@ -113,15 +113,18 @@
     <Compile Include="Core\RabbitTemplate.cs" />
     <Compile Include="Core\Support\RabbitGatewaySupport.cs" />
     <Compile Include="Listener\AbstractMessageListenerContainer.cs" />
-    <Compile Include="Listener\ActiveObjectListener.cs" />
+    <Compile Include="Listener\ActiveObjectCounter.cs" />
     <Compile Include="Listener\Adapter\ListenerExecutionFailedException.cs" />
     <Compile Include="Listener\Adapter\MessageListenerAdapter.cs" />
     <Compile Include="Listener\BlockingQueueConsumer.cs" />
     <Compile Include="Listener\FatalListenerExecutionException.cs" />
     <Compile Include="Listener\FatalListenerStartupException.cs" />
-    <Compile Include="Listener\LocallyExposedRabbitResourceHolder.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainer.cs" />
+    <Compile Include="Retry\IMessageKeyGenerator.cs" />
+    <Compile Include="Retry\IMessageRecoverer.cs" />
+    <Compile Include="Retry\INewMessageIdentifier.cs" />
     <Compile Include="Support\DateExtensions.cs" />
+    <Compile Include="Transaction\RabbitTransactionManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Spring.Messaging.Amqp\Spring.Messaging.Amqp.2010.csproj">
