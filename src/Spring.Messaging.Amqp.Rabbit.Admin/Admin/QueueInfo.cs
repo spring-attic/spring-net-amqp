@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -26,12 +27,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <author>Mark Pollack</author>
     public class QueueInfo
     {
-        /*{app.stock.request={transactions=0, acks_uncommitted=0, 
- * 					  consumers=0, pid=#Pid<rabbit@MARK6500.150.0>,
- *                    durable=false, messages=0, memory=2320, auto_delete=false, 
- *                    messages_ready=0, arguments=[], name=app.stock.request, 
- *                   messages_unacknowledged=0, messages_uncommitted=0}, 
- */
+        /*
+         * {app.stock.request={transactions=0, acks_uncommitted=0, 
+         * consumers=0, pid=#Pid<rabbit@MARK6500.150.0>,
+         * durable=false, messages=0, memory=2320, auto_delete=false, 
+         * messages_ready=0, arguments=[], name=app.stock.request, 
+         * messages_unacknowledged=0, messages_uncommitted=0}, 
+         */
 
         private long transactions;
 
@@ -59,87 +61,157 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         private long messageUncommitted;
 
+        /// <summary>
+        /// Gets or sets the transactions.
+        /// </summary>
+        /// <value>The transactions.</value>
+        /// <remarks></remarks>
         public long Transactions
         {
-            get { return transactions; }
-            set { transactions = value; }
+            get { return this.transactions; }
+            set { this.transactions = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the acks uncommitted.
+        /// </summary>
+        /// <value>The acks uncommitted.</value>
+        /// <remarks></remarks>
         public long AcksUncommitted
         {
-            get { return acksUncommitted; }
-            set { acksUncommitted = value; }
+            get { return this.acksUncommitted; }
+            set { this.acksUncommitted = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the consumers.
+        /// </summary>
+        /// <value>The consumers.</value>
+        /// <remarks></remarks>
         public long Consumers
         {
-            get { return consumers; }
-            set { consumers = value; }
+            get { return this.consumers; }
+            set { this.consumers = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the pid.
+        /// </summary>
+        /// <value>The pid.</value>
+        /// <remarks></remarks>
         public string Pid
         {
-            get { return pid; }
-            set { pid = value; }
+            get { return this.pid; }
+            set { this.pid = value; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="QueueInfo"/> is durable.
+        /// </summary>
+        /// <value><c>true</c> if durable; otherwise, <c>false</c>.</value>
+        /// <remarks></remarks>
         public bool Durable
         {
-            get { return durable; }
-            set { durable = value; }
+            get { return this.durable; }
+            set { this.durable = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the messages.
+        /// </summary>
+        /// <value>The messages.</value>
+        /// <remarks></remarks>
         public long Messages
         {
-            get { return messages; }
-            set { messages = value; }
+            get { return this.messages; }
+            set { this.messages = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the memory.
+        /// </summary>
+        /// <value>The memory.</value>
+        /// <remarks></remarks>
         public long Memory
         {
-            get { return memory; }
-            set { memory = value; }
+            get { return this.memory; }
+            set { this.memory = value; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [auto delete].
+        /// </summary>
+        /// <value><c>true</c> if [auto delete]; otherwise, <c>false</c>.</value>
+        /// <remarks></remarks>
         public bool AutoDelete
         {
-            get { return autoDelete; }
-            set { autoDelete = value; }
+            get { return this.autoDelete; }
+            set { this.autoDelete = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the messages ready.
+        /// </summary>
+        /// <value>The messages ready.</value>
+        /// <remarks></remarks>
         public long MessagesReady
         {
-            get { return messagesReady; }
-            set { messagesReady = value; }
+            get { return this.messagesReady; }
+            set { this.messagesReady = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the arguments.
+        /// </summary>
+        /// <value>The arguments.</value>
+        /// <remarks></remarks>
         public string[] Arguments
         {
-            get { return arguments; }
-            set { arguments = value; }
+            get { return this.arguments; }
+            set { this.arguments = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        /// <remarks></remarks>
         public string Name
         {
-            get { return name; }
-            set { name = value; }
+            get { return this.name; }
+            set { this.name = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the messages unacknowledged.
+        /// </summary>
+        /// <value>The messages unacknowledged.</value>
+        /// <remarks></remarks>
         public long MessagesUnacknowledged
         {
-            get { return messagesUnacknowledged; }
-            set { messagesUnacknowledged = value; }
+            get { return this.messagesUnacknowledged; }
+            set { this.messagesUnacknowledged = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the message uncommitted.
+        /// </summary>
+        /// <value>The message uncommitted.</value>
+        /// <remarks></remarks>
         public long MessageUncommitted
         {
-            get { return messageUncommitted; }
-            set { messageUncommitted = value; }
+            get { return this.messageUncommitted; }
+            set { this.messageUncommitted = value; }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
+        /// <remarks></remarks>
         public override string ToString()
         {
-            return string.Format("Transactions: {0}, AcksUncommitted: {1}, Consumers: {2}, Pid: {3}, Durable: {4}, Messages: {5}, Memory: {6}, AutoDelete: {7}, MessagesReady: {8}, Arguments: {9}, Name: {10}, MessagesUnacknowledged: {11}, MessageUncommitted: {12}", transactions, acksUncommitted, consumers, pid, durable, messages, memory, autoDelete, messagesReady, arguments, name, messagesUnacknowledged, messageUncommitted);
+            return string.Format("Transactions: {0}, AcksUncommitted: {1}, Consumers: {2}, Pid: {3}, Durable: {4}, Messages: {5}, Memory: {6}, AutoDelete: {7}, MessagesReady: {8}, Arguments: {9}, Name: {10}, MessagesUnacknowledged: {11}, MessageUncommitted: {12}", this.transactions, this.acksUncommitted, this.consumers, this.pid, this.durable, this.messages, this.memory, this.autoDelete, this.messagesReady, this.arguments, this.name, this.messagesUnacknowledged, this.messageUncommitted);
         }
     }
 

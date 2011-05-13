@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -26,21 +27,38 @@ namespace Spring.Erlang.Core
     /// <author>Mark Pollack</author>
     public class Node
     {
+        /// <summary>
+        /// The name.
+        /// </summary>
         private string name;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Node"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <remarks></remarks>
         public Node(string name)
         {
             this.name = name;
         }
 
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <remarks></remarks>
         public string Name
         {
-            get { return name; }
+            get { return this.name; }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
+        /// <remarks></remarks>
         public override string ToString()
         {
-            return string.Format("Name: {0}", name);
+            return string.Format("Name: {0}", this.name);
         }
     }
 

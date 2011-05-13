@@ -25,147 +25,147 @@ using RabbitMQ.Client.Events;
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
-    /// <summary>
-    ///  
-    /// </summary>
-    /// <author>Mark Pollack</author>
-    public class TestConnection : IConnection
-    {
-        private int closeCount;
-        private int createModelCount;
+    ///// <summary>
+    /////  
+    ///// </summary>
+    ///// <author>Mark Pollack</author>
+    //public class TestConnection : IConnection
+    //{
+    //    private int closeCount;
+    //    private int createModelCount;
 
-        public int CloseCount
-        {
-            get { return closeCount; }
-        }
+    //    public int CloseCount
+    //    {
+    //        get { return closeCount; }
+    //    }
 
-        public int CreateModelCount
-        {
-            get { return createModelCount; }
-        }
+    //    public int CreateModelCount
+    //    {
+    //        get { return createModelCount; }
+    //    }
 
-        #region Implementation of IDisposable
+    //    #region Implementation of IDisposable
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Dispose()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        #endregion
+    //    #endregion
 
-        #region Implementation of IConnection
+    //    #region Implementation of IConnection
 
-        public IModel CreateModel()
-        {
-            createModelCount++;
-            return new TestModel();
-        }
+    //    public IModel CreateModel()
+    //    {
+    //        createModelCount++;
+    //        return new TestModel();
+    //    }
 
-        public void Close()
-        {
-            closeCount++;
-        }
+    //    public void Close()
+    //    {
+    //        closeCount++;
+    //    }
 
-        public void Close(ushort reasonCode, string reasonText)
-        {
-            closeCount++;
-        }
+    //    public void Close(ushort reasonCode, string reasonText)
+    //    {
+    //        closeCount++;
+    //    }
 
-        public void Close(int timeout)
-        {
-            closeCount++;
-        }
+    //    public void Close(int timeout)
+    //    {
+    //        closeCount++;
+    //    }
 
-        public void Close(ushort reasonCode, string reasonText, int timeout)
-        {
-            closeCount++;
-        }
+    //    public void Close(ushort reasonCode, string reasonText, int timeout)
+    //    {
+    //        closeCount++;
+    //    }
 
-        public void Abort()
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Abort()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void Abort(ushort reasonCode, string reasonText)
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Abort(ushort reasonCode, string reasonText)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void Abort(int timeout)
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Abort(int timeout)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void Abort(ushort reasonCode, string reasonText, int timeout)
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Abort(ushort reasonCode, string reasonText, int timeout)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public AmqpTcpEndpoint Endpoint
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public AmqpTcpEndpoint Endpoint
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public IProtocol Protocol
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public IProtocol Protocol
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public ushort ChannelMax
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public ushort ChannelMax
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public uint FrameMax
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public uint FrameMax
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public ushort Heartbeat
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public ushort Heartbeat
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public IDictionary ClientProperties
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public IDictionary ClientProperties
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public IDictionary ServerProperties
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public IDictionary ServerProperties
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public AmqpTcpEndpoint[] KnownHosts
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public AmqpTcpEndpoint[] KnownHosts
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public ShutdownEventArgs CloseReason
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public ShutdownEventArgs CloseReason
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public bool IsOpen
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public bool IsOpen
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public bool AutoClose
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
+    //    public bool AutoClose
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //        set { throw new NotImplementedException(); }
+    //    }
 
-        public IList ShutdownReport
-        {
-            get { throw new NotImplementedException(); }
-        }
+    //    public IList ShutdownReport
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
 
-        public event ConnectionShutdownEventHandler ConnectionShutdown;
-        public event CallbackExceptionEventHandler CallbackException;
+    //    public event ConnectionShutdownEventHandler ConnectionShutdown;
+    //    public event CallbackExceptionEventHandler CallbackException;
 
-        #endregion
-    }
+    //    #endregion
+    //}
 
 }

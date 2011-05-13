@@ -107,7 +107,6 @@
     <Compile Include="Core\IChannelAwareMessageListener.cs" />
     <Compile Include="Core\IChannelCallback.cs" />
     <Compile Include="Core\IRabbitOperations.cs" />
-    <Compile Include="Core\MessageCreatorDelegate.cs" />
     <Compile Include="Connection\RabbitAccessor.cs" />
     <Compile Include="Core\RabbitAdmin.cs" />
     <Compile Include="Core\RabbitTemplate.cs" />

@@ -16,7 +16,7 @@ using System.Security.Permissions;
 
 [assembly: CLSCompliantAttribute(true)]
 [assembly: ComVisibleAttribute(false)]
-[assembly: AllowPartiallyTrustedCallersAttribute()]
+//[assembly: AllowPartiallyTrustedCallersAttribute()]
 [assembly: SecurityPermissionAttribute(SecurityAction.RequestMinimum)]
 [assembly: AssemblyCompanyAttribute("http://springsource.org/spring-amqp/")]
 [assembly: AssemblyCopyrightAttribute("Copyright 2010 SpringSource.")]

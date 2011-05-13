@@ -21,6 +21,8 @@
 #region
 
 using System;
+using System.IO;
+using Common.Logging;
 using Erlang.NET;
 using Spring.Objects.Factory;
 using Spring.Util;
@@ -35,54 +37,134 @@ namespace Spring.Erlang.Connection
     /// <author>Mark Pollack</author>
     public class SimpleConnectionFactory : IConnectionFactory, IInitializingObject
     {
-        private string selfNodeName;
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILog logger = LogManager.GetLogger(typeof(SimpleConnectionFactory));
 
-        private string cookie;
+        /// <summary>
+        /// The unique self node name.
+        /// </summary>
+        private bool uniqueSelfNodeName = true;
 
-        private string peerNodeName;
+        /// <summary>
+        /// The self node name.
+        /// </summary>
+        private readonly string selfNodeName;
 
+        /// <summary>
+        /// The peer node name.
+        /// </summary>
+        private readonly string peerNodeName;
+
+        /// <summary>
+        /// The cookie.
+        /// </summary>
+        private readonly string cookie;
+
+        /// <summary>
+        /// The otp self.
+        /// </summary>
         private OtpSelf otpSelf;
 
+        /// <summary>
+        /// The otp peer.
+        /// </summary>
         private OtpPeer otpPeer;
 
-        public SimpleConnectionFactory(String selfNodeName, String cookie, String peerNodeName)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleConnectionFactory"/> class.
+        /// </summary>
+        /// <param name="selfNodeName">Name of the self node.</param>
+        /// <param name="peerNodeName">Name of the peer node.</param>
+        /// <param name="cookie">The cookie.</param>
+        /// <remarks></remarks>
+        public SimpleConnectionFactory(string selfNodeName, string peerNodeName, string cookie)
         {
             this.selfNodeName = selfNodeName;
+            this.peerNodeName = peerNodeName;
             this.cookie = cookie;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleConnectionFactory"/> class.
+        /// </summary>
+        /// <param name="selfNodeName">Name of the self node.</param>
+        /// <param name="peerNodeName">Name of the peer node.</param>
+        /// <remarks></remarks>
+        public SimpleConnectionFactory(string selfNodeName, string peerNodeName)
+        {
+            this.selfNodeName = selfNodeName;
             this.peerNodeName = peerNodeName;
         }
 
-        public SimpleConnectionFactory(String selfNodeName, String peerNodeName)
+        /// <summary>
+        /// Gets or sets a value indicating whether [unique self node name].
+        /// </summary>
+        /// <value><c>true</c> if [unique self node name]; otherwise, <c>false</c>.</value>
+        /// <remarks></remarks>
+        public bool UniqueSelfNodeName
         {
-            this.selfNodeName = selfNodeName;
-            this.peerNodeName = peerNodeName;
+            get { return this.uniqueSelfNodeName; }
+            set { this.uniqueSelfNodeName = value; }
         }
 
         #region Implementation of IConnectionFactory
 
-        public OtpConnection CreateConnection()
+        /// <summary>
+        /// Creates the connection.
+        /// </summary>
+        /// <returns>The connection.</returns>
+        /// <remarks></remarks>
+        public IConnection CreateConnection()
         {
-            return otpSelf.connect(otpPeer);
+            try
+            {
+                return new DefaultConnection(this.otpSelf.connect(this.otpPeer));
+            }
+            catch (IOException ex)
+            {
+                throw new OtpIOException("failed to connect from '" + this.selfNodeName + "' to peer node '" + this.peerNodeName + "'", ex);
+            }
         }
 
         #endregion
 
         #region Implementation of IInitializingObject
 
+        /// <summary>
+        /// Afters the properties set.
+        /// </summary>
+        /// <remarks></remarks>
         public void AfterPropertiesSet()
         {
-            AssertUtils.IsTrue(this.selfNodeName != null || this.peerNodeName != null,
-                               "'selfNodeName' or 'peerNodeName' is required");
-            if (this.cookie == null)
+            AssertUtils.IsTrue(this.selfNodeName != null || this.peerNodeName != null, "'selfNodeName' or 'peerNodeName' is required");
+
+            var selfNodeNameToUse = this.selfNodeName;
+            selfNodeNameToUse = string.IsNullOrEmpty(selfNodeNameToUse) ? string.Empty : selfNodeNameToUse;
+            if (this.UniqueSelfNodeName)
             {
-                this.otpSelf = new OtpSelf(this.selfNodeName);
-            }
-            else
-            {
-                this.otpSelf = new OtpSelf(this.selfNodeName, this.cookie);
+                selfNodeNameToUse = this.selfNodeName + "-" + Guid.NewGuid().ToString();
+                this.logger.Debug("Creating OtpSelf with node name = [" + selfNodeNameToUse + "]");
             }
 
-            this.otpPeer = new OtpPeer(this.peerNodeName);
+            try
+            {
+                if (StringUtils.HasText(this.cookie))
+                {
+                    this.otpSelf = new OtpSelf(selfNodeNameToUse.Trim(), this.cookie);
+                }
+                else
+                {
+                    this.otpSelf = new OtpSelf(selfNodeNameToUse.Trim());
+                }
+            }
+            catch (IOException e)
+            {
+                throw new OtpIOException(e);
+            }
+
+            this.otpPeer = new OtpPeer(string.IsNullOrEmpty(this.peerNodeName) ? string.Empty : this.peerNodeName.Trim());
         }
 
         #endregion

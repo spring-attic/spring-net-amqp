@@ -24,36 +24,36 @@ using RabbitMQ.Client;
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
-    /// <summary>
-    ///  
-    /// </summary>
-    /// <author>Mark Pollack</author>
-    public class TestConnectionFactory : ConnectionFactory
-    {
-        private int createConnectionCount;
+    ///// <summary>
+    /////  
+    ///// </summary>
+    ///// <author>Mark Pollack</author>
+    //public class TestConnectionFactory : ConnectionFactory
+    //{
+    //    private int createConnectionCount;
 
-        protected override IConnection CreateConnection(int maxRedirects, IDictionary connectionAttempts, IDictionary connectionErrors, params AmqpTcpEndpoint[] endpoints)
-        {
-            createConnectionCount++;
-            return new TestConnection();
-        }
-        /*
-        public override IConnection CreateConnection(int maxRedirects, params AmqpTcpEndpoint[] endpoints)
-        {
-            createConnectionCount++;
-            return new TestConnection();
-        }
+    //    protected override IConnection CreateConnection(int maxRedirects, IDictionary connectionAttempts, IDictionary connectionErrors, params AmqpTcpEndpoint[] endpoints)
+    //    {
+    //        createConnectionCount++;
+    //        return new TestConnection();
+    //    }
+    //    /*
+    //    public override IConnection CreateConnection(int maxRedirects, params AmqpTcpEndpoint[] endpoints)
+    //    {
+    //        createConnectionCount++;
+    //        return new TestConnection();
+    //    }
 
-        public override IConnection CreateConnection(params AmqpTcpEndpoint[] endpoints)
-        {
-            createConnectionCount++;
-            return new TestConnection();
-        }*/
+    //    public override IConnection CreateConnection(params AmqpTcpEndpoint[] endpoints)
+    //    {
+    //        createConnectionCount++;
+    //        return new TestConnection();
+    //    }*/
 
-        public int CreateConnectionCount
-        {
-            get { return createConnectionCount; }
-        }
-    }
+    //    public int CreateConnectionCount
+    //    {
+    //        get { return createConnectionCount; }
+    //    }
+    //}
 
 }

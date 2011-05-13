@@ -1,6 +1,4 @@
 ﻿
-using RabbitMQ.Client;
-
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
     /// <summary>

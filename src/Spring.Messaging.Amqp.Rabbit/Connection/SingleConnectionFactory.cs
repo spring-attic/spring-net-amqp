@@ -196,7 +196,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             // If the connection is already alive we assume that the new listener wants to be notified
             if (this.connection != null)
             {
-                listener.OnCreate(this.connection);
+                this.listener.OnCreate(this.connection);
             }
         }
 

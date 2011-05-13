@@ -21,7 +21,6 @@
 
 using System;
 using Common.Logging;
-using RabbitMQ.Client;
 using Spring.Context;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
@@ -117,7 +116,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="exchange">The exchange.</param>
         public void DeclareExchange(IExchange exchange)
         {
-            this.rabbitTemplate.Execute<object>(delegate(IModel channel)
+            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
             {
                 this.DeclareExchanges(channel, exchange);
                 return null;
@@ -139,7 +138,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </returns>
         public bool DeleteExchange(string exchangeName)
         {
-            return this.rabbitTemplate.Execute(delegate(IModel channel)
+            return this.rabbitTemplate.Execute(delegate(RabbitMQ.Client.IModel channel)
             {
                 try
                 {
@@ -160,7 +159,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="queue">The queue.</param>
         public void DeclareQueue(Queue queue)
         {
-            this.rabbitTemplate.Execute<object>(delegate(IModel channel)
+            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
             {
                 this.DeclareQueues(channel, queue);
                 return null;
@@ -191,7 +190,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </returns>
         public bool DeleteQueue(string queueName)
         {
-            return this.rabbitTemplate.Execute(delegate(IModel channel)
+            return this.rabbitTemplate.Execute(delegate(RabbitMQ.Client.IModel channel)
             {
                 try
                 {
@@ -214,7 +213,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="empty">if set to <c>true</c> the queue should be deleted only if empty.</param>
         public void DeleteQueue(string queueName, bool unused, bool empty)
         {
-            this.rabbitTemplate.Execute<object>(delegate(IModel channel)
+            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
             {
                 channel.QueueDelete(queueName, unused, empty);
                 return null;
@@ -228,7 +227,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="noWait">if set to <c>true</c> [no wait].</param>
         public void PurgeQueue(string queueName, bool noWait)
         {
-            this.rabbitTemplate.Execute<object>(delegate(IModel channel)
+            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
             {
                 channel.QueuePurge(queueName);
                 return null;
@@ -243,7 +242,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </param>
         public void DeclareBinding(Binding binding)
         {
-            this.rabbitTemplate.Execute<object>(delegate(IModel channel)
+            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
             {
                 this.DeclareBindings(channel, binding);
                 return null;
@@ -256,7 +255,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="binding">Binding to remove.</param>
         public void RemoveBinding(Binding binding)
         {
-            this.rabbitTemplate.Execute<object>(delegate(IModel channel)
+            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
             {
                 if (binding.IsDestinationQueue())
                 {
@@ -360,7 +359,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 }
             }
 
-            this.rabbitTemplate.Execute<object>(delegate(IModel channel)
+            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
             {
                 var exchangeArray = new IExchange[exchanges.Count];
                 var queueArray = new Queue[queues.Count];
@@ -389,7 +388,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="exchanges">
         /// The exchanges.
         /// </param>
-        private void DeclareExchanges(IModel channel, params IExchange[] exchanges)
+        private void DeclareExchanges(RabbitMQ.Client.IModel channel, params IExchange[] exchanges)
         {
             foreach (var exchange in exchanges)
             {
@@ -410,7 +409,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="queues">
         /// The queues.
         /// </param>
-        private void DeclareQueues(IModel channel, params Queue[] queues)
+        private void DeclareQueues(RabbitMQ.Client.IModel channel, params Queue[] queues)
         {
             foreach (var queue in queues)
             {
@@ -439,7 +438,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="bindings">
         /// The bindings.
         /// </param>
-        private void DeclareBindings(IModel channel, params Binding[] bindings)
+        private void DeclareBindings(RabbitMQ.Client.IModel channel, params Binding[] bindings)
         {
             foreach (var binding in bindings)
             {
@@ -494,7 +493,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="connection">
         /// The connection.
         /// </param>
-        public void OnCreate(Spring.Messaging.Amqp.Rabbit.Connection.IConnection connection)
+        public void OnCreate(IConnection connection)
         {
             if (!this.initializing.CompareAndSet(false, true))
             {
@@ -524,7 +523,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="connection">
         /// The connection.
         /// </param>
-        public void OnClose(Spring.Messaging.Amqp.Rabbit.Connection.IConnection connection)
+        public void OnClose(IConnection connection)
         {
         }
     }

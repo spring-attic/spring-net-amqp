@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -25,32 +26,52 @@ using Spring.Erlang.Connection;
 using Spring.Objects.Factory;
 using Spring.Util;
 
-namespace Spring.Erlang.Core
+namespace Spring.Erlang.Support
 {
     /// <summary>
-    ///  
+    /// An erlang accessor.
     /// </summary>
     /// <author>Mark Pollack</author>
     public abstract class ErlangAccessor : IInitializingObject
     {
+        /// <summary>
+        /// The logger.
+        /// </summary>
         protected static readonly ILog logger = LogManager.GetLogger(typeof(ErlangAccessor));
 
+        /// <summary>
+        /// The connection factory.
+        /// </summary>
         private IConnectionFactory connectionFactory;
 
-        protected OtpConnection createConnection() {
-            return ConnectionFactory.CreateConnection();
-	    }
-
+        /// <summary>
+        /// Gets or sets the connection factory.
+        /// </summary>
+        /// <value>The connection factory.</value>
+        /// <remarks></remarks>
         public IConnectionFactory ConnectionFactory
         {
-            get { return connectionFactory; }
-            set { this.connectionFactory = value;}
+            get { return this.connectionFactory; }
+            set { this.connectionFactory = value; }
         }
 
+        /// <summary>
+        /// Afters the properties set.
+        /// </summary>
+        /// <remarks></remarks>
         public void AfterPropertiesSet()
         {
-            AssertUtils.ArgumentNotNull(ConnectionFactory, "ConnectionFactory is required");
+            AssertUtils.ArgumentNotNull(this.ConnectionFactory, "ConnectionFactory is required");
+        }
+
+        /// <summary>
+        /// Creates the connection.
+        /// </summary>
+        /// <returns>The connection.</returns>
+        /// <remarks></remarks>
+        protected IConnection CreateConnection()
+        {
+            return this.ConnectionFactory.CreateConnection();
         }
     }
-
 }

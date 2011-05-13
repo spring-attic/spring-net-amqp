@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -37,24 +38,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Core.Support
     /// <author>Mark Pollack</author>
     public class RabbitGatewaySupport : IInitializingObject
     {
-
         #region Logging
 
+        /// <summary>
+        /// The logger.
+        /// </summary>
         private readonly ILog logger = LogManager.GetLogger(typeof(RabbitGatewaySupport));
 
         #endregion
 
-        private RabbitTemplate rabbitTemplate;
-
         /// <summary>
-        /// Gets or sets the Rabbit template for the gateway.
+        /// The rabbit template.
         /// </summary>
-        /// <value>The Tabbity template.</value>
-        public RabbitTemplate RabbitTemplate
-        {
-            get { return rabbitTemplate; }
-            set { rabbitTemplate = value; }
-        }
+        private RabbitTemplate rabbitTemplate;
 
         /// <summary>
         /// Gets or sets he NMS connection factory to be used by the gateway.
@@ -65,23 +61,32 @@ namespace Spring.Messaging.Amqp.Rabbit.Core.Support
         {
             get
             {
-                return (rabbitTemplate != null ? this.rabbitTemplate.ConnectionFactory : null);
+                return this.rabbitTemplate != null ? this.rabbitTemplate.ConnectionFactory : null;
             }
+
             set
             {
-                this.rabbitTemplate = CreateRabbitTemplate(value);
+                this.rabbitTemplate = this.CreateRabbitTemplate(value);
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the Rabbit template for the gateway.
+        /// </summary>
+        /// <value>The Tabbity template.</value>
+        public RabbitTemplate RabbitTemplate
+        {
+            get { return this.rabbitTemplate; }
+            set { this.rabbitTemplate = value; }
         }
 
         /// <summary>
         /// Creates a RabbitTemplate for the given ConnectionFactory.
         /// </summary>
-        /// <remarks>Only invoked if populating the gateway with a ConnectionFactory reference.
-        /// Can be overridden in subclasses to provide a different RabbitTemplate instance
-        /// </remarks>
-        ///
         /// <param name="connectionFactory">The connection factory.</param>
-        /// <returns></returns>
+        /// <returns>The rabbit template.</returns>
+        /// <remarks>Only invoked if populating the gateway with a ConnectionFactory reference.
+        /// Can be overridden in subclasses to provide a different RabbitTemplate instance</remarks>
         protected virtual RabbitTemplate CreateRabbitTemplate(IConnectionFactory connectionFactory)
         {
             return new RabbitTemplate(connectionFactory);
@@ -94,13 +99,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Core.Support
         /// </summary>
         public void AfterPropertiesSet()
         {
-            if (rabbitTemplate == null)
+            if (this.rabbitTemplate == null)
             {
                 throw new ArgumentException("connectionFactory or rabbitTemplate is required");
             }
+
             try
             {
-                InitGateway();
+                this.InitGateway();
             }
             catch (Exception e)
             {
@@ -116,7 +122,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core.Support
         /// </summary>
         protected virtual void InitGateway()
         {
-
         }
     }
 }

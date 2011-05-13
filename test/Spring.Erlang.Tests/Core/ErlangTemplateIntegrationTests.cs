@@ -35,21 +35,17 @@ namespace Spring.Erlang.Core
             string selfNodeName = "rabbit-monitor";
             string peerNodeName = "rabbit@" + Dns.GetHostName();
 
-            SimpleConnectionFactory cf = new SimpleConnectionFactory(selfNodeName,peerNodeName);
+            var cf = new SimpleConnectionFactory(selfNodeName, peerNodeName);
 
             cf.AfterPropertiesSet();
-            ErlangTemplate template = new ErlangTemplate(cf);
+            var template = new ErlangTemplate(cf);
             template.AfterPropertiesSet();
 
-            System.Text.ASCIIEncoding  encoding=new System.Text.ASCIIEncoding();
+            var encoding = new System.Text.UTF8Encoding();
     
-
-            OtpErlangObject result = template.ExecuteRpc("rabbit_amqqueue",
-                "info_all", encoding.GetBytes("/"));
+            var result = template.ExecuteRpc("rabbit_amqqueue", "info_all", encoding.GetBytes("/"));
 
             Console.WriteLine(result);
-
-
         }
     }
 }

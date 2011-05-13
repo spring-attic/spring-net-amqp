@@ -362,7 +362,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 {
                     if (!this.target.IsOpen)
                     {
-                        this.target = this.ccf.CreateBareChannelthis.(transactional);
+                        this.target = this.ccf.CreateBareChannel(this.transactional);
                     }
                 }
 
