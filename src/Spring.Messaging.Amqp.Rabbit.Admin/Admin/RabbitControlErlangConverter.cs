@@ -224,7 +224,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             {
                 var erlangList = (OtpErlangList)erlangObject;
 
-                var runningAppTuple = (OtpErlangTuple)erlangList.elementAt(0);
+                var runningAppTuple = (OtpErlangTuple)erlangList.elementAt(1);
                 var appList = (OtpErlangList)runningAppTuple.elementAt(1);
                 this.ExtractApplications(applications, appList);
 
