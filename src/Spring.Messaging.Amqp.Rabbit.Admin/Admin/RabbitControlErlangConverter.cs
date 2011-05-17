@@ -25,6 +25,7 @@ using Common.Logging;
 using Erlang.NET;
 using Spring.Erlang.Core;
 using Spring.Erlang.Support.Converter;
+using Spring.Util;
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
@@ -34,218 +35,454 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <author>Mark Pollack</author>
     public class RabbitControlErlangConverter : SimpleErlangConverter
     {
+        /// <summary>
+        /// The logger
+        /// </summary>
         protected static readonly ILog logger = LogManager.GetLogger(typeof(RabbitControlErlangConverter));
 
-        private IDictionary<string, IErlangConverter> converterMap = new Dictionary<string, IErlangConverter>();
+        /// <summary>
+        /// The converter map.
+        /// </summary>
+        private readonly IDictionary<string, IErlangConverter> converterMap = new Dictionary<string, IErlangConverter>();
 
-        public RabbitControlErlangConverter()
+        /// <summary>
+        /// The module adapter.
+        /// </summary>
+        private readonly IDictionary<string, string> moduleAdapter;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RabbitControlErlangConverter"/> class.
+        /// </summary>
+        /// <param name="moduleAdapter">The module adapter.</param>
+        /// <remarks></remarks>
+        public RabbitControlErlangConverter(IDictionary<string, string> moduleAdapter)
         {
-            InitializeConverterMap();
+            this.moduleAdapter = moduleAdapter;
+            this.InitializeConverterMap();
         }
 
+        /// <summary>
+        /// The return value from executing the Erlang RPC.
+        /// </summary>
+        /// <param name="module">The module to call</param>
+        /// <param name="function">The function to invoke</param>
+        /// <param name="erlangObject">The erlang object that is passed in as a parameter</param>
+        /// <returns>The converted .NET object return value from the RPC call.</returns>
+        /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
+        /// <remarks></remarks>
         public override object FromErlangRpc(string module, string function, OtpErlangObject erlangObject)
         {
-            IErlangConverter converter = GetConverter(module, function);
+            var converter = this.GetConverter(module, function);
             if (converter != null)
             {
                 return converter.FromErlang(erlangObject);
-            } else
+            } 
+            else
             {
                 return base.FromErlangRpc(module, function, erlangObject);
             }
         }
 
-        private void InitializeConverterMap()
+        /// <summary>
+        /// Gets the converter.
+        /// </summary>
+        /// <param name="module">The module.</param>
+        /// <param name="function">The function.</param>
+        /// <returns>The converter.</returns>
+        /// <remarks></remarks>
+        protected virtual IErlangConverter GetConverter(string module, string function)
         {
-            RegisterConverter("rabbit_access_control", "list_users", new ListUsersConverter());	
-            RegisterConverter("rabbit", "status", new StatusConverter());
-            RegisterConverter("rabbit_amqqueue", "info_all", new QueueInfoAllConverter());
+            var key = this.GenerateKey(module, function);
+            if (this.converterMap.ContainsKey(key))
+            {
+                return this.converterMap[key];
+            }
+
+            return null;
         }
 
-        private void RegisterConverter(string module, string function, IErlangConverter converter)
+        /// <summary>
+        /// Initializes the converter map.
+        /// </summary>
+        /// <remarks></remarks>
+        protected void InitializeConverterMap()
         {
-            converterMap.Add(GenerateKey(module, function), converter);	   
+            this.RegisterConverter("rabbit_auth_backend_internal", "list_users", new ListUsersConverter());
+            this.RegisterConverter("rabbit", "status", new StatusConverter());
+            this.RegisterConverter("rabbit_amqqueue", "info_all", new QueueInfoAllConverter());
         }
 
-        private string GenerateKey(string module, string function)
+        /// <summary>
+        /// Registers the converter.
+        /// </summary>
+        /// <param name="module">The module.</param>
+        /// <param name="function">The function.</param>
+        /// <param name="listUsersConverter">The list users converter.</param>
+        /// <remarks></remarks>
+        protected void RegisterConverter(string module, string function, IErlangConverter listUsersConverter)
+        {
+            var key = this.GenerateKey(module, function);
+            if (this.moduleAdapter.ContainsKey(key))
+            {
+                var adapter = this.moduleAdapter[key];
+                var values = adapter.Split("%".ToCharArray());
+                AssertUtils.State(values.Length == 2, "The module adapter should be a map from 'module%function' to 'module%function'. " + "This one contained [" + adapter + "] which cannot be parsed to a module, function pair.");
+                module = values[0];
+                function = values[1];
+            }
+
+            this.converterMap.Add(this.GenerateKey(module, function), listUsersConverter);
+        }
+
+        /// <summary>
+        /// Generates the key.
+        /// </summary>
+        /// <param name="module">The module.</param>
+        /// <param name="function">The function.</param>
+        /// <returns>The key.</returns>
+        /// <remarks></remarks>
+        protected string GenerateKey(string module, string function)
         {
             return module + "%" + function;
         }
+    }
 
-        protected virtual IErlangConverter GetConverter(string module, string function)
+    /// <summary>
+    /// List users converter.
+    /// </summary>
+    /// <remarks></remarks>
+    public class ListUsersConverter : SimpleErlangConverter
+    {
+        /// <summary>
+        /// Convert from an Erlang data type to a .NET data type.
+        /// </summary>
+        /// <param name="erlangObject">The erlang object.</param>
+        /// <returns>The converted .NET object</returns>
+        /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
+        /// <remarks></remarks>
+        public override object FromErlang(OtpErlangObject erlangObject)
         {
-            string key = GenerateKey(module, function);
-            if (converterMap.ContainsKey(key))
+            var users = new List<string>();
+            if (erlangObject is OtpErlangList)
             {
-                return converterMap[key];
+                var erlangList = (OtpErlangList)erlangObject;
+                foreach (var obj in erlangList)
+                {
+                    var value = this.ExtractString(obj);
+                    if (value != null)
+                    {
+                        users.Add(value);
+                    }
+                }
             }
+
+            return users;
+        }
+
+        /// <summary>
+        /// Extracts the string.
+        /// </summary>
+        /// <param name="obj">The obj.</param>
+        /// <returns>The string.</returns>
+        /// <remarks></remarks>
+        private string ExtractString(OtpErlangObject obj)
+        {
+            if (obj is OtpErlangBinary)
+            {
+                var binary = (OtpErlangBinary)obj;
+                return new UTF8Encoding().GetString(binary.binaryValue());
+            }
+            else if (obj is OtpErlangTuple)
+            {
+                var tuple = (OtpErlangTuple)obj;
+                return this.ExtractString(tuple.elementAt(0));
+            }
+
             return null;
         }
     }
 
-    public class ListUsersConverter : SimpleErlangConverter
+    /// <summary>
+    /// A status converter.
+    /// </summary>
+    /// <remarks></remarks>
+    public class StatusConverter : SimpleErlangConverter
     {
+        /// <summary>
+        /// Convert from an Erlang data type to a .NET data type.
+        /// </summary>
+        /// <param name="erlangObject">The erlang object.</param>
+        /// <returns>The converted .NET object</returns>
+        /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
+        /// <remarks></remarks>
         public override object FromErlang(OtpErlangObject erlangObject)
         {
-            IList<string> users = new List<string>();
+            var applications = new List<Application>();
+            var nodes = new List<Node>();
+            var runningNodes = new List<Node>();
             if (erlangObject is OtpErlangList)
             {
-                OtpErlangList erlangList = (OtpErlangList) erlangObject;
-                foreach (OtpErlangObject obj in erlangList)
-                {
-                    if (obj is OtpErlangBinary)
-                    {
-                        OtpErlangBinary binary = (OtpErlangBinary) obj;
-                        users.Add(new ASCIIEncoding().GetString(binary.binaryValue()));
-                    }
+                var erlangList = (OtpErlangList)erlangObject;
 
-                }
+                var runningAppTuple = (OtpErlangTuple)erlangList.elementAt(0);
+                var appList = (OtpErlangList)runningAppTuple.elementAt(1);
+                this.ExtractApplications(applications, appList);
+
+                var nodesTuple = (OtpErlangTuple)erlangList.elementAt(1);
+                var nodesList = (OtpErlangList)nodesTuple.elementAt(1);
+                this.ExtractNodes(nodes, nodesList);
+
+
+                var runningNodesTuple = (OtpErlangTuple)erlangList.elementAt(2);
+                nodesList = (OtpErlangList)runningNodesTuple.elementAt(1);
+                this.ExtractNodes(runningNodes, nodesList);
             }
-            return users;
+
+            return new RabbitStatus(applications, nodes, runningNodes);
+        }
+
+        /// <summary>
+        /// Extracts the nodes.
+        /// </summary>
+        /// <param name="nodes">The nodes.</param>
+        /// <param name="nodesList">The nodes list.</param>
+        /// <remarks></remarks>
+        private void ExtractNodes(IList<Node> nodes, OtpErlangList nodesList)
+        {
+            foreach (var erlangNodeName in nodesList)
+            {
+                var nodeName = erlangNodeName.ToString();
+                nodes.Add(new Node(nodeName));
+            }
+        }
+
+        /// <summary>
+        /// Extracts the applications.
+        /// </summary>
+        /// <param name="applications">The applications.</param>
+        /// <param name="appList">The app list.</param>
+        /// <remarks></remarks>
+        private void ExtractApplications(IList<Application> applications, OtpErlangList appList)
+        {
+            foreach (var appDescription in appList)
+            {
+                var appDescriptionTuple = (OtpErlangTuple)appDescription;
+                var name = appDescriptionTuple.elementAt(0).ToString();
+                var description = appDescriptionTuple.elementAt(1).ToString();
+                var version = appDescriptionTuple.elementAt(2).ToString();
+                applications.Add(new Application(name, description, version));
+            }
         }
     }
 
+    /// <summary>
+    /// Queue info field enumeraton.
+    /// </summary>
+    /// <remarks></remarks>
+    public enum QueueInfoField
+    {
+        /// <summary>
+        /// Transactions value
+        /// </summary>
+        transactions,
+
+        /// <summary>
+        /// Acks Uncommitted value
+        /// </summary>
+        acks_uncommitted,
+
+        /// <summary>
+        /// Consumers value
+        /// </summary>
+        consumers,
+
+        /// <summary>
+        /// Pid value
+        /// </summary>
+        pid,
+
+        /// <summary>
+        /// Durable value
+        /// </summary>
+        durable,
+
+        /// <summary>
+        /// Messages value
+        /// </summary>
+        messages,
+
+        /// <summary>
+        /// Memory value
+        /// </summary>
+        memory,
+
+        /// <summary>
+        /// Auto delete value
+        /// </summary>
+        auto_delete,
+
+        /// <summary>
+        /// Messages ready value
+        /// </summary>
+        messages_ready,
+
+        /// <summary>
+        /// Arguments value
+        /// </summary>
+        arguments,
+
+        /// <summary>
+        /// Name value
+        /// </summary>
+        name,
+
+        /// <summary>
+        /// Messages unacknowledged value
+        /// </summary>
+        messages_unacknowledged,
+
+        /// <summary>
+        /// Messages uncommitted value
+        /// </summary>
+        messages_uncommitted,
+
+        /// <summary>
+        /// No value
+        /// </summary>
+        NOVALUE
+    }
+
+    /// <summary>
+    /// A queue info all converter.
+    /// </summary>
+    /// <remarks></remarks>
     public class QueueInfoAllConverter : SimpleErlangConverter
     {
+        /// <summary>
+        /// Toes the queue info field.
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <returns>The queue info field value.</returns>
+        /// <remarks></remarks>
+        public static QueueInfoField ToQueueInfoField(string str)
+        {
+            try
+            {
+                return (QueueInfoField)Enum.Parse(typeof(QueueInfoField), str, true);
+            }
+            catch (Exception ex)
+            {
+                return QueueInfoField.NOVALUE;
+            }
+        }
+
         public override object FromErlang(OtpErlangObject erlangObject)
         {
-            IList<QueueInfo> queueInfoList = new List<QueueInfo>();
+            var queueInfoList = new List<QueueInfo>();
             if (erlangObject is OtpErlangList)
             {
-                OtpErlangList erlangList = (OtpErlangList) erlangObject;
-                foreach (OtpErlangObject element in erlangList)
+                var erlangList = (OtpErlangList)erlangObject;
+                foreach (var element in erlangList)
                 {
-                    QueueInfo queueInfo = new QueueInfo();
-                    OtpErlangList itemList = (OtpErlangList) element;
-                    foreach (OtpErlangObject item in itemList)
+                    var queueInfo = new QueueInfo();
+                    var itemList = (OtpErlangList)element;
+                    foreach (var item in itemList)
                     {
-                        OtpErlangTuple tuple = (OtpErlangTuple) item;
+                        var tuple = (OtpErlangTuple)item;
                         if (tuple.arity() == 2)
                         {
-                            string key = tuple.elementAt(0).ToString();
-                            OtpErlangObject value = tuple.elementAt(1);
-                            switch (key)
+                            var key = tuple.elementAt(0).ToString();
+                            var value = tuple.elementAt(1);
+                            switch (ToQueueInfoField(key))
                             {
-                                case "name":
-                                    queueInfo.Name = ExtractNameValueFromTuple((OtpErlangTuple) value);
+                                case QueueInfoField.name:
+                                    queueInfo.Name = this.ExtractNameValueFromTuple((OtpErlangTuple)value);
                                     break;
-                                case "transactions":
+                                case QueueInfoField.transactions:
                                     queueInfo.Transactions = ExtractLong(value);
                                     break;
-                                case "acks_uncommitted":
+                                case QueueInfoField.acks_uncommitted:
                                     queueInfo.AcksUncommitted = ExtractLong(value);
                                     break;
-                                case "consumers":
+                                case QueueInfoField.consumers:
                                     queueInfo.Consumers = ExtractLong(value);
                                     break;
-                                case "pid":
+                                case QueueInfoField.pid:
                                     queueInfo.Pid = ExtractPid(value);
                                     break;
-                                case "durable":
-                                    queueInfo.Durable = ExtractAtomBoolean(value);                                    
+                                case QueueInfoField.durable:
+                                    queueInfo.Durable = this.ExtractAtomBoolean(value);                                    
                                     break;
-                                case "messages":
+                                case QueueInfoField.messages:
                                     queueInfo.Messages = ExtractLong(value);
                                     break;
-                                case "memory":
+                                case QueueInfoField.memory:
                                     queueInfo.Memory = ExtractLong(value);
                                     break;
-                                case "auto_delete":
-                                    queueInfo.AutoDelete = ExtractAtomBoolean(value);
+                                case QueueInfoField.auto_delete:
+                                    queueInfo.AutoDelete = this.ExtractAtomBoolean(value);
                                     break;
-                                case "messages_ready":
+                                case QueueInfoField.messages_ready:
                                     queueInfo.MessagesReady = ExtractLong(value);
                                     break;
-                                case "arguments":
-                                    OtpErlangList list = (OtpErlangList)value;
+                                case QueueInfoField.arguments:
+                                    var list = (OtpErlangList)value;
                                     if (list != null)
                                     {
-                                        String[] args = new String[list.arity()];
-                                        for (int i = 0; i < list.arity(); i++)
+                                        var args = new string[list.arity()];
+                                        for (var i = 0; i < list.arity(); i++)
                                         {
-                                            OtpErlangObject obj = list.elementAt(i);
+                                            var obj = list.elementAt(i);
                                             args[i] = obj.ToString();
                                         }
+
                                         queueInfo.Arguments = args;
                                     }
+
                                     break;
-                                case "messages_unacknowledged":
+                                case QueueInfoField.messages_unacknowledged:
                                     queueInfo.MessagesUnacknowledged = ExtractLong(value);
                                     break;
-                                case "messages_uncommitted":
+                                case QueueInfoField.messages_uncommitted:
                                     queueInfo.MessageUncommitted = ExtractLong(value);
                                     break;
                                 default:
                                     break;    
                                 
                             }
+
                             queueInfoList.Add(queueInfo);
                         }
                     }
                 }
             }
+
             return queueInfoList;
         }
 
+        /// <summary>
+        /// Extracts the atom boolean.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The atom boolean.</returns>
+        /// <remarks></remarks>
         private bool ExtractAtomBoolean(OtpErlangObject value)
         {
             return ((OtpErlangAtom)value).boolValue();
         }
 
+        /// <summary>
+        /// Extracts the name value from tuple.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The name value.</returns>
+        /// <remarks></remarks>
         private string ExtractNameValueFromTuple(OtpErlangTuple value)
         {
-            Object nameElement = value.elementAt(3);
-            return new ASCIIEncoding().GetString(((OtpErlangBinary) nameElement).binaryValue());
+            object nameElement = value.elementAt(3);
+            return new UTF8Encoding().GetString(((OtpErlangBinary)nameElement).binaryValue());
         }
     }
 
-    public class StatusConverter : SimpleErlangConverter
-    {
-        public override object FromErlang(OtpErlangObject erlangObject)
-        {
-            IList<Application> applications = new List<Application>();
-            IList<Node> nodes = new List<Node>();
-            IList<Node> runningNodes = new List<Node>();
-            if (erlangObject is OtpErlangList)
-            {
-                OtpErlangList erlangList = (OtpErlangList)erlangObject;
 
-                OtpErlangTuple runningAppTuple = (OtpErlangTuple)erlangList.elementAt(0);
-                OtpErlangList appList = (OtpErlangList)runningAppTuple.elementAt(1);
-                ExtractApplications(applications, appList);
-
-                OtpErlangTuple nodesTuple = (OtpErlangTuple)erlangList.elementAt(1);
-                OtpErlangList nodesList = (OtpErlangList)nodesTuple.elementAt(1);
-                ExtractNodes(nodes, nodesList);
-
-
-                OtpErlangTuple runningNodesTuple = (OtpErlangTuple)erlangList.elementAt(2);
-                nodesList = (OtpErlangList)runningNodesTuple.elementAt(1);
-                ExtractNodes(runningNodes, nodesList);
-            }
-
-            return new RabbitStatus(applications, nodes, runningNodes);
-        }
-
-        private void ExtractNodes(IList<Node> nodes, OtpErlangList nodesList)
-        {
-            foreach (OtpErlangObject erlangNodeName in nodesList)
-            {
-                string nodeName = erlangNodeName.ToString();
-                nodes.Add(new Node(nodeName));
-            }
-        }
-
-        private void ExtractApplications(IList<Application> applications, OtpErlangList appList)
-        {
-            foreach (OtpErlangObject appDescription in appList)
-            {
-                OtpErlangTuple appDescriptionTuple = (OtpErlangTuple)appDescription;
-                string name = appDescriptionTuple.elementAt(0).ToString();
-                String description = appDescriptionTuple.elementAt(1).ToString();
-                String version = appDescriptionTuple.elementAt(2).ToString();
-                applications.Add(new Application(name, description, version));
-            }           
-        }
-    }
 }

@@ -122,7 +122,7 @@
     <Compile Include="Connection\TestConnectionFactory.cs" />
     <Compile Include="Connection\TestModel.cs" />
     <Compile Include="Support\MoqExtensions.cs" />
-    <Compile Include="Test\BrokerUtils.cs" />
+    <Compile Include="Test\BrokerTestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\SampleAdmin.xml" />
@@ -157,6 +157,10 @@
     <ProjectReference Include="..\..\examples\Spring.RabbitQuickStart\src\Spring\Spring.RabbitQuickStart.Common\Spring.RabbitQuickStart.Common.2010.csproj">
       <Project>{DE909872-61DE-48EC-BD1A-8DEE4D993F5B}</Project>
       <Name>Spring.RabbitQuickStart.Common.2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Spring.Messaging.Amqp.Rabbit.Admin\Spring.Messaging.Amqp.Rabbit.Admin.2010.csproj">
+      <Project>{EBC1D070-FC8A-4EAD-B2A7-3AC25AB62507}</Project>
+      <Name>Spring.Messaging.Amqp.Rabbit.Admin.2010</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Spring.Messaging.Amqp.Rabbit\Spring.Messaging.Amqp.Rabbit.2010.csproj">
       <Project>{1B1394DA-24D3-47FE-84CA-7E33B077F686}</Project>

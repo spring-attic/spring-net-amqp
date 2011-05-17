@@ -56,9 +56,11 @@
     <Reference Include="Common.Logging, Version=1.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e">
       <HintPath>..\..\packages\Common.Logging.1.2.0\lib\1.0\Common.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Erlang, Version=0.9.0.20193, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\2.0\Erlang.dll</HintPath>
+    <Reference Include="Erlang">
+      <HintPath>..\..\packages\Erlang.NET.0.9.5\lib\net20\Erlang.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.5.9.10348, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -102,6 +104,10 @@
     <ProjectReference Include="..\..\src\Spring.Messaging.Amqp\Spring.Messaging.Amqp.2010.csproj">
       <Project>{96CD9010-9DDF-4D13-892A-5D60F01F3C90}</Project>
       <Name>Spring.Messaging.Amqp.2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Spring.Messaging.Amqp.Rabbit.Tests\Spring.Messaging.Amqp.Rabbit.Tests.2010.csproj">
+      <Project>{48A4238A-9B96-4CCB-B2BB-86BC07484158}</Project>
+      <Name>Spring.Messaging.Amqp.Rabbit.Tests.2010</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -32,7 +32,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// Goal is to support full CRUD of Exchanges, Queues, Bindings, User, VHosts, etc.
     /// </remarks>
     /// <author>Mark Pollack</author>
-    public interface IRabbitBrokerOperations : IAmqpAdmin
+    public interface IRabbitBrokerOperations
     {
         // Queue operations
 

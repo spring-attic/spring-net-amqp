@@ -20,10 +20,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using log4net.Core;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
+using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Test;
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
@@ -34,58 +38,90 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         private RabbitBrokerAdmin brokerAdmin;
 
+
         [SetUp]
         public void SetUp()
-        {                      
-            connectionFactory = new SingleConnectionFactory();
-            brokerAdmin = new RabbitBrokerAdmin(connectionFactory);
+        {
+            //if (environment.isActive())
+            //{
+            // Set up broker admin for non-root user
+            this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin("rabbit@WIN-8QET3DBQ5GJ",5672);
+            this.brokerAdmin.StartNode();
+            //panic.setBrokerAdmin(brokerAdmin);
+            // }
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            this.brokerAdmin.StopNode();
         }
 
         [Test]
         public void UserCrud()
         {
-            IList<string> users = brokerAdmin.ListUsers();
+            List<String> users = brokerAdmin.ListUsers();
             if (users.Contains("joe"))
             {
                 brokerAdmin.DeleteUser("joe");
             }
+            Thread.Sleep(200);
             brokerAdmin.AddUser("joe", "trader");
-            users = brokerAdmin.ListUsers();
-            Assert.AreEqual("guest", users[0]);
-            Assert.AreEqual("joe", users[1]);
+            Thread.Sleep(200);
             brokerAdmin.ChangeUserPassword("joe", "sales");
+            Thread.Sleep(200);
             users = brokerAdmin.ListUsers();
+            if (users.Contains("joe"))
+            {
+                Thread.Sleep(200);
+                brokerAdmin.DeleteUser("joe");
+            }
+        }
+
+        [Test]
+        public void IntegrationTestsUserCrudWithModuleAdapter()
+        {
+
+            var adapter = new Dictionary<string, string>();
+            // Switch two functions with identical inputs!
+            adapter.Add("rabbit_auth_backend_internal%add_user", "rabbit_auth_backend_internal%change_password");
+            adapter.Add("rabbit_auth_backend_internal%change_password", "rabbit_auth_backend_internal%add_user");
+            brokerAdmin.ModuleAdapter = adapter;
+
+            var users = brokerAdmin.ListUsers();
             if (users.Contains("joe"))
             {
                 brokerAdmin.DeleteUser("joe");
             }
+            Thread.Sleep(200);
+            brokerAdmin.ChangeUserPassword("joe", "sales");
+            Thread.Sleep(200);
+            brokerAdmin.AddUser("joe", "trader");
+            Thread.Sleep(200);
+            users = brokerAdmin.ListUsers();
+            if (users.Contains("joe"))
+            {
+                Thread.Sleep(200);
+                brokerAdmin.DeleteUser("joe");
+            }
+
         }
-        
+        [Test]
+        public void TestGetEmptyQueues()
+        {
+            List<QueueInfo> queues = brokerAdmin.GetQueues();
+            Assert.Equals(0, queues.Count);
+        }
 
         [Test]
-        public void TestStatus()
+        public void TestGetQueues()
         {
-            RabbitStatus status = brokerAdmin.Status;
-            AssertBrokerAppRunning(status);
-
+            SingleConnectionFactory connectionFactory = new SingleConnectionFactory();
+            connectionFactory.Port = BrokerTestUtils.GetAdminPort();
+            Queue queue = new RabbitAdmin(connectionFactory).DeclareQueue();
+            Assert.Equals("/", connectionFactory.VirtualHost);
+            List<QueueInfo> queues = brokerAdmin.GetQueues();
+            Assert.Equals(queue.Name, queues[0].Name);
         }
-
-        [Test]
-        public void GetQueues()
-        {
-            brokerAdmin.DeclareQueue(new Queue("test.queue"));
-            IList<QueueInfo> queues = brokerAdmin.Queues;
-            Assert.AreEqual("test.queue", queues[0].Name);
-            Console.WriteLine(queues[0]);
-
-        }
-
-        private void AssertBrokerAppRunning(RabbitStatus status)
-        {
-            Assert.AreEqual(status.RunningNodes.Count, 1);
-            Assert.IsTrue(status.RunningNodes[0].Name.Contains("rabbit"));
-        }
-
-
     }
 }

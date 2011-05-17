@@ -57,9 +57,12 @@
     <Reference Include="Common.Logging, Version=1.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e">
       <HintPath>..\..\packages\Common.Logging.1.2.0\lib\1.0\Common.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Erlang, Version=0.9.0.20193, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Erlang, Version=0.9.5.0, Culture=neutral, PublicKeyToken=dd1e4028f8bbbc5a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\2.0\Erlang.dll</HintPath>
+      <HintPath>..\..\packages\Erlang.NET.0.9.5\lib\net20\Erlang.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Spring.Aop">
       <HintPath>..\..\packages\Spring.Aop.1.3.1\lib\Net40\Spring.Aop.dll</HintPath>

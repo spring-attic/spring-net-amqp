@@ -11,8 +11,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     {
         private CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
 
-	public BrokerRunning brokerIsRunning = BrokerRunning.isRunning();
+	//public BrokerRunning brokerIsRunning = BrokerRunning.isRunning();
 	
-	public ExpectedException exception = ExpectedException.none();
+	//public ExpectedException exception = ExpectedException.none();
     }
 }

@@ -214,5 +214,4 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return string.Format("Transactions: {0}, AcksUncommitted: {1}, Consumers: {2}, Pid: {3}, Durable: {4}, Messages: {5}, Memory: {6}, AutoDelete: {7}, MessagesReady: {8}, Arguments: {9}, Name: {10}, MessagesUnacknowledged: {11}, MessageUncommitted: {12}", this.transactions, this.acksUncommitted, this.consumers, this.pid, this.durable, this.messages, this.memory, this.autoDelete, this.messagesReady, this.arguments, this.name, this.messagesUnacknowledged, this.messageUncommitted);
         }
     }
-
 }

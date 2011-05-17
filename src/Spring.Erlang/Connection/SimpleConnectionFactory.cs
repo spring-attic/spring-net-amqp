@@ -35,7 +35,7 @@ namespace Spring.Erlang.Connection
     ///  
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class SimpleConnectionFactory : IConnectionFactory, IInitializingObject
+    public class SimpleConnectionFactory : Spring.Erlang.Connection.IConnectionFactory, IInitializingObject
     {
         /// <summary>
         /// The logger.
