@@ -150,7 +150,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 this.channels.Add(channel);
                 if (connection != null)
                 {
-                    var channels = this.channelsPerConnection[connection];
+                    List<IModel> channels;
+                    this.channelsPerConnection.TryGetValue(connection, out channels);
                     
                     // TODO: double check, what about TryGet..
                     if (channels == null)
