@@ -336,18 +336,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             var source = message.MessageProperties;
             
             var target = channel.CreateBasicProperties();
-            target.Headers = source.Headers;
-            target.Timestamp = source.Timestamp.ToAmqpTimestamp();
-            target.MessageId = source.MessageId;
-            target.UserId = source.UserId;
-            target.AppId = source.AppId;
-            target.ClusterId = source.ClusterId;
-            target.Type = source.Type;
-            target.DeliveryMode = (byte)((int)source.DeliveryMode);
-            target.Expiration = source.Expiration;
-            target.Priority = (byte)source.Priority;
-            target.ContentType = source.ContentType;
-            target.ContentEncoding = source.ContentEncoding;
+            target.Headers = source.Headers == null ? target.Headers : source.Headers;
+            target.Timestamp = source.Timestamp == null ? target.Timestamp : source.Timestamp.ToAmqpTimestamp();
+            target.MessageId = string.IsNullOrEmpty(source.MessageId) ? target.MessageId : source.MessageId;
+            target.UserId = string.IsNullOrEmpty(source.UserId) ? target.UserId : source.UserId;
+            target.AppId = string.IsNullOrEmpty(source.AppId) ? target.AppId : source.AppId;
+            target.ClusterId = string.IsNullOrEmpty(source.ClusterId) ? target.ClusterId : source.ClusterId;
+            target.Type = string.IsNullOrEmpty(source.Type) ? target.Type : source.Type;
+            target.DeliveryMode = source.DeliveryMode == null ? target.DeliveryMode : (byte)((int)source.DeliveryMode);
+            target.Expiration = string.IsNullOrEmpty(source.Expiration) ? target.Expiration : source.Expiration;
+            target.Priority = source.Priority == null ? target.Priority : (byte)source.Priority;
+            target.ContentType = string.IsNullOrEmpty(source.ContentType) ? target.ContentType : source.ContentType;
+            target.ContentEncoding = string.IsNullOrEmpty(source.ContentEncoding) ? target.ContentEncoding : source.ContentEncoding;
             var correlationId = source.CorrelationId;
             if (correlationId != null && correlationId.Length > 0)
             {

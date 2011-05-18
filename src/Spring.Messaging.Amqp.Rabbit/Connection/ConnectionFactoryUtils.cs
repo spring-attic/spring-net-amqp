@@ -166,7 +166,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 RabbitUtils.CloseChannel(channel);
                 RabbitUtils.CloseConnection(connection);
-                throw new AmqpException(ex);
+                throw;
             }
         }
 

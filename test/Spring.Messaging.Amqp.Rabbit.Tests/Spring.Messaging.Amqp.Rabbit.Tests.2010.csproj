@@ -122,6 +122,7 @@
     <Compile Include="Connection\TestConnectionFactory.cs" />
     <Compile Include="Connection\TestModel.cs" />
     <Compile Include="Support\MoqExtensions.cs" />
+    <Compile Include="Test\BrokerRunning.cs" />
     <Compile Include="Test\BrokerTestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
