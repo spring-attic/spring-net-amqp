@@ -118,9 +118,13 @@
     <Compile Include="Connection\CachingConnectionFactoryIntegrationTests.cs" />
     <Compile Include="Connection\CachingConnectionFactoryTests.cs" />
     <Compile Include="Connection\SingleConnectionFactoryTests.cs" />
-    <Compile Include="Connection\TestConnection.cs" />
-    <Compile Include="Connection\TestConnectionFactory.cs" />
-    <Compile Include="Connection\TestModel.cs" />
+    <Compile Include="Core\Producer.cs" />
+    <Compile Include="Core\QueueUtils.cs" />
+    <Compile Include="Core\RabbitAdminIntegrationTests.cs" />
+    <Compile Include="Core\RabbitAdminTests.cs" />
+    <Compile Include="Core\RabbitBindingIntegrationTests.cs" />
+    <Compile Include="Core\RabbitTemplatePerformanceIntegrationTests.cs" />
+    <Compile Include="Core\TestConstants.cs" />
     <Compile Include="Support\MoqExtensions.cs" />
     <Compile Include="Test\BrokerRunning.cs" />
     <Compile Include="Test\BrokerTestUtils.cs" />
@@ -129,7 +133,6 @@
     <Content Include="Config\SampleAdmin.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\" />
     <Folder Include="Gateways\" />
     <Folder Include="Properties\" />
     <Folder Include="Support\Converter\" />

@@ -100,6 +100,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.ccf = ccf;
         }
 
+        /// <summary>
+        /// Gets the connection.
+        /// </summary>
+        /// <remarks></remarks>
+        public RabbitMQ.Client.IConnection Connection
+        {
+            get { return ((RabbitMQ.Client.Impl.ModelBase)this.GetTargetChannel()).m_session.Connection; }
+        }
+
         #region Implementation of IChannelProxy
 
         /// <summary>
@@ -593,10 +602,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.InvokeActionWithReconnect(() => this.target.Abort());
         }
 
-		public void Abort(ushort replyCode, string replyText)
-		{
+        public void Abort(ushort replyCode, string replyText)
+        {
             this.InvokeActionWithReconnect(() => this.target.Abort(replyCode, replyText));
-		}
+        }
 
         // TODO - wrap the rest with InvokeAction/Function
 

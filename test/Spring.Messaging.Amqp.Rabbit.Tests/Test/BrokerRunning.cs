@@ -106,12 +106,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="BrokerRunning"/> class. 
         /// Prevents a default instance of the <see cref="BrokerRunning"/> class from being created.
         /// </summary>
-        /// <param name="assumeOnline">if set to <c>true</c> [assume online].</param>
-        /// <param name="purge">if set to <c>true</c> [purge].</param>
-        /// <param name="queues">The queues.</param>
-        /// <remarks></remarks>
+        /// <param name="assumeOnline">
+        /// if set to <c>true</c> [assume online].
+        /// </param>
+        /// <param name="purge">
+        /// if set to <c>true</c> [purge].
+        /// </param>
+        /// <param name="queues">
+        /// The queues.
+        /// </param>
+        /// <remarks>
+        /// </remarks>
         private BrokerRunning(bool assumeOnline, bool purge, params Queue[] queues)
         {
             this.assumeOnline = assumeOnline;
