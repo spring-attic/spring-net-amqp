@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using RabbitMQ.Client;
+using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Test;
@@ -25,7 +27,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// The broker is running.
         /// </summary>
         public BrokerRunning brokerIsRunning;
-        
+
         // public ExpectedException exception = ExpectedException.none();
 
         /// <summary>
@@ -123,6 +125,40 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             catch (Exception e)
             {
                 Assert.True(e is AmqpIOException);
+            }
+        }
+
+        /// <summary>
+        /// Tests the mix transactional and non transactional.
+        /// </summary>
+        /// <remarks></remarks>
+        [Test]
+        public void TestMixTransactionalAndNonTransactional()
+        {
+            var template1 = new RabbitTemplate(this.connectionFactory);
+            var template2 = new RabbitTemplate(this.connectionFactory);
+            template1.IsChannelTransacted = true;
+
+            var admin = new RabbitAdmin(this.connectionFactory);
+            var queue = admin.DeclareQueue();
+
+            template1.ConvertAndSend(queue.Name, "message");
+            
+            var result = (string)template2.ReceiveAndConvert(queue.Name);
+            Assert.AreEqual("message", result);
+
+            try
+            {
+                template2.Execute<object>(delegate(IModel channel)
+                {
+                    // Should be an exception because the channel is not transactional
+                    channel.TxRollback();
+                    return null;
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.True(ex is AmqpIOException, "The channel is not transactional.");
             }
         }
     }
