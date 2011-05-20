@@ -123,8 +123,14 @@
     <Compile Include="Core\RabbitAdminIntegrationTests.cs" />
     <Compile Include="Core\RabbitAdminTests.cs" />
     <Compile Include="Core\RabbitBindingIntegrationTests.cs" />
+    <Compile Include="Core\RabbitTemplateIntegrationTests.cs" />
     <Compile Include="Core\RabbitTemplatePerformanceIntegrationTests.cs" />
+    <Compile Include="Core\Support\RabbitGatewaySupportTests.cs" />
     <Compile Include="Core\TestConstants.cs" />
+    <Compile Include="Listener\ActiveObjectCounterTests.cs" />
+    <Compile Include="Listener\SimpleMessageListenerContainerIntegrationTests.cs" />
+    <Compile Include="Listener\SimpleMessageListenerContainerTests.cs" />
+    <Compile Include="Listener\UnackedRawIntegrationTests.cs" />
     <Compile Include="Support\MoqExtensions.cs" />
     <Compile Include="Test\BrokerRunning.cs" />
     <Compile Include="Test\BrokerTestUtils.cs" />

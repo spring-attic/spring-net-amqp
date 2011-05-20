@@ -871,7 +871,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// </summary>
     internal class MessageRejectedWhileStoppingException : SystemException 
     {
-	}
+    }
 
     /// <summary>
     /// Exception that indicates that the initial setup of this container's

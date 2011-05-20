@@ -112,6 +112,5 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             var result = (string)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual("message", result);
         }
-
     }
 }

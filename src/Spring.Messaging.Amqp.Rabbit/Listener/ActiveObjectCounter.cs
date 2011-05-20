@@ -3,20 +3,16 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Spring.Messaging.Amqp.Rabbit.Support;
-using Spring.Threading;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
-    /**
- * @author Dave Syer
- * 
- */
-
     /// <summary>
     /// An active object counter.
     /// </summary>
     /// <typeparam name="T">
+    /// Type T.
     /// </typeparam>
     /// <author>Dave Syer</author>
     /// <author>Joe Fitzgerald</author>
@@ -25,7 +21,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// A lock dictionary.
         /// </summary>
-        private readonly ConcurrentDictionary<T, CountDownLatch> locks = new ConcurrentDictionary<T, CountDownLatch>();
+        private readonly ConcurrentDictionary<T, CountdownEvent> locks = new ConcurrentDictionary<T, CountdownEvent>();
 
         /// <summary>
         /// Add the object.
@@ -35,7 +31,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </param>
         public void Add(T obj)
         {
-            var latchLock = new CountDownLatch(1);
+            var latchLock = new CountdownEvent(1);
             this.locks.AddOrUpdate(obj, latchLock, (key, oldValue) => latchLock);
         }
 
@@ -47,11 +43,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </param>
         public void Release(T obj)
         {
-            CountDownLatch remove = null;
-            this.locks.TryRemove(obj, out remove);
+            CountdownEvent remove = null;
+            try
+            {
+                this.locks.TryRemove(obj, out remove);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             if (remove != null)
             {
-                remove.CountDown();
+                remove.Signal();
             }
         }
 
@@ -70,7 +74,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var t1 = t0.Add(timeout);
             while (DateTime.Now <= t1)
             {
-                if (this.locks == null || this.locks.Count < 1)
+                if (this.locks == null || this.locks.Count == 0)
                 {
                     return true;
                 }
@@ -78,17 +82,26 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 var objects = new HashSet<T>(this.locks.Keys);
                 foreach (var obj in objects)
                 {
-                    CountDownLatch latchLock = this.locks[obj];
+                    CountdownEvent latchLock = null;
+                    this.locks.TryGetValue(obj, out latchLock);
                     if (latchLock == null)
                     {
                         continue;
                     }
 
                     t0 = DateTime.Now;
-                    if (latchLock.Await(t1.Subtract(t0)))
+                    if (latchLock.Wait(t1.Subtract(t0)))
                     {
-                        CountDownLatch removeResult;
-                        this.locks.TryRemove(obj, out removeResult);
+                        CountdownEvent removeResult;
+                        try
+                        {
+
+                            this.locks.TryRemove(obj, out removeResult);
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
 
                         // TODO: Do something if removeResult is null?
                     }
