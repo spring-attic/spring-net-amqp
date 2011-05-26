@@ -88,10 +88,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Spring.Messaging.Amqp.Qpid-0-10-0.8\Spring.Messaging.Amqp.Qpid-0-10-0.8\Spring.Messaging.Amqp.Qpid-0-10-0.8.2010.csproj">
-      <Project>{07B01C3C-A31D-45BE-98FD-691A387BD030}</Project>
-      <Name>Spring.Messaging.Amqp.Qpid-0-10-0.8.2010</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\src\Spring.Messaging.Amqp\Spring.Messaging.Amqp.2010.csproj">
       <Project>{96CD9010-9DDF-4D13-892A-5D60F01F3C90}</Project>
       <Name>Spring.Messaging.Amqp.2010</Name>

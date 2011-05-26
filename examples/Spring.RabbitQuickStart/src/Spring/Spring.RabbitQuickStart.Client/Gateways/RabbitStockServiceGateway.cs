@@ -19,15 +19,8 @@ namespace Spring.RabbitQuickStart.Client.Gateways
         }
 
         public void Send(TradeRequest tradeRequest)
-        {   
-            RabbitTemplate.ConvertAndSend(tradeRequest, delegate(Message message)
-                                                            {
-                                                                message.MessageProperties.ReplyTo = defaultReplyToQueue;
-                                                                message.MessageProperties.CorrelationId =
-                                                                    new Guid().ToByteArray();
-                                                                return message;
-
-                                                            });           
+        {
+            RabbitTemplate.ConvertAndSend(tradeRequest);           
         }        
     }
 }

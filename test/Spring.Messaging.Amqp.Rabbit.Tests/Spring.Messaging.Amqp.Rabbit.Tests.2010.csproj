@@ -128,12 +128,22 @@
     <Compile Include="Core\Support\RabbitGatewaySupportTests.cs" />
     <Compile Include="Core\TestConstants.cs" />
     <Compile Include="Listener\ActiveObjectCounterTests.cs" />
+    <Compile Include="Listener\MessageListenerBrokerInterruptionIntegrationTests.cs" />
+    <Compile Include="Listener\MessageListenerContainerErrorHandlerIntegrationTests.cs" />
+    <Compile Include="Listener\MessageListenerContainerLifecycleIntegrationTests.cs" />
+    <Compile Include="Listener\MessageListenerContainerMultipleQueueIntegrationTests.cs" />
+    <Compile Include="Listener\MessageListenerContainerRetryIntegrationTests.cs" />
+    <Compile Include="Listener\MessageListenerManualAckIntegrationTests.cs" />
+    <Compile Include="Listener\MessageListenerRecoveryCachingConnectionIntegrationTests.cs" />
+    <Compile Include="Listener\MessageListenerRecoverySingleConnectionIntegrationTests.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainerIntegrationTests.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainerTests.cs" />
     <Compile Include="Listener\UnackedRawIntegrationTests.cs" />
     <Compile Include="Support\MoqExtensions.cs" />
     <Compile Include="Test\BrokerRunning.cs" />
     <Compile Include="Test\BrokerTestUtils.cs" />
+    <Compile Include="Test\EnvironmentAvailable.cs" />
+    <Compile Include="Transaction\RabbitTransactionManagerIntegrationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\SampleAdmin.xml" />

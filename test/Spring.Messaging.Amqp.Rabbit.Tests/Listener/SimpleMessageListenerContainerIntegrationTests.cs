@@ -222,30 +222,30 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// A Poco Listener.
     /// </summary>
     /// <remarks></remarks>
-    public class PocoListener
+    public class SimplePocoListener
     {
         private AtomicInteger count = new AtomicInteger();
-        private static ILog logger = LogManager.GetLogger(typeof(PocoListener));
+        private static ILog logger = LogManager.GetLogger(typeof(SimplePocoListener));
         private readonly CountdownEvent latch;
 
         private readonly bool fail;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PocoListener"/> class.
+        /// Initializes a new instance of the <see cref="SimplePocoListener"/> class.
         /// </summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public PocoListener(CountdownEvent latch) : this(latch, false)
+        public SimplePocoListener(CountdownEvent latch) : this(latch, false)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PocoListener"/> class.
+        /// Initializes a new instance of the <see cref="SimplePocoListener"/> class.
         /// </summary>
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <remarks></remarks>
-        public PocoListener(CountdownEvent latch, bool fail)
+        public SimplePocoListener(CountdownEvent latch, bool fail)
         {
             this.latch = latch;
             this.fail = fail;

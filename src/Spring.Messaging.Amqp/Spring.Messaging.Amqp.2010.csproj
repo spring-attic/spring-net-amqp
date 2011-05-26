@@ -75,6 +75,7 @@
     </Compile>
     <Compile Include="AmqpConnectException.cs" />
     <Compile Include="AmqpException.cs" />
+    <Compile Include="AmqpIllegalStateException.cs" />
     <Compile Include="AmqpIOException.cs" />
     <Compile Include="AmqpUnsupportedEncodingException.cs" />
     <Compile Include="Core\AbstractExchange.cs" />

@@ -12,11 +12,11 @@ namespace Spring.RabbitQuickStart.BrokerConfiguration
         {
             using (IConnectionFactory connectionFactory = new SingleConnectionFactory())
             {
-                IAmqpAdmin amqpAdmin = new RabbitAdmin(new RabbitTemplate(connectionFactory));
+                IAmqpAdmin amqpAdmin = new RabbitAdmin(connectionFactory);
 
-                Queue marketDataQueue = new Queue("APP.STOCK.MARKETDATA");
+                var marketDataQueue = new Queue("APP.STOCK.MARKETDATA");
                 amqpAdmin.DeclareQueue(marketDataQueue);
-                Binding binding = new Binding(marketDataQueue, DirectExchange.DEFAULT);
+                var binding = BindingBuilder.Bind(marketDataQueue).To(DirectExchange.DEFAULT).WithQueueName();
                 amqpAdmin.DeclareBinding(binding);
 
                 amqpAdmin.DeclareQueue(new Queue("APP.STOCK.REQUEST"));
