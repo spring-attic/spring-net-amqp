@@ -512,7 +512,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </returns>
         protected BlockingQueueConsumer CreateBlockingQueueConsumer()
         {
-            return new BlockingQueueConsumer(this.ConnectionFactory, this.cancellationLock, this.AcknowledgeMode, this.IsChannelTransacted, this.prefetchCount, this.prefetchSize, GetRequiredQueueNames());
+            // There's no point prefetching less than the tx size, otherwise the consumer will stall because the broker
+            // didn't get an ack for delivered messages
+            var actualPrefetchCount = this.prefetchCount > this.txSize ? this.prefetchCount : this.txSize;
+            return new BlockingQueueConsumer(this.ConnectionFactory, this.cancellationLock, this.AcknowledgeMode, this.IsChannelTransacted, this.prefetchCount, actualPrefetchCount, GetRequiredQueueNames());
         }
 
         /// <summary>
@@ -533,6 +536,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     {
                         // Need to recycle the channel in this consumer
                         consumer.Stop();
+
+                        // Ensure consumer counts are correct (another is not going
+                        // to start because of the exception, but
+                        // we haven't counted down yet)
                         this.cancellationLock.Release(consumer);
                         this.consumers.Remove(consumer);
                         consumer = this.CreateBlockingQueueConsumer();
@@ -540,9 +547,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     }
                     catch (Exception e)
                     {
-                        // Ensure consumer counts are correct (another is not going
-                        // to start because of the exception, but
-                        // we haven't counted down yet)
                         this.logger.Warn("Consumer died on restart. " + e.Source + ": " + e.Message);
 
                         // Thrown into the void (probably) in a background thread.
@@ -605,20 +609,39 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             var channel = consumer.Channel;
 
+            Message lastMessage = null;
             for (var i = 0; i < this.txSize; i++)
             {
-
                 this.logger.Trace("Waiting for message from consumer.");
                 var message = consumer.NextMessage(new TimeSpan(0, 0, 0, 0, (int)this.receiveTimeout));
                 if (message == null)
                 {
-                    return false;
+                    break;
                 }
 
-                this.ExecuteListener(channel, message);
+                lastMessage = message;
+                try
+                {
+                    this.ExecuteListener(channel, message);
+                }
+                catch (ImmediateAcknowledgeAmqpException e)
+                {
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    this.RollbackOnExceptionIfNecessary(channel, message, ex);
+                    throw;
+                }
             }
 
-            return true;
+            if (lastMessage != null)
+            {
+                this.CommitIfNecessary(channel, lastMessage);
+                return true;
+            }
+
+            return false;
         }
     }
 

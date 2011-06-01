@@ -33,7 +33,7 @@ namespace Spring.Erlang.Core
         public void TestExecuteRpc()
         {
             string selfNodeName = "rabbit-monitor";
-            string peerNodeName = "rabbit@" + Dns.GetHostName();
+            string peerNodeName = "rabbit@" + Dns.GetHostName().ToUpper();
 
             var cf = new SimpleConnectionFactory(selfNodeName, peerNodeName);
 

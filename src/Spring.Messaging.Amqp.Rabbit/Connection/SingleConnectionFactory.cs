@@ -109,7 +109,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         {
             if (!StringUtils.HasText(hostname))
             {
-                hostname = GetDefaultHostName();
+                hostname = this.GetDefaultHostName();
             }
 
             this.rabbitConnectionFactory = new RabbitMQ.Client.ConnectionFactory { HostName = hostname, Port = port };
@@ -320,7 +320,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             string temp;
             try
             {
-                temp = Dns.GetHostName();
+                temp = Dns.GetHostName().ToUpper();
                 logger.Debug("Using hostname [" + temp + "] for hostname.");
             }
             catch (Exception e)

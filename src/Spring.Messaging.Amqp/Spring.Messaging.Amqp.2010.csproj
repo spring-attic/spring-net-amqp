@@ -101,6 +101,7 @@
     <Compile Include="Core\MessagePostProcessorDelegate.cs" />
     <Compile Include="Core\Queue.cs" />
     <Compile Include="Core\TopicExchange.cs" />
+    <Compile Include="ImmediateAcknowledgeAmqpException.cs" />
     <Compile Include="Support\Converter\AbstractMessageConverter.cs" />
     <Compile Include="Support\Converter\IMessageConverter.cs">
       <SubType>Code</SubType>

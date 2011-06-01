@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Common.Logging;
@@ -341,8 +342,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             var source = message.MessageProperties;
             
             var target = channel.CreateBasicProperties();
-            
-            target.Headers = source.Headers == null ? target.Headers : source.Headers;
+
+            target.Headers = ConvertHeadersIfNecessary(source.Headers == null ? target.Headers : source.Headers);
             target.Timestamp = source.Timestamp.ToAmqpTimestamp();
 
             if (source.MessageId != null)
@@ -427,6 +428,60 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 throw RabbitUtils.ConvertRabbitAccessException(e);
             }
+        }
+
+        /// <summary>
+        /// Converts the headers if necessary.
+        /// </summary>
+        /// <param name="headers">The headers.</param>
+        /// <returns>The converted headers.</returns>
+        /// <remarks></remarks>
+        private static IDictionary ConvertHeadersIfNecessary(IDictionary headers)
+        {
+            if (CollectionUtils.IsEmpty(headers))
+            {
+                return new Dictionary<string, object>();
+            }
+
+            var writableHeaders = new Dictionary<string, object>();
+            foreach (DictionaryEntry entry in headers)
+            {
+                writableHeaders.Add((string)entry.Key, ConvertHeaderValueIfNecessary(entry.Value));
+            }
+
+            return writableHeaders;
+        }
+
+        /// <summary>
+        /// Converts the header value if necessary.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The header value.</returns>
+        /// <remarks></remarks>
+        private static object ConvertHeaderValueIfNecessary(object value)
+        {
+            var valid = (value is string)
+                         || (value is byte[])
+                         || (value is bool)
+
+                         // || (value is LongString)
+                         || (value is int)
+                         || (value is long)
+                         || (value is float)
+                         || (value is double)
+                         || (value is decimal) // BigDecimal doesn't exist...
+                         || (value is short)
+                         || (value is byte)
+                         || (value is DateTime)
+                         || (value is IList)
+                         || (value is IDictionary);
+
+            if (!valid && value != null)
+            {
+                value = value.ToString();
+            }
+
+            return value;
         }
     }
 }

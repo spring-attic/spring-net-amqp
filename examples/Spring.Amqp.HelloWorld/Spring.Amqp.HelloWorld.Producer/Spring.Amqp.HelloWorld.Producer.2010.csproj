@@ -75,6 +75,7 @@
   <ItemGroup>
     <Content Include="Config\Application.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>

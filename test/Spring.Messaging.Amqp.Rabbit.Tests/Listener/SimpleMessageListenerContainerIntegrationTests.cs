@@ -4,19 +4,38 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Common.Logging;
+using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Threading;
 using Spring.Threading.AtomicTypes;
 using Spring.Transaction;
 using Spring.Transaction.Support;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
+    /// <summary>
+    /// Simple message listener container integration tests.
+    /// </summary>
+    /// <remarks></remarks>
+    [TestFixture(1, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
+    [TestFixture(1, 1, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
+    [TestFixture(4, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
+    [TestFixture(4, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
+    [TestFixture(4, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, false, 1, false)]
+    [TestFixture(2, 2, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
+    [TestFixture(2, 2, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
+    [TestFixture(20, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
+    [TestFixture(20, 4, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
+    [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
+    [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
+    [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 10, false)]
     public class SimpleMessageListenerContainerIntegrationTests
     {
-        
         private static ILog logger = LogManager.GetLogger(typeof(SimpleMessageListenerContainerIntegrationTests));
 
         private Queue queue = new Queue("test.queue");
@@ -29,7 +48,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         // @Rule
         // public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.ERROR, RabbitTemplate.class,
-        // SimpleMessageListenerContainer.class, BlockingQueueConsumer.class);
+        // SimpleMessageListenerContainer.class, BlockingQueueConsumer.class, CachingConnectionFactory.class);
 
         //@Rule
         public BrokerRunning brokerIsRunning;
@@ -44,13 +63,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         private readonly bool transactional;
 
-        public SimpleMessageListenerContainerIntegrationTests()
-        {
-            brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
-        }
-
         public SimpleMessageListenerContainerIntegrationTests(int messageCount, int concurrency, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode, bool transactional, int txSize, bool externalTransaction)
         {
+            brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
             this.messageCount = messageCount;
             this.concurrentConsumers = concurrency;
             this.acknowledgeMode = acknowledgeMode;
@@ -59,163 +74,217 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             this.externalTransaction = externalTransaction;
         }
 
-        /*@Parameters
-        public static List<Object[]> getParameters() {
-            return Arrays.asList( //
-                    params(0, 1, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO), //
-                    params(1, 1, 1, AcknowledgeModeUtils.AcknowledgeMode.NONE), //
-                    params(2, 4, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO), //
-                    extern(3, 4, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO), //
-                    params(4, 4, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, false), //
-                    params(5, 2, 2, AcknowledgeModeUtils.AcknowledgeMode.AUTO), //
-                    params(6, 2, 2, AcknowledgeModeUtils.AcknowledgeMode.NONE), //
-                    params(7, 20, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO), //
-                    params(8, 20, 4, AcknowledgeModeUtils.AcknowledgeMode.NONE), //
-                    params(9, 1000, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO), //
-                    params(10, 1000, 4, AcknowledgeModeUtils.AcknowledgeMode.NONE), //
-                    params(11, 1000, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, 10) //
-                    );
-        }
-        
-        private static Object[] params(int i, int messageCount, int concurrency, AcknowledgeMode acknowledgeMode,
-                boolean transactional, int txSize) {
+        private static object[] GetParams(int i, int messageCount, int concurrency, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode, bool transactional, int txSize)
+        {
             // "i" is just a counter to make it easier to identify the test in the log
-            return new Object[] { messageCount, concurrency, acknowledgeMode, transactional, txSize, false };
+            return new object[] { messageCount, concurrency, acknowledgeMode, transactional, txSize, false };
         }
 
-        private static Object[] params(int i, int messageCount, int concurrency, AcknowledgeMode acknowledgeMode, int txSize) {
+        private static object[] GetParams(int i, int messageCount, int concurrency, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode, int txSize)
+        {
             // For this test always us a transaction if it makes sense...
-            return params(i, messageCount, concurrency, acknowledgeMode, acknowledgeMode.isTransactionAllowed(), txSize);
+            return GetParams(i, messageCount, concurrency, acknowledgeMode, acknowledgeMode.TransactionAllowed(), txSize);
         }
 
-        private static Object[] params(int i, int messageCount, int concurrency, AcknowledgeMode acknowledgeMode,
-                boolean transactional) {
-            return params(i, messageCount, concurrency, acknowledgeMode, transactional, 1);
+        private static object[] GetParams(int i, int messageCount, int concurrency, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode, bool transactional)
+        {
+            return GetParams(i, messageCount, concurrency, acknowledgeMode, transactional, 1);
         }
 
-        private static Object[] params(int i, int messageCount, int concurrency, AcknowledgeMode acknowledgeMode) {
-            return params(i, messageCount, concurrency, acknowledgeMode, 1);
+        private static object[] GetParams(int i, int messageCount, int concurrency, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode)
+        {
+            return GetParams(i, messageCount, concurrency, acknowledgeMode, 1);
         }
 
-        private static Object[] extern(int i, int messageCount, int concurrency, AcknowledgeMode acknowledgeMode) {
-            return new Object[] { messageCount, concurrency, acknowledgeMode, true, 1, true };
+        /// <summary>
+        /// Declares the queue.
+        /// </summary>
+        /// <remarks></remarks>
+        [SetUp]
+        public void DeclareQueue()
+        {
+            var connectionFactory = new CachingConnectionFactory();
+            connectionFactory.ChannelCacheSize = this.concurrentConsumers;
+            connectionFactory.Port = BrokerTestUtils.GetPort();
+            this.template.ConnectionFactory = connectionFactory;
         }
 
-        @Before
-        public void declareQueue() {
-            CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-            connectionFactory.setChannelCacheSize(concurrentConsumers);
-            connectionFactory.setPort(BrokerTestUtils.getPort());
-            template.setConnectionFactory(connectionFactory);
-        }
-
-        @After
-        public void clear() throws Exception {
+        /// <summary>
+        /// Clears this instance.
+        /// </summary>
+        /// <remarks></remarks>
+        [TearDown]
+        public void Clear()
+        {
             // Wait for broker communication to finish before trying to stop container
-            Thread.sleep(300L);
-            logger.debug("Shutting down at end of test");
-            if (container != null) {
-                container.shutdown();
+            Thread.Sleep(300);
+            logger.Debug("Shutting down at end of test");
+            if (this.container != null)
+            {
+                this.container.Shutdown();
             }
         }
 
-        @Test
-        public void testPojoListenerSunnyDay() throws Exception {
-            CountDownLatch latch = new CountDownLatch(messageCount);
-            doSunnyDayTest(latch, new MessageListenerAdapter(new PojoListener(latch)));
+        /// <summary>
+        /// Tests the poco listener sunny day.
+        /// </summary>
+        /// <remarks></remarks>
+        [Test]
+        public void TestPocoListenerSunnyDay()
+        {
+            var latch = new CountDownLatch(this.messageCount);
+            this.DoSunnyDayTest(latch, new MessageListenerAdapter(new SimplePocoListener(latch)));
         }
 
-        @Test
-        public void testListenerSunnyDay() throws Exception {
-            CountDownLatch latch = new CountDownLatch(messageCount);
-            doSunnyDayTest(latch, new Listener(latch));
+        /// <summary>
+        /// Tests the listener sunny day.
+        /// </summary>
+        /// <remarks></remarks>
+        [Test]
+        public void TestListenerSunnyDay()
+        {
+            var latch = new CountDownLatch(this.messageCount);
+            this.DoSunnyDayTest(latch, new Listener(latch));
         }
 
-        @Test
-        public void testChannelAwareListenerSunnyDay() throws Exception {
-            CountDownLatch latch = new CountDownLatch(messageCount);
-            doSunnyDayTest(latch, new ChannelAwareListener(latch));
+        /// <summary>
+        /// Tests the channel aware listener sunny day.
+        /// </summary>
+        /// <remarks></remarks>
+        [Test]
+        public void TestChannelAwareListenerSunnyDay()
+        {
+            var latch = new CountDownLatch(this.messageCount);
+            this.DoSunnyDayTest(latch, new ChannelAwareListener(latch));
         }
 
-        @Test
-        public void testPojoListenerWithException() throws Exception {
-            CountDownLatch latch = new CountDownLatch(messageCount);
-            doListenerWithExceptionTest(latch, new MessageListenerAdapter(new PojoListener(latch, true)));
+        /// <summary>
+        /// Tests the poco listener with exception.
+        /// </summary>
+        /// <remarks></remarks>
+        [Test]
+        public void TestPocoListenerWithException()
+        {
+            var latch = new CountDownLatch(this.messageCount);
+            this.DoListenerWithExceptionTest(latch, new MessageListenerAdapter(new SimplePocoListener(latch, true)));
         }
 
-        @Test
-        public void testListenerWithException() throws Exception {
-            CountDownLatch latch = new CountDownLatch(messageCount);
-            doListenerWithExceptionTest(latch, new Listener(latch, true));
+        /// <summary>
+        /// Tests the listener with exception.
+        /// </summary>
+        /// <remarks></remarks>
+        [Test]
+        public void TestListenerWithException()
+        {
+            var latch = new CountDownLatch(this.messageCount);
+            this.DoListenerWithExceptionTest(latch, new Listener(latch, true));
         }
 
-        @Test
-        public void testChannelAwareListenerWithException() throws Exception {
-            CountDownLatch latch = new CountDownLatch(messageCount);
-            doListenerWithExceptionTest(latch, new ChannelAwareListener(latch, true));
+        /// <summary>
+        /// Tests the channel aware listener with exception.
+        /// </summary>
+        /// <remarks></remarks>
+        [Test]
+        public void TestChannelAwareListenerWithException()
+        {
+            var latch = new CountDownLatch(this.messageCount);
+            this.DoListenerWithExceptionTest(latch, new ChannelAwareListener(latch, true));
         }
 
-        private void doSunnyDayTest(CountDownLatch latch, Object listener) throws Exception {
-            container = createContainer(listener);
-            for (int i = 0; i < messageCount; i++) {
-                template.convertAndSend(queue.getName(), i + "foo");
+
+        /// <summary>
+        /// Does the sunny day test.
+        /// </summary>
+        /// <param name="latch">The latch.</param>
+        /// <param name="listener">The listener.</param>
+        /// <remarks></remarks>
+        private void DoSunnyDayTest(CountDownLatch latch, object listener)
+        {
+            this.container = this.CreateContainer(listener);
+            for (var i = 0; i < this.messageCount; i++)
+            {
+                this.template.ConvertAndSend(this.queue.Name, i + "foo");
             }
-            boolean waited = latch.await(Math.max(2, messageCount / 50), TimeUnit.SECONDS);
-            assertTrue("Timed out waiting for message", waited);
-            assertNull(template.receiveAndConvert(queue.getName()));
+            
+            var waited = latch.Await(new TimeSpan(0, 0, 0, Math.Max(2, this.messageCount / 40)));
+            Assert.True(waited, "Timed out waiting for message");
+            Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
         }
 
-        private void doListenerWithExceptionTest(CountDownLatch latch, Object listener) throws Exception {
-            container = createContainer(listener);
-            if (acknowledgeMode.isTransactionAllowed()) {
+        /// <summary>
+        /// Does the listener with exception test.
+        /// </summary>
+        /// <param name="latch">The latch.</param>
+        /// <param name="listener">The listener.</param>
+        /// <remarks></remarks>
+        private void DoListenerWithExceptionTest(CountDownLatch latch, object listener)
+        {
+            this.container = this.CreateContainer(listener);
+            if (this.acknowledgeMode.TransactionAllowed())
+            {
                 // Should only need one message if it is going to fail
-                for (int i = 0; i < concurrentConsumers; i++) {
-                    template.convertAndSend(queue.getName(), i + "foo");
-                }
-            } else {
-                for (int i = 0; i < messageCount; i++) {
-                    template.convertAndSend(queue.getName(), i + "foo");
+                for (var i = 0; i < this.concurrentConsumers; i++)
+                {
+                    this.template.ConvertAndSend(this.queue.Name, i + "foo");
                 }
             }
-            try {
-                boolean waited = latch.await(5 + Math.max(1, messageCount / 20), TimeUnit.SECONDS);
-                assertTrue("Timed out waiting for message", waited);
-            } finally {
+            else
+            {
+                for (var i = 0; i < this.messageCount; i++)
+                {
+                    this.template.ConvertAndSend(this.queue.Name, i + "foo");
+                }
+            }
+
+            try
+            {
+                var waited = latch.Await(new TimeSpan(0, 0, 0, (5 + Math.Max(1, this.messageCount / 20))));
+                Assert.True(waited, "Timed out waiting for message");
+            }
+            finally
+            {
                 // Wait for broker communication to finish before trying to stop
                 // container
-                Thread.sleep(300L);
-                container.shutdown();
-                Thread.sleep(300L);
+                Thread.Sleep(300);
+                this.container.Shutdown();
+                Thread.Sleep(300);
             }
-            if (acknowledgeMode.isTransactionAllowed()) {
-                assertNotNull(template.receiveAndConvert(queue.getName()));
-            } else {
-                assertNull(template.receiveAndConvert(queue.getName()));
+
+            if (this.acknowledgeMode.TransactionAllowed())
+            {
+                Assert.NotNull(this.template.ReceiveAndConvert(this.queue.Name));
+            }
+            else
+            {
+                Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
             }
         }
 
-        private SimpleMessageListenerContainer createContainer(Object listener) {
-            SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(template.getConnectionFactory());
-            container.setMessageListener(listener);
-            container.setQueueNames(queue.getName());
-            container.setTxSize(txSize);
-            container.setPrefetchCount(txSize);
-            container.setConcurrentConsumers(concurrentConsumers);
-            container.setChannelTransacted(transactional);
-            container.setAcknowledgeMode(acknowledgeMode);
-            if (externalTransaction) {
-                container.setTransactionManager(new IntegrationTestTransactionManager());
+        /// <summary>
+        /// Creates the container.
+        /// </summary>
+        /// <param name="listener">The listener.</param>
+        /// <returns>The container.</returns>
+        /// <remarks></remarks>
+        private SimpleMessageListenerContainer CreateContainer(object listener)
+        {
+            var container = new SimpleMessageListenerContainer(this.template.ConnectionFactory);
+            container.MessageListener = listener;
+            container.SetQueueNames(this.queue.Name);
+            container.TxSize = this.txSize;
+            container.PrefetchCount = this.txSize;
+            container.ConcurrentConsumers = this.concurrentConsumers;
+            container.IsChannelTransacted = this.transactional;
+            container.AcknowledgeMode = this.acknowledgeMode;
+            if (this.externalTransaction)
+            {
+                container.TransactionManager = new IntegrationTestTransactionManager();
             }
-            container.afterPropertiesSet();
-            container.start();
+
+            container.AfterPropertiesSet();
+            container.Start();
             return container;
         }
-
-
-
-
-    */
-
     }
 
     /// <summary>
@@ -226,7 +295,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     {
         private AtomicInteger count = new AtomicInteger();
         private static ILog logger = LogManager.GetLogger(typeof(SimplePocoListener));
-        private readonly CountdownEvent latch;
+        private readonly CountDownLatch latch;
 
         private readonly bool fail;
 
@@ -235,7 +304,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public SimplePocoListener(CountdownEvent latch) : this(latch, false)
+        public SimplePocoListener(CountDownLatch latch)
+            : this(latch, false)
         {
         }
 
@@ -245,7 +315,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <remarks></remarks>
-        public SimplePocoListener(CountdownEvent latch, bool fail)
+        public SimplePocoListener(CountDownLatch latch, bool fail)
         {
             this.latch = latch;
             this.fail = fail;
@@ -256,12 +326,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         /// <param name="value">The value.</param>
         /// <remarks></remarks>
-        public void HandleMessage(String value)
+        public void HandleMessage(string value)
         {
             try
             {
-                int counter = this.count.ReturnValueAndIncrement();
-                if (logger.IsDebugEnabled && counter % 500 == 0)
+                var counter = this.count.ReturnValueAndIncrement();
+                if (logger.IsDebugEnabled && counter % 100 == 0)
                 {
                     logger.Debug("Handling: " + value + ":" + counter + " - " + this.latch);
                 }
@@ -273,7 +343,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.Signal();
+                this.latch.CountDown();
             }
         }
     }
@@ -286,7 +356,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     {
         private AtomicInteger count = new AtomicInteger();
         private static ILog logger = LogManager.GetLogger(typeof(Listener));
-        private readonly CountdownEvent latch;
+        private readonly CountDownLatch latch;
 
         private readonly bool fail;
 
@@ -295,7 +365,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public Listener(CountdownEvent latch) : this(latch, false)
+        public Listener(CountDownLatch latch) : this(latch, false)
         {
         }
 
@@ -305,7 +375,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <remarks></remarks>
-        public Listener(CountdownEvent latch, bool fail)
+        public Listener(CountDownLatch latch, bool fail)
         {
             this.latch = latch;
             this.fail = fail;
@@ -321,8 +391,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var value = Encoding.UTF8.GetString(message.Body);
             try
             {
-                int counter = this.count.ReturnValueAndIncrement();
-                if (logger.IsDebugEnabled && counter % 500 == 0)
+                var counter = this.count.ReturnValueAndIncrement();
+                if (logger.IsDebugEnabled && counter % 100 == 0)
                 {
                     logger.Debug(value + counter);
                 }
@@ -334,7 +404,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.Signal();
+                this.latch.CountDown();
             }
         }
     }
@@ -347,7 +417,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     {
         private AtomicInteger count = new AtomicInteger();
         private static ILog logger = LogManager.GetLogger(typeof(ChannelAwareListener));
-        private readonly CountdownEvent latch;
+        private readonly CountDownLatch latch;
 
         private readonly bool fail;
 
@@ -356,7 +426,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public ChannelAwareListener(CountdownEvent latch) : this(latch, false)
+        public ChannelAwareListener(CountDownLatch latch) : this(latch, false)
         {
         }
 
@@ -366,7 +436,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <remarks></remarks>
-        public ChannelAwareListener(CountdownEvent latch, bool fail)
+        public ChannelAwareListener(CountDownLatch latch, bool fail)
         {
             this.latch = latch;
             this.fail = fail;
@@ -383,8 +453,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var value = Encoding.UTF8.GetString(message.Body);
             try
             {
-                int counter = this.count.ReturnValueAndIncrement();
-                if (logger.IsDebugEnabled && counter % 500 == 0)
+                var counter = this.count.ReturnValueAndIncrement();
+                if (logger.IsDebugEnabled && counter % 100 == 0)
                 {
                     logger.Debug(value + counter);
                 }
@@ -395,31 +465,68 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.Signal();
+                this.latch.CountDown();
             }
         }
-
     }
 
     /// <summary>
-    /// 
+    /// Integration test transaction manager.
     /// </summary>
     /// <remarks></remarks>
     internal class IntegrationTestTransactionManager : AbstractPlatformTransactionManager
     {
+        /// <summary>
+        /// Begin a new transaction with the given transaction definition.
+        /// </summary>
+        /// <param name="transaction">Transaction object returned by
+        /// <see cref="M:Spring.Transaction.Support.AbstractPlatformTransactionManager.DoGetTransaction"/>.</param>
+        /// <param name="definition"><see cref="T:Spring.Transaction.ITransactionDefinition"/> instance, describing
+        /// propagation behavior, isolation level, timeout etc.</param>
+        /// <exception cref="T:Spring.Transaction.TransactionException">
+        /// In the case of creation or system errors.
+        /// </exception>
+        /// <remarks></remarks>
         protected override void DoBegin(object transaction, ITransactionDefinition definition)
         {
         }
 
+        /// <summary>
+        /// Perform an actual commit on the given transaction.
+        /// </summary>
+        /// <param name="status">The status representation of the transaction.</param>
+        /// <exception cref="T:Spring.Transaction.TransactionException">
+        /// In the case of system errors.
+        /// </exception>
+        /// <remarks></remarks>
         protected override void DoCommit(DefaultTransactionStatus status)
         {
         }
 
+        /// <summary>
+        /// Return the current transaction object.
+        /// </summary>
+        /// <returns>The current transaction object.</returns>
+        /// <exception cref="T:Spring.Transaction.CannotCreateTransactionException">
+        /// If transaction support is not available.
+        /// </exception>
+        /// <exception cref="T:Spring.Transaction.TransactionException">
+        /// In the case of lookup or system errors.
+        ///   </exception>
+        /// <remarks></remarks>
         protected override object DoGetTransaction()
         {
             return new object();
         }
 
+        /// <summary>
+        /// Perform an actual rollback on the given transaction.
+        /// </summary>
+        /// <param name="status">The status representation of the transaction.</param>
+        /// <exception cref="T:Spring.Transaction.TransactionException">
+        /// In the case of system errors.
+        /// </exception>
+        /// <remarks></remarks>
         protected override void DoRollback(DefaultTransactionStatus status)
         {
         }

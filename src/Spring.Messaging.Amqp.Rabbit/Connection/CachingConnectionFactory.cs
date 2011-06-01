@@ -301,6 +301,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </returns>
         public RabbitMQ.Client.IModel CreateBareChannel(bool transactional)
         {
+            if (!this.targetConnection.IsOpen())
+            {
+                // Use createConnection here not doCreateConnection so that the old one is properly disposed
+                this.CreateConnection();
+            }
+
             return this.targetConnection.CreateBareChannel(transactional);
         }
 

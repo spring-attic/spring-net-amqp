@@ -577,17 +577,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 throw new MessageRejectedWhileStoppingException();
             }
 
-            try
-            {
-                this.InvokeListener(channel, message);
-            }
-            catch (Exception ex)
-            {
-                this.RollbackOnExceptionIfNecessary(channel, message, ex);
-                throw;
-            }
-
-            this.CommitIfNecessary(channel, message);
+            this.InvokeListener(channel, message);
         }
 
         /// <summary>
@@ -689,7 +679,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 if (ackRequired)
                 {
-                    channel.BasicAck((ulong)deliveryTag, false);
+                    channel.BasicAck((ulong)deliveryTag, true);
                 }
 
                 RabbitUtils.CommitIfNecessary(channel);
@@ -704,7 +694,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 if (ackRequired)
                 {
-                    channel.BasicAck((ulong)deliveryTag, false);
+                    channel.BasicAck((ulong)deliveryTag, true);
                 }
             }
         }
@@ -775,7 +765,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                             this.logger.Debug("Rejecting message");
                         }
 
-                        channel.BasicReject((ulong)message.MessageProperties.DeliveryTag, true);
+                        // channel.BasicReject((ulong)message.MessageProperties.DeliveryTag, true);
+                        channel.BasicNack((ulong)message.MessageProperties.DeliveryTag, true, true);
                     }
 
                     if (this.IsChannelTransacted)

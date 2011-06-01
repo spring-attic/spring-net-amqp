@@ -24,12 +24,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         private static readonly ILog logger = LogManager.GetLogger(typeof(BrokerRunning));
 
         // Static so that we only test once on failure: speeds up test suite
-        private static bool brokerOnline = true;
+        private static IDictionary<int, bool> brokerOnline = new Dictionary<int, bool>();
 
         /// <summary>
         /// The broker offline flag. Static so that we only test once on failure.
         /// </summary>
-        private static bool brokerOffline = true;
+        private static IDictionary<int, bool> brokerOffline = new Dictionary<int, bool>();
 
         /// <summary>
         /// The assume online flag.
@@ -47,9 +47,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         private Queue[] queues;
 
         /// <summary>
+        /// The default port.
+        /// </summary>
+        private int DEFAULT_PORT = BrokerTestUtils.GetPort();
+
+        /// <summary>
         /// The port.
         /// </summary>
-        private int port = BrokerTestUtils.GetPort();
+        private int port;
 
         /// <summary>
         /// The host name.
@@ -125,6 +130,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
             this.assumeOnline = assumeOnline;
             this.queues = queues;
             this.purge = purge;
+            this.Port = this.DEFAULT_PORT;
             this.Apply();
         }
 
@@ -155,7 +161,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         /// <remarks></remarks>
         public int Port
         {
-            set { this.port = value; }
+            set
+            {
+                this.port = value;
+                if (!brokerOffline.ContainsKey(this.port))
+                {
+                    brokerOffline.Add(this.port, true);
+                }
+                if (!brokerOnline.ContainsKey(this.port))
+                {
+                    brokerOnline.Add(this.port, true);
+                }
+            }
         }
 
         /// <summary>
@@ -179,11 +196,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
             // Check at the beginning, so this can be used as a static field
             if (this.assumeOnline)
             {
-                Assume.That(brokerOnline == true);
+                Assume.That(brokerOnline[this.port] == true);
             }
             else
             {
-                Assume.That(brokerOffline == true);
+                Assume.That(brokerOffline[this.port] == true);
             }
 
             var connectionFactory = new CachingConnectionFactory();
@@ -221,18 +238,33 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
                     }
                 }
 
-                brokerOffline = false;
+                if (brokerOffline.ContainsKey(this.port))
+                {
+                    brokerOffline[this.port] = false;
+                }
+                else
+                {
+                    brokerOffline.Add(this.port, false);
+                }
                 
                 if (!this.assumeOnline)
                 {
-                    Assume.That(brokerOffline == true);
+                    Assume.That(brokerOffline[this.port] == true);
                 }
 
             }
             catch (Exception e)
             {
                 logger.Warn("Not executing tests because basic connectivity test failed", e);
-                brokerOnline = false;
+                if (brokerOnline.ContainsKey(this.port))
+                {
+                    brokerOnline[this.port] = false;
+                }
+                else
+                {
+                    brokerOnline.Add(this.port, false);
+                }
+                    
                 if (this.assumeOnline)
                 {
                     Assume.That(!(e is Exception));

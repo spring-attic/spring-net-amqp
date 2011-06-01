@@ -228,12 +228,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 var appList = (OtpErlangList)runningAppTuple.elementAt(1);
                 this.ExtractApplications(applications, appList);
 
-                var nodesTuple = (OtpErlangTuple)erlangList.elementAt(1);
+                var nodesTuple = (OtpErlangTuple)erlangList.elementAt(2);
                 var nodesList = (OtpErlangList)nodesTuple.elementAt(1);
                 this.ExtractNodes(nodes, nodesList);
 
 
-                var runningNodesTuple = (OtpErlangTuple)erlangList.elementAt(2);
+                var runningNodesTuple = (OtpErlangTuple)erlangList.elementAt(3);
                 nodesList = (OtpErlangList)runningNodesTuple.elementAt(1);
                 this.ExtractNodes(runningNodes, nodesList);
             }

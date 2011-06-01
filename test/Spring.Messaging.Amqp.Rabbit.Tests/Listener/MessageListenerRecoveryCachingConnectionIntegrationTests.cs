@@ -28,8 +28,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         private int messageCount = 10;
 
-        private int txSize = 1;
-
         private bool transactional = false;
 
         private AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
@@ -73,21 +71,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         [Test]
-        public void TestListenerSendsMessageAndThenCommit()
+        public void TestListenerSendsMessageAndThenContainerCommits()
         {
-
-            var connectionFactory = CreateConnectionFactory();
+            var connectionFactory = this.CreateConnectionFactory();
             var template = new RabbitTemplate(connectionFactory);
             new RabbitAdmin(connectionFactory).DeclareQueue(sendQueue);
 
-            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
-            transactional = true;
+            this.acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            this.transactional = true;
 
             var latch = new CountdownEvent(1);
-            container = CreateContainer(queue.Name, new ChannelSenderListener(sendQueue.Name, latch, false), connectionFactory);
+            this.container = this.CreateContainer(queue.Name, new ChannelSenderListener(sendQueue.Name, latch, false), connectionFactory);
             template.ConvertAndSend(queue.Name, "foo");
 
-            var timeout = GetTimeout();
+            var timeout = this.GetTimeout();
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
@@ -96,8 +93,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var bytes = (byte[])template.ReceiveAndConvert(sendQueue.Name);
             Assert.NotNull(bytes);
             Assert.AreEqual("bar", Encoding.UTF8.GetString(bytes));
-            Assert.Null(template.ReceiveAndConvert(queue.Name));
-
+            Assert.AreEqual(null, template.ReceiveAndConvert(queue.Name));
         }
 
         [Test]
@@ -309,8 +305,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var container = new SimpleMessageListenerContainer(connectionFactory);
             container.MessageListener = new MessageListenerAdapter(listener);
             container.SetQueueNames(queueName);
-            container.TxSize = this.txSize;
-            container.PrefetchCount = this.txSize;
             container.ConcurrentConsumers = this.concurrentConsumers;
             container.IsChannelTransacted = this.transactional;
             container.AcknowledgeMode = this.acknowledgeMode;

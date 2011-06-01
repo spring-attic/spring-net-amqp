@@ -114,6 +114,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         [Test]
         [Ignore]
+        [Repeat(10)]
         public void testStatefulRetryWithTxSizeAndIntermittentFailure()
         {
 
@@ -149,7 +150,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             factory.MessageRecoverer(new MessageRecoverer() {
                 public void recover(Message message, Throwable cause) {
-                    logger.Info("Recovered: " + message);
+                    logger.Info("Recovered: [" + SerializationUtils.deserialize(message.getBody()).toString()+"], message: " +message);
                     latch.Signal();
                 }
             });
@@ -200,7 +201,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             try
             {
-
                 var timeout = Math.Min(1 + messageCount / concurrentConsumers, 30);
 
                 var count = messageCount;
@@ -231,17 +231,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 Assert.True(waited, "Timed out waiting for messages");
 
                 // Retried each failure 3 times (default retry policy)...
-                Assert.AreEqual(messageCount + 2 * failedMessageCount, listener.Count);
+                Assert.AreEqual(3 * failedMessageCount, listener.Count);
 
+                // All failed messages recovered
+                Assert.AreEqual(null, this.template.ReceiveAndConvert(queue.Name));
             }
             finally
             {
                 container.Shutdown();
                 Assert.AreEqual(0, container.ActiveConsumerCount);
             }
-
-            // All failed messages recovered
-            Assert.Null(template.ReceiveAndConvert(queue.Name));
         }
     }
 

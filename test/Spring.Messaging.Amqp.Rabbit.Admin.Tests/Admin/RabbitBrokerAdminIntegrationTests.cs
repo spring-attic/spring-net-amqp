@@ -56,7 +56,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             //{
             // Set up broker admin for non-root user
             this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(); //"rabbit@LOCALHOST", 5672);
-            this.brokerAdmin.StartNode();
+            this.brokerAdmin.StartBrokerApplication();
             //panic.setBrokerAdmin(brokerAdmin);
             // }
         }
@@ -133,7 +133,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         [Test]
         public void TestGetEmptyQueues()
         {
-            List<QueueInfo> queues = brokerAdmin.GetQueues();
+            var queues = this.brokerAdmin.GetQueues();
             Assert.AreEqual(0, queues.Count);
         }
 

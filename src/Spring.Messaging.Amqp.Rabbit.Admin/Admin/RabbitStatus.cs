@@ -85,7 +85,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <remarks></remarks>
         public bool IsReady
         {
-            get { return this.IsRunning && this.runningApplications != null && !(this.runningApplications.Count <= 0); }
+            get
+            {
+                var erlangNodeIsRunning = this.IsRunning && this.runningApplications != null && !(this.runningApplications.Count <= 0);
+                if (!erlangNodeIsRunning)
+                {
+                    return false;
+                }
+                
+                var rabbitIsRunning = false;
+                foreach (var application in this.runningApplications)
+                {
+                    if (application.Id == "\"RabbitMQ\"")
+                    {
+                        rabbitIsRunning = true;
+                    }
+                }
+
+                return rabbitIsRunning;
+            }
         }
 
         /// <summary>

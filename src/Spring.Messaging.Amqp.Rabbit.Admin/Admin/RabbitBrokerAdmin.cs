@@ -132,12 +132,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         {
             try
             {
-                var hostName = Dns.GetHostName();
+                var hostName = Dns.GetHostName().ToUpper();
                 return "rabbit@" + hostName;
             }
             catch (Exception e)
             {
-                return "rabbit@localhost";
+                return "rabbit@LOCALHOST";
             }
         }
 
@@ -515,10 +515,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         {
             this.logger.Info("Stopping Rabbit Application.");
             this.ExecuteAndConvertRpc<object>("rabbit", "stop");
-            /*if (timeout > 0)
+            if (timeout > 0)
             {
                 this.WaitForUnreadyState();
-            }*/
+            }
         }
 
         #region Alternate StartBrokerApplication Implementation - .NET 4.0 TPL
@@ -783,23 +783,30 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             if (!callable.Invoke(status))
             {
                 this.logger.Info("Waiting for broker to enter state: " + state);
-
-                var started = Task.Factory.StartNew(() =>
+                var tokenSource = new CancellationTokenSource();
+                var token = tokenSource.Token;
+                var started = Task.Factory.StartNew(
+                                                    () =>
                                                         {
                                                             var internalstatus = GetStatus();
-                                                            while (!callable.Invoke(internalstatus))
+                                                            while (!callable.Invoke(internalstatus) && !token.IsCancellationRequested)
                                                             {
                                                                 // Any less than 1000L and we tend to clog up the socket?
                                                                 Thread.Sleep(500);
-                                                                status = GetStatus();
+                                                                internalstatus = GetStatus();
                                                             }
 
                                                             return internalstatus;
-                                                        });
+                                                        }, 
+                                                        token);
 
                 try
                 {
-                    started.Wait((int)this.timeout);
+                    var result = started.Wait((int)this.timeout);
+                    if (!result)
+                    {
+                        // tokenSource.Cancel();
+                    }
 
                     status = started.Result;
 
@@ -834,7 +841,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
 
             return true;
-
         }
 
         /// <summary>
@@ -909,9 +915,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 this.logger.Error("Failed to send stop signal", e);
             }
 
-            /*if (timeout >= 0) {
-            this.WaitForStoppedState();
-        }*/
+            if (timeout >= 0) 
+            {
+                this.WaitForStoppedState();
+            }
         }
 
         /// <summary>
@@ -959,6 +966,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 }
                 return new RabbitStatus(new List<Application>(), new List<Node>(), new List<Node>());
             }
+            catch (Exception e)
+            {
+                logger.Debug("Error occurred getting status", e);
+                throw;
+            }
         }
 
         /// <summary>
@@ -986,27 +998,22 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             this.erlangTemplate.AfterPropertiesSet();
         }
 
-
-
-        /**
-     * Convenience method for lazy initialization of the {@link ErlangTemplate} and associated trimmings. All RPC calls
-     * should go through this method.
-     * 
-     * @param <T> the type of the result
-     * @param module the module to address remotely
-     * @param function the function to call
-     * @param args the arguments to pass
-     * 
-     * @return the result from the remote erl process converted to the correct type
-     */
-
-        private T ExecuteAndConvertRpc<T>(string module, String function, params object[] args)
+        /// <summary>
+        /// Convenience method for lazy initialization of the {@link ErlangTemplate} and associated trimmings. All RPC calls should go through this method.
+        /// </summary>
+        /// <typeparam name="T">The type of result.</typeparam>
+        /// <param name="module">The module to address remotely.</param>
+        /// <param name="function">The function to call.</param>
+        /// <param name="args">The arguments to pass.</param>
+        /// <returns>The result from the remote erl process converted to the correct type</returns>
+        /// <remarks></remarks>
+        private T ExecuteAndConvertRpc<T>(string module, string function, params object[] args)
         {
-            if (erlangTemplate == null)
+            if (this.erlangTemplate == null)
             {
                 lock (this)
                 {
-                    if (erlangTemplate == null)
+                    if (this.erlangTemplate == null)
                     {
                         this.InitializeDefaultErlangTemplate();
                     }
@@ -1014,19 +1021,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
 
             var key = module + "%" + function;
-            if (moduleAdapter.ContainsKey(key))
+            if (this.moduleAdapter.ContainsKey(key))
             {
-                var adapter = moduleAdapter[key];
+                var adapter = this.moduleAdapter[key];
                 var values = adapter.Split("%".ToCharArray());
-                AssertUtils.State(values.Length == 2,
-                                  "The module adapter should be a map from 'module%function' to 'module%function'. " +
-                                  "This one contained [" + adapter +
-                                  "] which cannot be parsed to a module, function pair.");
+                AssertUtils.State(values.Length == 2, "The module adapter should be a map from 'module%function' to 'module%function'. " + "This one contained [" + adapter + "] which cannot be parsed to a module, function pair.");
                 module = values[0];
                 function = values[1];
             }
 
-            return (T)erlangTemplate.ExecuteAndConvertRpc(module, function, args);
+            return (T)this.erlangTemplate.ExecuteAndConvertRpc(module, function, args);
         }
 
         /// <summary>
