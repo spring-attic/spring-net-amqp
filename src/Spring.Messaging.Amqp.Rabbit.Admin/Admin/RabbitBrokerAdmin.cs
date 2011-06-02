@@ -684,7 +684,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             var running = new CountdownEvent(1);
             var finished = false;
             var errorHint = hint;
-            var task = Task.Factory.StartNew(() =>
+            var tokenSource = new CancellationTokenSource();
+            var token = tokenSource.Token;
+            var task = Task.Factory.StartNew(
+                                () =>
                                {
                                    try
                                    {
@@ -703,12 +706,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                                    {
                                        logger.Error("Failed to start node", e);
                                    }
-                               });
+                               }, 
+                               token);
 
             try 
             {
                 this.logger.Info("Waiting for Rabbit process to be started");
-                AssertUtils.State(task.Wait(1000), "Timed out waiting for thread to start Rabbit process.");
+                var result = task.Wait((int)this.timeout);
+                AssertUtils.State(result, "Timed out waiting for thread to start Rabbit process.");
+                if (!result)
+                {
+                    tokenSource.Cancel();
+                }
+                
             } 
             catch (Exception e) 
             {
@@ -980,7 +990,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         protected void InitializeDefaultErlangTemplate()
         {
             var peerNodeName = this.nodeName;
-            this.logger.Debug("Creating jinterface connection with peerNodeName = [" + peerNodeName + "]");
+            this.logger.Debug("Creating connection with peerNodeName = [" + peerNodeName + "]");
             var otpConnectionFactory = new SimpleConnectionFactory("rabbit-spring-monitor", peerNodeName, this.cookie);
             otpConnectionFactory.AfterPropertiesSet();
             this.CreateErlangTemplate(otpConnectionFactory);

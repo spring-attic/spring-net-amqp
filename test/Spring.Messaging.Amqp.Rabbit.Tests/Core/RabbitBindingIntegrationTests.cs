@@ -3,6 +3,7 @@ using System;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Test;
@@ -32,7 +33,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         }
 
         /* @Rule  */
-        public BrokerRunning brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+        public BrokerRunning brokerIsRunning;
+
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
+        {
+            var brokerAdmin = new RabbitBrokerAdmin();
+            brokerAdmin.StartupTimeout = 10000;
+            brokerAdmin.StartBrokerApplication();
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+        }
+
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            var brokerAdmin = new RabbitBrokerAdmin();
+            brokerAdmin.StopBrokerApplication();
+            brokerAdmin.StopNode();
+        }
 
         /// <summary>
         /// Tests the send and receive with topic single callback.

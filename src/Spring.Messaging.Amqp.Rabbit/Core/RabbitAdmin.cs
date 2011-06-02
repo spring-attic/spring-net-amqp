@@ -311,6 +311,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 {
                     this.logger.Debug("no ApplicationContext has been set, cannot auto-declare Exchanges, Queues, and Bindings");
                 }
+
                 return;
             }
 

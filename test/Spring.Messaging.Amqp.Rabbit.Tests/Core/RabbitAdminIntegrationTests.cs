@@ -6,6 +6,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Impl;
 using Spring.Context.Support;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Test;
 using Spring.Threading.AtomicTypes;
@@ -22,9 +23,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// The connection factory.
         /// </summary>
-        private CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        private CachingConnectionFactory connectionFactory;
 
-        //public BrokerRunning brokerIsRunning = BrokerRunning.isRunning();
+        public BrokerRunning brokerIsRunning;
 
         /// <summary>
         /// The context.
@@ -44,7 +45,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </remarks>
         public RabbitAdminIntegrationTests()
         {
+            this.connectionFactory = new CachingConnectionFactory();
             this.connectionFactory.Port = BrokerTestUtils.GetPort();
+            this.brokerIsRunning = BrokerRunning.IsRunning();
+        }
+
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
+        {
+            var brokerAdmin = new RabbitBrokerAdmin();
+            brokerAdmin.StartupTimeout = 10000;
+            brokerAdmin.StartBrokerApplication();
+        }
+        
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            var brokerAdmin = new RabbitBrokerAdmin();
+            brokerAdmin.StopBrokerApplication();
+            brokerAdmin.StopNode();
         }
 
         /// <summary>
@@ -56,10 +75,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             this.context = new GenericApplicationContext();
             this.rabbitAdmin = new RabbitAdmin(this.connectionFactory);
+            
             this.rabbitAdmin.DeleteQueue("test.queue");
 
             // Force connection factory to forget that it has been used to delete the queue
             this.connectionFactory.Dispose();
+
             this.rabbitAdmin.ApplicationContext = this.context;
             this.rabbitAdmin.AutoStartup = true;
         }

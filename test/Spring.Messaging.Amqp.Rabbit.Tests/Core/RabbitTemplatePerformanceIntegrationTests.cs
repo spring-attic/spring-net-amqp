@@ -1,6 +1,7 @@
 ﻿
 using System.Threading;
 using NUnit.Framework;
+using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Test;
 
@@ -22,6 +23,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </summary>
         private RabbitTemplate template = new RabbitTemplate();
 
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
+        {
+            var brokerAdmin = new RabbitBrokerAdmin();
+            brokerAdmin.StartupTimeout = 10000;
+            brokerAdmin.StartBrokerApplication();
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(ROUTE);
+        }
+
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            var brokerAdmin = new RabbitBrokerAdmin();
+            brokerAdmin.StopBrokerApplication();
+            brokerAdmin.StopNode();
+        }
+
         /*@Rule
         //public RepeatProcessor repeat = new RepeatProcessor(4);
 
@@ -35,7 +53,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// The broker is running.
         /// </summary>
-        public BrokerRunning brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(ROUTE);
+        public BrokerRunning brokerIsRunning;
 
         /// <summary>
         /// The connection factory.

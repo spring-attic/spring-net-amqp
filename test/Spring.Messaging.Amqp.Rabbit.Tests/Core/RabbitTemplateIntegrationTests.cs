@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Test;
 using Spring.Messaging.Amqp.Support.Converter;
@@ -32,6 +33,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </summary>
         private RabbitTemplate template;
 
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
+        {
+            var brokerAdmin = new RabbitBrokerAdmin();
+            brokerAdmin.StartupTimeout = 10000;
+            brokerAdmin.StartBrokerApplication();
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(ROUTE);
+        }
+
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            var brokerAdmin = new RabbitBrokerAdmin();
+            brokerAdmin.StopBrokerApplication();
+            brokerAdmin.StopNode();
+        }
+
         /// <summary>
         /// Creates this instance.
         /// </summary>
@@ -47,7 +65,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// The broker running.
         /// </summary>
-        private BrokerRunning brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(ROUTE);
+        private BrokerRunning brokerIsRunning;
 
         /// <summary>
         /// Tests the send to non existent and then receive.

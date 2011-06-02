@@ -79,27 +79,30 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         private RabbitBrokerAdmin brokerAdmin;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Object"/> class.
+        /// Initializes a new instance of the <see cref="MessageListenerBrokerInterruptionIntegrationTests"/> class. 
         /// </summary>
-        /// <remarks></remarks>
+        /// <remarks>
+        /// </remarks>
         public MessageListenerBrokerInterruptionIntegrationTests()
         {
-            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);
             var directory = new DirectoryInfo("target/rabbitmq");
             if (directory.Exists)
             {
                 directory.Delete(true);
             }
 
-            this.brokerIsRunning.Port = BrokerTestUtils.GetAdminPort();
             logger.Debug("Setting up broker");
             this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin();
             
             // panic.setBrokerAdmin(brokerAdmin);
-            //if (environment.IsActive())
-            //{
+            if (environment.IsActive())
+            {
+                this.brokerAdmin.StartupTimeout = 10000;
                 this.brokerAdmin.StartNode();
-            //}
+            }
+
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);
+            this.brokerIsRunning.Port = BrokerTestUtils.GetAdminPort();
         }
 
         /// <summary>

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -12,10 +14,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// <summary>
     /// Used to verify raw Rabbit Java Client behaviour for corner cases.
     /// </summary>
-    /// 
     /// @author Dave Syer
     /// <remarks></remarks>
-    
     public class UnackedRawIntegrationTests
     {
         private ConnectionFactory factory = new ConnectionFactory();
@@ -30,14 +30,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [SetUp]
         public void Init()
         {
-            this.factory.HostName = "localhost";
+            this.factory.HostName = Dns.GetHostName().ToUpper();
             this.factory.Port = BrokerTestUtils.GetPort();
             this.conn = this.factory.CreateConnection();
             this.noTxChannel = this.conn.CreateModel();
             this.txChannel = this.conn.CreateModel();
 
             // this.txChannel.BasicQos(1, 0, false);
-            this.txChannel.BasicQos(0, 0, false);
+            this.txChannel.BasicQos(0, 1, false);
             this.txChannel.TxSelect();
 
             try
@@ -110,7 +110,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             Assert.IsNotNull(next);
             this.txChannel.BasicReject(((BasicDeliverEventArgs)next).DeliveryTag, true);
             this.txChannel.TxRollback();
-
+            
             var get = this.noTxChannel.BasicGet("test.queue", true);
             Assert.IsNotNull(get);
         }

@@ -71,10 +71,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         public static BrokerRunning IsRunningWithEmptyQueues(params string[] names)
         {
             var queues = new Queue[names.Length];
-            for (int i = 0; i < queues.Length; i++)
+            for (var i = 0; i < queues.Length; i++)
             {
                 queues[i] = new Queue(names[i]);
             }
+
             return new BrokerRunning(true, true, queues);
         }
 
@@ -267,7 +268,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
                     
                 if (this.assumeOnline)
                 {
-                    Assume.That(!(e is Exception));
+                    // Assume.That(!(e is Exception));
                 }
             }
             finally
@@ -276,6 +277,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
             }
 
             return true;
+
             // return base.Apply(base, method, target);
         }
 
