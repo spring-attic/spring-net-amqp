@@ -195,7 +195,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var latch = new CountdownEvent(failedMessageCount);
             //container.AdviceChain = new IAdvice[] { CreateRetryInterceptor(latch, stateful) };
 
-            container.SetQueueNames(queue.Name);
+            container.QueueNames = new string[] { queue.Name };
             container.AfterPropertiesSet();
             container.Start();
 

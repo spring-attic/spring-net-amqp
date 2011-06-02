@@ -32,7 +32,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             var container = new SimpleMessageListenerContainer(new SingleConnectionFactory());
             container.MessageListener = new MessageListenerAdapter(this);
-            container.SetQueueNames("foo");
+            container.QueueNames = new string[] { "foo" };
             container.IsChannelTransacted = false;
             container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.NONE;
             container.TransactionManager = new TestTransactionManager();
@@ -56,7 +56,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             var container = new SimpleMessageListenerContainer(new SingleConnectionFactory());
             container.MessageListener = new MessageListenerAdapter(this);
-            container.SetQueueNames("foo");
+            container.QueueNames = new string[] { "foo" };
             container.IsChannelTransacted = true;
             container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.NONE;
 
@@ -79,7 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             var container = new SimpleMessageListenerContainer(new SingleConnectionFactory());
             container.MessageListener = new MessageListenerAdapter(this);
-            container.SetQueueNames("foo");
+            container.QueueNames = new string[] { "foo" };
             container.AutoStartup = false;
             container.AfterPropertiesSet();
             Assert.AreEqual(1, ReflectionUtils.GetInstanceFieldValue(container, "concurrentConsumers"));
@@ -95,7 +95,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var container = new SimpleMessageListenerContainer(new TestConnectionFactory());
             
             // TODO: I added this, but should we be setting a default queue name, instead of blowing up when queueNames is empty?
-            container.SetQueueNames("foo");
+            container.QueueNames = new string[] { "foo" };
             container.Start();
             Assert.AreEqual(1, ReflectionUtils.GetInstanceFieldValue(container, "concurrentConsumers"));
         }

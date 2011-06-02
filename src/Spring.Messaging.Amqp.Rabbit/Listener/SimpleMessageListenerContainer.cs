@@ -23,22 +23,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using AopAlliance.Aop;
 using Common.Logging;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using RabbitMQ.Client.Exceptions;
 using Spring.Aop;
 using Spring.Aop.Framework;
 using Spring.Aop.Support;
-using Spring.Collections.Generic;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
-using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
-using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Threading;
 using Spring.Threading.Execution;
 using Spring.Transaction;

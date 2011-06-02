@@ -29,6 +29,7 @@ using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Support;
+using Spring.Objects.Factory;
 using Spring.Threading;
 using Spring.Util;
 using IConnection = RabbitMQ.Client.IConnection;
@@ -127,23 +128,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// Gets the name of the queues to receive messages from
         /// </summary>
         /// <value>The name of the queues. Can not be null.</value>
+        /// <remarks></remarks>
         public string[] QueueNames
         {
             get
             {
                 return this.queueNames;
             }
-        }
 
-        /// <summary>
-        /// The set queue names.
-        /// </summary>
-        /// <param name="queueName">
-        /// The queue name.
-        /// </param>
-        public void SetQueueNames(params string[] queueName)
-        {
-            this.queueNames = queueName;
+            set
+            {
+                this.queueNames = value;
+            }
         }
 
         /// <summary>
@@ -152,17 +148,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="queues">
         /// The queues.
         /// </param>
-        public void SetQueues(params Queue[] queues)
+        ///
+        public Queue[] Queues
         {
-            var queueNames = new string[queues.Length];
-
-            for (var i = 0; i < queues.Length; i++)
+            set
             {
-                AssertUtils.ArgumentNotNull(queues[i], "Queue must not be null.");
-                queueNames[i] = queues[i].Name;
-            }
+                var queueNames = new string[value.Length];
 
-            this.queueNames = queueNames;
+                for (var i = 0; i < value.Length; i++)
+                {
+                    AssertUtils.ArgumentNotNull(value[i], "Queue must not be null.");
+                    queueNames[i] = value[i].Name;
+                }
+
+                this.queueNames = queueNames;
+            }
         }
 
 

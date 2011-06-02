@@ -12,7 +12,7 @@ using Spring.Messaging.Amqp.Rabbit.Test;
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
     /// <summary>
-    /// Used to verify raw Rabbit Java Client behaviour for corner cases.
+    /// Used to verify raw Rabbit .NET Client behaviour for corner cases.
     /// </summary>
     /// @author Dave Syer
     /// <remarks></remarks>
@@ -36,7 +36,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             this.noTxChannel = this.conn.CreateModel();
             this.txChannel = this.conn.CreateModel();
 
-            // this.txChannel.BasicQos(1, 0, false);
+            // TODO: this should be: this.txChannel.BasicQos(1, 0, false);
             this.txChannel.BasicQos(0, 1, false);
             this.txChannel.TxSelect();
 

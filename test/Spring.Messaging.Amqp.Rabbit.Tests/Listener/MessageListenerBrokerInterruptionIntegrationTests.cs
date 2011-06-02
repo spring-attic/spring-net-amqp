@@ -206,7 +206,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             var container = new SimpleMessageListenerContainer(connectionFactory);
             container.MessageListener = new MessageListenerAdapter(listener);
-            container.SetQueueNames(new string[] { queueName });
+            container.QueueNames = new string[] { queueName };
             container.TxSize = this.txSize;
             container.PrefetchCount = this.txSize;
             container.ConcurrentConsumers = this.concurrentConsumers;

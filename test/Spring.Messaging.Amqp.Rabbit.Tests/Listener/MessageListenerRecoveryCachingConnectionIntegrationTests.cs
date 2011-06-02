@@ -311,7 +311,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             var container = new SimpleMessageListenerContainer(connectionFactory);
             container.MessageListener = new MessageListenerAdapter(listener);
-            container.SetQueueNames(queueName);
+            container.QueueNames = new string[] { queueName };
             container.ConcurrentConsumers = this.concurrentConsumers;
             container.IsChannelTransacted = this.transactional;
             container.AcknowledgeMode = this.acknowledgeMode;

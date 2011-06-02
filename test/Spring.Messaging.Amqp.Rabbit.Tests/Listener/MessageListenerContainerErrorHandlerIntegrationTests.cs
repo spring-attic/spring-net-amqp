@@ -169,7 +169,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             container.PrefetchCount = messageCount;
             container.TxSize = messageCount;
-            container.SetQueueNames(new string[] { queue.Name });
+            container.QueueNames = new string[] { queue.Name };
             container.ErrorHandler = errorHandler;
             container.AfterPropertiesSet();
             container.Start();

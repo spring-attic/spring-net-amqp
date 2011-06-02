@@ -59,7 +59,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var mocker = new AutoMoqer();
 
             var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
-            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.SetQueues(queue1, queue2));
+            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.Queues = new Queue[] { queue1, queue2 });
 
             this.DoTest(1, mockConfigurer.Object);
         }
@@ -74,7 +74,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var mocker = new AutoMoqer();
 
             var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
-            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.SetQueueNames(queue1.Name, queue2.Name));
+            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.QueueNames = new string[] { queue1.Name, queue2.Name });
 
             this.DoTest(1, mockConfigurer.Object);
         }
@@ -89,7 +89,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var mocker = new AutoMoqer();
 
             var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
-            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.SetQueues(queue1, queue2));
+            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.Queues = new Queue[] { queue1, queue2 });
 
             this.DoTest(3, mockConfigurer.Object);
         }
@@ -104,7 +104,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var mocker = new AutoMoqer();
 
             var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
-            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.SetQueueNames(queue1.Name, queue2.Name));
+            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.QueueNames = new string[] { queue1.Name, queue2.Name });
 
             this.DoTest(3, mockConfigurer.Object);
         }

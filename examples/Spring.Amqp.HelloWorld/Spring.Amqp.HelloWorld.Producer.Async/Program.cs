@@ -9,20 +9,32 @@ using Spring.Messaging.Amqp.Core;
 
 namespace Spring.Amqp.HelloWorld.Producer.Async
 {
+    /// <summary>
+    /// A sample asynchronous producer.
+    /// </summary>
+    /// <remarks></remarks>
     class Program
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Program));
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(Program));
 
-        static void Main(string[] args)
+        /// <summary>
+        /// Starts the program.
+        /// </summary>
+        /// <param name="args">The args.</param>
+        /// <remarks></remarks>
+        public static void Main(string[] args)
         {
-            using (IApplicationContext ctx = ContextRegistry.GetContext())
+            using (var ctx = ContextRegistry.GetContext())
             {
-                IAmqpTemplate amqpTemplate = (IAmqpTemplate)ctx.GetObject("RabbitTemplate");
+                var amqpTemplate = ctx.GetObject<IAmqpTemplate>();
                 int i = 0;
                 while (true)
                 {
                     amqpTemplate.ConvertAndSend("Hello World " + i++);
-                    log.Info("Hello world message sent.");
+                    Logger.Info("Hello world message sent.");
                     Thread.Sleep(3000);
                 }
             }            

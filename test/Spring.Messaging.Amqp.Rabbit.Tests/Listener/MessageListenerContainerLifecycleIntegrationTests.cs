@@ -160,7 +160,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 container.TxSize = transactionMode.TxSize();
             }
 
-            container.SetQueueNames(new string[] { queue.Name });
+            container.QueueNames = new string[] { queue.Name };
             container.AfterPropertiesSet();
             container.Start();
 
