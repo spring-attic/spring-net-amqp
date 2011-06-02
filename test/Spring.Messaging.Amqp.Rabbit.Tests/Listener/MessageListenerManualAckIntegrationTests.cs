@@ -14,7 +14,7 @@ using Spring.Messaging.Amqp.Rabbit.Test;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
-    public class MessageListenerManualAckIntegrationTests
+    public class MessageListenerManualAckIntegrationTests : IntegrationTestBase
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerManualAckIntegrationTests));
 
@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         //		SimpleMessageListenerContainer.class, BlockingQueueConsumer.class);
 
         //@Rule
-        public BrokerRunning brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+        public BrokerRunning brokerIsRunning;
 
         /// <summary>
         /// Creates the connection factory.
@@ -46,6 +46,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [SetUp]
         public void CreateConnectionFactory()
         {
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
             var connectionFactory = new CachingConnectionFactory();
             connectionFactory.ChannelCacheSize = this.concurrentConsumers;
             connectionFactory.Port = BrokerTestUtils.GetPort();

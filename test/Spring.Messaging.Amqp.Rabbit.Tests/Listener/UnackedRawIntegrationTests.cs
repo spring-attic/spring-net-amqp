@@ -16,7 +16,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// </summary>
     /// @author Dave Syer
     /// <remarks></remarks>
-    public class UnackedRawIntegrationTests
+    public class UnackedRawIntegrationTests : IntegrationTestBase
     {
         private ConnectionFactory factory = new ConnectionFactory();
         private IConnection conn;

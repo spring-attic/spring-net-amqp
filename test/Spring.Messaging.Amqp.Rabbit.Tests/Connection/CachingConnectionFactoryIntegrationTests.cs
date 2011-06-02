@@ -20,7 +20,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// </summary>
     /// <remarks></remarks>
     [TestFixture]
-    public class CachingConnectionFactoryIntegrationTests
+    public class CachingConnectionFactoryIntegrationTests : IntegrationTestBase
     {
         /// <summary>
         /// The connection factory.
@@ -47,8 +47,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         public void SetUp()
         {
             this.connectionFactory = new CachingConnectionFactory();
-            this.brokerAdmin = new RabbitBrokerAdmin();
-            this.brokerAdmin.StartBrokerApplication();
             this.brokerIsRunning = BrokerRunning.IsRunning();
             this.connectionFactory.Port = BrokerTestUtils.GetPort();
         }
@@ -60,8 +58,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         [TearDown]
         public void TearDown()
         {
-            this.brokerAdmin.StopBrokerApplication();
-
             // Release resources
             this.brokerIsRunning = null;
             this.connectionFactory.Dispose();

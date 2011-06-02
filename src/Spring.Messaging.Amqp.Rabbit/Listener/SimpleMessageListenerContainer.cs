@@ -77,7 +77,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         public static readonly int DEFAULT_PREFETCH_COUNT = 1;
 
-        // TODO: Determine if this is the right default value!
+        // TODO: Determine if this is the right default value! RabbitMQ blows up with anything != 0.
         /// <summary>
         /// The default prefetch size.
         /// </summary>
@@ -515,7 +515,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             // There's no point prefetching less than the tx size, otherwise the consumer will stall because the broker
             // didn't get an ack for delivered messages
             var actualPrefetchCount = this.prefetchCount > this.txSize ? this.prefetchCount : this.txSize;
-            return new BlockingQueueConsumer(this.ConnectionFactory, this.cancellationLock, this.AcknowledgeMode, this.IsChannelTransacted, this.prefetchCount, actualPrefetchCount, GetRequiredQueueNames());
+            // return new BlockingQueueConsumer(this.ConnectionFactory, this.cancellationLock, this.AcknowledgeMode, this.IsChannelTransacted, this.prefetchCount, actualPrefetchCount, GetRequiredQueueNames());
+            return new BlockingQueueConsumer(this.ConnectionFactory, this.cancellationLock, this.AcknowledgeMode, this.IsChannelTransacted, this.prefetchCount, this.prefetchSize, GetRequiredQueueNames());
         }
 
         /// <summary>

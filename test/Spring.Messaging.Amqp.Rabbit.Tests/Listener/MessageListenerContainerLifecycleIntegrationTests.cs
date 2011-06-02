@@ -14,7 +14,7 @@ using Spring.Threading.AtomicTypes;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
-    public class MessageListenerContainerLifecycleIntegrationTests
+    public class MessageListenerContainerLifecycleIntegrationTests : IntegrationTestBase
     {
         /// <summary>
         /// The logger.
@@ -41,7 +41,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         //@Rule
-        public BrokerRunning brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+        public BrokerRunning brokerIsRunning;
+
+        [SetUp]
+        public void SetUp()
+        {
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+        }
 
         //@Rule
         //public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.INFO, RabbitTemplate.class,

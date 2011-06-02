@@ -21,7 +21,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// Message listener container error handler integration tests.
     /// </summary>
     /// <remarks></remarks>
-    public class MessageListenerContainerErrorHandlerIntegrationTests
+    public class MessageListenerContainerErrorHandlerIntegrationTests : IntegrationTestBase
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerErrorHandlerIntegrationTests));
 
@@ -37,17 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         //public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.INFO, RabbitTemplate.class,
         //		SimpleMessageListenerContainer.class, BlockingQueueConsumer.class,
         //		MessageListenerContainerErrorHandlerIntegrationTests.class);
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageListenerContainerErrorHandlerIntegrationTests"/> class. 
-        /// </summary>
-        /// <remarks>
-        /// </remarks>
-        public MessageListenerContainerErrorHandlerIntegrationTests()
-        {
-            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
-        }
-
+        
         /// <summary>
         /// Sets up.
         /// </summary>
@@ -55,6 +45,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [SetUp]
         public void SetUp()
         {
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
             var mocker = new AutoMoqer();
 
             var mockErrorHandler = mocker.GetMock<IErrorHandler>();

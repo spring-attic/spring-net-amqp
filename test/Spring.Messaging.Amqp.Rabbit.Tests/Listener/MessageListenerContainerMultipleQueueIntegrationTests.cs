@@ -17,7 +17,7 @@ using Spring.Threading.AtomicTypes;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
-    public class MessageListenerContainerMultipleQueueIntegrationTests
+    public class MessageListenerContainerMultipleQueueIntegrationTests : IntegrationTestBase
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerMultipleQueueIntegrationTests));
 
@@ -26,10 +26,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         private static Queue queue2 = new Queue("test.queue.2");
 
         //@Rule
-        public BrokerRunning brokerIsRunningAndQueue1Empty = BrokerRunning.IsRunningWithEmptyQueues(queue1);
+        public BrokerRunning brokerIsRunningAndQueue1Empty;
 
         //@Rule
-        public BrokerRunning brokerIsRunningAndQueue2Empty = BrokerRunning.IsRunningWithEmptyQueues(queue2);
+        public BrokerRunning brokerIsRunningAndQueue2Empty;
 
         //@Rule
         //public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.INFO, RabbitTemplate.class,
@@ -38,6 +38,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         //@Rule
         //public ExpectedException exception = ExpectedException.none();
 
+        /// <summary>
+        /// Sets up.
+        /// </summary>
+        /// <remarks></remarks>
+        [SetUp]
+        public void SetUp()
+        {
+            this.brokerIsRunningAndQueue1Empty = BrokerRunning.IsRunningWithEmptyQueues(queue1);
+            this.brokerIsRunningAndQueue2Empty = BrokerRunning.IsRunningWithEmptyQueues(queue2);
+        }
 
         /// <summary>
         /// Tests the multiple queues.

@@ -7,6 +7,7 @@ using Common.Logging;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
@@ -34,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 10, false)]
-    public class SimpleMessageListenerContainerIntegrationTests
+    public class SimpleMessageListenerContainerIntegrationTests : IntegrationTestBase
     {
         private static ILog logger = LogManager.GetLogger(typeof(SimpleMessageListenerContainerIntegrationTests));
 
@@ -65,7 +66,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         public SimpleMessageListenerContainerIntegrationTests(int messageCount, int concurrency, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode, bool transactional, int txSize, bool externalTransaction)
         {
-            brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
             this.messageCount = messageCount;
             this.concurrentConsumers = concurrency;
             this.acknowledgeMode = acknowledgeMode;
@@ -103,6 +103,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [SetUp]
         public void DeclareQueue()
         {
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
             var connectionFactory = new CachingConnectionFactory();
             connectionFactory.ChannelCacheSize = this.concurrentConsumers;
             connectionFactory.Port = BrokerTestUtils.GetPort();

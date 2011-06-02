@@ -7,6 +7,7 @@ using Common.Logging;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
@@ -16,7 +17,7 @@ using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
-    public class MessageListenerRecoveryCachingConnectionIntegrationTests
+    public class MessageListenerRecoveryCachingConnectionIntegrationTests : IntegrationTestBase
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerRecoveryCachingConnectionIntegrationTests));
 
@@ -39,8 +40,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         //		SimpleMessageListenerContainer.class, BlockingQueueConsumer.class);
 
         //@Rule
-        public BrokerRunning brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue, sendQueue);
-
+        public BrokerRunning brokerIsRunning;
+        
         /// <summary>
         /// Creates the connection factory.
         /// </summary>
@@ -52,6 +53,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             connectionFactory.ChannelCacheSize = this.concurrentConsumers;
             connectionFactory.Port = BrokerTestUtils.GetPort();
             return connectionFactory;
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue, sendQueue);
         }
 
         /// <summary>
