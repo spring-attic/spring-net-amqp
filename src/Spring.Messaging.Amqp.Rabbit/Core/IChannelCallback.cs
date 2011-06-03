@@ -23,12 +23,17 @@ using RabbitMQ.Client;
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
     /// <summary>
-    ///  
+    /// A Channel Callback interface.
     /// </summary>
     /// <author>Mark Pollack</author>
     public interface IChannelCallback<T>
     {
+        /// <summary>
+        /// Does the in rabbit.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns>An object of type T.</returns>
+        /// <remarks></remarks>
         T DoInRabbit(IModel model);
     }
-
 }

@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -22,12 +23,20 @@ using System;
 
 namespace Spring.Amqp.HelloWorld.Consumer.Async
 {
+    /// <summary>
+    /// A sample asynchronous message handler.
+    /// </summary>
+    /// <remarks></remarks>
     public class HelloWorldHandler
     {
+        /// <summary>
+        /// Handles the message.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <remarks></remarks>
         public void HandleMessage(string text)
         {
             Console.WriteLine("Received: " + text);
         }
     }
-
 }

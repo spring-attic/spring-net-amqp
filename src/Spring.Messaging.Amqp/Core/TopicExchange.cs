@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -19,6 +20,7 @@
 #endregion
 
 using System;
+using System.Collections;
 
 namespace Spring.Messaging.Amqp.Core
 {
@@ -29,21 +31,61 @@ namespace Spring.Messaging.Amqp.Core
     /// Used in conjunction with administrative operations.
     /// </remarks>
     /// <author>Mark Pollack</author>
+    /// <author>Joe Fitzgerald</author>
     /// <see cref="IAmqpAdmin"/>
     public class TopicExchange : AbstractExchange
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TopicExchange"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
         public TopicExchange(string name) : base(name)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TopicExchange"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="durable">
+        /// The durable.
+        /// </param>
+        /// <param name="autoDelete">
+        /// The auto delete.
+        /// </param>
         public TopicExchange(string name, bool durable, bool autoDelete) : base(name, durable, autoDelete)
         {
         }
 
-        public override ExchangeType ExchangeType
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TopicExchange"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="durable">
+        /// The durable.
+        /// </param>
+        /// <param name="autoDelete">
+        /// The auto delete.
+        /// </param>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
+        public TopicExchange(string name, bool durable, bool autoDelete, IDictionary arguments) : base(name, durable, autoDelete, arguments)
+        { 
+        }
+
+        /// <summary>
+        /// Gets ExchangeType.
+        /// </summary>
+        public override string ExchangeType
         {
-            get { return Core.ExchangeType.Topic; }
+            get { return ExchangeTypes.Topic; }
         }
     }
-
 }

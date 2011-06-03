@@ -18,7 +18,9 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Spring.Erlang.Core;
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
@@ -27,14 +29,31 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     ///  The status object returned from querying the broker
     /// </summary>
     /// <author>Mark Pollack</author>
+    /// <author>Joe Fitzgerald</author>
     public class RabbitStatus
     {
+        /// <summary>
+        /// The running applications.
+        /// </summary>
         private IList<Application> runningApplications;
 
+        /// <summary>
+        /// The nodes.
+        /// </summary>
         private IList<Node> nodes;
 
+        /// <summary>
+        /// The running nodes.
+        /// </summary>
         private IList<Node> runningNodes;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RabbitStatus"/> class.
+        /// </summary>
+        /// <param name="runningApplications">The running applications.</param>
+        /// <param name="nodes">The nodes.</param>
+        /// <param name="runningNodes">The running nodes.</param>
+        /// <remarks></remarks>
         public RabbitStatus(IList<Application> runningApplications, IList<Node> nodes, IList<Node> runningNodes)
         {
             this.runningApplications = runningApplications;
@@ -42,25 +61,86 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             this.runningNodes = runningNodes;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is alive.
+        /// </summary>
+        /// <remarks></remarks>
+        public bool IsAlive
+        {
+            get { return this.nodes != null && !(this.nodes.Count <= 0); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is running.
+        /// </summary>
+        /// <remarks></remarks>
+        public bool IsRunning
+        {
+            get { return this.runningNodes != null && !(this.runningNodes.Count <= 0); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is ready.
+        /// </summary>
+        /// <remarks></remarks>
+        public bool IsReady
+        {
+            get
+            {
+                var erlangNodeIsRunning = this.IsRunning && this.runningApplications != null && !(this.runningApplications.Count <= 0);
+                if (!erlangNodeIsRunning)
+                {
+                    return false;
+                }
+                
+                var rabbitIsRunning = false;
+                foreach (var application in this.runningApplications)
+                {
+                    if (application.Id == "\"RabbitMQ\"")
+                    {
+                        rabbitIsRunning = true;
+                    }
+                }
+
+                return rabbitIsRunning;
+            }
+        }
+
+        /// <summary>
+        /// Gets the running applications.
+        /// </summary>
+        /// <remarks></remarks>
         public IList<Application> RunningApplications
         {
-            get { return runningApplications; }
+            get { return this.runningApplications; }
         }
 
+        /// <summary>
+        /// Gets the nodes.
+        /// </summary>
+        /// <remarks></remarks>
         public IList<Node> Nodes
         {
-            get { return nodes; }
+            get { return this.nodes; }
         }
 
+        /// <summary>
+        /// Gets the running nodes.
+        /// </summary>
+        /// <remarks></remarks>
         public IList<Node> RunningNodes
         {
-            get { return runningNodes; }
+            get { return this.runningNodes; }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
+        /// <remarks></remarks>
         public override string ToString()
         {
-            return string.Format("RunningApplications: {0}, Nodes: {1}, RunningNodes: {2}", runningApplications, nodes, runningNodes);
+            return string.Format("RunningApplications: {0}, Nodes: {1}, RunningNodes: {2}", this.runningApplications, this.nodes, this.runningNodes);
         }
     }
-
 }

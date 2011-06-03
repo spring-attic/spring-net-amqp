@@ -23,19 +23,26 @@ using Erlang.NET;
 namespace Spring.Erlang.Support.Converter
 {
     /// <summary>
-    ///  
+    /// An Erlang conversion exception.
     /// </summary>
     /// <author>Mark Pollack</author>
     public class ErlangConversionException : OtpErlangException
     {
-        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:System.Object"/> class.
+        /// </summary>
+        /// <remarks></remarks>
         public ErlangConversionException() : base()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ErlangConversionException"/> class.
+        /// </summary>
+        /// <param name="msg">The MSG.</param>
+        /// <remarks></remarks>
         public ErlangConversionException(string msg) : base(msg)
         {
         }
     }
-
 }

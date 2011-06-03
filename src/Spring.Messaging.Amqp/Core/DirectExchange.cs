@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -18,6 +19,8 @@
 
 #endregion
 
+using System.Collections;
+
 namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
@@ -30,19 +33,59 @@ namespace Spring.Messaging.Amqp.Core
     /// <see cref="IAmqpAdmin"/>
     public class DirectExchange : AbstractExchange
     {
-        public static readonly DirectExchange DEFAULT = new DirectExchange("");
+        /// <summary>
+        /// The default direct exchange.
+        /// </summary>
+        public static readonly DirectExchange DEFAULT = new DirectExchange(string.Empty);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectExchange"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
         public DirectExchange(string name) : base(name)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectExchange"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="durable">
+        /// The durable.
+        /// </param>
+        /// <param name="autoDelete">
+        /// The auto delete.
+        /// </param>
         public DirectExchange(string name, bool durable, bool autoDelete) : base(name, durable, autoDelete)
         {
         }
 
-        public override ExchangeType ExchangeType
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectExchange"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="durable">
+        /// The durable.
+        /// </param>
+        /// <param name="autoDelete">
+        /// The auto delete.
+        /// </param>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
+        public DirectExchange(string name, bool durable, bool autoDelete, IDictionary arguments) : base(name, durable, autoDelete, arguments)
         {
-            get { return Core.ExchangeType.Direct; }
+        }
+
+        public override string ExchangeType
+        {
+            get { return ExchangeTypes.Direct; }
         }
     }
 

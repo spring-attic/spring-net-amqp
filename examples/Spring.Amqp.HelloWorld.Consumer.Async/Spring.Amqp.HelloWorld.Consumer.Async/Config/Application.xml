@@ -1,25 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <objects xmlns="http://www.springframework.net">
-
   <object id="ConnectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.SingleConnectionFactory, Spring.Messaging.Amqp.Rabbit">
-
+    <!--<property name="Host" value="rabbit-server-hostname-here" />-->
   </object>
-
-  <object id="MessageListenerContainer" type="Spring.Messaging.Amqp.Rabbit.Listener.SimpleMessageListenerContainer, Spring.Messaging.Amqp.Rabbit">
-    <property name="ConnectionFactory" ref="ConnectionFactory"/>
-    <property name="Queue" value="hello.world.queue"/>
-    <property name="ConcurrentConsumers" value="5"/>
-    <property name="MessageListener" ref="MessageListenerAdapter"/>
+  <object id="MessageListenerContainer" type="Spring.Messaging.Amqp.Rabbit.Listener.SimpleMessageListenerContainer, Spring.Messaging.Amqp.Rabbit" init-method="Start">
+    <property name="ConnectionFactory" ref="ConnectionFactory" />
+    <property name="QueueNames" value="hello.world.queue" />
+    <property name="ConcurrentConsumers" value="5" />
+    <property name="MessageListener" ref="MessageListenerAdapter" />
   </object>
-
-
   <object id="MessageListenerAdapter" type="Spring.Messaging.Amqp.Rabbit.Listener.Adapter.MessageListenerAdapter, Spring.Messaging.Amqp.Rabbit">
-    <property name="HandlerObject" ref="HelloWorldHandler"/>
+    <property name="HandlerObject" ref="HelloWorldHandler" />
   </object>
-
-  <object id="HelloWorldHandler" type="Spring.Amqp.HelloWorld.Consumer.Async.HelloWorldHandler, Spring.Amqp.HelloWorld.Consumer.Async">
-    
-  </object>
-
-
+  <object id="HelloWorldHandler" type="Spring.Amqp.HelloWorld.Consumer.Async.HelloWorldHandler, Spring.Amqp.HelloWorld.Consumer.Async"></object>
 </objects>

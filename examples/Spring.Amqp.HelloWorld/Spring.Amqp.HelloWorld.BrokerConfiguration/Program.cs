@@ -15,9 +15,9 @@ namespace Spring.Amqp.HelloWorld.BrokerConfiguration
         {
             using (IConnectionFactory connectionFactory = new SingleConnectionFactory())
             {
-                IAmqpAdmin amqpAdmin = new RabbitAdmin(new RabbitTemplate(connectionFactory));
+                IAmqpAdmin amqpAdmin = new RabbitAdmin(connectionFactory);
 
-                Queue helloWorldQueue = new Queue("hello.world.queue");
+                var helloWorldQueue = new Queue("hello.world.queue");
 
                 amqpAdmin.DeclareQueue(helloWorldQueue);
 

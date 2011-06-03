@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -19,13 +20,16 @@
 #endregion
 
 using Erlang.NET;
+using Spring.Erlang.Connection;
 
 namespace Spring.Erlang.Core
 {
     /// <summary>
     /// Execute any number of operations against the supplied OTP connection, possibly returning a result.
     /// </summary>
-    /// <author>Mark Pollack</author>
-    public delegate T ConnectionCallbackDelegate<T>(OtpConnection channel);
-
+    /// <typeparam name="T">Type T.</typeparam>
+    /// <param name="channel">The channel.</param>
+    /// <returns>Object of Type T.</returns>
+    /// <remarks></remarks>
+    public delegate T ConnectionCallbackDelegate<T>(IConnection channel);
 }

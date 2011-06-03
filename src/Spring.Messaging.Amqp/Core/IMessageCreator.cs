@@ -21,11 +21,17 @@
 namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
-    ///  
+    /// Interface for Message creation.
     /// </summary>
     /// <author>Mark Pollack</author>
     public interface IMessageCreator
     {
+        /// <summary>
+        /// Create a Message.
+        /// </summary>
+        /// <returns>
+        /// The Message.
+        /// </returns>
         Message CreateMessage();
     }
 

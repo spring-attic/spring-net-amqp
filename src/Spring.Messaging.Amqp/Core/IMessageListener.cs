@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -21,11 +22,17 @@
 namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
-    ///  
+    /// Interface for Message listening.
     /// </summary>
     /// <author>Mark Pollack</author>
     public interface IMessageListener
     {
+        /// <summary>
+        /// Called when a Message is received.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
         void OnMessage(Message message);
     }
 

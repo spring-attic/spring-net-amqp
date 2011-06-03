@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -20,6 +21,12 @@
 
 namespace Spring.Messaging.Amqp.Core
 {
+    /// <summary>
+    /// A delegate for message post processing.
+    /// </summary>
+    /// <param name="message">
+    /// The message.
+    /// </param>
+    /// <returns>The Message.</returns>
     public delegate Message MessagePostProcessorDelegate(Message message);
-
 }

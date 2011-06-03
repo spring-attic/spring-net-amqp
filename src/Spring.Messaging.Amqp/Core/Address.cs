@@ -16,10 +16,9 @@ namespace Spring.Messaging.Amqp.Core
     public class Address
     {
         //	private static final Pattern pattern = Pattern.compile("^([^:]+)://([^/]*)/?(.*)$");
-        public static readonly Regex PSEUDO_URI_PARSER = new Regex("^([^:]+)://([^/]*)/?(.*)$");
+        public static readonly Regex pattern = new Regex("^([^:]+)://([^/]*)/?(.*)$");
 
-
-        private ExchangeType exchangeType;
+        private string exchangeType;
 
         private string exchangeName;
 
@@ -34,21 +33,20 @@ namespace Spring.Messaging.Amqp.Core
         {
             if (address == null)
             {
-                exchangeType = ExchangeType.Direct;                                
-                exchangeName = "";
-                routingKey = "";
+                this.exchangeType = ExchangeTypes.Direct;                                
+                this.exchangeName = "";
+                this.routingKey = "";
             } else
             {
-                Match match = PSEUDO_URI_PARSER.Match(address);
+                Match match = pattern.Match(address);
                 if (match.Success)
                 {
-                    string exchangeTypeAsString = match.Groups[1].Value;
-                    exchangeType = (ExchangeType)Enum.Parse(typeof(ExchangeType), exchangeTypeAsString, true);
+                    exchangeType = match.Groups[1].Value;
                     exchangeName = match.Groups[2].Value;
                     routingKey = match.Groups[3].Value;
                 } else
                 {
-                    exchangeType = ExchangeType.Direct;
+                    exchangeType = ExchangeTypes.Direct;
                     exchangeName = "";
                     routingKey = address;
                 }
@@ -62,14 +60,14 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="exchangeType">Type of the exchange.</param>
         /// <param name="exchangeName">Name of the exchange.</param>
         /// <param name="routingKey">The routing key.</param>
-        public Address(ExchangeType exchangeType, string exchangeName, string routingKey)
+        public Address(string exchangeType, string exchangeName, string routingKey)
         {
             this.exchangeType = exchangeType;
             this.exchangeName = exchangeName;
             this.routingKey = routingKey;
         }
 
-        public ExchangeType ExchangeType
+        public string ExchangeType
         {
             get { return exchangeType; }
         }
