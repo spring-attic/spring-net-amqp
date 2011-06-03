@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -54,5 +55,4 @@ namespace Spring.Erlang.Support.Converter
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception> 
         object FromErlangRpc(string module, string function, OtpErlangObject erlangObject);
     }
-
 }

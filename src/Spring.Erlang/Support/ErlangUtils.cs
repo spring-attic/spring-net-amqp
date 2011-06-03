@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -25,25 +26,38 @@ using Spring.Util;
 namespace Spring.Erlang.Support
 {
     /// <summary>
-    ///  
+    /// Erlang Utilities.
     /// </summary>
     /// <author>Mark Pollack</author>
     public class ErlangUtils
     {
+        /// <summary>
+        /// Releases the connection.
+        /// </summary>
+        /// <param name="con">The con.</param>
+        /// <remarks></remarks>
         public static void ReleaseConnection(OtpConnection con)
         {
             if (con == null)
             {
                 return;
             }
+
             con.close();
         }
 
-        public static OtpException ConvertOtpAccessException(Exception ex) {
-		AssertUtils.ArgumentNotNull(ex, "Exception must not be null");
-        //TODO preserve stack strace
-		return new UncategorizedOtpException(ex.Message);
-	}
-    }
+        /// <summary>
+        /// Converts the otp access exception.
+        /// </summary>
+        /// <param name="ex">The ex.</param>
+        /// <returns>The exception.</returns>
+        /// <remarks></remarks>
+        public static OtpException ConvertOtpAccessException(Exception ex)
+        {
+            AssertUtils.ArgumentNotNull(ex, "Exception must not be null");
 
+            // TODO: preserve stack strace
+            return new UncategorizedOtpException(ex.Message);
+        }
+    }
 }

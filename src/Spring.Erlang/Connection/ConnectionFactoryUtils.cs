@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -20,28 +21,36 @@
 
 using System;
 using Common.Logging;
-using Erlang.NET;
 
 namespace Spring.Erlang.Connection
 {
     /// <summary>
-    ///  
+    /// Connection factory utilities.
     /// </summary>
     /// <author>Mark Pollack</author>
     public class ConnectionFactoryUtils
     {
+        /// <summary>
+        /// The logger.
+        /// </summary>
         protected static readonly ILog logger = LogManager.GetLogger(typeof(ConnectionFactoryUtils));
 
-
-        public static void ReleaseConnection(OtpConnection con, IConnectionFactory cf)
+        /// <summary>
+        /// Releases the connection.
+        /// </summary>
+        /// <param name="con">The con.</param>
+        /// <param name="cf">The cf.</param>
+        /// <remarks></remarks>
+        public static void ReleaseConnection(IConnection con, IConnectionFactory cf)
         {
             if (con == null)
             {
                 return;
             }
+
             try
             {
-                con.close();
+                con.Close();
             }
             catch (Exception ex)
             {

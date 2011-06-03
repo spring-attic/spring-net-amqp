@@ -5,4 +5,4 @@ REM 'test-integration'
 
 @ECHO OFF
 cls
-tools\nant\nant.exe daily -f:Spring.Amqp.build
+tools\nant\bin\nant.exe daily -f:Spring.Amqp.build

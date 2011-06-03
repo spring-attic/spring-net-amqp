@@ -230,6 +230,7 @@
             An expression string that should be evaluated in order to determine
             the cache key for the item.
             </param>
+            <remarks>The cache key cannot evaluate be null or an empty string.</remarks>
         </member>
         <member name="P:Spring.Caching.BaseCacheAttribute.CacheName">
             <summary>
@@ -558,6 +559,1060 @@
             Gets a collection of all cache item keys.
             </summary>
         </member>
+        <member name="T:Spring.Collections.Generic.DictionarySet`1">
+             <summary>
+             <p><c>DictionarySet</c> is an abstract class that supports the creation of new <c>Set</c>
+             types where the underlying data store is an <c>IDictionary</c> instance.</p> 
+              
+             <p>You can use any object that implements the <c>IDictionary</c> interface to hold set data.
+             You can define your own, or you can use one of the objects provided in the Framework.   
+             The type of <c>IDictionary</c> you choose will affect both the performance and the behavior
+             of the <c>Set</c> using it. </p>
+            
+             <p>To make a <c>Set</c> typed based on your own <c>IDictionary</c>, simply derive a
+             new class with a constructor that takes no parameters.  Some <c>Set</c> implmentations
+             cannot be defined with a default constructor.  If this is the case for your class, 
+             you will need to override <c>Clone()</c> as well.</p>
+            
+             <p>It is also standard practice that at least one of your constructors takes an <c>ICollection</c> or 
+             an <c>ISet</c> as an argument.</p>
+             </summary>
+        </member>
+        <member name="T:Spring.Collections.Generic.Set`1">
+            <summary><p>A collection that contains no duplicate elements.  This class models the mathematical
+            <c>Set</c> abstraction, and is the base class for all other <c>Set</c> implementations.  
+            The order of elements in a set is dependant on (a)the data-structure implementation, and 
+            (b)the implementation of the various <c>Set</c> methods, and thus is not guaranteed.</p>
+             
+            <p>None of the <c>Set</c> implementations in this library are guranteed to be thread-safe
+            in any way unless wrapped in a <c>SynchronizedSet</c>.</p>
+            
+            <p>The following table summarizes the binary operators that are supported by the <c>Set</c> class.</p>
+            <list type="table">
+            	<listheader>
+            		<term>Operation</term>
+            		<term>Description</term>
+            		<term>Method</term>
+            		<term>Operator</term>
+            	</listheader>
+            	<item>
+            		<term>Union (OR)</term>
+            		<term>Element included in result if it exists in either <c>A</c> OR <c>B</c>.</term>
+            		<term><c>Union()</c></term>
+            		<term><c>|</c></term>
+            	</item>
+            	<item>
+            		<term>Intersection (AND)</term>
+            		<term>Element included in result if it exists in both <c>A</c> AND <c>B</c>.</term>
+            		<term><c>InterSect()</c></term>
+            		<term><c>&amp;</c></term>
+            	</item>
+            	<item>
+            		<term>Exclusive Or (XOR)</term>
+            		<term>Element included in result if it exists in one, but not both, of <c>A</c> and <c>B</c>.</term>
+            		<term><c>ExclusiveOr()</c></term>
+            		<term><c>^</c></term>
+            	</item>
+            	<item>
+            		<term>Minus (n/a)</term>
+            		<term>Take all the elements in <c>A</c>.  Now, if any of them exist in <c>B</c>, remove
+            		them.  Note that unlike the other operators, <c>A - B</c> is not the same as <c>B - A</c>.</term>
+            		<term><c>Minus()</c></term>
+            		<term><c>-</c></term>
+            	</item>
+            </list>
+            </summary>
+        </member>
+        <member name="T:Spring.Collections.Generic.ISet`1">
+            <summary>
+            <p>A collection that contains no duplicate elements.  This interface models the mathematical
+            <c>Set</c> abstraction.    
+            The order of elements in a set is dependant on (a)the data-structure implementation, and 
+            (b)the implementation of the various <c>Set</c> methods, and thus is not guaranteed.</p>
+            
+            <p>None of the <c>Set</c> implementations in this library are guranteed to be thread-safe
+            in any way unless wrapped in a <c>SynchronizedSet</c>.</p>
+            
+            <p>The following table summarizes the binary operators that are supported by the <c>Set</c> class.</p>
+            <list type="table">
+            	<listheader>
+            		<term>Operation</term>
+            		<term>Description</term>
+            		<term>Method</term>
+            	</listheader>
+            	<item>
+            		<term>Union (OR)</term>
+            		<term>Element included in result if it exists in either <c>A</c> OR <c>B</c>.</term>
+            		<term><c>Union()</c></term>
+            	</item>
+            	<item>
+            		<term>Intersection (AND)</term>
+            		<term>Element included in result if it exists in both <c>A</c> AND <c>B</c>.</term>
+            		<term><c>InterSect()</c></term>
+            	</item>
+            	<item>
+            		<term>Exclusive Or (XOR)</term>
+            		<term>Element included in result if it exists in one, but not both, of <c>A</c> and <c>B</c>.</term>
+            		<term><c>ExclusiveOr()</c></term>
+            	</item>
+            	<item>
+            		<term>Minus (n/a)</term>
+            		<term>Take all the elements in <c>A</c>.  Now, if any of them exist in <c>B</c>, remove
+            		them.  Note that unlike the other operators, <c>A - B</c> is not the same as <c>B - A</c>.</term>
+            		<term><c>Minus()</c></term>
+            	</item>
+            </list>
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.ISet`1.Union(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs a "union" of the two sets, where all the elements
+            in both sets are present.  That is, the element is included if it is in either <c>a</c> or <c>b</c>.
+            Neither this set nor the input set are modified during the operation.  The return value
+            is a <c>Clone()</c> of this set with the extra elements added in.
+            </summary>
+            <param name="a">A collection of elements.</param>
+            <returns>A new <c>Set</c> containing the union of this <c>Set</c> with the specified collection.
+            Neither of the input objects is modified by the union.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ISet`1.Intersect(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs an "intersection" of the two sets, where only the elements
+            that are present in both sets remain.  That is, the element is included if it exists in
+            both sets.  The <c>Intersect()</c> operation does not modify the input sets.  It returns
+            a <c>Clone()</c> of this set with the appropriate elements removed.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <returns>The intersection of this set with <c>a</c>.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ISet`1.Minus(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs a "minus" of set <c>b</c> from set <c>a</c>.  This returns a set of all
+            the elements in set <c>a</c>, removing the elements that are also in set <c>b</c>.
+            The original sets are not modified during this operation.  The result set is a <c>Clone()</c>
+            of this <c>Set</c> containing the elements from the operation.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <returns>A set containing the elements from this set with the elements in <c>a</c> removed.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ISet`1.ExclusiveOr(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs an "exclusive-or" of the two sets, keeping only the elements that
+            are in one of the sets, but not in both.  The original sets are not modified
+            during this operation.  The result set is a <c>Clone()</c> of this set containing
+            the elements from the exclusive-or operation.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <returns>A set containing the result of <c>a ^ b</c>.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ISet`1.ContainsAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Returns <see langword="true" /> if the set contains all the elements in the specified collection.
+            </summary>
+            <param name="c">A collection of objects.</param>
+            <returns><see langword="true" /> if the set contains all the elements in the specified collection, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ISet`1.Add(`0)">
+            <summary>
+            Adds the specified element to this set if it is not already present.
+            </summary>
+            <param name="o">The object to add to the set.</param>
+            <returns><see langword="true" /> is the object was added, <see langword="false" /> if it was already present.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ISet`1.AddAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Adds all the elements in the specified collection to the set if they are not already present.
+            </summary>
+            <param name="c">A collection of objects to add to the set.</param>
+            <returns><see langword="true" /> is the set changed as a result of this operation, <see langword="false" /> if not.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ISet`1.RemoveAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Remove all the specified elements from this set, if they exist in this set.
+            </summary>
+            <param name="c">A collection of elements to remove.</param>
+            <returns><see langword="true" /> if the set was modified as a result of this operation.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ISet`1.RetainAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Retains only the elements in this set that are contained in the specified collection.
+            </summary>
+            <param name="c">Collection that defines the set of elements to be retained.</param>
+            <returns><see langword="true" /> if this set changed as a result of this operation.</returns>
+        </member>
+        <member name="P:Spring.Collections.Generic.ISet`1.IsEmpty">
+            <summary>
+            Returns <see langword="true" /> if this set contains no elements.
+            </summary>
+        </member>
+        <member name="T:Spring.Collections.ISet">
+            <summary>
+            A collection that contains no duplicate elements.
+            </summary>
+            <remarks>
+            <p>
+            This interface models the mathematical
+            <see cref="T:Spring.Collections.ISet"/> abstraction. The order of
+            elements in a set is dependant on (a)the data-structure implementation, and 
+            (b)the implementation of the various
+            <see cref="T:Spring.Collections.ISet"/> methods, and thus is not
+            guaranteed.
+            </p>
+            <p>
+            <see cref="T:Spring.Collections.ISet"/> overrides the
+            <see cref="M:System.Object.Equals(System.Object)"/> method to test for "equivalency":
+            whether the two sets contain the same elements. The "==" and "!="
+            operators are not overridden by design, since it is often desirable to
+            compare object references for equality.
+            </p>
+            <p>
+            Also, the <see cref="M:System.Object.GetHashCode"/> method is not
+            implemented on any of the set implementations, since none of them are
+            truly immutable. This is by design, and it is the way almost all
+            collections in the .NET framework function. So as a general rule, don't
+            store collection objects inside <see cref="T:Spring.Collections.ISet"/>
+            instances. You would typically want to use a keyed
+            <see cref="T:System.Collections.IDictionary"/> instead.
+            </p>
+            <p>
+            None of the <see cref="T:Spring.Collections.ISet"/> implementations in
+            this library are guaranteed to be thread-safe in any way unless wrapped
+            in a <see cref="T:Spring.Collections.SynchronizedSet"/>.
+            </p>
+            <p>
+            The following table summarizes the binary operators that are supported
+            by the <see cref="T:Spring.Collections.ISet"/> class.
+            </p>
+            <list type="table">
+            	<listheader>
+            		<term>Operation</term>
+            		<term>Description</term>
+            		<term>Method</term>
+            	</listheader>
+            	<item>
+            		<term>Union (OR)</term>
+            		<term>
+            		Element included in result if it exists in either <c>A</c> OR
+            		<c>B</c>.
+            		</term>
+            		<term><c>Union()</c></term>
+            	</item>
+            	<item>
+            		<term>Intersection (AND)</term>
+            		<term>
+            		Element included in result if it exists in both <c>A</c> AND
+            		<c>B</c>.
+            		</term>
+            		<term><c>InterSect()</c></term>
+            	</item>
+            	<item>
+            		<term>Exclusive Or (XOR)</term>
+            		<term>
+            		Element included in result if it exists in one, but not both,
+            		of <c>A</c> and <c>B</c>.
+            		</term>
+            		<term><c>ExclusiveOr()</c></term>
+            	</item>
+            	<item>
+            		<term>Minus (n/a)</term>
+            		<term>
+            		Take all the elements in <c>A</c>. Now, if any of them exist in
+            		 <c>B</c>, remove them. Note that unlike the other operators,
+            		 <c>A - B</c> is not the same as <c>B - A</c>.
+            		 </term>
+            		<term><c>Minus()</c></term>
+            	</item>
+            </list>
+            </remarks>
+        </member>
+        <member name="M:Spring.Collections.ISet.Union(Spring.Collections.ISet)">
+            <summary>
+            Performs a "union" of the two sets, where all the elements
+            in both sets are present. 
+            </summary>
+            <remarks>
+            <p>
+            That is, the element is included if it is in either
+            <paramref name="setOne"/> or this set. Neither this set nor the input
+            set are modified during the operation. The return value is a
+            <b>clone</b> of this set with the extra elements added in.
+            </p>
+            </remarks>
+            <param name="setOne">A collection of elements.</param>
+            <returns>
+            A new <see cref="T:Spring.Collections.ISet"/> containing the union of
+            this <see cref="T:Spring.Collections.ISet"/> with the specified
+            collection. Neither of the input objects is modified by the union.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.Intersect(Spring.Collections.ISet)">
+            <summary>
+            Performs an "intersection" of the two sets, where only the elements
+            that are present in both sets remain.
+            </summary>
+            <remarks>
+            <p>
+            That is, the element is included if it exists in both sets. The
+            <c>Intersect()</c> operation does not modify the input sets. It
+            returns a <b>clone</b> of this set with the appropriate elements
+            removed.
+            </p>
+            </remarks>
+            <param name="setOne">A set of elements.</param>
+            <returns>
+            The intersection of this set with <paramref name="setOne"/>.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.Minus(Spring.Collections.ISet)">
+            <summary>
+            Performs a "minus" of this set from the <paramref name="setOne"/>
+            set.
+            </summary>
+            <remarks>
+            <p>
+            This returns a set of all the elements in set
+            <paramref name="setOne"/>, removing the elements that are also in
+            this set. The original sets are not modified during this operation.
+            The result set is a <b>clone</b> of this
+            <see cref="T:Spring.Collections.ISet"/> containing the elements from
+            the operation.
+            </p>
+            </remarks>
+            <param name="setOne">A set of elements.</param>
+            <returns>
+            A set containing the elements from this set with the elements in
+            <paramref name="setOne"/> removed.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.ExclusiveOr(Spring.Collections.ISet)">
+            <summary>
+            Performs an "exclusive-or" of the two sets, keeping only those
+            elements that are in one of the sets, but not in both.
+            </summary>
+            <remarks>
+            <p>
+            The original sets are not modified during this operation. The
+            result set is a <b>clone</b> of this set containing the elements
+            from the exclusive-or operation.
+            </p>
+            </remarks>
+            <param name="setOne">A set of elements.</param>
+            <returns>
+            A set containing the result of
+            <c><paramref name="setOne"/> ^ this</c>.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.Contains(System.Object)">
+            <summary>
+            Returns <see langword="true"/> if this set contains the specified
+            element.
+            </summary>
+            <param name="element">The element to look for.</param>
+            <returns>
+            <see langword="true"/> if this set contains the specified element.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.ContainsAll(System.Collections.ICollection)">
+            <summary>
+            Returns <see langword="true"/> if the set contains all the
+            elements in the specified collection.
+            </summary>
+            <param name="collection">A collection of objects.</param>
+            <returns>
+            <see langword="true"/> if the set contains all the elements in the
+            specified collection.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.Add(System.Object)">
+            <summary>
+            Adds the specified element to this set if it is not already present.
+            </summary>
+            <param name="element">The object to add to the set.</param>
+            <returns>
+            <see langword="true"/> is the object was added,
+            <see langword="true"/> if the object was already present.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.AddAll(System.Collections.ICollection)">
+            <summary>
+            Adds all the elements in the specified collection to the set if
+            they are not already present.
+            </summary>
+            <param name="collection">A collection of objects to add to the set.</param>
+            <returns>
+            <see langword="true"/> is the set changed as a result of this
+            operation.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.Remove(System.Object)">
+            <summary>
+            Removes the specified element from the set.
+            </summary>
+            <param name="element">The element to be removed.</param>
+            <returns>
+            <see langword="true"/> if the set contained the specified element.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.RemoveAll(System.Collections.ICollection)">
+            <summary>
+            Remove all the specified elements from this set, if they exist in
+            this set.
+            </summary>
+            <param name="collection">A collection of elements to remove.</param>
+            <returns>
+            <see langword="true"/> if the set was modified as a result of this
+            operation.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.RetainAll(System.Collections.ICollection)">
+            <summary>
+            Retains only the elements in this set that are contained in the
+            specified collection.
+            </summary>
+            <param name="collection">
+            The collection that defines the set of elements to be retained.
+            </param>
+            <returns>
+            <see langword="true"/> if this set changed as a result of this
+            operation.
+            </returns>
+        </member>
+        <member name="M:Spring.Collections.ISet.Clear">
+            <summary>
+            Removes all objects from this set.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.ISet.IsEmpty">
+            <summary>
+            Returns <see langword="true"/> if this set contains no elements.
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Union(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs a "union" of the two sets, where all the elements
+            in both sets are present.  That is, the element is included if it is in either <c>a</c> or <c>b</c>.
+            Neither this set nor the input set are modified during the operation.  The return value
+            is a <c>Clone()</c> of this set with the extra elements added in.
+            </summary>
+            <param name="a">A collection of elements.</param>
+            <returns>A new <c>Set</c> containing the union of this <c>Set</c> with the specified collection.
+            Neither of the input objects is modified by the union.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Union(Spring.Collections.Generic.ISet{`0},Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs a "union" of two sets, where all the elements
+            in both are present.  That is, the element is included if it is in either <c>a</c> or <c>b</c>.
+            The return value is a <c>Clone()</c> of one of the sets (<c>a</c> if it is not <see langword="null" />) with elements of the other set
+            added in.  Neither of the input sets is modified by the operation.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <param name="b">A set of elements.</param>
+            <returns>A set containing the union of the input sets.  <see langword="null" /> if both sets are <see langword="null" />.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.op_BitwiseOr(Spring.Collections.Generic.Set{`0},Spring.Collections.Generic.Set{`0})">
+            <summary>
+            Performs a "union" of two sets, where all the elements
+            in both are present.  That is, the element is included if it is in either <c>a</c> or <c>b</c>.
+            The return value is a <c>Clone()</c> of one of the sets (<c>a</c> if it is not <see langword="null" />) with elements of the other set
+            added in.  Neither of the input sets is modified by the operation.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <param name="b">A set of elements.</param>
+            <returns>A set containing the union of the input sets.  <see langword="null" /> if both sets are <see langword="null" />.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Intersect(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs an "intersection" of the two sets, where only the elements
+            that are present in both sets remain.  That is, the element is included if it exists in
+            both sets.  The <c>Intersect()</c> operation does not modify the input sets.  It returns
+            a <c>Clone()</c> of this set with the appropriate elements removed.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <returns>The intersection of this set with <c>a</c>.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Intersect(Spring.Collections.Generic.ISet{`0},Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs an "intersection" of the two sets, where only the elements
+            that are present in both sets remain.  That is, the element is included only if it exists in
+            both <c>a</c> and <c>b</c>.  Neither input object is modified by the operation.
+            The result object is a <c>Clone()</c> of one of the input objects (<c>a</c> if it is not <see langword="null" />) containing the
+            elements from the intersect operation. 
+            </summary>
+            <param name="a">A set of elements.</param>
+            <param name="b">A set of elements.</param>
+            <returns>The intersection of the two input sets.  <see langword="null" /> if both sets are <see langword="null" />.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.op_BitwiseAnd(Spring.Collections.Generic.Set{`0},Spring.Collections.Generic.Set{`0})">
+            <summary>
+            Performs an "intersection" of the two sets, where only the elements
+            that are present in both sets remain.  That is, the element is included only if it exists in
+            both <c>a</c> and <c>b</c>.  Neither input object is modified by the operation.
+            The result object is a <c>Clone()</c> of one of the input objects (<c>a</c> if it is not <see langword="null" />) containing the
+            elements from the intersect operation. 
+            </summary>
+            <param name="a">A set of elements.</param>
+            <param name="b">A set of elements.</param>
+            <returns>The intersection of the two input sets.  <see langword="null" /> if both sets are <see langword="null" />.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Minus(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs a "minus" of set <c>b</c> from set <c>a</c>.  This returns a set of all
+            the elements in set <c>a</c>, removing the elements that are also in set <c>b</c>.
+            The original sets are not modified during this operation.  The result set is a <c>Clone()</c>
+            of this <c>Set</c> containing the elements from the operation.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <returns>A set containing the elements from this set with the elements in <c>a</c> removed.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Minus(Spring.Collections.Generic.ISet{`0},Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs a "minus" of set <c>b</c> from set <c>a</c>.  This returns a set of all
+            the elements in set <c>a</c>, removing the elements that are also in set <c>b</c>.
+            The original sets are not modified during this operation.  The result set is a <c>Clone()</c>
+            of set <c>a</c> containing the elements from the operation. 
+            </summary>
+            <param name="a">A set of elements.</param>
+            <param name="b">A set of elements.</param>
+            <returns>A set containing <c>A - B</c> elements.  <see langword="null" /> if <c>a</c> is <see langword="null" />.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.op_Subtraction(Spring.Collections.Generic.Set{`0},Spring.Collections.Generic.Set{`0})">
+            <summary>
+            Performs a "minus" of set <c>b</c> from set <c>a</c>.  This returns a set of all
+            the elements in set <c>a</c>, removing the elements that are also in set <c>b</c>.
+            The original sets are not modified during this operation.  The result set is a <c>Clone()</c>
+            of set <c>a</c> containing the elements from the operation. 
+            </summary>
+            <param name="a">A set of elements.</param>
+            <param name="b">A set of elements.</param>
+            <returns>A set containing <c>A - B</c> elements.  <see langword="null" /> if <c>a</c> is <see langword="null" />.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.ExclusiveOr(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs an "exclusive-or" of the two sets, keeping only the elements that
+            are in one of the sets, but not in both.  The original sets are not modified
+            during this operation.  The result set is a <c>Clone()</c> of this set containing
+            the elements from the exclusive-or operation.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <returns>A set containing the result of <c>a ^ b</c>.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.ExclusiveOr(Spring.Collections.Generic.ISet{`0},Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs an "exclusive-or" of the two sets, keeping only the elements that
+            are in one of the sets, but not in both.  The original sets are not modified
+            during this operation.  The result set is a <c>Clone()</c> of one of the sets
+            (<c>a</c> if it is not <see langword="null" />) containing
+            the elements from the exclusive-or operation.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <param name="b">A set of elements.</param>
+            <returns>A set containing the result of <c>a ^ b</c>.  <see langword="null" /> if both sets are <see langword="null" />.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.op_ExclusiveOr(Spring.Collections.Generic.Set{`0},Spring.Collections.Generic.Set{`0})">
+            <summary>
+            Performs an "exclusive-or" of the two sets, keeping only the elements that
+            are in one of the sets, but not in both.  The original sets are not modified
+            during this operation.  The result set is a <c>Clone()</c> of one of the sets
+            (<c>a</c> if it is not <see langword="null" />) containing
+            the elements from the exclusive-or operation.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <param name="b">A set of elements.</param>
+            <returns>A set containing the result of <c>a ^ b</c>.  <see langword="null" /> if both sets are <see langword="null" />.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Add(`0)">
+            <summary>
+            Adds the specified element to this set if it is not already present.
+            </summary>
+            <param name="o">The object to add to the set.</param>
+            <returns><see langword="true" /> is the object was added, <see langword="false" /> if it was already present.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.AddAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Adds all the elements in the specified collection to the set if they are not already present.
+            </summary>
+            <param name="c">A collection of objects to add to the set.</param>
+            <returns><see langword="true" /> is the set changed as a result of this operation, <see langword="false" /> if not.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Clear">
+            <summary>
+            Removes all objects from the set.
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Contains(`0)">
+            <summary>
+            Returns <see langword="true" /> if this set contains the specified element.
+            </summary>
+            <param name="o">The element to look for.</param>
+            <returns><see langword="true" /> if this set contains the specified element, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.ContainsAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Returns <see langword="true" /> if the set contains all the elements in the specified collection.
+            </summary>
+            <param name="c">A collection of objects.</param>
+            <returns><see langword="true" /> if the set contains all the elements in the specified collection, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Remove(`0)">
+            <summary>
+            Removes the specified element from the set.
+            </summary>
+            <param name="o">The element to be removed.</param>
+            <returns><see langword="true" /> if the set contained the specified element, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.RemoveAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Remove all the specified elements from this set, if they exist in this set.
+            </summary>
+            <param name="c">A collection of elements to remove.</param>
+            <returns><see langword="true" /> if the set was modified as a result of this operation.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.RetainAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Retains only the elements in this set that are contained in the specified collection.
+            </summary>
+            <param name="c">Collection that defines the set of elements to be retained.</param>
+            <returns><see langword="true" /> if this set changed as a result of this operation.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.Clone">
+            <summary>
+            Returns a clone of the <c>Set</c> instance.  This will work for derived <c>Set</c>
+            classes if the derived class implements a constructor that takes no arguments.
+            </summary>
+            <returns>A clone of this object.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements in the <c>Set</c> to an array.  The type of array needs
+            to be compatible with the objects in the <c>Set</c>, obviously.
+            </summary>
+            <param name="array">An array that will be the target of the copy operation.</param>
+            <param name="index">The zero-based index where copying will start.</param>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.GetEnumerator">
+            <summary>
+            Gets an enumerator for the elements in the <c>Set</c>.
+            </summary>
+            <returns>An <c>IEnumerator</c> over the elements in the <c>Set</c>.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.NonGenericCopyTo(System.Array,System.Int32)">
+            <summary>
+            Performs CopyTo when called trhough non-generic ISet (ICollection) interface
+            </summary>
+            <param name="array"></param>
+            <param name="index"></param>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.NonGenericUnion(Spring.Collections.ISet)">
+            <summary>
+            Performs Union when called trhough non-generic ISet interface
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.NonGenericMinus(Spring.Collections.ISet)">
+            <summary>
+            Performs Minus when called trhough non-generic ISet interface
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.NonGenericIntersect(Spring.Collections.ISet)">
+            <summary>
+            Performs Intersect when called trhough non-generic ISet interface
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.Set`1.NonGenericExclusiveOr(Spring.Collections.ISet)">
+            <summary>
+            Performs ExclusiveOr when called trhough non-generic ISet interface
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Spring.Collections.Generic.Set`1.IsEmpty">
+            <summary>
+            Returns <see langword="true" /> if this set contains no elements.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.Set`1.Count">
+            <summary>
+            The number of elements currently contained in this collection.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.Set`1.IsSynchronized">
+            <summary>
+            Returns <see langword="true" /> if the <c>Set</c> is synchronized across threads.  Note that
+            enumeration is inherently not thread-safe.  Use the <c>SyncRoot</c> to lock the
+            object during enumeration.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.Set`1.SyncRoot">
+            <summary>
+            An object that can be used to synchronize this collection to make it thread-safe.
+            When implementing this, if your object uses a base object, like an <c>IDictionary</c>,
+            or anything that has a <c>SyncRoot</c>, return that object instead of "<c>this</c>".
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.Set`1.IsReadOnly">
+            <summary>
+            Indicates whether the given instance is read-only or not
+            </summary>
+            <value>
+            <see langword="true" /> if the ISet is read-only; otherwise, <see langword="false" />. 
+            In the default implementation of Set, this property always returns false. 
+            </value>
+        </member>
+        <member name="F:Spring.Collections.Generic.DictionarySet`1.InternalDictionary">
+            <summary>
+            Provides the storage for elements in the <c>Set</c>, stored as the key-set
+            of the <c>IDictionary</c> object.  Set this object in the constructor
+            if you create your own <c>Set</c> class.  
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.Add(`0)">
+            <summary>
+            Adds the specified element to this set if it is not already present.
+            </summary>
+            <param name="o">The <typeparamref name="T"/> to add to the set.</param>
+            <returns><see langword="true" /> is the object was added, <see langword="false" /> if it was already present.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.AddAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Adds all the elements in the specified collection to the set if they are not already present.
+            </summary>
+            <param name="c">A collection of objects to add to the set.</param>
+            <returns><see langword="true" /> is the set changed as a result of this operation, <see langword="false" /> if not.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.Clear">
+            <summary>
+            Removes all objects from the set.
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.Contains(`0)">
+            <summary>
+            Returns <see langword="true" /> if this set contains the specified element.
+            </summary>
+            <param name="o">The element to look for.</param>
+            <returns><see langword="true" /> if this set contains the specified element, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.ContainsAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Returns <see langword="true" /> if the set contains all the elements in the specified collection.
+            </summary>
+            <param name="c">A collection of objects.</param>
+            <returns><see langword="true" /> if the set contains all the elements in the specified collection, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.Remove(`0)">
+            <summary>
+            Removes the specified element from the set.
+            </summary>
+            <param name="o">The element to be removed.</param>
+            <returns><see langword="true" /> if the set contained the specified element, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.RemoveAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Remove all the specified elements from this set, if they exist in this set.
+            </summary>
+            <param name="c">A collection of elements to remove.</param>
+            <returns><see langword="true" /> if the set was modified as a result of this operation.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.RetainAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Retains only the elements in this set that are contained in the specified collection.
+            </summary>
+            <param name="c">Collection that defines the set of elements to be retained.</param>
+            <returns><see langword="true" /> if this set changed as a result of this operation.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements in the <c>Set</c> to an array of T.  The type of array needs
+            to be compatible with the objects in the <c>Set</c>, obviously.
+            </summary>
+            <param name="array">An array that will be the target of the copy operation.</param>
+            <param name="index">The zero-based index where copying will start.</param>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.GetEnumerator">
+            <summary>
+            Gets an enumerator for the elements in the <c>Set</c>.
+            </summary>
+            <returns>An <c>IEnumerator</c> over the elements in the <c>Set</c>.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.DictionarySet`1.NonGenericCopyTo(System.Array,System.Int32)">
+            <summary>
+            Copies the elements in the <c>Set</c> to an array.  The type of array needs
+            to be compatible with the objects in the <c>Set</c>, obviously. Needed for 
+            non-generic ISet methods implementation
+            </summary>
+            <param name="array">An array that will be the target of the copy operation.</param>
+            <param name="index">The zero-based index where copying will start.</param>
+        </member>
+        <member name="P:Spring.Collections.Generic.DictionarySet`1.Placeholder">
+            <summary>
+            The placeholder object used as the value for the <c>IDictionary</c> instance.
+            </summary>
+            <remarks>
+            There is a single instance of this object globally, used for all <c>Sets</c>.
+            </remarks>
+        </member>
+        <member name="P:Spring.Collections.Generic.DictionarySet`1.IsEmpty">
+            <summary>
+            Returns <see langword="true" /> if this set contains no elements.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.DictionarySet`1.Count">
+            <summary>
+            The number of elements contained in this collection.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.DictionarySet`1.IsSynchronized">
+            <summary>
+            None of the objects based on <c>DictionarySet</c> are synchronized.  Use the
+            <c>SyncRoot</c> property instead.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.DictionarySet`1.SyncRoot">
+            <summary>
+            Returns an object that can be used to synchronize the <c>Set</c> between threads.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.DictionarySet`1.IsReadOnly">
+            <summary>
+            Indicates wether the <c>Set</c> is read-only or not
+            </summary>
+        </member>
+        <member name="T:Spring.Collections.Generic.HashedSet`1">
+            <summary>
+            Implements a <c>Set</c> based on a Dictionary (which is equivalent of 
+            non-genric <c>HashTable</c>) This will give the best lookup, add, and remove
+            performance for very large data-sets, but iteration will occur in no particular order.
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.HashedSet`1.#ctor">
+            <summary>
+            Creates a new set instance based on a Dictinary.
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.HashedSet`1.#ctor(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Creates a new set instance based on a Dictinary and
+            initializes it based on a collection of elements.
+            </summary>
+            <param name="initialValues">A collection of elements that defines the initial set contents.</param>
+        </member>
+        <member name="T:Spring.Collections.Generic.ImmutableSet`1">
+            <summary>
+            <p>Implements an immutable (read-only) <c>Set</c> wrapper.</p>
+            <p>Although this is advertised as immutable, it really isn't.  Anyone with access to the
+            <c>basisSet</c> can still change the data-set.  So <c>GetHashCode()</c> is not implemented
+            for this <c>Set</c>, as is the case for all <c>Set</c> implementations in this library.
+            This design decision was based on the efficiency of not having to <c>Clone()</c> the 
+            <c>basisSet</c> every time you wrap a mutable <c>Set</c>.</p>
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.#ctor(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Constructs an immutable (read-only) <c>Set</c> wrapper.
+            </summary>
+            <param name="basisSet">The <c>Set</c> that is wrapped.</param>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.Add(`0)">
+            <summary>
+            Adds the specified element to this set if it is not already present.
+            </summary>
+            <param name="o">The object to add to the set.</param>
+            <returns>nothing</returns>
+            <exception cref="T:System.NotSupportedException"> is always thrown</exception>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.AddAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Adds all the elements in the specified collection to the set if they are not already present.
+            </summary>
+            <param name="c">A collection of objects to add to the set.</param>
+            <returns>nothing</returns>
+            <exception cref="T:System.NotSupportedException"> is always thrown</exception>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.Clear">
+            <summary>
+            Removes all objects from the set.
+            </summary>
+            <exception cref="T:System.NotSupportedException"> is always thrown</exception>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.Contains(`0)">
+            <summary>
+            Returns <see langword="true" /> if this set contains the specified element.
+            </summary>
+            <param name="o">The element to look for.</param>
+            <returns><see langword="true" /> if this set contains the specified element, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.ContainsAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Returns <see langword="true" /> if the set contains all the elements in the specified collection.
+            </summary>
+            <param name="c">A collection of objects.</param>
+            <returns><see langword="true" /> if the set contains all the elements in the specified collection, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.Remove(`0)">
+            <summary>
+            Removes the specified element from the set.
+            </summary>
+            <param name="o">The element to be removed.</param>
+            <returns>nothing</returns>
+            <exception cref="T:System.NotSupportedException"> is always thrown</exception>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.RemoveAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Remove all the specified elements from this set, if they exist in this set.
+            </summary>
+            <param name="c">A collection of elements to remove.</param>
+            <returns>nothing</returns>
+            <exception cref="T:System.NotSupportedException"> is always thrown</exception>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.RetainAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Retains only the elements in this set that are contained in the specified collection.
+            </summary>
+            <param name="c">Collection that defines the set of elements to be retained.</param>
+            <returns>nothing</returns>
+            <exception cref="T:System.NotSupportedException"> is always thrown</exception>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements in the <c>Set</c> to an array of T. The type of array needs
+            to be compatible with the objects in the <c>Set</c>, obviously.
+            </summary>
+            <param name="array">An array that will be the target of the copy operation.</param>
+            <param name="index">The zero-based index where copying will start.</param>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.GetEnumerator">
+            <summary>
+            Gets an enumerator for the elements in the <c>Set</c>.
+            </summary>
+            <returns>An <c>IEnumerator</c> over the elements in the <c>Set</c>.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.Clone">
+            <summary>
+            Returns a clone of the <c>Set</c> instance.  
+            </summary>
+            <returns>A clone of this object.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.Union(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs a "union" of the two sets, where all the elements
+            in both sets are present.  That is, the element is included if it is in either <c>a</c> or <c>b</c>.
+            Neither this set nor the input set are modified during the operation.  The return value
+            is a <c>Clone()</c> of this set with the extra elements added in.
+            </summary>
+            <param name="a">A collection of elements.</param>
+            <returns>A new <c>Set</c> containing the union of this <c>Set</c> with the specified collection.
+            Neither of the input objects is modified by the union.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.Intersect(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs an "intersection" of the two sets, where only the elements
+            that are present in both sets remain.  That is, the element is included if it exists in
+            both sets.  The <c>Intersect()</c> operation does not modify the input sets.  It returns
+            a <c>Clone()</c> of this set with the appropriate elements removed.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <returns>The intersection of this set with <c>a</c>.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.Minus(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs a "minus" of set <c>b</c> from set <c>a</c>.  This returns a set of all
+            the elements in set <c>a</c>, removing the elements that are also in set <c>b</c>.
+            The original sets are not modified during this operation.  The result set is a <c>Clone()</c>
+            of this <c>Set</c> containing the elements from the operation.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <returns>A set containing the elements from this set with the elements in <c>a</c> removed.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.ExclusiveOr(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Performs an "exclusive-or" of the two sets, keeping only the elements that
+            are in one of the sets, but not in both.  The original sets are not modified
+            during this operation.  The result set is a <c>Clone()</c> of this set containing
+            the elements from the exclusive-or operation.
+            </summary>
+            <param name="a">A set of elements.</param>
+            <returns>A set containing the result of <c>a ^ b</c>.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.NonGenericCopyTo(System.Array,System.Int32)">
+            <summary>
+            Performs CopyTo when called trhough non-generic ISet (ICollection) interface
+            </summary>
+            <param name="array"></param>
+            <param name="index"></param>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.NonGenericUnion(Spring.Collections.ISet)">
+            <summary>
+            Performs Union when called trhough non-generic ISet interface
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.NonGenericMinus(Spring.Collections.ISet)">
+            <summary>
+            Performs Minus when called trhough non-generic ISet interface
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.NonGenericIntersect(Spring.Collections.ISet)">
+            <summary>
+            Performs Intersect when called trhough non-generic ISet interface
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.ImmutableSet`1.NonGenericExclusiveOr(Spring.Collections.ISet)">
+            <summary>
+            Performs ExclusiveOr when called trhough non-generic ISet interface
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Spring.Collections.Generic.ImmutableSet`1.IsEmpty">
+            <summary>
+            Returns <see langword="true" /> if this set contains no elements.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.ImmutableSet`1.Count">
+            <summary>
+            The number of elements contained in this collection.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.ImmutableSet`1.IsSynchronized">
+            <summary>
+            Returns an object that can be used to synchronize use of the <c>Set</c> across threads.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.ImmutableSet`1.SyncRoot">
+            <summary>
+            Returns an object that can be used to synchronize the <c>Set</c> between threads.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.ImmutableSet`1.IsReadOnly">
+            <summary>
+            Indicates that the given instance is read-only
+            </summary>
+        </member>
+        <member name="T:Spring.Collections.Generic.OrderedSet`1">
+            <summary>
+            Implements an ordered <c>Set</c> based on a dictionary.
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.OrderedSet`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Collections.Generic.OrderedSet`1"/> class.
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.OrderedSet`1.#ctor(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Collections.Generic.OrderedSet`1"/> class.
+            </summary>
+            <param name="initialValues">A collection of elements that defines the initial set contents.</param>
+        </member>
         <member name="T:Spring.Collections.Generic.ReadOnlyDictionary`2">
             <summary>
             Represents a read only wrapper around a generic IDictionary. The design pattern
@@ -812,6 +1867,170 @@
             </summary>
             <value></value>
             <returns>An object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection"></see>.</returns>
+        </member>
+        <member name="T:Spring.Collections.Generic.SortedSet`1">
+            <summary>
+            Implements a <c>Set</c> based on a sorted tree.  This gives good performance for operations on very
+            large data-sets, though not as good - asymptotically - as a <c>HashedSet</c>.  However, iteration
+            occurs in order.  Elements that you put into this type of collection must implement <c>IComparable</c>,
+            and they must actually be comparable.  You can't mix <c>string</c> and <c>int</c> values, for example.
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.SortedSet`1.#ctor">
+            <summary>
+            Creates a new set instance based on a sorted tree.
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.SortedSet`1.#ctor(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Creates a new set instance based on a sorted tree.
+            </summary>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IComparer`1"/> to use for sorting.</param>
+        </member>
+        <member name="M:Spring.Collections.Generic.SortedSet`1.#ctor(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Creates a new set instance based on a sorted tree and
+            initializes it based on a collection of elements.
+            </summary>
+            <param name="initialValues">A collection of elements that defines the initial set contents.</param>
+        </member>
+        <member name="M:Spring.Collections.Generic.SortedSet`1.#ctor(System.Collections.ICollection)">
+            <summary>
+            Creates a new set instance based on a sorted tree and
+            initializes it based on a collection of elements.
+            </summary>
+            <param name="initialValues">A collection of elements that defines the initial set contents.</param>
+        </member>
+        <member name="M:Spring.Collections.Generic.SortedSet`1.#ctor(System.Collections.Generic.ICollection{`0},System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Creates a new set instance based on a sorted tree and
+            initializes it based on a collection of elements.
+            </summary>
+            <param name="initialValues">A collection of elements that defines the initial set contents.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IComparer`1"/> to use for sorting.</param>
+        </member>
+        <member name="T:Spring.Collections.Generic.SynchronizedSet`1">
+            <summary>
+            <p>Implements a thread-safe <c>Set</c> wrapper.  The implementation is extremely conservative, 
+            serializing critical sections to prevent possible deadlocks, and locking on everything.
+            The one exception is for enumeration, which is inherently not thread-safe.  For this, you
+            have to <c>lock</c> the <c>SyncRoot</c> object for the duration of the enumeration.</p>
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.#ctor(Spring.Collections.Generic.ISet{`0})">
+            <summary>
+            Constructs a thread-safe <c>Set</c> wrapper.
+            </summary>
+            <param name="basisSet">The <c>Set</c> object that this object will wrap.</param>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.Add(`0)">
+            <summary>
+            Adds the specified element to this set if it is not already present.
+            </summary>
+            <param name="o">The object to add to the set.</param>
+            <returns><see langword="true" /> is the object was added, <see langword="false" /> if it was already present.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.AddAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Adds all the elements in the specified collection to the set if they are not already present.
+            </summary>
+            <param name="c">A collection of objects to add to the set.</param>
+            <returns><see langword="true" /> is the set changed as a result of this operation, <see langword="false" /> if not.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.Clear">
+            <summary>
+            Removes all objects from the set.
+            </summary>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.Contains(`0)">
+            <summary>
+            Returns <see langword="true" /> if this set contains the specified element.
+            </summary>
+            <param name="o">The element to look for.</param>
+            <returns><see langword="true" /> if this set contains the specified element, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.ContainsAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Returns <see langword="true" /> if the set contains all the elements in the specified collection.
+            </summary>
+            <param name="c">A collection of objects.</param>
+            <returns><see langword="true" /> if the set contains all the elements in the specified collection, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.Remove(`0)">
+            <summary>
+            Removes the specified element from the set.
+            </summary>
+            <param name="o">The element to be removed.</param>
+            <returns><see langword="true" /> if the set contained the specified element, <see langword="false" /> otherwise.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.RemoveAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Remove all the specified elements from this set, if they exist in this set.
+            </summary>
+            <param name="c">A collection of elements to remove.</param>
+            <returns><see langword="true" /> if the set was modified as a result of this operation.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.RetainAll(System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Retains only the elements in this set that are contained in the specified collection.
+            </summary>
+            <param name="c">Collection that defines the set of elements to be retained.</param>
+            <returns><see langword="true" /> if this set changed as a result of this operation.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements in the <c>Set</c> to an array.  The type of array needs
+            to be compatible with the objects in the <c>Set</c>, obviously.
+            </summary>
+            <param name="array">An array that will be the target of the copy operation.</param>
+            <param name="index">The zero-based index where copying will start.</param>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.GetEnumerator">
+            <summary>
+            Enumeration is, by definition, not thread-safe.  Use a <c>lock</c> on the <c>SyncRoot</c> 
+            to synchronize the entire enumeration process.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.Clone">
+            <summary>
+            Returns a clone of the <c>Set</c> instance.  
+            </summary>
+            <returns>A clone of this object.</returns>
+        </member>
+        <member name="M:Spring.Collections.Generic.SynchronizedSet`1.NonGenericCopyTo(System.Array,System.Int32)">
+            <summary>
+            Performs CopyTo when called trhough non-generic ISet (ICollection) interface
+            </summary>
+            <param name="array"></param>
+            <param name="index"></param>
+        </member>
+        <member name="P:Spring.Collections.Generic.SynchronizedSet`1.IsEmpty">
+            <summary>
+            Returns <see langword="true" /> if this set contains no elements.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.SynchronizedSet`1.Count">
+            <summary>
+            The number of elements contained in this collection.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.SynchronizedSet`1.IsSynchronized">
+            <summary>
+            Returns <see langword="true" />, indicating that this object is thread-safe.  The exception to this
+            is enumeration, which is inherently not thread-safe.  Use the <c>SyncRoot</c> object to
+            lock this object for the entire duration of the enumeration.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.SynchronizedSet`1.SyncRoot">
+            <summary>
+            Returns an object that can be used to synchronize the <c>Set</c> between threads.
+            </summary>
+        </member>
+        <member name="P:Spring.Collections.Generic.SynchronizedSet`1.IsReadOnly">
+            <summary>
+            Indicates whether given instace is read-only or not
+            </summary>
         </member>
         <member name="T:Spring.Collections.AbstractQueue">
             <summary> 
@@ -1366,248 +2585,6 @@
             A collection that contains no duplicate elements.
             </summary>
             <seealso cref="T:Spring.Collections.ISet"/>
-        </member>
-        <member name="T:Spring.Collections.ISet">
-            <summary>
-            A collection that contains no duplicate elements.
-            </summary>
-            <remarks>
-            <p>
-            This interface models the mathematical
-            <see cref="T:Spring.Collections.ISet"/> abstraction. The order of
-            elements in a set is dependant on (a)the data-structure implementation, and 
-            (b)the implementation of the various
-            <see cref="T:Spring.Collections.ISet"/> methods, and thus is not
-            guaranteed.
-            </p>
-            <p>
-            <see cref="T:Spring.Collections.ISet"/> overrides the
-            <see cref="M:System.Object.Equals(System.Object)"/> method to test for "equivalency":
-            whether the two sets contain the same elements. The "==" and "!="
-            operators are not overridden by design, since it is often desirable to
-            compare object references for equality.
-            </p>
-            <p>
-            Also, the <see cref="M:System.Object.GetHashCode"/> method is not
-            implemented on any of the set implementations, since none of them are
-            truly immutable. This is by design, and it is the way almost all
-            collections in the .NET framework function. So as a general rule, don't
-            store collection objects inside <see cref="T:Spring.Collections.ISet"/>
-            instances. You would typically want to use a keyed
-            <see cref="T:System.Collections.IDictionary"/> instead.
-            </p>
-            <p>
-            None of the <see cref="T:Spring.Collections.ISet"/> implementations in
-            this library are guaranteed to be thread-safe in any way unless wrapped
-            in a <see cref="T:Spring.Collections.SynchronizedSet"/>.
-            </p>
-            <p>
-            The following table summarizes the binary operators that are supported
-            by the <see cref="T:Spring.Collections.ISet"/> class.
-            </p>
-            <list type="table">
-            	<listheader>
-            		<term>Operation</term>
-            		<term>Description</term>
-            		<term>Method</term>
-            	</listheader>
-            	<item>
-            		<term>Union (OR)</term>
-            		<term>
-            		Element included in result if it exists in either <c>A</c> OR
-            		<c>B</c>.
-            		</term>
-            		<term><c>Union()</c></term>
-            	</item>
-            	<item>
-            		<term>Intersection (AND)</term>
-            		<term>
-            		Element included in result if it exists in both <c>A</c> AND
-            		<c>B</c>.
-            		</term>
-            		<term><c>InterSect()</c></term>
-            	</item>
-            	<item>
-            		<term>Exclusive Or (XOR)</term>
-            		<term>
-            		Element included in result if it exists in one, but not both,
-            		of <c>A</c> and <c>B</c>.
-            		</term>
-            		<term><c>ExclusiveOr()</c></term>
-            	</item>
-            	<item>
-            		<term>Minus (n/a)</term>
-            		<term>
-            		Take all the elements in <c>A</c>. Now, if any of them exist in
-            		 <c>B</c>, remove them. Note that unlike the other operators,
-            		 <c>A - B</c> is not the same as <c>B - A</c>.
-            		 </term>
-            		<term><c>Minus()</c></term>
-            	</item>
-            </list>
-            </remarks>
-        </member>
-        <member name="M:Spring.Collections.ISet.Union(Spring.Collections.ISet)">
-            <summary>
-            Performs a "union" of the two sets, where all the elements
-            in both sets are present. 
-            </summary>
-            <remarks>
-            <p>
-            That is, the element is included if it is in either
-            <paramref name="setOne"/> or this set. Neither this set nor the input
-            set are modified during the operation. The return value is a
-            <b>clone</b> of this set with the extra elements added in.
-            </p>
-            </remarks>
-            <param name="setOne">A collection of elements.</param>
-            <returns>
-            A new <see cref="T:Spring.Collections.ISet"/> containing the union of
-            this <see cref="T:Spring.Collections.ISet"/> with the specified
-            collection. Neither of the input objects is modified by the union.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.Intersect(Spring.Collections.ISet)">
-            <summary>
-            Performs an "intersection" of the two sets, where only the elements
-            that are present in both sets remain.
-            </summary>
-            <remarks>
-            <p>
-            That is, the element is included if it exists in both sets. The
-            <c>Intersect()</c> operation does not modify the input sets. It
-            returns a <b>clone</b> of this set with the appropriate elements
-            removed.
-            </p>
-            </remarks>
-            <param name="setOne">A set of elements.</param>
-            <returns>
-            The intersection of this set with <paramref name="setOne"/>.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.Minus(Spring.Collections.ISet)">
-            <summary>
-            Performs a "minus" of this set from the <paramref name="setOne"/>
-            set.
-            </summary>
-            <remarks>
-            <p>
-            This returns a set of all the elements in set
-            <paramref name="setOne"/>, removing the elements that are also in
-            this set. The original sets are not modified during this operation.
-            The result set is a <b>clone</b> of this
-            <see cref="T:Spring.Collections.ISet"/> containing the elements from
-            the operation.
-            </p>
-            </remarks>
-            <param name="setOne">A set of elements.</param>
-            <returns>
-            A set containing the elements from this set with the elements in
-            <paramref name="setOne"/> removed.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.ExclusiveOr(Spring.Collections.ISet)">
-            <summary>
-            Performs an "exclusive-or" of the two sets, keeping only those
-            elements that are in one of the sets, but not in both.
-            </summary>
-            <remarks>
-            <p>
-            The original sets are not modified during this operation. The
-            result set is a <b>clone</b> of this set containing the elements
-            from the exclusive-or operation.
-            </p>
-            </remarks>
-            <param name="setOne">A set of elements.</param>
-            <returns>
-            A set containing the result of
-            <c><paramref name="setOne"/> ^ this</c>.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.Contains(System.Object)">
-            <summary>
-            Returns <see langword="true"/> if this set contains the specified
-            element.
-            </summary>
-            <param name="element">The element to look for.</param>
-            <returns>
-            <see langword="true"/> if this set contains the specified element.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.ContainsAll(System.Collections.ICollection)">
-            <summary>
-            Returns <see langword="true"/> if the set contains all the
-            elements in the specified collection.
-            </summary>
-            <param name="collection">A collection of objects.</param>
-            <returns>
-            <see langword="true"/> if the set contains all the elements in the
-            specified collection.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.Add(System.Object)">
-            <summary>
-            Adds the specified element to this set if it is not already present.
-            </summary>
-            <param name="element">The object to add to the set.</param>
-            <returns>
-            <see langword="true"/> is the object was added,
-            <see langword="true"/> if the object was already present.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.AddAll(System.Collections.ICollection)">
-            <summary>
-            Adds all the elements in the specified collection to the set if
-            they are not already present.
-            </summary>
-            <param name="collection">A collection of objects to add to the set.</param>
-            <returns>
-            <see langword="true"/> is the set changed as a result of this
-            operation.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.Remove(System.Object)">
-            <summary>
-            Removes the specified element from the set.
-            </summary>
-            <param name="element">The element to be removed.</param>
-            <returns>
-            <see langword="true"/> if the set contained the specified element.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.RemoveAll(System.Collections.ICollection)">
-            <summary>
-            Remove all the specified elements from this set, if they exist in
-            this set.
-            </summary>
-            <param name="collection">A collection of elements to remove.</param>
-            <returns>
-            <see langword="true"/> if the set was modified as a result of this
-            operation.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.RetainAll(System.Collections.ICollection)">
-            <summary>
-            Retains only the elements in this set that are contained in the
-            specified collection.
-            </summary>
-            <param name="collection">
-            The collection that defines the set of elements to be retained.
-            </param>
-            <returns>
-            <see langword="true"/> if this set changed as a result of this
-            operation.
-            </returns>
-        </member>
-        <member name="M:Spring.Collections.ISet.Clear">
-            <summary>
-            Removes all objects from this set.
-            </summary>
-        </member>
-        <member name="P:Spring.Collections.ISet.IsEmpty">
-            <summary>
-            Returns <see langword="true"/> if this set contains no elements.
-            </summary>
         </member>
         <member name="M:Spring.Collections.Set.Union(Spring.Collections.ISet)">
             <summary>
@@ -5647,7 +6624,7 @@
             event gets raised.
             </summary>
         </member>
-        <member name="M:Spring.Context.Support.AbstractApplicationContext.InvokeObjectFactoryPostProcessors">
+        <member name="M:Spring.Context.Support.AbstractApplicationContext.InvokeObjectFactoryPostProcessors(Spring.Objects.Factory.Config.IConfigurableListableObjectFactory)">
             <summary>
             Instantiate and invoke all registered
             <see cref="T:Spring.Objects.Factory.Config.IObjectFactoryPostProcessor"/>
@@ -7270,7 +8247,8 @@
             </exception>
             <exception cref="T:Spring.Objects.ObjectsException">
             In the case of errors encountered reading any of the resources
-            yielded by the <see cref="P:Spring.Context.Support.AbstractXmlApplicationContext.ConfigurationLocations"/> method.
+            yielded by either the <see cref="P:Spring.Context.Support.AbstractXmlApplicationContext.ConfigurationLocations"/> or
+            the <see cref="P:Spring.Context.Support.AbstractXmlApplicationContext.ConfigurationResources"/> methods.
             </exception>
         </member>
         <member name="M:Spring.Context.Support.AbstractXmlApplicationContext.LoadObjectDefinitions(Spring.Objects.Factory.Support.DefaultListableObjectFactory)">
@@ -7337,6 +8315,22 @@
             </remarks>
             <returns>
             An array of resource locations, or <see langword="null"/> if none.
+            </returns>
+        </member>
+        <member name="P:Spring.Context.Support.AbstractXmlApplicationContext.ConfigurationResources">
+            <summary>
+            An array of resources that this context is to be built with.
+            </summary>
+            <remarks>
+            <p>
+            Examples of the format of the various strings that would be
+            returned by accessing this property can be found in the overview
+            documentation of with the <see cref="T:Spring.Context.Support.XmlApplicationContext"/>
+            class.
+            </p>
+            </remarks>
+            <returns>
+            An array of <see cref="T:Spring.Core.IO.IResource"/>s, or <see langword="null"/> if none.
             </returns>
         </member>
         <member name="P:Spring.Context.Support.AbstractXmlApplicationContext.ObjectFactory">
@@ -7865,6 +8859,12 @@
             Defaults to 'true'.
             </p>
             </remarks>
+        </member>
+        <member name="P:Spring.Context.Support.ContextHandler.AutoRegisterWithContextRegistry">
+            <summary>
+            Specifies, whether the instantiated context will be automatically registered in the 
+            global <see cref="T:Spring.Context.Support.ContextRegistry"/>.
+            </summary>
         </member>
         <member name="P:Spring.Context.Support.ContextHandler.IsLazy">
             <summary>
@@ -9526,6 +10526,11 @@
             <seealso cref="T:Spring.Core.IO.IResourceLoader"/>
             <seealso cref="T:Spring.Core.IO.ConfigurableResourceLoader"/>
         </member>
+        <member name="M:Spring.Context.Support.XmlApplicationContext.#ctor(Spring.Context.Support.XmlApplicationContextArgs)">
+            <summary>
+            Initializes a new instance of the XmlApplicationContext class.
+            </summary>
+        </member>
         <member name="M:Spring.Context.Support.XmlApplicationContext.#ctor(System.String[])">
             <summary>
             Creates a new instance of the
@@ -9629,12 +10634,51 @@
         <member name="P:Spring.Context.Support.XmlApplicationContext.ConfigurationLocations">
             <summary>
             An array of resource locations, referring to the XML object
-            definition files that this context is to be built with.
+            definition files with which this context is to be built.
             </summary>
             <returns>
             An array of resource locations, or <see langword="null"/> if none.
             </returns>
             <seealso cref="P:Spring.Context.Support.AbstractXmlApplicationContext.ConfigurationLocations"/>
+        </member>
+        <member name="P:Spring.Context.Support.XmlApplicationContext.ConfigurationResources">
+            <summary>
+            An array of resources instances with which this context is to be built.
+            </summary>
+            <returns>
+            An array of <see cref="T:Spring.Core.IO.IResource"/>s, or <see langword="null"/> if none.
+            </returns>
+            <seealso cref="P:Spring.Context.Support.AbstractXmlApplicationContext.ConfigurationLocations"/>
+        </member>
+        <member name="T:Spring.Context.Support.XmlApplicationContextArgs">
+            <summary>
+            Encapsulates arguments to the <see cref="T:Spring.Context.Support.XmlApplicationContext"/> class.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Support.XmlApplicationContextArgs.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Support.XmlApplicationContextArgs"/> class.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Support.XmlApplicationContextArgs.#ctor(System.String,Spring.Context.IApplicationContext,System.String[],Spring.Core.IO.IResource[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Support.XmlApplicationContextArgs"/> class.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="parentContext">The parent context.</param>
+            <param name="configurationLocations">The configuration locations.</param>
+            <param name="configurationResources">The configuration resources.</param>
+        </member>
+        <member name="M:Spring.Context.Support.XmlApplicationContextArgs.#ctor(System.String,Spring.Context.IApplicationContext,System.String[],Spring.Core.IO.IResource[],System.Boolean,System.Boolean)">
+            <summary>
+            Initializes a new instance of the XmlApplicationContextArgs class.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="parentContext">The parent context.</param>
+            <param name="configurationLocations">The configuration locations.</param>
+            <param name="configurationResources">The configuration resources.</param>
+            <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>
+            <param name="refresh">if set to <c>true</c> [refresh].</param>
         </member>
         <member name="T:Spring.Context.ApplicationContextException">
             <summary>Exception thrown during application context initialization.</summary>
@@ -14365,6 +15409,28 @@
             The name of the offending property.
             </summary>
         </member>
+        <member name="T:Spring.Core.IPriorityOrdered">
+            <summary>
+            Extension of the <see cref="T:Spring.Core.IOrdered"/> interface, expressing a 'priority'
+            ordering: Order values expressed by IPriorityOrdered objects always
+            apply before order values of 'plain' Ordered values.
+            </summary>
+            <remarks>
+            <para>This is primarily a special-purpose interface, used for objects
+            where it is particularly important to determine 'prioritized'
+            objects first, without even obtaining the remaining objects.
+            A typical example: Prioritized post-processors in a Spring
+            <see cref="T:Spring.Context.IApplicationContext"/>
+            </para>
+            <para>IPriorityOrdered post-processor objects are initialized in
+            a special phase, ahead of other post-processor objects.</para>
+            </remarks>
+            <author>Juergen Hoeller</author>
+            <author>Mark Pollack (.NET)</author>
+            <see cref="T:Spring.Objects.Factory.Config.VariablePlaceholderConfigurer"/>
+            <see cref="T:Spring.Objects.Factory.Config.TypeAliasConfigurer"/>
+            <see cref="T:Spring.Objects.Factory.Config.ResourceHandlerConfigurer"/>
+        </member>
         <member name="T:Spring.Core.MethodArgumentsCriteria">
             <summary>
             Criteria that is satisfied if the <see cref="T:System.Type"/> of each of the
@@ -14460,7 +15526,7 @@
             must have to satisfy this criteria.
             </param>
             <exception cref="T:System.ArgumentException">
-            If the supplied <paramref name="expectedParameterCount"/> is less
+            If the supplied <paramref name="expectedGenericArgumentCount"/> is less
             than zero.
             </exception>
         </member>
@@ -22444,9 +23510,21 @@
             Returns the section from the specified resource with the given section name
             </summary>
         </member>
+        <member name="M:Spring.Objects.Factory.Config.ConfigurationReader.GetSection(Spring.Core.IO.IResource,System.String,System.Type)">
+            <summary>
+            Returns the section from the specified resource with the given section name. Use <paramref name="defaultConfigurationSectionHandlerType"/>
+            in case no section handler is specified.
+            </summary>
+        </member>
         <member name="M:Spring.Objects.Factory.Config.ConfigurationReader.GetSection``1(Spring.Core.IO.IResource,System.String)">
             <summary>
             Returns the typed section from the specified resource with the given section name
+            </summary>
+        </member>
+        <member name="M:Spring.Objects.Factory.Config.ConfigurationReader.GetSection``1(Spring.Core.IO.IResource,System.String,System.Type)">
+            <summary>
+            Returns the section from the specified resource with the given section name. Use <paramref name="defaultConfigurationSectionHandlerType"/>
+            in case no section handler is specified.
             </summary>
         </member>
         <member name="M:Spring.Objects.Factory.Config.ConfigurationReader.GetSectionFromXmlDocument``1(System.Xml.XmlDocument,System.String)">
@@ -22462,6 +23540,20 @@
             <param name="document"></param>
             <param name="configSectionName"></param>
             <returns></returns>
+        </member>
+        <member name="M:Spring.Objects.Factory.Config.ConfigurationReader.GetSectionFromXmlDocument(System.Xml.XmlDocument,System.String,System.Type)">
+            <summary>
+            Reads the specified configuration section from the given <see cref="T:System.Xml.XmlDocument"/>
+            </summary>
+            <param name="document"></param>
+            <param name="configSectionName"></param>
+            <param name="defaultConfigurationSectionHandlerType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Objects.Factory.Config.ConfigurationReader.GetSectionHandlerType(System.Xml.XmlDocument,System.String,System.Type)">
+            <summary>
+            Determine the configuration section handler type
+            </summary>
         </member>
         <member name="M:Spring.Objects.Factory.Config.ConfigurationReader.PopulateFromAppConfig(System.Collections.Specialized.NameValueCollection,System.String,System.Boolean)">
             <summary>
@@ -23414,6 +24506,11 @@
             </example>
             </remarks>
             <param name="args">the argument list containing pairs, or <c>null</c></param>
+        </member>
+        <member name="M:Spring.Objects.Factory.Config.DictionaryVariableSource.#ctor(System.Collections.IDictionary)">
+            <summary>
+            Initializes a new instance of the DictionaryVariableSource class.
+            </summary>
         </member>
         <member name="M:Spring.Objects.Factory.Config.DictionaryVariableSource.#ctor(System.Collections.IDictionary,System.Boolean)">
             <summary>
@@ -26068,7 +27165,7 @@
         </member>
         <member name="F:Spring.Objects.Factory.Config.ObjectRole.ROLE_APPLICATION">
             <summary>
-            Role hint indicating that a <see cref="T:Spring.Objects.Factory.Config.IObjectDefinition"/> is a major part of the application. Typically corresponds to a user-defined bean.
+            Role hint indicating that a <see cref="T:Spring.Objects.Factory.Config.IObjectDefinition"/> is a major part of the application. Typically corresponds to a user-defined object.
             </summary>
         </member>
         <member name="F:Spring.Objects.Factory.Config.ObjectRole.ROLE_SUPPORT">
@@ -26138,6 +27235,15 @@
             </summary>
             <value>
             A location to read properties from.
+            </value>
+        </member>
+        <member name="P:Spring.Objects.Factory.Config.PropertyFileVariableSource.IgnoreMissingResources">
+            <summary>
+            Sets a value indicating whether to ignore resource locations that do not exist.  This will call 
+            the <see cref="T:Spring.Core.IO.IResource"/> Exists property.
+            </summary>
+            <value>
+            	<c>true</c> if one should ignore missing resources; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="T:Spring.Objects.Factory.Config.PropertyOverrideConfigurer">
@@ -27394,6 +28500,7 @@
             </remarks>
             <author>Juergen Hoeller</author>
             <author>Rick Evans (.NET)</author>
+            <author>Bruno Baia (.NET)</author>
         </member>
         <member name="M:Spring.Objects.Factory.Config.TypedStringValue.#ctor">
             <summary>
@@ -27425,6 +28532,29 @@
             <see langword="null"/>.
             </exception>
         </member>
+        <member name="M:Spring.Objects.Factory.Config.TypedStringValue.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new instance of the
+            <see cref="T:Spring.Objects.Factory.Config.TypedStringValue"/>
+            class.
+            </summary>
+            <param name="value">
+            The value that is to be converted.
+            </param>
+            <param name="targetTypeName">
+            The unresolved type to convert to.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the supplied <paramref name="targetTypeName"/> is a 
+            <see langword="null"/> or an empty string.
+            </exception>
+        </member>
+        <member name="M:Spring.Objects.Factory.Config.TypedStringValue.ResolveTargetType">
+            <summary>
+            Determine the type to convert to, resolving it from a specified type name if necessary.
+            </summary>
+            <returns>The resolved type to convert to.</returns>    
+        </member>
         <member name="P:Spring.Objects.Factory.Config.TypedStringValue.Value">
             <summary>
             The value that is to be converted. 
@@ -27444,6 +28574,14 @@
             </summary>
             <exception cref="T:System.ArgumentNullException">
             If the setter is supplied with a <see langword="null"/> value.
+            </exception>
+        </member>
+        <member name="P:Spring.Objects.Factory.Config.TypedStringValue.TargetTypeName">
+            <summary>
+            The unresolved type to convert to.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">
+            If the setter is supplied with a <see langword="null"/> value or an empty string.
             </exception>
         </member>
         <member name="P:Spring.Objects.Factory.Config.TypedStringValue.HasTargetType">
@@ -27834,18 +28972,18 @@
         </member>
         <member name="M:Spring.Objects.Factory.Config.VariableAccessor.GetEnum(System.String,System.Enum)">
             <summary>
-            Returns an <see cref="T:System.Enum"/> of type <paramref name="defaultValue.GetType()"/> that contains the value of the specified variable.
+            Returns an <see cref="T:System.Enum"/> of <paramref name="defaultValue"/>'s type that contains the value of the specified variable.
             </summary>
             <param name="name">The name of the variable to be read.</param>
             <param name="defaultValue">The value to be returned if <see cref="M:Spring.Objects.Factory.Config.IVariableSource.ResolveVariable(System.String)"/> returns <c>null</c>.</param>
             <returns>
-            An <see cref="T:System.Enum"/> of type <paramref name="defaultValue.GetType()"/> that contains the value of the specified variable 
+            An <see cref="T:System.Enum"/> of <paramref name="defaultValue"/>'s type that contains the value of the specified variable 
             or <paramref name="defaultValue"/>, if <see cref="M:Spring.Objects.Factory.Config.IVariableSource.ResolveVariable(System.String)"/> returns <c>null</c>.
             </returns>
         </member>
         <member name="M:Spring.Objects.Factory.Config.VariableAccessor.GetEnum(System.String,System.Enum,System.Boolean)">
             <summary>
-            Returns an <see cref="T:System.Enum"/> of type <paramref name="defaultValue.GetType()"/> that contains the value of the specified variable.
+            Returns an <see cref="T:System.Enum"/> of <paramref name="defaultValue"/>'s type that contains the value of the specified variable.
             </summary>
             <param name="name">The name of the variable to be read.</param>
             <param name="defaultValue">The value to be returned if <see cref="M:Spring.Objects.Factory.Config.IVariableSource.ResolveVariable(System.String)"/> returns <c>null</c>.</param>
@@ -27854,7 +28992,7 @@
             of <see cref="M:Spring.Objects.Factory.Config.IVariableSource.ResolveVariable(System.String)"/> cannot be parsed
             and returns <paramref name="defaultValue"/> instead.</param>
             <returns>
-            An <see cref="T:System.Enum"/> of type <paramref name="defaultValue.GetType()"/> that contains the value of the specified variable 
+            An <see cref="T:System.Enum"/> of <paramref name="defaultValue"/>'s type that contains the value of the specified variable 
             or <paramref name="defaultValue"/>, if <see cref="M:Spring.Objects.Factory.Config.IVariableSource.ResolveVariable(System.String)"/> cannot be parsed.
             </returns>
         </member>
@@ -27998,6 +29136,298 @@
             </summary>
             <returns>The order value.</returns>
             <seealso cref="P:Spring.Core.IOrdered.Order"/>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.Location.#ctor(Spring.Core.IO.IResource,System.Object)">
+            <summary>
+            Initializes a new instance of the Location class.
+            </summary>
+            <param name="resource"></param>
+            <param name="source"></param>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.Location.#ctor(Spring.Core.IO.IResource)">
+            <summary>
+            Initializes a new instance of the Location class.
+            </summary>
+            <param name="resource"></param>
+        </member>
+        <member name="T:Spring.Objects.Factory.ObjectDefinitionStoreException">
+            <summary>
+            Thrown when an <see cref="T:Spring.Objects.Factory.IObjectFactory"/>
+            encounters an internal error, and its definitions are invalid.
+            </summary>
+            <remarks>
+            <p>
+            An example of a situation when this exception would be thrown is
+            in the case of an XML document containing object definitions being
+            malformed.
+            </p>
+            </remarks>
+            <author>Rod Johnson</author>
+            <author>Juergen Hoeller</author>
+            <author>Rick Evans (.NET)</author>
+        </member>
+        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor">
+            <summary>
+            Creates a new instance of the ObjectDefinitionStoreException class.
+            </summary>
+        </member>
+        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionStoreException class.
+            </summary>
+            <param name="message">
+            A message about the exception.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionStoreException class.
+            </summary>
+            <param name="resourceDescription">
+            The description of the resource that the object definition came from
+            </param>
+            <param name="name">
+            The name of the object that triggered the exception.
+            </param>
+            <param name="message">
+            A message about the exception.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.String,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Objects.Factory.ObjectDefinitionStoreException"/> class.
+            </summary>
+            <param name="resourceDescription">
+            The description of the resource that the object definition came from
+            </param>
+            <param name="msg">The detail message (used as exception message as-is)</param>
+            <param name="cause">The root cause. (may be <code>null</code></param>
+        </member>
+        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(Spring.Core.IO.IResource,System.String,System.String)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionStoreException class.
+            </summary>
+            <param name="resourceLocation">
+            The resource location (e.g. an XML object definition file) associated
+            with the offending object definition.
+            </param>
+            <param name="message">
+            A message about the exception.
+            </param>
+            <param name="name">
+            The name of the object that triggered the exception.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(Spring.Core.IO.IResource,System.String,System.String,System.Exception)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionStoreException class.
+            </summary>
+            <param name="resourceLocation">
+            The resource location (e.g. an XML object definition file) associated
+            with the offending object definition.
+            </param>
+            <param name="message">
+            A message about the exception.
+            </param>
+            <param name="name">
+            The name of the object that triggered the exception.
+            </param>
+            <param name="rootCause">
+            The root exception that is being wrapped.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.String,System.String,System.String,System.Exception)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionStoreException class.
+            </summary>
+            <param name="resourceDescription">
+            The description of the resource that the object definition came from
+            </param>
+            <param name="message">
+            A message about the exception.
+            </param>
+            <param name="name">
+            The name of the object that triggered the exception.
+            </param>
+            <param name="rootCause">
+            The root exception that is being wrapped.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionStoreException class.
+            </summary>
+            <param name="message">
+            A message about the exception.
+            </param>
+            <param name="rootCause">
+            The root exception that is being wrapped.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionStoreException class.
+            </summary>
+            <param name="info">
+            The <see cref="T:System.Runtime.Serialization.SerializationInfo"/>
+            that holds the serialized object data about the exception being thrown.
+            </param>
+            <param name="context">
+            The <see cref="T:System.Runtime.Serialization.StreamingContext"/>
+            that contains contextual information about the source or destination.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with
+            the data needed to serialize the target object.
+            </summary>
+            <param name="info">
+            The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate
+            with data.
+            </param>
+            <param name="context">
+            The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"/>)
+            for this serialization.
+            </param>
+        </member>
+        <member name="F:Spring.Objects.Factory.ObjectDefinitionStoreException._resourceDescription">
+            <summary>
+            The description of the resource associated with the object
+            </summary>
+        </member>
+        <member name="F:Spring.Objects.Factory.ObjectDefinitionStoreException._objectName">
+            <summary>
+            The name of the object that trigger the exception.
+            </summary>
+        </member>
+        <member name="P:Spring.Objects.Factory.ObjectDefinitionStoreException.ObjectName">
+            <summary>
+            The name of the object that triggered the exception (if any).
+            </summary>
+        </member>
+        <member name="P:Spring.Objects.Factory.ObjectDefinitionStoreException.ResourceDescription">
+            <summary>
+            The description of the resource associated with the object (if any).
+            </summary>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.ObjectDefinitionParsingException.#ctor(Spring.Objects.Factory.Parsing.Problem)">
+            <summary>
+            Initializes a new instance of the ObjectDefinitionParsingException class.
+            </summary>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.ObjectDefinitionParsingException.#ctor">
+            <summary>
+            Creates a new instance of the ObjectDefinitionParsingException class.
+            </summary>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.ObjectDefinitionParsingException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionParsingException class.
+            </summary>
+            <param name="message">
+            A message about the exception.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.ObjectDefinitionParsingException.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionParsingException class.
+            </summary>
+            <param name="resourceDescription">
+            The description of the resource that the object definition came from
+            </param>
+            <param name="name">
+            The name of the object that triggered the exception.
+            </param>
+            <param name="message">
+            A message about the exception.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.ObjectDefinitionParsingException.#ctor(System.String,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Objects.Factory.Parsing.ObjectDefinitionParsingException"></see> class.
+            </summary>
+            <param name="resourceDescription">
+            The description of the resource that the object definition came from
+            </param>
+            <param name="msg">The detail message (used as exception message as-is)</param>
+            <param name="cause">The root cause. (may be <code>null</code></param>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.ObjectDefinitionParsingException.#ctor(Spring.Core.IO.IResource,System.String,System.String)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionParsingException class.
+            </summary>
+            <param name="resourceLocation">
+            The resource location (e.g. an XML object definition file) associated
+            with the offending object definition.
+            </param>
+            <param name="message">
+            A message about the exception.
+            </param>
+            <param name="name">
+            The name of the object that triggered the exception.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.ObjectDefinitionParsingException.#ctor(Spring.Core.IO.IResource,System.String,System.String,System.Exception)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionParsingException class.
+            </summary>
+            <param name="resourceLocation">
+            The resource location (e.g. an XML object definition file) associated
+            with the offending object definition.
+            </param>
+            <param name="message">
+            A message about the exception.
+            </param>
+            <param name="name">
+            The name of the object that triggered the exception.
+            </param>
+            <param name="rootCause">
+            The root exception that is being wrapped.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.ObjectDefinitionParsingException.#ctor(System.String,System.String,System.String,System.Exception)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionParsingException class.
+            </summary>
+            <param name="resourceDescription">
+            The description of the resource that the object definition came from
+            </param>
+            <param name="message">
+            A message about the exception.
+            </param>
+            <param name="name">
+            The name of the object that triggered the exception.
+            </param>
+            <param name="rootCause">
+            The root exception that is being wrapped.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.ObjectDefinitionParsingException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new instance of the ObjectDefinitionParsingException class.
+            </summary>
+            <param name="message">
+            A message about the exception.
+            </param>
+            <param name="rootCause">
+            The root exception that is being wrapped.
+            </param>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.Problem.#ctor(System.String,Spring.Objects.Factory.Parsing.Location)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Objects.Factory.Parsing.Problem"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="location">The location.</param>
+        </member>
+        <member name="M:Spring.Objects.Factory.Parsing.Problem.#ctor(System.String,Spring.Objects.Factory.Parsing.Location,System.Exception)">
+            <summary>
+            Initializes a new instance of the Problem class.
+            </summary>
+            <param name="message"></param>
+            <param name="location"></param>
+            <param name="rootCause"></param>
         </member>
         <member name="T:Spring.Objects.Factory.Parsing.ReaderContext">
             <summary>
@@ -29065,6 +30495,13 @@
             	<c>true</c> if is object name in use; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="M:Spring.Objects.Factory.Support.AbstractObjectFactory.GetSingletonLockFor(System.String)">
+            <summary>
+            Gets the singleton lock for a given object name.
+            </summary>
+            <param name="objectName">Name of the object.</param>
+            <returns>lock object</returns>
+        </member>
         <member name="P:Spring.Objects.Factory.Support.AbstractObjectFactory.IsCaseSensitive">
             <summary>
             Returns, whether this factory treats object names case sensitive or not.
@@ -29546,7 +30983,7 @@
         </member>
         <member name="M:Spring.Objects.Factory.Support.AbstractAutowireCapableObjectFactory.DetermineConstructorsFromObjectPostProcessors(System.Type,System.String)">
             <summary>
-            Determines candidate constructors to use for the given bean, checking all registered
+            Determines candidate constructors to use for the given object, checking all registered
             <see cref="T:Spring.Objects.Factory.Config.SmartInstantiationAwareObjectPostProcessor"/>
             </summary>
             <param name="objectType">Raw type of the object.</param>
@@ -31226,6 +32663,17 @@
             or <code>null</code> if none (-> use constructor argument values from object definition)</param>
             <returns>An IObjectWrapper for the new instance</returns>
         </member>
+        <member name="M:Spring.Objects.Factory.Support.ConstructorResolver.GetConstructorInstantiationInfo(System.String,Spring.Objects.Factory.Support.RootObjectDefinition,System.Reflection.ConstructorInfo[],System.Object[])">
+            <summary>
+            Gets the constructor instantiation info given the object definition.
+            </summary>
+            <param name="objectName">Name of the object.</param>
+            <param name="rod">The RootObjectDefinition</param>
+            <param name="chosenCtors">The explicitly chosen ctors.</param>
+            <param name="explicitArgs">The explicit chose ctor args.</param>
+            <returns>A ConstructorInstantiationInfo containg the specified constructor in the RootObjectDefinition or
+            one based on type matching.</returns>
+        </member>
         <member name="M:Spring.Objects.Factory.Support.ConstructorResolver.InstantiateUsingFactoryMethod(System.String,Spring.Objects.Factory.Support.RootObjectDefinition,System.Object[])">
             <summary>
             Instantiate an object instance using a named factory method.
@@ -31528,7 +32976,7 @@
             ApplicationContext instance that the object is living in.
             <para>
             Note there are no such default types registered in a plain IObjectFactory,
-            not even for the BeanFactory interface itself.
+            not even for the IObjectFactory interface itself.
             </para>
             </remarks>
         </member>
@@ -32726,24 +34174,6 @@
             method injection logic.
             </param>
         </member>
-        <member name="M:Spring.Objects.Factory.Support.MethodInjectingInstantiationStrategy.MethodInjectingTypeBuilder.DefineOverrideMethodParameters(System.Reflection.ParameterInfo[],System.Reflection.Emit.MethodBuilder)">
-            <summary>
-            Defines the parameters to the method that is being overridden.
-            </summary>
-            <remarks>
-            <p>
-            Since we are simply overridding a method (in this method
-            injection context), all we do here is simply copy the
-            parameters (since we want a method with the exact same parameters).
-            </p>
-            </remarks>
-            <param name="methodParameters">
-            The parameters to the original method that is being overridden.
-            </param>
-            <param name="methodBuilder">
-            The builder we are using to define the new overridden method.
-            </param>
-        </member>
         <member name="M:Spring.Objects.Factory.Support.MethodInjectingInstantiationStrategy.MethodInjectingTypeBuilder.SetupTheReturnValueIfAny(System.Reflection.Emit.LocalBuilder,System.Reflection.Emit.ILGenerator)">
             <summary>
             Generates the MSIL for actually returning a return value if the
@@ -33435,6 +34865,44 @@
             The runtime reference containing the value of the property.
             </param>
             <returns>A reference to another object in the factory.</returns>
+        </member>
+        <member name="T:Spring.Objects.Factory.Support.ObjectScope">
+            <summary>
+            The possible object scope values.
+            </summary>
+            <author>Aleksandar Seovic</author>
+        </member>
+        <member name="F:Spring.Objects.Factory.Support.ObjectScope.Singleton">
+            <summary>
+             
+            </summary>
+        </member>
+        <member name="F:Spring.Objects.Factory.Support.ObjectScope.Application">
+            <summary>
+            Application scope.
+            </summary>
+        </member>
+        <member name="F:Spring.Objects.Factory.Support.ObjectScope.Session">
+            <summary>
+            Session scope.
+            </summary>
+        </member>
+        <member name="F:Spring.Objects.Factory.Support.ObjectScope.Request">
+            <summary>
+            Request scope.
+            </summary>
+        </member>
+        <member name="F:Spring.Objects.Factory.Support.ObjectScope.Prototype">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Spring.Objects.Factory.Support.ObjectScope.Default">
+            <summary>
+            Default scope (currently
+            <see cref="F:Spring.Objects.Factory.Support.ObjectScope.Application"/>).
+            </summary>
+            <seealso cref="F:Spring.Objects.Factory.Support.ObjectScope.Application"/>
         </member>
         <member name="T:Spring.Objects.Factory.Support.PropertiesObjectDefinitionReader">
             <summary>
@@ -37730,167 +39198,6 @@
             The message about the exception.
             </summary>
         </member>
-        <member name="T:Spring.Objects.Factory.ObjectDefinitionStoreException">
-            <summary>
-            Thrown when an <see cref="T:Spring.Objects.Factory.IObjectFactory"/>
-            encounters an internal error, and its definitions are invalid.
-            </summary>
-            <remarks>
-            <p>
-            An example of a situation when this exception would be thrown is
-            in the case of an XML document containing object definitions being
-            malformed.
-            </p>
-            </remarks>
-            <author>Rod Johnson</author>
-            <author>Juergen Hoeller</author>
-            <author>Rick Evans (.NET)</author>
-        </member>
-        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor">
-            <summary>
-            Creates a new instance of the ObjectDefinitionStoreException class.
-            </summary>
-        </member>
-        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.String)">
-            <summary>
-            Creates a new instance of the ObjectDefinitionStoreException class.
-            </summary>
-            <param name="message">
-            A message about the exception.
-            </param>
-        </member>
-        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.String,System.String,System.String)">
-            <summary>
-            Creates a new instance of the ObjectDefinitionStoreException class.
-            </summary>
-            <param name="resourceDescription">
-            The description of the resource that the object definition came from
-            </param>
-            <param name="name">
-            The name of the object that triggered the exception.
-            </param>
-            <param name="message">
-            A message about the exception.
-            </param>
-        </member>
-        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.String,System.String,System.Exception)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Spring.Objects.Factory.ObjectDefinitionStoreException"/> class.
-            </summary>
-            <param name="resourceDescription">
-            The description of the resource that the object definition came from
-            </param>
-            <param name="msg">The detail message (used as exception message as-is)</param>
-            <param name="cause">The root cause. (may be <code>null</code></param>
-        </member>
-        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(Spring.Core.IO.IResource,System.String,System.String)">
-            <summary>
-            Creates a new instance of the ObjectDefinitionStoreException class.
-            </summary>
-            <param name="resourceLocation">
-            The resource location (e.g. an XML object definition file) associated
-            with the offending object definition.
-            </param>
-            <param name="message">
-            A message about the exception.
-            </param>
-            <param name="name">
-            The name of the object that triggered the exception.
-            </param>
-        </member>
-        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(Spring.Core.IO.IResource,System.String,System.String,System.Exception)">
-            <summary>
-            Creates a new instance of the ObjectDefinitionStoreException class.
-            </summary>
-            <param name="resourceLocation">
-            The resource location (e.g. an XML object definition file) associated
-            with the offending object definition.
-            </param>
-            <param name="message">
-            A message about the exception.
-            </param>
-            <param name="name">
-            The name of the object that triggered the exception.
-            </param>
-            <param name="rootCause">
-            The root exception that is being wrapped.
-            </param>
-        </member>
-        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.String,System.String,System.String,System.Exception)">
-            <summary>
-            Creates a new instance of the ObjectDefinitionStoreException class.
-            </summary>
-            <param name="resourceDescription">
-            The description of the resource that the object definition came from
-            </param>
-            <param name="message">
-            A message about the exception.
-            </param>
-            <param name="name">
-            The name of the object that triggered the exception.
-            </param>
-            <param name="rootCause">
-            The root exception that is being wrapped.
-            </param>
-        </member>
-        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.String,System.Exception)">
-            <summary>
-            Creates a new instance of the ObjectDefinitionStoreException class.
-            </summary>
-            <param name="message">
-            A message about the exception.
-            </param>
-            <param name="rootCause">
-            The root exception that is being wrapped.
-            </param>
-        </member>
-        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Creates a new instance of the ObjectDefinitionStoreException class.
-            </summary>
-            <param name="info">
-            The <see cref="T:System.Runtime.Serialization.SerializationInfo"/>
-            that holds the serialized object data about the exception being thrown.
-            </param>
-            <param name="context">
-            The <see cref="T:System.Runtime.Serialization.StreamingContext"/>
-            that contains contextual information about the source or destination.
-            </param>
-        </member>
-        <member name="M:Spring.Objects.Factory.ObjectDefinitionStoreException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with
-            the data needed to serialize the target object.
-            </summary>
-            <param name="info">
-            The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate
-            with data.
-            </param>
-            <param name="context">
-            The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"/>)
-            for this serialization.
-            </param>
-        </member>
-        <member name="F:Spring.Objects.Factory.ObjectDefinitionStoreException._resourceDescription">
-            <summary>
-            The description of the resource associated with the object
-            </summary>
-        </member>
-        <member name="F:Spring.Objects.Factory.ObjectDefinitionStoreException._objectName">
-            <summary>
-            The name of the object that trigger the exception.
-            </summary>
-        </member>
-        <member name="P:Spring.Objects.Factory.ObjectDefinitionStoreException.ObjectName">
-            <summary>
-            The name of the object that triggered the exception (if any).
-            </summary>
-        </member>
-        <member name="P:Spring.Objects.Factory.ObjectDefinitionStoreException.ResourceDescription">
-            <summary>
-            The description of the resource associated with the object (if any).
-            </summary>
-        </member>
         <member name="T:Spring.Objects.Factory.ObjectFactoryUtils">
             <summary>
             Convenience methods operating on object factories, returning object instances,
@@ -40680,15 +41987,6 @@
             The <see cref="T:System.Reflection.Emit.MethodBuilder"/> for the proxy method.
             </returns>
         </member>
-        <member name="M:Spring.Proxy.AbstractProxyMethodBuilder.DefineParameters(System.Reflection.Emit.MethodBuilder,System.Reflection.MethodInfo)">
-            <summary>
-            Defines method parameters based on proxied method metadata.
-            </summary>
-            <param name="methodBuilder">
-            The <see cref="T:System.Reflection.Emit.MethodBuilder"/> to use.
-            </param>
-            <param name="method">The method to proxy.</param>
-        </member>
         <member name="M:Spring.Proxy.AbstractProxyMethodBuilder.DefineGenericParameters(System.Reflection.Emit.MethodBuilder,System.Reflection.MethodInfo)">
             <summary>
             Defines generic method parameters based on proxied method metadata.
@@ -40715,10 +42013,13 @@
             <param name="il">The IL generator to use.</param>
             <param name="targetMethod">The method to invoke.</param>
         </member>
-        <member name="M:Spring.Proxy.AbstractProxyMethodBuilder.CallAssertUnderstands(System.Reflection.Emit.ILGenerator,System.Reflection.MethodInfo,System.Reflection.Emit.LocalBuilder,System.String)">
+        <member name="M:Spring.Proxy.AbstractProxyMethodBuilder.CallAssertUnderstands(System.Reflection.Emit.ILGenerator,System.Reflection.MethodInfo,System.String)">
             <summary>
-            Emits code to ensure that target understands the method and throw a sensible exception otherwise.
+            Emits code to ensure that target on stack understands the method and throw a sensible exception otherwise.
             </summary>
+            <param name="il">The IL generator to use.</param>
+            <param name="method">The method to test for</param>
+            <param name="targetName">the name of the target to be used in error messages</param>
         </member>
         <member name="M:Spring.Proxy.AbstractProxyMethodBuilder.CallDirectBaseMethod(System.Reflection.Emit.ILGenerator,System.Reflection.MethodInfo)">
             <summary>
@@ -43970,6 +45271,31 @@
             The line position within the resource this element was read from.
             </summary>
         </member>
+        <member name="T:Spring.Util.ConstructorInstantiationInfo">
+            <summary>
+            Collects information on the constructor to use to create the instance and the argument instances to pass into the
+            constructor.
+            </summary>
+        </member>
+        <member name="M:Spring.Util.ConstructorInstantiationInfo.#ctor(System.Reflection.ConstructorInfo,System.Object[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Util.ConstructorInstantiationInfo"/> class.
+            </summary>
+            <param name="constructorInfo">The constructor info.</param>
+            <param name="argInstances">The arg instances.</param>
+        </member>
+        <member name="P:Spring.Util.ConstructorInstantiationInfo.ConstructorInfo">
+            <summary>
+            Gets the constructor info.
+            </summary>
+            <value>The constructor info.</value>
+        </member>
+        <member name="P:Spring.Util.ConstructorInstantiationInfo.ArgInstances">
+            <summary>
+            Gets the arg instances.
+            </summary>
+            <value>The arg instances.</value>
+        </member>
         <member name="T:Spring.Util.DelegateInfo">
             <summary>
             Discovers the attributes of a <see cref="T:System.Delegate"/>
@@ -45283,6 +46609,20 @@
             </p>
             </example>
         </member>
+        <member name="M:Spring.Util.ReflectionUtils.GetTypeFriendlyName(System.Type)">
+            <summary>
+            Given the <see cref="T:System.Type"/> return its representation as
+            it would appear in the source code files.
+            </summary>
+            <remarks>
+            Largely intended to handle generic types where .ToString() will typically return:
+            "System.Collections.Generic.List`1[System.Collections.Generic.Dictionary`2[System.String,System.Int32]]"
+            and this method will instead return:
+            "System.Collections.Generic.List&lt;System.Collections.Generic.Dictionary&lt;string,int&gt;&gt;"
+            </remarks>
+            <param name="type">The type.</param>
+            <returns>Friendly string representing the Type</returns>
+        </member>
         <member name="M:Spring.Util.ReflectionUtils.HasAtLeastOneMethodWithName(System.Type,System.String)">
             <summary>
             Does the given <see cref="T:System.Type"/> and/or it's superclasses
@@ -45405,6 +46745,17 @@
             </param>
             <returns>A custom attribute builder.</returns>
         </member>
+        <member name="M:Spring.Util.ReflectionUtils.GetCustomAttributes(System.Reflection.MemberInfo)">
+            <summary>
+            Calculates and returns the list of attributes that apply to the
+            specified type or method.
+            </summary>
+            <param name="member">The type or method to find attributes for.</param>
+            <returns>
+            A list of custom attributes (CustomAttributeData or Attribute instances) 
+            that should be applied to type or method.
+            </returns>
+        </member>
         <member name="M:Spring.Util.ReflectionUtils.GetMatchingMethods(System.Type,System.Reflection.MethodInfo[],System.Boolean)">
             <summary>
             Tries to find matching methods in the specified <see cref="T:System.Type"/>
@@ -45526,6 +46877,24 @@
             <param name="fromObject">The source object</param>
             <param name="toObject">The object, who's fields will be populated with values from the source object</param>
             <exception cref="T:System.ArgumentException">If the object's types are not related</exception>
+        </member>
+        <member name="M:Spring.Util.ReflectionUtils.GetInstanceFieldValue(System.Object,System.String)">
+            <summary>
+            Convenience method that uses reflection to return the value of a non-public field of a given object.
+            </summary>
+            <remarks>Useful in certain instances during testing to avoid the need to add protected properties, etc. to a class just to facilitate testing.</remarks>
+            <param name="obj">The instance of the object from which to retrieve the field value.</param>
+            <param name="fieldName">Name of the field on the object from which to retrieve the value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Util.ReflectionUtils.SetInstanceFieldValue(System.Object,System.String,System.Object)">
+            <summary>
+            Convenience method that uses reflection to set the value of a non-public field of a given object.
+            </summary>
+            <remarks>Useful in certain instances during testing to avoid the need to add protected properties, etc. to a class just to facilitate testing.</remarks>
+            <param name="obj">The instance of the object from which to set the field value.</param>
+            <param name="fieldName">Name of the field on the object to which to set the value.</param>
+            <param name="fieldValue">The field value to set.</param>
         </member>
         <member name="T:Spring.Util.ReflectionUtils.CustomAttributeBuilderBuilder">
             <summary>
@@ -45976,6 +47345,11 @@
             Returns true if running on Mono
             </summary>
             <remarks>Tests for the presence of the type Mono.Runtime</remarks>
+        </member>
+        <member name="P:Spring.Util.SystemUtils.Clr4Runtime">
+            <summary>
+            Returns true if running on CLR 4.0 under InProc SxS mode
+            </summary>
         </member>
         <member name="P:Spring.Util.SystemUtils.ThreadId">
             <summary>
@@ -47003,6 +48377,12 @@
             </summary>
             <value>The regular expression <b>text</b>.</value>
         </member>
+        <member name="P:Spring.Validation.RegularExpressionValidator.AllowPartialMatching">
+            <summary>
+            Gets or sets a value indicating whether to do a partial match instead of a full match.  
+            Default is false.
+            </summary>
+        </member>
         <member name="P:Spring.Validation.RegularExpressionValidator.Options">
             <summary>
             The <see cref="T:System.Text.RegularExpressions.RegexOptions"/> for the regular expression evaluation.
@@ -47776,8 +49156,24 @@
         </member>
         <member name="M:Spring.Validation.ValidatorReference.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:Spring.Validation.ValidatorReference"/> class.
+            Creates a new instance of the <see cref="T:Spring.Validation.ValidatorReference"/> class.
             </summary>
+        </member>
+        <member name="M:Spring.Validation.ValidatorReference.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:Spring.Validation.ValidatorReference"/> class.
+            </summary>
+            <param name="when">
+            The expression that determines if this validator should be evaluated.
+            </param>
+        </member>
+        <member name="M:Spring.Validation.ValidatorReference.#ctor(Spring.Expressions.IExpression)">
+            <summary>
+            Creates a new instance of the <see cref="T:Spring.Validation.ValidatorReference"/> class.
+            </summary>
+            <param name="when">
+            The expression that determines if this validator should be evaluated.
+            </param>
         </member>
         <member name="M:Spring.Validation.ValidatorReference.Validate(System.Object,Spring.Validation.IValidationErrors)">
             <summary>
@@ -47807,6 +49203,12 @@
             Gets or sets the expression that should be used to narrow validation context.
             </summary>
             <value>The expression that should be used to narrow validation context.</value>
+        </member>
+        <member name="P:Spring.Validation.ValidatorReference.When">
+            <summary>
+            Gets or sets the expression that determines if this validator should be evaluated.
+            </summary>
+            <value>The expression that determines if this validator should be evaluated.</value>
         </member>
         <member name="P:Spring.Validation.ValidatorReference.ObjectFactory">
             <summary>

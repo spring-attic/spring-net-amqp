@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -21,18 +22,30 @@
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
     /// <summary>
-    ///  
+    /// Test constants. 
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class TestConstants
+    public static class TestConstants
     {
-        public static string EXCHANGE_NAME = "";
+        /// <summary>
+        /// Exchange Name.
+        /// </summary>
+        public const string EXCHANGE_NAME = "";
 
-        public static string QUEUE_NAME = "foo";
+        /// <summary>
+        /// Queue Name.
+        /// </summary>
+        public const string QUEUE_NAME = "foo";
 
-        public static string ROUTING_KEY = "foo";
+        /// <summary>
+        /// Routing Key.
+        /// </summary>
+        public const string ROUTING_KEY = "foo";
 
-        public static int NUM_MESSAGES = 10;
+        /// <summary>
+        /// Number of Messages.
+        /// </summary>
+        public const int NUM_MESSAGES = 500;
     }
 
 }

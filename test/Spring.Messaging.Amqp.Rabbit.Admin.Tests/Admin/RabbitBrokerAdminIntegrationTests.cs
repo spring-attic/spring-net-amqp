@@ -20,72 +20,132 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using log4net.Core;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
+using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Test;
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
     [TestFixture]
     public class RabbitBrokerAdminIntegrationTests
     {
+        /// <summary>
+        /// The connection factory.
+        /// </summary>
         protected SingleConnectionFactory connectionFactory;
 
+        /// <summary>
+        /// The broker admin.
+        /// </summary>
         private RabbitBrokerAdmin brokerAdmin;
 
+
+        /// <summary>
+        /// Sets up.
+        /// </summary>
+        /// <remarks></remarks>
         [SetUp]
         public void SetUp()
-        {                      
-            connectionFactory = new SingleConnectionFactory();
-            brokerAdmin = new RabbitBrokerAdmin(connectionFactory);
+        {
+            //if (environment.isActive())
+            //{
+            // Set up broker admin for non-root user
+            this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(); //"rabbit@LOCALHOST", 5672);
+            this.brokerAdmin.StartBrokerApplication();
+            //panic.setBrokerAdmin(brokerAdmin);
+            // }
         }
 
+        /// <summary>
+        /// Tears down.
+        /// </summary>
+        /// <remarks></remarks>
+        [TearDown]
+        public void TearDown()
+        {
+            this.brokerAdmin.StopNode();
+        }
+
+        /// <summary>
+        /// Users the crud.
+        /// </summary>
+        /// <remarks></remarks>
         [Test]
         public void UserCrud()
         {
-            IList<string> users = brokerAdmin.ListUsers();
+            List<String> users = this.brokerAdmin.ListUsers();
+            if (users.Contains("joe"))
+            {
+                this.brokerAdmin.DeleteUser("joe");
+            }
+
+            Thread.Sleep(200);
+            this.brokerAdmin.AddUser("joe", "trader");
+            Thread.Sleep(200);
+            this.brokerAdmin.ChangeUserPassword("joe", "sales");
+            Thread.Sleep(200);
+            users = this.brokerAdmin.ListUsers();
+            if (users.Contains("joe"))
+            {
+                Thread.Sleep(200);
+                this.brokerAdmin.DeleteUser("joe");
+            }
+        }
+
+        /// <summary>
+        /// Integrations the tests user crud with module adapter.
+        /// </summary>
+        /// <remarks></remarks>
+        [Test]
+        public void IntegrationTestsUserCrudWithModuleAdapter()
+        {
+
+            var adapter = new Dictionary<string, string>();
+            // Switch two functions with identical inputs!
+            adapter.Add("rabbit_auth_backend_internal%add_user", "rabbit_auth_backend_internal%change_password");
+            adapter.Add("rabbit_auth_backend_internal%change_password", "rabbit_auth_backend_internal%add_user");
+            brokerAdmin.ModuleAdapter = adapter;
+
+            var users = brokerAdmin.ListUsers();
             if (users.Contains("joe"))
             {
                 brokerAdmin.DeleteUser("joe");
             }
-            brokerAdmin.AddUser("joe", "trader");
-            users = brokerAdmin.ListUsers();
-            Assert.AreEqual("guest", users[0]);
-            Assert.AreEqual("joe", users[1]);
+            Thread.Sleep(200);
             brokerAdmin.ChangeUserPassword("joe", "sales");
+            Thread.Sleep(200);
+            brokerAdmin.AddUser("joe", "trader");
+            Thread.Sleep(200);
             users = brokerAdmin.ListUsers();
             if (users.Contains("joe"))
             {
+                Thread.Sleep(200);
                 brokerAdmin.DeleteUser("joe");
             }
-        }
-        
-
-        [Test]
-        public void TestStatus()
-        {
-            RabbitStatus status = brokerAdmin.Status;
-            AssertBrokerAppRunning(status);
 
         }
 
         [Test]
-        public void GetQueues()
+        public void TestGetEmptyQueues()
         {
-            brokerAdmin.DeclareQueue(new Queue("test.queue"));
-            IList<QueueInfo> queues = brokerAdmin.Queues;
-            Assert.AreEqual("test.queue", queues[0].Name);
-            Console.WriteLine(queues[0]);
-
+            var queues = this.brokerAdmin.GetQueues();
+            Assert.AreEqual(0, queues.Count);
         }
 
-        private void AssertBrokerAppRunning(RabbitStatus status)
+        [Test]
+        public void TestGetQueues()
         {
-            Assert.AreEqual(status.RunningNodes.Count, 1);
-            Assert.IsTrue(status.RunningNodes[0].Name.Contains("rabbit"));
+            SingleConnectionFactory connectionFactory = new SingleConnectionFactory();
+            connectionFactory.Port = BrokerTestUtils.GetAdminPort();
+            Queue queue = new RabbitAdmin(connectionFactory).DeclareQueue();
+            Assert.AreEqual("/", connectionFactory.VirtualHost);
+            List<QueueInfo> queues = brokerAdmin.GetQueues();
+            Assert.AreEqual(queue.Name, queues[0].Name);
         }
-
-
     }
 }

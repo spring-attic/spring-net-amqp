@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -32,14 +33,29 @@ namespace Spring.Messaging.Amqp.Core
     /// <author>Mark Pollack</author>
     public interface IExchange
     {
+        /// <summary>
+        /// Gets Name.
+        /// </summary>
         string Name { get; }
 
-        ExchangeType ExchangeType { get; }
+        /// <summary>
+        /// Gets ExchangeType.
+        /// </summary>
+        string ExchangeType { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether Durable.
+        /// </summary>
         bool Durable { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether AutoDelete.
+        /// </summary>
         bool AutoDelete { get;  }
 
+        /// <summary>
+        /// Gets Arguments.
+        /// </summary>
         IDictionary Arguments { get;  }
 
     }

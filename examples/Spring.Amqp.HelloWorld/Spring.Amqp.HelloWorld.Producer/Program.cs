@@ -35,7 +35,7 @@ namespace Spring.Amqp.HelloWorld.Producer
         {
             using (IApplicationContext ctx = ContextRegistry.GetContext())
             {
-                IAmqpTemplate amqpTemplate = (IAmqpTemplate) ctx.GetObject("RabbitTemplate");
+                var amqpTemplate = (IAmqpTemplate) ctx.GetObject("RabbitTemplate");
                 log.Info("Sending hello world message.");
                 amqpTemplate.ConvertAndSend("Hello World");
                 log.Info("Hello world message sent.");                

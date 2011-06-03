@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -34,27 +35,213 @@ namespace Spring.Messaging.Amqp.Core
     /// <author>Mark Pollack</author>
     public interface IAmqpTemplate
     {
+        #region Send methods for messages
+
+        /// <summary>
+        /// Send a message.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        void Send(Message message);
+
+        /// <summary>
+        /// Send a message.
+        /// </summary>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        void Send(string routingKey, Message message);
+
+        /// <summary>
+        /// Send a message.
+        /// </summary>
+        /// <param name="exchange">
+        /// The exchange.
+        /// </param>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        void Send(string exchange, string routingKey, Message message);
+
+        #endregion
+
+        #region Send methods with conversion
+
+        /// <summary>
+        /// Send a message with conversion.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
         void ConvertAndSend(object message);
 
+        /// <summary>
+        /// Send a message with conversion.
+        /// </summary>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
         void ConvertAndSend(string routingKey, object message);
 
+        /// <summary>
+        /// Send a message with conversion.
+        /// </summary>
+        /// <param name="exchange">
+        /// The exchange.
+        /// </param>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
         void ConvertAndSend(string exchange, string routingKey, object message);
+        #endregion
 
-        void ConvertAndSend(object message, MessagePostProcessorDelegate messagePostProcessorDelegate);
+        #region Receive methods for messages
 
-        void ConvertAndSend(string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate);
-
-        void ConvertAndSend(string exchange, string routingKey, object message, MessagePostProcessorDelegate messagePostProcessorDelegate);
-
+        /// <summary>
+        /// Receive a message.
+        /// </summary>
+        /// <returns>
+        /// The message.
+        /// </returns>
         Message Receive();
 
+        /// <summary>
+        /// Receive a message.
+        /// </summary>
+        /// <param name="queueName">
+        /// The queue name.
+        /// </param>
+        /// <returns>
+        /// The message.
+        /// </returns>
         Message Receive(string queueName);
 
+        #endregion
+
+        #region Receive methods with conversion
+
+        /// <summary>
+        /// Receive a message with conversion.
+        /// </summary>
+        /// <returns>
+        /// The message.
+        /// </returns>
         object ReceiveAndConvert();
 
+        /// <summary>
+        /// Receive a message with conversion.
+        /// </summary>
+        /// <param name="queueName">
+        /// The queue name.
+        /// </param>
+        /// <returns>
+        /// The message.
+        /// </returns>
         object ReceiveAndConvert(string queueName);
 
-        IMessageProperties CreateMessageProperties();
-    }
+        #endregion
 
+        #region Send and receive methods for messages
+
+        /// <summary>
+        /// Send a message and receive a response.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <returns>
+        /// The response.
+        /// </returns>
+        Message SendAndReceive(Message message);
+
+        /// <summary>
+        /// Send a message and receive a response.
+        /// </summary>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <returns>
+        /// The response.
+        /// </returns>
+        Message SendAndReceive(string routingKey, Message message);
+
+        /// <summary>
+        /// Send a message and receive a response.
+        /// </summary>
+        /// <param name="exchange">
+        /// The exchange.
+        /// </param>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <returns>
+        /// The response.
+        /// </returns>
+        Message SendAndReceive(string exchange, string routingKey, Message message);
+        #endregion
+
+        #region Send and receive methods with conversion
+
+        /// <summary>
+        /// Send a message and receive a response with conversion.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <returns>
+        /// The response.
+        /// </returns>
+        object ConvertSendAndReceive(object message);
+
+        /// <summary>
+        /// Send a message and receive a response with conversion.
+        /// </summary>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <returns>
+        /// The response.
+        /// </returns>
+        object ConvertSendAndReceive(string routingKey, object message);
+
+        /// <summary>
+        /// Send a message and receive a response with conversion.
+        /// </summary>
+        /// <param name="exchange">
+        /// The exchange.
+        /// </param>
+        /// <param name="routingKey">
+        /// The routing key.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <returns>
+        /// The response.
+        /// </returns>
+        object ConvertSendAndReceive(string exchange, string routingKey, object message);
+        #endregion
+    }
 }

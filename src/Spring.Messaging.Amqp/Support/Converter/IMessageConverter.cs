@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -23,13 +24,34 @@ using Spring.Messaging.Amqp.Core;
 namespace Spring.Messaging.Amqp.Support.Converter
 {
     /// <summary>
-    /// Convert from 
+    /// Interface for message conversion.
     /// </summary>
-    /// <author>Mark Pollack</author>
+    /// <author>Joe Fitzgerald</author>
     public interface IMessageConverter
     {
-        Message ToMessage(object obj, IMessagePropertiesFactory messagePropertiesFactory);
+        /// <summary>
+        /// Convert a .NET object to an AMQP Message.
+        /// </summary>
+        /// <param name="obj">
+        /// The object to convert.
+        /// </param>
+        /// <param name="messageProperties">
+        /// The message properties.
+        /// </param>
+        /// <returns>
+        /// The AMQP Message.
+        /// </returns>
+        Message ToMessage(object obj, MessageProperties messageProperties);
 
+        /// <summary>
+        /// Convert from an AMQP Message to a .NET object.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <returns>
+        /// The .NET object.
+        /// </returns>
         object FromMessage(Message message);
     }
 }

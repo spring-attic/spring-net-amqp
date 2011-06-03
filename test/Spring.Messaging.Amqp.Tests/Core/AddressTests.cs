@@ -24,55 +24,77 @@ using Spring.Messaging.Amqp.Core;
 
 namespace Spring.Messaging.Amqp.Tests.Core
 {
+    /// <summary>
+    /// Address tests.
+    /// </summary>
+    /// <remarks></remarks>
     [TestFixture]
     public class AddressTests
     {
-
+        /// <summary>
+        /// Toes the string.
+        /// </summary>
+        /// <remarks></remarks>
         [Test]
         public void ToString()
         {
-            Address address = new Address(ExchangeType.Direct, "my-exchange", "routing-key");
-            string replyToUri = "direct://my-exchange/routing-key";
+            var address = new Address(ExchangeTypes.Direct, "my-exchange", "routing-key");
+            var replyToUri = "direct://my-exchange/routing-key";
             Assert.AreEqual(replyToUri, address.ToString());
         }
+
+        /// <summary>
+        /// Parses this instance.
+        /// </summary>
+        /// <remarks></remarks>
         [Test]
         public void Parse()
         {
-            string replyToUri = "direct://my-exchange/routing-key";
-            Address address = new Address(replyToUri);
-            Assert.AreEqual(address.ExchangeType, ExchangeType.Direct);
+            var replyToUri = "direct://my-exchange/routing-key";
+            var address = new Address(replyToUri);
+            Assert.AreEqual(address.ExchangeType, ExchangeTypes.Direct);
             Assert.AreEqual(address.ExchangeName, "my-exchange");
             Assert.AreEqual(address.RoutingKey, "routing-key");
         }
 
+        /// <summary>
+        /// Unstructureds the with routing key only.
+        /// </summary>
+        /// <remarks></remarks>
         [Test]
         public void UnstructuredWithRoutingKeyOnly() 
         {
-            Address address = new Address("my-routing-key");
+            var address = new Address("my-routing-key");
             Assert.AreEqual("my-routing-key", address.RoutingKey);
             Assert.AreEqual("direct:///my-routing-key", address.ToString());
-        }  
+        }
 
+        /// <summary>
+        /// Withouts the routing key.
+        /// </summary>
+        /// <remarks></remarks>
         [Test]
         public void WithoutRoutingKey()
         {
-            Address address = new Address("fanout://my-exchange");
-            Assert.AreEqual(ExchangeType.Fanout, address.ExchangeType);
+            var address = new Address("fanout://my-exchange");
+            Assert.AreEqual(ExchangeTypes.Fanout, address.ExchangeType);
             Assert.AreEqual("my-exchange", address.ExchangeName);
-            Assert.AreEqual("", address.RoutingKey);
+            Assert.AreEqual(string.Empty, address.RoutingKey);
             Assert.AreEqual("fanout://my-exchange/", address.ToString());
         }
 
+        /// <summary>
+        /// Withes the default exchange and routing key.
+        /// </summary>
+        /// <remarks></remarks>
         [Test]
         public void WithDefaultExchangeAndRoutingKey()
         {
-            Address address = new Address("direct:///routing-key");
-            Assert.AreEqual(ExchangeType.Direct, address.ExchangeType);
-            Assert.AreEqual("", address.ExchangeName);
+            var address = new Address("direct:///routing-key");
+            Assert.AreEqual(ExchangeTypes.Direct, address.ExchangeType);
+            Assert.AreEqual(string.Empty, address.ExchangeName);
             Assert.AreEqual("routing-key", address.RoutingKey);
             Assert.AreEqual("direct:///routing-key", address.ToString());
         }
-
-
     }
 }   

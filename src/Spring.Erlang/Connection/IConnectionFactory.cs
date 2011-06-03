@@ -23,12 +23,17 @@ using Erlang.NET;
 namespace Spring.Erlang.Connection
 {
     /// <summary>
-    ///  An interface based ConnectionFactory for creating <see cref="OtpConnection"/>s.
+    /// An interface based ConnectionFactory for creating <see cref="OtpConnection"/>s.
     /// </summary>
-    /// <author>Mark Pollack</author>
+    /// <remarks></remarks>
     public interface IConnectionFactory
     {
-        OtpConnection CreateConnection();
+        /// <summary>
+        /// Creates the connection.
+        /// </summary>
+        /// <returns>The connection.</returns>
+        /// <remarks></remarks>
+        IConnection CreateConnection();
     }
 
 }

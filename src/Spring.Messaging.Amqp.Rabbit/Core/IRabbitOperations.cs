@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -27,16 +28,35 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// </summary>
     /// <author>Mark Pollack</author>
     /// <author>Mark Fisher</author>
+    /// <author>Joe Fitzgerald</author>
     public interface IRabbitOperations : IAmqpTemplate
     {
-        void Send(MessageCreatorDelegate messageCreator);
-
-        void Send(string routingkey, MessageCreatorDelegate messageCreator);
-
-        void Send(string exchange, string routingKey, MessageCreatorDelegate messageCreatorDelegate);
-
+        /// <summary>
+        /// Execute the action.
+        /// </summary>
+        /// <param name="action">
+        /// The action.
+        /// </param>
+        /// <typeparam name="T">
+        /// Type T
+        /// </typeparam>
+        /// <returns>
+        /// Object of Type T
+        /// </returns>
         T Execute<T>(IChannelCallback<T> action);
 
+        /// <summary>
+        /// Execute the action.
+        /// </summary>
+        /// <param name="action">
+        /// The action.
+        /// </param>
+        /// <typeparam name="T">
+        /// Type T
+        /// </typeparam>
+        /// <returns>
+        /// Object of Type T
+        /// </returns>
         T Execute<T>(ChannelCallbackDelegate<T> action);
     }
 }

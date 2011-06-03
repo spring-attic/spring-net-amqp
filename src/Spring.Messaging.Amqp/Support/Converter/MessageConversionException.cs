@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -23,26 +24,26 @@ using System;
 namespace Spring.Messaging.Amqp.Support.Converter
 {
     /// <summary>
-    ///  
+    /// A message conversion exception.
     /// </summary>
     /// <author>Mark Pollack</author>
     public class MessageConversionException : Exception
     {
         #region Constructor (s) / Destructor
 
-
         /// <summary>
+        /// Initializes a new instance of the <see cref="MessageConversionException"/> class. 
         /// Creates a new instance of the IMessageConverterException class. with the specified message.
         /// </summary>
         /// <param name="message">
         /// A message about the exception.
         /// </param>
-        public MessageConversionException(string message)
-            : base(message)
+        public MessageConversionException(string message) : base(message)
         {
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MessageConversionException"/> class. 
         /// Creates a new instance of the IMessageConverterException class with the specified message
         /// and root cause.
         /// </summary>
@@ -52,12 +53,10 @@ namespace Spring.Messaging.Amqp.Support.Converter
         /// <param name="rootCause">
         /// The root exception that is being wrapped.
         /// </param>
-        public MessageConversionException(string message, Exception rootCause)
-            : base(message, rootCause)
+        public MessageConversionException(string message, Exception rootCause) : base(message, rootCause)
         {
         }
 
         #endregion
-
     }
 }

@@ -19,7 +19,6 @@
 #endregion
 
 using System;
-using RabbitMQ.Client;
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
@@ -29,12 +28,35 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <author>Mark Pollack</author>
     public interface IConnectionFactory : IDisposable
     {
-        IConnection CreateConnection();
-
+        /// <summary>
+        /// Gets Host.
+        /// </summary>
         string Host { get; }
 
+        /// <summary>
+        /// Gets Port.
+        /// </summary>
+        int Port { get; }
+
+        /// <summary>
+        /// Gets VirtualHost.
+        /// </summary>
         string VirtualHost { get; }
 
-    }
+        /// <summary>
+        /// Create a connection.
+        /// </summary>
+        /// <returns>
+        /// The connection.
+        /// </returns>
+        IConnection CreateConnection();
 
+        /// <summary>
+        /// Add a connection listener.
+        /// </summary>
+        /// <param name="listener">
+        /// The listener.
+        /// </param>
+        void AddConnectionListener(IConnectionListener listener);
+    }
 }

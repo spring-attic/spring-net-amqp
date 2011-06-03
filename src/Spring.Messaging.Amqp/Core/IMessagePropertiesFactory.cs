@@ -26,7 +26,7 @@ namespace Spring.Messaging.Amqp.Core
     /// <author>Mark Pollack</author>
     public interface IMessagePropertiesFactory
     {
-        IMessageProperties Create();
+        MessageProperties Create();
     }
 
 }

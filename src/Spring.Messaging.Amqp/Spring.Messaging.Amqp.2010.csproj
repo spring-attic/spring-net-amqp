@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{96CD9010-9DDF-4D13-892A-5D60F01F3C90}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Spring.Messaging.Amqp</RootNamespace>
+    <AssemblyName>Spring.Messaging.Amqp</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Spring.Messaging.Amqp.XML</DocumentationFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common.Logging, Version=1.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e">
+      <HintPath>..\..\packages\Common.Logging.1.2.0\lib\1.0\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.4.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Core, Version=1.3.1.40711, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Spring.Core.1.3.1\lib\Net40\Spring.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AmqpConnectException.cs" />
+    <Compile Include="AmqpException.cs" />
+    <Compile Include="AmqpIllegalStateException.cs" />
+    <Compile Include="AmqpIOException.cs" />
+    <Compile Include="AmqpUnsupportedEncodingException.cs" />
+    <Compile Include="Core\AbstractExchange.cs" />
+    <Compile Include="Core\AcknowledgeMode.cs" />
+    <Compile Include="Core\Address.cs" />
+    <Compile Include="Core\AnonymousQueue.cs" />
+    <Compile Include="Core\Binding.cs" />
+    <Compile Include="Core\BindingBuilder.cs" />
+    <Compile Include="Core\ContentType.cs" />
+    <Compile Include="Core\CustomExchange.cs" />
+    <Compile Include="Core\DirectExchange.cs" />
+    <Compile Include="Core\ExchangeType.cs" />
+    <Compile Include="Core\FanoutExchange.cs" />
+    <Compile Include="Core\HeadersExchange.cs" />
+    <Compile Include="Core\IAmqpAdmin.cs" />
+    <Compile Include="Core\IAmqpTemplate.cs" />
+    <Compile Include="Core\IExchange.cs" />
+    <Compile Include="Core\IMessageCreator.cs" />
+    <Compile Include="Core\IMessageListener.cs" />
+    <Compile Include="Core\Message.cs" />
+    <Compile Include="Core\MessageDeliveryMode.cs" />
+    <Compile Include="Core\MessageProperties.cs" />
+    <Compile Include="Core\MessagePostProcessorDelegate.cs" />
+    <Compile Include="Core\Queue.cs" />
+    <Compile Include="Core\TopicExchange.cs" />
+    <Compile Include="ImmediateAcknowledgeAmqpException.cs" />
+    <Compile Include="Support\Converter\AbstractMessageConverter.cs" />
+    <Compile Include="Support\Converter\IMessageConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Support\Converter\ITypeMapper.cs" />
+    <Compile Include="Support\Converter\JsonMessageConverter.cs" />
+    <Compile Include="Support\Converter\MessageConversionException.cs" />
+    <Compile Include="UncategorizedAmqpException.cs" />
+    <Compile Include="Utils\SerializationUtils.cs" />
+    <Compile Include="Support\Converter\SimpleMessageConverter.cs" />
+    <Compile Include="Support\Converter\TypeMapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

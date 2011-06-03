@@ -2928,9 +2928,9 @@
             Array of introduction delegates
             </summary>
         </member>
-        <member name="F:Spring.Aop.Framework.DynamicProxy.AdvisedProxy.m_targetSourceWrapper">
+        <member name="F:Spring.Aop.Framework.DynamicProxy.AdvisedProxy.m_targetSource">
             <summary>
-            Target source wrapper
+            Target source 
             </summary>
         </member>
         <member name="F:Spring.Aop.Framework.DynamicProxy.AdvisedProxy.m_targetType">
@@ -3581,10 +3581,9 @@
             <author>Aleksandar Seovic</author>
             <author>Bruno Baia</author>
         </member>
-        <member name="F:Spring.Aop.Framework.DynamicProxy.TargetAopProxyMethodBuilder.targetSource">
+        <member name="F:Spring.Aop.Framework.DynamicProxy.TargetAopProxyMethodBuilder.target">
             <summary>
-            The local variable to store
-            the <see cref="T:Spring.Aop.Framework.ITargetSourceWrapper"/> instance.
+            The local variable to store the target instance.
             </summary>
         </member>
         <member name="M:Spring.Aop.Framework.DynamicProxy.TargetAopProxyMethodBuilder.#ctor(System.Reflection.Emit.TypeBuilder,Spring.Aop.Framework.DynamicProxy.IAopProxyTypeGenerator,System.Boolean,System.Collections.IDictionary)">
@@ -3610,6 +3609,13 @@
             </summary>
             <param name="il">The IL generator to use.</param>
             <param name="method">The method to proxy.</param>
+        </member>
+        <member name="M:Spring.Aop.Framework.DynamicProxy.TargetAopProxyMethodBuilder.PushTarget(System.Reflection.Emit.ILGenerator)">
+            <summary>
+            Generates the IL instructions that pushes 
+            the target instance on which calls should be delegated to.
+            </summary>
+            <param name="il">The IL generator to use.</param>
         </member>
         <member name="M:Spring.Aop.Framework.DynamicProxy.TargetAopProxyMethodBuilder.GenerateMethodLogic(System.Reflection.Emit.ILGenerator,System.Reflection.MethodInfo,System.Reflection.MethodInfo)">
             <summary>
@@ -5423,57 +5429,6 @@
             The new <see cref="T:AopAlliance.Intercept.IMethodInvocation"/> instance to use.
             </returns>
         </member>
-        <member name="T:Spring.Aop.Framework.DynamicTargetSourceWrapper">
-            <summary>
-            Decorates a target source with the <see cref="T:System.IDisposable"/>
-            interface.
-            </summary>
-            <remarks>
-            <p>
-            This implementation will release the target object when said object
-            is disposed.
-            </p>
-            </remarks>
-            <author>Aleksandar Seovic</author>
-        </member>
-        <member name="T:Spring.Aop.Framework.ITargetSourceWrapper">
-            <summary>
-            Decorates a target source with the <see cref="T:System.IDisposable"/>
-            interface.
-            </summary>
-            <author>Aleksandar Seovic</author>
-        </member>
-        <member name="M:Spring.Aop.Framework.ITargetSourceWrapper.GetTarget">
-            <summary>
-            Returns the target object that proxy methods will be delegated to.
-            </summary>
-            <returns>The target object.</returns>
-        </member>
-        <member name="M:Spring.Aop.Framework.DynamicTargetSourceWrapper.#ctor(Spring.Aop.ITargetSource)">
-            <summary>
-            Creates a new instance of the
-            <see cref="T:Spring.Aop.Framework.DynamicTargetSourceWrapper"/>
-            class.
-            </summary>
-            <param name="targetSource">
-            The target object that proxy methods will be delegated to.
-            </param>
-            <exception cref="T:System.ArgumentNullException">
-            If the supplied <paramref name="targetSource"/> is
-            <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Spring.Aop.Framework.DynamicTargetSourceWrapper.GetTarget">
-            <summary>
-            Returns the target object that proxy methods will be delegated to.
-            </summary>
-            <returns>The target object.</returns>
-        </member>
-        <member name="M:Spring.Aop.Framework.DynamicTargetSourceWrapper.Dispose">
-            <summary>
-            Releases the dynamic target when this object is disposed.
-            </summary>
-        </member>
         <member name="T:Spring.Aop.Framework.HashtableCachingAdvisorChainFactory">
             <summary> 
             <see cref="T:Spring.Aop.Framework.IAdvisorChainFactory"/> implementation
@@ -6260,50 +6215,6 @@
             <returns>
             The new <see cref="T:AopAlliance.Intercept.IMethodInvocation"/> instance to use.
             </returns>
-        </member>
-        <member name="T:Spring.Aop.Framework.StaticTargetSourceWrapper">
-            <summary>
-            Decorates a target source with the <see cref="T:System.IDisposable"/>
-            interface.
-            </summary>
-            <remarks>
-            <p>
-            Because the target source is static, the target object can be cached
-            and simply returned as is.
-            </p>
-            </remarks>
-            <author>Aleksandar Seovic</author>
-        </member>
-        <member name="M:Spring.Aop.Framework.StaticTargetSourceWrapper.#ctor(Spring.Aop.ITargetSource)">
-            <summary>
-            Creates a new instance of the
-            <see cref="T:Spring.Aop.Framework.StaticTargetSourceWrapper"/>
-            class.
-            </summary>
-            <param name="targetSource">
-            The target object that proxy methods will be delegated to.
-            </param>
-            <exception cref="T:System.ArgumentNullException">
-            If the supplied <paramref name="targetSource"/> is
-            <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Spring.Aop.Framework.StaticTargetSourceWrapper.GetTarget">
-            <summary>
-            Returns the target object that proxy methods will be delegated to.
-            </summary>
-            <returns>The target object.</returns>
-        </member>
-        <member name="M:Spring.Aop.Framework.StaticTargetSourceWrapper.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing,
-            releasing, or resetting unmanaged resources.
-            </summary>
-            <remarks>
-            <note type="implementnotes">
-            This is a no-op operation in this implementation.
-            </note>
-            </remarks>
         </member>
         <member name="T:Spring.Aop.Support.AbstractGenericPointcutAdvisor">
             <summary>
@@ -10405,6 +10316,17 @@
             <param name="vars">
             Variables for expression evaluation.
             </param>
+        </member>
+        <member name="T:Spring.Aspects.Cache.CacheResultAdvice.NullValueMarkerType">
+            <summary>
+            Inner class to help cache null values.
+            </summary>
+        </member>
+        <member name="M:Spring.Aspects.Cache.CacheResultAdvice.NullValueMarkerType.Equals(System.Object)">
+            <returns>true when other object is of same type.</returns>
+        </member>
+        <member name="M:Spring.Aspects.Cache.CacheResultAdvice.NullValueMarkerType.GetHashCode">
+            <returns>13</returns>
         </member>
         <member name="T:Spring.Aspects.Cache.CacheResultAdvisor">
             <summary>
