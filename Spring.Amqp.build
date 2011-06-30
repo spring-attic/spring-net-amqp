@@ -6,7 +6,7 @@
   <property name="root.dir" value="${project::get-base-directory()}" />
   <property name="deploy.dir" value="${root.dir}\..\deploy" />
   <property name="build.dir" value="${root.dir}\build" />
-  <property name="package.dir" value="${build.dir}\package" />
+  <property name="package.dir" value="${root.dir}\package" />
   <property name="bin.dir" value="${root.dir}\bin" />
   <property name="doc.dir" value="${root.dir}\doc" />
   <property name="tools.dir" value="${root.dir}\tools" />
@@ -18,13 +18,13 @@
   <property name="product.url" value="http://www.springframework.net/" />
   <property name="product.description" value="The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions." />
   
-  <property name="product.version" value="1.0.0" />
+  <property name="product.version" value="0.9.5" />
   <!-- alpha / beta# / rc# -->
   <property name="product.releasetype" value="" />
   <property name="product.fullname" value="${product.name} ${product.version}" if="${(product.releasetype == '')}" />
   <property name="product.fullname" value="${product.name} ${product.version} (${product.releasetype})" if="${(product.releasetype != '')}" />
 
-  <property name="project.buildnumber" value="${math::abs(math::floor(timespan::get-total-days(datetime::now() - datetime::parse('01/01/2011'))))}" />
+  <property name="project.buildnumber" value="${datetime::get-day(datetime::now())}${datetime::get-hour(datetime::now())}" />
   <property name="project.version" value="${product.version}.${project.buildnumber}" />
   <property name="project.buildtype" value="dev" />
   <property name="project.sign" value="false" overwrite="false" />
@@ -116,7 +116,7 @@
     <echo message="Building for .NET 2.0 with '${project.buildconfiguration}' configuration" />
     <property name="product.fullname" value="${product.fullname.temp} for .NET 2.0" />
     <property name="project.framework" value="net-2.0"/>
-    <property name="project.version" value="${product.version}.${project.buildnumber}20" />
+    <property name="project.version" value="${product.version}.${project.buildnumber}" />
     <property name="project.buildoutputdir" value="${bin.dir}\net\2.0\${project.buildconfiguration}" />
     <property name="project.buildsolutionfile" value="${root.dir}\Spring.Messaging.Amqp.2010-20.sln" />
     <call target="update-common-assemblyinfo" />
@@ -128,7 +128,7 @@
     <echo message="Building for .NET 3.5 with '${project.buildconfiguration}' configuration" />
     <property name="product.fullname" value="${product.fullname.temp} for .NET 3.5" />
     <property name="project.framework" value="net-3.5"/>
-    <property name="project.version" value="${product.version}.${project.buildnumber}35" />
+    <property name="project.version" value="${product.version}.${project.buildnumber}" />
     <property name="project.buildoutputdir" value="${bin.dir}\net\3.5\${project.buildconfiguration}" />
     <property name="project.buildsolutionfile" value="${root.dir}\Spring.Messaging.Amqp.2010-35.sln" />
     <call target="update-common-assemblyinfo" />
@@ -140,19 +140,19 @@
     <echo message="Building for .NET 4.0 with '${project.buildconfiguration}' configuration" />
     <property name="product.fullname" value="${product.fullname.temp} for .NET 4.0" />
     <property name="project.framework" value="net-4.0"/>
-    <property name="project.version" value="${product.version}.${project.buildnumber}40" />
+    <property name="project.version" value="${product.version}.${project.buildnumber}" />
     <property name="project.buildoutputdir" value="${bin.dir}\net\4.0\${project.buildconfiguration}" />
     <property name="project.buildsolutionfile" value="${root.dir}\Spring.Messaging.Amqp.2010-40.sln" />
     <call target="update-common-assemblyinfo" />
     <call target="rebuild-solution"/>
-    <call target="test-assemblies"/>
+    <!--<call target="test-assemblies"/>-->
   </target>
 
   <target name="doc">
     <echo message="Generating reference documentation" />
     <nant buildfile="${doc.dir}/reference/docbook.build" target="all" />
     <echo message="Generating API documentation" />
-    <nant buildfile="${doc.dir}/api/sandcastle.build" target="all" />
+    <!--<nant buildfile="${doc.dir}/api/sandcastle.build" target="all" />-->
   </target>
 
   <target name="package" depends="build,doc" description="Builds all modules and documentation">
@@ -163,13 +163,29 @@
         <include name="**\Spring.Messaging.Amqp.dll"/>
         <include name="**\Spring.Messaging.Amqp.pdb"/>
         <include name="**\Spring.Messaging.Amqp.xml"/>
-        <include name="**\Spring.Core.dll"/>
+		<include name="**\Spring.Messaging.Amqp.Rabbit.dll"/>
+        <include name="**\Spring.Messaging.Amqp.Rabbit.pdb"/>
+        <include name="**\Spring.Messaging.Amqp.Rabbit.xml"/>
+		<include name="**\Spring.Threading.dll"/>
+        <include name="**\Spring.Threading.pdb"/>
+        <include name="**\Spring.Threading.xml"/>
+		<include name="**\Spring.Core.dll"/>
         <include name="**\Spring.Core.pdb"/>
         <include name="**\Spring.Core.xml"/>
-        <include name="**\Newtonsoft.Json*.dll"/>
-        <include name="**\Newtonsoft.Json*.pdb"/>
-        <include name="**\Newtonsoft.Json*.xml"/>
-        <include name="**\Common.Logging.dll"/>
+		<include name="**\Spring.Aop.dll"/>
+        <include name="**\Spring.Aop.pdb"/>
+        <include name="**\Spring.Aop.xml"/>
+		<include name="**\Spring.Data.dll"/>
+        <include name="**\Spring.Data.pdb"/>
+        <include name="**\Spring.Data.xml"/>
+		<include name="**\RabbitMQ.Client.dll"/>
+        <include name="**\RabbitMQ.Client.pdb"/>
+        <include name="**\RabbitMQ.Client.xml"/>
+		<include name="**\Newtonsoft.Json.dll"/>
+        <include name="**\Newtonsoft.Json.pdb"/>
+        <include name="**\Newtonsoft.Json.xml"/>
+		<include name="**\Common.Logging.dll"/>
+        <include name="**\Common.Logging.pdb"/>
         <include name="**\Common.Logging.xml"/>
       </fileset>
     </copy>
@@ -197,6 +213,7 @@
         <exclude name="test\**\obj\**"/>
         <exclude name="examples\**\bin\**"/>
         <exclude name="examples\**\obj\**"/>
+		<exclude name="**\*.nuspec"/>
       </fileset>
     </copy>
     <!-- Copy docs -->
@@ -213,13 +230,31 @@
   </target>
 
   <target name="nuget" depends="build">
-    <echo message="Generating NuGet package..." />
-
-    <mkdir dir="${build.dir}"/>
-    <exec program="${setup.dir}\NuGet\lib\NuGet.exe" workingdir="${build.dir}" verbose="true">
-      <arg value="pack" />
-      <arg value="${setup.dir}\NuGet\src\Spring.Messaging.Amqp.nuspec" />
-      <arg value="-version ${product.version}" if="${property::exists('product.version')}" />
+	<echo message="Generating NuGet package..." />
+	<echo message="Setup Dir: ${setup.dir}" />
+	<echo message="Build Dir: ${build.dir}" />
+	<mkdir dir="${build.dir}" if="${not directory::exists('build.dir')}"/>
+	<mkdir dir="${package.dir}" if="${not directory::exists('package.dir')}"/>
+	<exec program="${tools.dir}\NuGet\NuGet.exe" workingdir="${build.dir}" verbose="true">
+		<arg value="pack" />
+		<arg value="${setup.dir}\Spring.Messaging.Amqp.nuspec" />
+		<arg value="-version" if="${property::exists('project.version')}" />
+		<arg value="${project.version}" if="${property::exists('project.version')}" />
+    </exec>
+	
+	<if test="${property::exists('project.version')}">
+      <xmlpoke file="${setup.dir}\Spring.Messaging.Amqp.Rabbit.nuspec" xpath="/n:package/n:metadata/n:dependencies/n:dependency[@id='Spring.Messaging.Amqp']/@version" value="${project.version}">
+        <namespaces>
+          <namespace prefix="n" uri="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd" />
+        </namespaces>
+      </xmlpoke>
+    </if>
+	
+	<exec program="${tools.dir}\NuGet\NuGet.exe" workingdir="${build.dir}" verbose="true">
+		<arg value="pack" />
+		<arg value="${setup.dir}\Spring.Messaging.Amqp.Rabbit.nuspec" />
+		<arg value="-version" if="${property::exists('project.version')}" />
+		<arg value="${project.version}" if="${property::exists('product.version')}" />
     </exec>
   </target>
 

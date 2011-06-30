@@ -115,8 +115,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="connectionFactory">
         /// The connection factory.
         /// </param>
-        public RabbitTemplate(IConnectionFactory connectionFactory)
-            : this()
+        public RabbitTemplate(IConnectionFactory connectionFactory) : this()
         {
             ConnectionFactory = connectionFactory;
             AfterPropertiesSet();

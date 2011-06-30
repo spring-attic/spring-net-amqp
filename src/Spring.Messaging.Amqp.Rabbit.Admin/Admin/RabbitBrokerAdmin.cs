@@ -815,7 +815,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                     var result = started.Wait((int)this.timeout);
                     if (!result)
                     {
-                        // tokenSource.Cancel();
+                        tokenSource.Cancel();
                     }
 
                     status = started.Result;
