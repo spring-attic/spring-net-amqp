@@ -41,31 +41,31 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         private readonly ILog logger = LogManager.GetLogger(typeof(BlockingQueueConsumer));
 
-	    // This must be an unbounded queue or we risk blocking the Connection thread.
-	    internal readonly IBlockingQueue<Delivery> queue = new LinkedBlockingQueue<Delivery>();
+        // This must be an unbounded queue or we risk blocking the Connection thread.
+        internal readonly IBlockingQueue<Delivery> queue = new LinkedBlockingQueue<Delivery>();
 
-	    // When this is non-null the connection has been closed (should never happen in normal operation).
-	    internal volatile ShutdownEventArgs shutdown;
+        // When this is non-null the connection has been closed (should never happen in normal operation).
+        internal volatile ShutdownEventArgs shutdown;
 
-	    private readonly string[] queues;
+        private readonly string[] queues;
 
-	    private readonly int prefetchCount;
+        private readonly int prefetchCount;
 
         private readonly int prefetchSize;
 
-	    private readonly bool transactional;
+        private readonly bool transactional;
 
-	    private IModel channel;
+        private IModel channel;
 
-	    private InternalConsumer consumer;
+        private InternalConsumer consumer;
 
-	    internal readonly AtomicBoolean cancelled = new AtomicBoolean(false);
+        internal readonly AtomicBoolean cancelled = new AtomicBoolean(false);
 
-	    internal readonly AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode;
+        internal readonly AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode;
 
-	    private readonly IConnectionFactory connectionFactory;
+        private readonly IConnectionFactory connectionFactory;
 
-	    internal readonly ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter;
+        internal readonly ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter;
 
         #endregion
 
@@ -259,7 +259,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public string ToString() 
         {
             return "Consumer: tag=[" + (this.consumer != null ? this.consumer.ConsumerTag : null) + "], channel=" + this.channel + ", acknowledgeMode=" + this.acknowledgeMode + " local queue size=" + this.queue.Count;
-	    }
+        }
     }
 
     internal class InternalConsumer : DefaultBasicConsumer

@@ -24,7 +24,7 @@ using Spring.Messaging.Amqp.Core;
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
     /// <summary>
-    ///  
+    /// A Channel Aware Message Listener.
     /// </summary>
     /// <author>Mark Pollack</author>
     public interface IChannelAwareMessageListener

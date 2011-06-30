@@ -138,10 +138,6 @@
       <Project>{96CD9010-9DDF-4D13-892A-5D60F01F3C90}</Project>
       <Name>Spring.Messaging.Amqp.2010</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Spring.RabbitQuickStart.Common\Spring.RabbitQuickStart.Common.2010.csproj">
-      <Project>{DE909872-61DE-48EC-BD1A-8DEE4D993F5B}</Project>
-      <Name>Spring.RabbitQuickStart.Common.2010</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

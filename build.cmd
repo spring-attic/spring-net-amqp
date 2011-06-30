@@ -1,8 +1,5 @@
-REM other targets are:
-REM 'build'
-REM 'test'
-REM 'test-integration'
-
-@ECHO OFF
-cls
-tools\nant\bin\nant.exe daily -f:Spring.Amqp.build
+@echo off
+@echo Running full Build Script, capturing output to buildlog.txt file...
+tools\NAnt\bin\nant.exe build -f:Spring.Amqp.build > buildlog.txt
+@echo Launching text file viewer to display buildlog.txt contents...
+start "ignored but required placeholder window title argument" buildlog.txt
