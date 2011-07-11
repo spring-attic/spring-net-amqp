@@ -24,12 +24,13 @@ namespace Spring.Messaging.Amqp.Core
     /// A simple class to hold content type values.
     /// </summary>
     /// <author>Mark Pollack</author>
+    /// <author>Joe Fitzgerald</author>
     public class ContentType
     {
         public static readonly string CONTENT_TYPE_BYTES = "application/octet-stream";
         public static readonly string CONTENT_TYPE_TEXT_PLAIN = "text/plain";
         public static readonly string CONTENT_TYPE_SERIALIZED_OBJECT = "application/x-dotnet-serialized-object";
-        public static readonly string CONTENT_TYPE_JSON = "appication/json";
+        public static readonly string CONTENT_TYPE_JSON = "application/json";
     }
 
 }
