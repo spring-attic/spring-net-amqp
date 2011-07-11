@@ -12,11 +12,12 @@
     <summary>The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions. We provide a "template" as a high-level abstraction for sending and receiving messages. We also provide support for Message-driven POCOs. These libraries facilitate management of AMQP resources while promoting the use of dependency injection and declarative configuration.</summary>
     <language>en-US</language>
     <dependencies>
+	  <dependency id="Common.Logging" version="2.0.0" />
       <dependency id="Spring.Core" version="1.3.1" />
       <dependency id="Spring.Aop" version="1.3.1" />
       <dependency id="Newtonsoft.Json" version="4.0.2" />
       <dependency id="Spring.Messaging.Amqp" version="1.0.0.0" />
-      <dependency id="RabbitMQ.Client" version="2.4.1" />
+      <dependency id="RabbitMQ.Client" version="2.5.1" />
     </dependencies>
   </metadata>
   <files>

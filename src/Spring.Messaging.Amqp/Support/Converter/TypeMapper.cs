@@ -26,6 +26,8 @@ using Spring.Messaging.Amqp.Core;
 
 namespace Spring.Messaging.Amqp.Support.Converter
 {
+    using System.Text;
+
     /// <summary>
     /// A type mapper implementaiton.
     /// </summary>
@@ -128,7 +130,14 @@ namespace Spring.Messaging.Amqp.Support.Converter
             string typeId = null;
             if (typeIdFieldNameValue != null)
             {
-                typeId = typeIdFieldNameValue.ToString();
+                if (typeIdFieldNameValue is byte[])
+                {
+                    typeId = Encoding.UTF8.GetString((byte[])typeIdFieldNameValue);
+                }
+                else
+                {
+                    typeId = typeIdFieldNameValue.ToString();
+                }
             }
 
             if (typeId == null)
