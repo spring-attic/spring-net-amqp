@@ -28,10 +28,12 @@ namespace Spring.Messaging.Amqp.Support.Converter
 {
     using System.Text;
 
+    using Spring.Objects.Factory;
+
     /// <summary>
     /// A type mapper implementaiton.
     /// </summary>
-    public class TypeMapper : ITypeMapper
+    public class TypeMapper : ITypeMapper, IInitializingObject
     {
         public static readonly string DEFAULT_TYPEID_FIELD_NAME = "__TypeId__";
         private string defaultNamespace;
@@ -152,10 +154,6 @@ namespace Spring.Messaging.Amqp.Support.Converter
         /// <summary>
         /// Performs validation actions after properties are set.
         /// </summary>
-        /// <exception cref="ArgumentException">
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// </exception>
         public void AfterPropertiesSet()
         {
             this.ValidateIdTypeMapping();
@@ -180,12 +178,15 @@ namespace Spring.Messaging.Amqp.Support.Converter
             foreach (DictionaryEntry entry in this.idTypeMapping)
             {
                 var id = entry.Key.ToString();
+
                 var t = entry.Value as Type;
+
                 if (t == null)
                 {
                     var typeName = entry.Value.ToString();
                     t = TypeResolutionUtils.ResolveType(typeName);
                 }
+
                 finalIdTypeMapping.Add(id, t);
                 this.typeIdMapping.Add(t, id);
             }
