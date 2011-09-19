@@ -47,3 +47,4 @@
 /bin/
 *.csproj.user
 /_ReSharper.Spring.Messaging.Amqp.2010-40/
+/package/
