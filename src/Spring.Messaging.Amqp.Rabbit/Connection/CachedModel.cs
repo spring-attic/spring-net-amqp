@@ -716,5 +716,31 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         {
             this.InvokeActionWithReconnect(() => this.target.Dispose());
         }
+
+
+        QueueDeclareOk IModel.QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary arguments)
+        {
+            throw new NotImplementedException();
+        }
+
+        QueueDeclareOk IModel.QueueDeclare()
+        {
+            throw new NotImplementedException();
+        }
+
+        QueueDeclareOk IModel.QueueDeclarePassive(string queue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool WaitForConfirms()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WaitForConfirmsOrDie()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
