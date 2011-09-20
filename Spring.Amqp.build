@@ -35,6 +35,8 @@
 
   <readregistry property="net40.install.dir" key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\InstallPath" hive="LocalMachine" failonerror="true" />
   <property name="msbuild.exe" value="${net40.install.dir}\msbuild.exe" />
+  
+  <property name="skip-tests" value="false" overwrite="false" />
 
   <!-- MAIN TARGETS -->
  
@@ -145,7 +147,7 @@
     <property name="project.buildsolutionfile" value="${root.dir}\Spring.Messaging.Amqp.2010-40.sln" />
     <call target="update-common-assemblyinfo" />
     <call target="rebuild-solution"/>
-    <!--<call target="test-assemblies"/>-->
+    <call target="test-assemblies"/>
   </target>
 
   <target name="doc">
@@ -292,7 +294,10 @@
   </target>
 
   <target name="test-assemblies" description="Unit tests given assemblies">
-    <echo message="Unit testing in '${project.buildoutputdir}'" />
+
+  <if test="${not skip-tests}">
+   
+  <echo message="Unit testing in '${project.buildoutputdir}'" />
     <foreach item="File" property="filename">
       <in>
         <items basedir="${project.buildoutputdir}">
@@ -310,6 +315,9 @@
         </exec>
       </do>
     </foreach>
+	
+	</if>
+	
   </target>
 
   <target name="testcover-assemblies" description="Code coverage given assemblies">
