@@ -14,7 +14,7 @@ using Spring.Messaging.Amqp.Rabbit.Test;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
-    public class MessageListenerManualAckIntegrationTests : IntegrationTestBase
+    public class MessageListenerManualAckIntegrationTests : AbstractRabbitIntegrationTest
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerManualAckIntegrationTests));
 
@@ -38,6 +38,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         //@Rule
         public BrokerRunning brokerIsRunning;
+
+        #region Fixture Setup and Teardown
+        /// <summary>
+        /// Code to execute before fixture setup.
+        /// </summary>
+        public override void BeforeFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute before fixture teardown.
+        /// </summary>
+        public override void BeforeFixtureTearDown()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture setup.
+        /// </summary>
+        public override void AfterFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture teardown.
+        /// </summary>
+        public override void AfterFixtureTearDown()
+        {
+        }
+        #endregion
 
         /// <summary>
         /// Creates the connection factory.

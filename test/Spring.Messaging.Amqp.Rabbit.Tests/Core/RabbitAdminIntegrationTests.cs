@@ -18,15 +18,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// Rabbit admin integration tests.
     /// </summary>
     /// <remarks></remarks>
-    public class RabbitAdminIntegrationTests
+    public class RabbitAdminIntegrationTests : AbstractRabbitIntegrationTest
     {
         /// <summary>
         /// The connection factory.
         /// </summary>
-        private CachingConnectionFactory connectionFactory;
-
-        public BrokerRunning brokerIsRunning;
-
+        private CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        
         /// <summary>
         /// The context.
         /// </summary>
@@ -41,35 +39,44 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// Initializes a new instance of the <see cref="RabbitAdminIntegrationTests"/> class. 
         /// Initializes a new instance of the <see cref="T:System.Object"/> class.
         /// </summary>
-        /// <remarks>
-        /// </remarks>
         public RabbitAdminIntegrationTests()
         {
-            this.connectionFactory = new CachingConnectionFactory();
             this.connectionFactory.Port = BrokerTestUtils.GetPort();
-            this.brokerIsRunning = BrokerRunning.IsRunning();
         }
 
-        [TestFixtureSetUp]
-        public void FixtureSetUp()
+        #region Fixture Setup and Teardown
+        /// <summary>
+        /// Code to execute before fixture setup.
+        /// </summary>
+        public override void BeforeFixtureSetUp()
         {
-            var brokerAdmin = new RabbitBrokerAdmin();
-            brokerAdmin.StartupTimeout = 10000;
-            brokerAdmin.StartBrokerApplication();
         }
-        
-        [TestFixtureTearDown]
-        public void FixtureTearDown()
+
+        /// <summary>
+        /// Code to execute before fixture teardown.
+        /// </summary>
+        public override void BeforeFixtureTearDown()
         {
-            var brokerAdmin = new RabbitBrokerAdmin();
-            brokerAdmin.StopBrokerApplication();
-            brokerAdmin.StopNode();
         }
+
+        /// <summary>
+        /// Code to execute after fixture setup.
+        /// </summary>
+        public override void AfterFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture teardown.
+        /// </summary>
+        public override void AfterFixtureTearDown()
+        {
+        }
+        #endregion
 
         /// <summary>
         /// Inits this instance.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void Init()
         {
@@ -88,7 +95,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// Closes this instance.
         /// </summary>
-        /// <remarks></remarks>
         [TearDown]
         public void Close()
         {
@@ -121,7 +127,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// Tests the double declaration of exclusive queue.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestDoubleDeclarationOfExclusiveQueue()
         {

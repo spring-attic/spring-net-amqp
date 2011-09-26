@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using log4net.Core;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
@@ -140,7 +139,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         [Test]
         public void TestGetQueues()
         {
-            AbstractConnectionFactory connectionFactory = new AbstractConnectionFactory();
+            AbstractConnectionFactory connectionFactory = new SingleConnectionFactory();
             connectionFactory.Port = BrokerTestUtils.GetAdminPort();
             Queue queue = new RabbitAdmin(connectionFactory).DeclareQueue();
             Assert.AreEqual("/", connectionFactory.VirtualHost);

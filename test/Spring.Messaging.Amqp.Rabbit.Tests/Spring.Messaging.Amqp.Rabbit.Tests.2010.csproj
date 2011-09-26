@@ -111,8 +111,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection\AbstractConnectionFactoryTests.cs" />
     <Compile Include="Connection\CachingConnectionFactoryIntegrationTests.cs" />
     <Compile Include="Connection\CachingConnectionFactoryTests.cs" />
+    <Compile Include="Connection\SharedConnectionProxy.cs" />
+    <Compile Include="Connection\SingleConnectionFactory.cs" />
     <Compile Include="Connection\SingleConnectionFactoryTests.cs" />
     <Compile Include="Core\Producer.cs" />
     <Compile Include="Core\QueueUtils.cs" />
@@ -141,7 +144,7 @@
     <Compile Include="Test\BrokerRunning.cs" />
     <Compile Include="Test\BrokerTestUtils.cs" />
     <Compile Include="Test\EnvironmentAvailable.cs" />
-    <Compile Include="Test\IntegrationTestBase.cs" />
+    <Compile Include="Test\AbstractRabbitIntegrationTest.cs" />
     <Compile Include="Transaction\RabbitTransactionManagerIntegrationTests.cs" />
   </ItemGroup>
   <ItemGroup>

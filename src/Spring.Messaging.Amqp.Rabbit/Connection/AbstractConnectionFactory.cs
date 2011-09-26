@@ -186,7 +186,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// Create a connection.
         /// </summary>
         /// <returns>The connection.</returns>
-        protected IConnection CreateBareConnection()
+        public IConnection CreateBareConnection()
         {
             try
             {

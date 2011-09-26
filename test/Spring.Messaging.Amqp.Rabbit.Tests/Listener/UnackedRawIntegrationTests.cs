@@ -16,12 +16,42 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// </summary>
     /// @author Dave Syer
     /// <remarks></remarks>
-    public class UnackedRawIntegrationTests : IntegrationTestBase
+    public class UnackedRawIntegrationTests : AbstractRabbitIntegrationTest
     {
         private ConnectionFactory factory = new ConnectionFactory();
         private IConnection conn;
         private IModel noTxChannel;
         private IModel txChannel;
+
+        #region Fixture Setup and Teardown
+        /// <summary>
+        /// Code to execute before fixture setup.
+        /// </summary>
+        public override void BeforeFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute before fixture teardown.
+        /// </summary>
+        public override void BeforeFixtureTearDown()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture setup.
+        /// </summary>
+        public override void AfterFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture teardown.
+        /// </summary>
+        public override void AfterFixtureTearDown()
+        {
+        }
+        #endregion
 
         /// <summary>
         /// Inits this instance.

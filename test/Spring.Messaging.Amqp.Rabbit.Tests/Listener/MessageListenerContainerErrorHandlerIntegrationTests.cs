@@ -21,7 +21,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// Message listener container error handler integration tests.
     /// </summary>
     /// <remarks></remarks>
-    public class MessageListenerContainerErrorHandlerIntegrationTests : IntegrationTestBase
+    public class MessageListenerContainerErrorHandlerIntegrationTests : AbstractRabbitIntegrationTest
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerErrorHandlerIntegrationTests));
 
@@ -32,6 +32,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         //@Rule
         public BrokerRunning brokerIsRunning;
+
+        #region Fixture Setup and Teardown
+        /// <summary>
+        /// Code to execute before fixture setup.
+        /// </summary>
+        public override void BeforeFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute before fixture teardown.
+        /// </summary>
+        public override void BeforeFixtureTearDown()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture setup.
+        /// </summary>
+        public override void AfterFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture teardown.
+        /// </summary>
+        public override void AfterFixtureTearDown()
+        {
+        }
+        #endregion
 
         //@Rule
         //public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.INFO, RabbitTemplate.class,

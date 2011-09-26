@@ -11,46 +11,80 @@ using Spring.Messaging.Amqp.Support.Converter;
 
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
+    using Spring.Messaging.Amqp.Rabbit.Support;
+
     /// <summary>
     /// Rabbit Binding Integration Tests
     /// </summary>
-    /// <remarks></remarks>
-    public class RabbitBindingIntegrationTests
+    public class RabbitBindingIntegrationTests : AbstractRabbitIntegrationTest
     {
+        /// <summary>
+        /// The queue.
+        /// </summary>
         private static Queue queue = new Queue("test.queue");
 
-        private IConnectionFactory connectionFactory = new CachingConnectionFactory();
+        /// <summary>
+        /// The connection factory.
+        /// </summary>
+        private IConnectionFactory connectionFactory = new CachingConnectionFactory(BrokerTestUtils.GetPort());
 
+        /// <summary>
+        /// The rabbit template.
+        /// </summary>
         private RabbitTemplate template;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Object"/> class.
+        /// Initializes a new instance of the <see cref="RabbitBindingIntegrationTests"/> class.
         /// </summary>
-        /// <remarks></remarks>
         public RabbitBindingIntegrationTests()
         {
             this.template = new RabbitTemplate(this.connectionFactory);
         }
 
-        /* @Rule  */
-        public BrokerRunning brokerIsRunning;
-
-        [TestFixtureSetUp]
-        public void FixtureSetUp()
+        #region Fixture Setup and Teardown
+        /// <summary>
+        /// Code to execute before fixture setup.
+        /// </summary>
+        public override void BeforeFixtureSetUp()
         {
-            var brokerAdmin = new RabbitBrokerAdmin();
-            brokerAdmin.StartupTimeout = 10000;
-            brokerAdmin.StartBrokerApplication();
-            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
         }
 
-        [TestFixtureTearDown]
-        public void FixtureTearDown()
+        /// <summary>
+        /// Code to execute before fixture teardown.
+        /// </summary>
+        public override void BeforeFixtureTearDown()
         {
-            var brokerAdmin = new RabbitBrokerAdmin();
-            brokerAdmin.StopBrokerApplication();
-            brokerAdmin.StopNode();
         }
+
+        /// <summary>
+        /// Code to execute after fixture setup.
+        /// </summary>
+        public override void AfterFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture teardown.
+        /// </summary>
+        public override void AfterFixtureTearDown()
+        {
+        }
+        #endregion
+
+        #region Test Setup and Teardown
+        /// <summary>
+        /// Sets up.
+        /// </summary>
+        [SetUp]
+        public void SetUp()
+        {
+            var brokerRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+            if (!brokerRunning.Apply())
+            {
+                Assert.Ignore("Cannot execute test as the broker is not running with empty queues.");
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Tests the send and receive with topic single callback.
@@ -318,7 +352,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <remarks></remarks>
         private BlockingQueueConsumer CreateConsumer(RabbitAccessor accessor)
         {
-            var consumer = new BlockingQueueConsumer(accessor.ConnectionFactory, new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, 0, queue.Name);
+            var consumer = new BlockingQueueConsumer(accessor.ConnectionFactory, new DefaultMessagePropertiesConverter(), new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, queue.Name);
             consumer.Start();
             return consumer;
         }

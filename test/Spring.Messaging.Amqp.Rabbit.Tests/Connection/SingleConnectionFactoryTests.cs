@@ -1,148 +1,69 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using AutoMoq;
 using Moq;
 using NUnit.Framework;
-using Spring.Messaging.Amqp.Rabbit.Support;
+
 using Spring.Threading.AtomicTypes;
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
+    using RabbitMQ.Client;
+
     /// <summary>
     /// Tests for the single connection factory.
     /// </summary>
-    /// <remarks></remarks>
     [TestFixture]
-    public class SingleConnectionFactoryTests
+    public class SingleConnectionFactoryTests : AbstractConnectionFactoryTests
     {
-
         /// <summary>
-        /// Tests the with listener.
+        /// Creates the connection factory.
         /// </summary>
-        /// <remarks></remarks>
-        [Test]
-        public void TestWithListener()
+        /// <param name="connectionFactory">The connection factory.</param>
+        /// <returns>The created connection factory.</returns>
+        protected override AbstractConnectionFactory CreateConnectionFactory(RabbitMQ.Client.ConnectionFactory connectionFactory)
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<RabbitMQ.Client.ConnectionFactory>();
-            var mockConnection = mocker.GetMock<RabbitMQ.Client.IConnection>();
-
-            mockConnectionFactory.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
-
-            var called = new AtomicInteger(0);
-            var connectionFactory = new AbstractConnectionFactory(mockConnectionFactory.Object);
-            var mockConnectionListener = new Mock<IConnectionListener>();
-            mockConnectionListener.Setup(m => m.OnCreate(It.IsAny<IConnection>())).Callback((IConnection conn) => called.IncrementValueAndReturn());
-            mockConnectionListener.Setup(m => m.OnClose(It.IsAny<IConnection>())).Callback((IConnection conn) => called.DecrementValueAndReturn());
-
-            connectionFactory.ConnectionListeners = new List<IConnectionListener>() { mockConnectionListener.Object };
-
-            var con = connectionFactory.CreateConnection();
-            Assert.AreEqual(1, called.Value);
-
-            con.Close();
-            Assert.AreEqual(1, called.Value);
-            mockConnection.Verify(c => c.Close(), Times.Never());
-
-            connectionFactory.CreateConnection();
-            Assert.AreEqual(1, called.Value);
-
-            connectionFactory.Dispose();
-            Assert.AreEqual(0, called.Value);
-            mockConnection.Verify(c => c.Close(), Times.AtLeastOnce());
-
-            mockConnectionFactory.Verify(c => c.CreateConnection(), Times.Exactly(1));
+            return new SingleConnectionFactory(connectionFactory);
         }
 
-        /// <summary>
-        /// Tests the with listener registered after open.
-        /// </summary>
-        /// <remarks></remarks>
         [Test]
-        public void TestWithListenerRegisteredAfterOpen()
+        public void TestWithChannelListener()
         {
             var mocker = new AutoMoqer();
 
-            var mockConnectionFactory = mocker.GetMock<RabbitMQ.Client.ConnectionFactory>();
+            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
             var mockConnection = mocker.GetMock<RabbitMQ.Client.IConnection>();
+            var mockChannel = new Mock<IModel>();
 
-            mockConnectionFactory.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
-
-            var called = new AtomicInteger(0);
-            var connectionFactory = new AbstractConnectionFactory(mockConnectionFactory.Object);
-            var con = connectionFactory.CreateConnection();
-            Assert.AreEqual(0, called.Value);
-
-            var mockConnectionListener = new Mock<IConnectionListener>();
-            mockConnectionListener.Setup(m => m.OnCreate(It.IsAny<IConnection>())).Callback((IConnection conn) => called.IncrementValueAndReturn());
-            mockConnectionListener.Setup(m => m.OnClose(It.IsAny<IConnection>())).Callback((IConnection conn) => called.DecrementValueAndReturn());
-
-            connectionFactory.ConnectionListeners = new List<IConnectionListener>() { mockConnectionListener.Object };
-            Assert.AreEqual(1, called.Value);
-
-            con.Close();
-            Assert.AreEqual(1, called.Value);
-            mockConnection.Verify(c => c.Close(), Times.Never());
-
-            connectionFactory.CreateConnection();
-            Assert.AreEqual(1, called.Value);
-
-            connectionFactory.Dispose();
-            Assert.AreEqual(0, called.Value);
-            mockConnection.Verify(c => c.Close(), Times.AtLeastOnce());
-
-            mockConnectionFactory.Verify(c => c.CreateConnection(), Times.Exactly(1));
-        }
-
-        /// <summary>
-        /// Tests the close invalid connection.
-        /// </summary>
-        /// <remarks></remarks>
-        [Test]
-        public void TestCloseInvalidConnection()
-        {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<RabbitMQ.Client.ConnectionFactory>();
-            var mockConnection1 = new Mock<RabbitMQ.Client.IConnection>();
-            var mockConnection2 = new Mock<RabbitMQ.Client.IConnection>();
-
-            mockConnectionFactory.Setup(c => c.CreateConnection()).ReturnsInOrder(mockConnection1.Object, mockConnection2.Object);
-
-            // simulate a dead connection
-            mockConnection1.Setup(c => c.IsOpen).Returns(false);
-
-            var connectionFactory = new AbstractConnectionFactory(mockConnectionFactory.Object);
-
-            var connection = connectionFactory.CreateConnection();
+            mockConnectionFactory.Setup(factory => factory.CreateConnection()).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockConnection.Setup(connection => connection.CreateModel()).Returns(mockChannel.Object);
             
-            // the dead connection should be discarded
-            connection.CreateChannel(false);
-            mockConnectionFactory.Verify(c => c.CreateConnection(), Times.Exactly(2));
-            mockConnection2.Verify(c => c.CreateModel(), Times.Exactly(1));
+            var called = new AtomicInteger(0);
+            var connectionFactory = this.CreateConnectionFactory(mockConnectionFactory.Object);
+            var channelListeners = new List<IChannelListener>();
+            var mockChannelListener = mocker.GetMock<IChannelListener>();
+            mockChannelListener.Setup(listener => listener.OnCreate(It.IsAny<IModel>(), It.IsAny<bool>())).Callback(() => called.IncrementValueAndReturn());
+            channelListeners.Add(mockChannelListener.Object);
+            connectionFactory.ChannelListeners = channelListeners;
+
+            var con = connectionFactory.CreateConnection();
+            var channel = con.CreateChannel(false);
+            Assert.AreEqual(1, called.Value);
+            channel.Close();
+
+            con.Close();
+            mockConnection.Verify(c => c.Close(), Times.Never());
+
+            connectionFactory.CreateConnection();
+            con.CreateChannel(false);
+            Assert.AreEqual(2, called.Value);
 
             connectionFactory.Dispose();
-            mockConnection2.Verify(c => c.Close(), Times.Exactly(1));
-        }
+            mockConnection.Verify(c => c.Close(), Times.AtLeastOnce());
 
-        /// <summary>
-        /// Tests the destroy before used.
-        /// </summary>
-        /// <remarks></remarks>
-        [Test]
-        public void TestDestroyBeforeUsed()
-        {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<RabbitMQ.Client.ConnectionFactory>();
-
-            var connectionFactory = new AbstractConnectionFactory(mockConnectionFactory.Object);
-            connectionFactory.Dispose();
-
-            mockConnectionFactory.Verify(c => c.CreateConnection(), Times.Never());
+            mockConnectionFactory.Verify(c => c.CreateConnection());
         }
     }
 }

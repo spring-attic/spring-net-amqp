@@ -21,9 +21,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         /// <summary>
         /// The logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetLogger(typeof(BrokerRunning));
+        private static readonly ILog logger = LogManager.GetCurrentClassLogger();
 
-        // Static so that we only test once on failure: speeds up test suite
+        // The broker online flag. Static so that we only test once on failure: speeds up test suite.
         private static IDictionary<int, bool> brokerOnline = new Dictionary<int, bool>();
 
         /// <summary>
@@ -132,7 +132,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
             this.queues = queues;
             this.purge = purge;
             this.Port = this.DEFAULT_PORT;
-            this.Apply();
         }
 
         /// <summary>
@@ -169,6 +168,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
                 {
                     brokerOffline.Add(this.port, true);
                 }
+
                 if (!brokerOnline.ContainsKey(this.port))
                 {
                     brokerOnline.Add(this.port, true);
@@ -209,7 +209,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
             try
             {
                 connectionFactory.Port = this.port;
-                if (StringUtils.HasText(this.hostName))
+                if (!string.IsNullOrWhiteSpace(this.hostName))
                 {
                     connectionFactory.Host = this.hostName;
                 }
@@ -268,6 +268,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
                     
                 if (this.assumeOnline)
                 {
+                    return false;
+
                     // Assume.That(!(e is Exception));
                 }
             }
@@ -286,10 +288,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         /// </summary>
         /// <param name="queue">The queue.</param>
         /// <returns><c>true</c> if [is default queue] [the specified queue]; otherwise, <c>false</c>.</returns>
-        /// <remarks></remarks>
         private bool IsDefaultQueue(string queue)
         {
-            return DEFAULT_QUEUE_NAME.Equals(queue);
+            return DEFAULT_QUEUE_NAME == queue;
         }
 
     }

@@ -17,7 +17,7 @@ using Spring.Threading.AtomicTypes;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
-    public class MessageListenerContainerMultipleQueueIntegrationTests : IntegrationTestBase
+    public class MessageListenerContainerMultipleQueueIntegrationTests : AbstractRabbitIntegrationTest
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerMultipleQueueIntegrationTests));
 
@@ -37,6 +37,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         //@Rule
         //public ExpectedException exception = ExpectedException.none();
+
+        #region Fixture Setup and Teardown
+        /// <summary>
+        /// Code to execute before fixture setup.
+        /// </summary>
+        public override void BeforeFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute before fixture teardown.
+        /// </summary>
+        public override void BeforeFixtureTearDown()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture setup.
+        /// </summary>
+        public override void AfterFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture teardown.
+        /// </summary>
+        public override void AfterFixtureTearDown()
+        {
+        }
+        #endregion
 
         /// <summary>
         /// Sets up.

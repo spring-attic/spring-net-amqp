@@ -20,17 +20,42 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// </summary>
     /// <remarks></remarks>
     [TestFixture]
-    public class CachingConnectionFactoryIntegrationTests : IntegrationTestBase
+    public class CachingConnectionFactoryIntegrationTests : AbstractRabbitIntegrationTest
     {
         /// <summary>
         /// The connection factory.
         /// </summary>
         private CachingConnectionFactory connectionFactory;
+        
+        #region Fixture Setup and Teardown
+        /// <summary>
+        /// Code to execute before fixture setup.
+        /// </summary>
+        public override void BeforeFixtureSetUp()
+        {
+        }
 
         /// <summary>
-        /// The broker is running.
+        /// Code to execute before fixture teardown.
         /// </summary>
-        public BrokerRunning brokerIsRunning;
+        public override void BeforeFixtureTearDown()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture setup.
+        /// </summary>
+        public override void AfterFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture teardown.
+        /// </summary>
+        public override void AfterFixtureTearDown()
+        {
+        }
+        #endregion
 
         // public ExpectedException exception = ExpectedException.none();
 

@@ -8,7 +8,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// Message listener recovery single connection integration tests.
     /// </summary>
     /// <remarks></remarks>
-    public class MessageListenerRecoverySingleConnectionIntegrationTests
+    public class MessageListenerRecoverySingleConnectionIntegrationTests : MessageListenerRecoveryCachingConnectionIntegrationTests
     {
         /// <summary>
         /// Creates the connection factory.
@@ -17,7 +17,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <remarks></remarks>
         protected IConnectionFactory CreateConnectionFactory()
         {
-            var connectionFactory = new AbstractConnectionFactory();
+            var connectionFactory = new SingleConnectionFactory();
             connectionFactory.Port = BrokerTestUtils.GetPort();
             return connectionFactory;
         }

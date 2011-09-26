@@ -35,12 +35,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// </summary>
     /// <remarks></remarks>
     [TestFixture]
-    public class CachingConnectionFactoryTests
+    public class CachingConnectionFactoryTests : AbstractConnectionFactoryTests
     {
+        /// <summary>
+        /// Creates the connection factory.
+        /// </summary>
+        /// <param name="connectionFactory">The connection factory.</param>
+        /// <returns>The created connection factory.</returns>
+        protected override AbstractConnectionFactory CreateConnectionFactory(RabbitMQ.Client.ConnectionFactory connectionFactory)
+        {
+            return new SingleConnectionFactory(connectionFactory);
+        }
+
         /// <summary>
         /// Tests the with connection factory defaults.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestWithConnectionFactoryDefaults()
         {

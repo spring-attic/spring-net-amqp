@@ -128,6 +128,7 @@
     <Compile Include="Support\IMessagePropertiesConverter.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicBoolean.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicInteger.cs" />
+    <Compile Include="Threading\AtomicTypes\AtomicReference.cs" />
     <Compile Include="Threading\AtomicTypes\IAtomic.cs" />
     <Compile Include="Threading\Collections\Generic\AbstractBlockingQueue.cs" />
     <Compile Include="Threading\Collections\Generic\AbstractCollection.cs" />

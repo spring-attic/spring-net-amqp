@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 10, false)]
-    public class SimpleMessageListenerContainerIntegrationTests : IntegrationTestBase
+    public class SimpleMessageListenerContainerIntegrationTests : AbstractRabbitIntegrationTest
     {
         private static ILog logger = LogManager.GetLogger(typeof(SimpleMessageListenerContainerIntegrationTests));
 
@@ -53,6 +53,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         //@Rule
         public BrokerRunning brokerIsRunning;
+
+        #region Fixture Setup and Teardown
+        /// <summary>
+        /// Code to execute before fixture setup.
+        /// </summary>
+        public override void BeforeFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute before fixture teardown.
+        /// </summary>
+        public override void BeforeFixtureTearDown()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture setup.
+        /// </summary>
+        public override void AfterFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture teardown.
+        /// </summary>
+        public override void AfterFixtureTearDown()
+        {
+        }
+        #endregion
 
         private readonly int messageCount;
 
@@ -133,7 +163,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestPocoListenerSunnyDay()
         {
-            var latch = new CountDownLatch(this.messageCount);
+            var latch = new CountdownEvent(this.messageCount);
             this.DoSunnyDayTest(latch, new MessageListenerAdapter(new SimplePocoListener(latch)));
         }
 
@@ -144,7 +174,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestListenerSunnyDay()
         {
-            var latch = new CountDownLatch(this.messageCount);
+            var latch = new CountdownEvent(this.messageCount);
             this.DoSunnyDayTest(latch, new Listener(latch));
         }
 
@@ -155,7 +185,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestChannelAwareListenerSunnyDay()
         {
-            var latch = new CountDownLatch(this.messageCount);
+            var latch = new CountdownEvent(this.messageCount);
             this.DoSunnyDayTest(latch, new ChannelAwareListener(latch));
         }
 
@@ -166,7 +196,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestPocoListenerWithException()
         {
-            var latch = new CountDownLatch(this.messageCount);
+            var latch = new CountdownEvent(this.messageCount);
             this.DoListenerWithExceptionTest(latch, new MessageListenerAdapter(new SimplePocoListener(latch, true)));
         }
 
@@ -177,7 +207,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestListenerWithException()
         {
-            var latch = new CountDownLatch(this.messageCount);
+            var latch = new CountdownEvent(this.messageCount);
             this.DoListenerWithExceptionTest(latch, new Listener(latch, true));
         }
 
@@ -188,7 +218,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestChannelAwareListenerWithException()
         {
-            var latch = new CountDownLatch(this.messageCount);
+            var latch = new CountdownEvent(this.messageCount);
             this.DoListenerWithExceptionTest(latch, new ChannelAwareListener(latch, true));
         }
 
