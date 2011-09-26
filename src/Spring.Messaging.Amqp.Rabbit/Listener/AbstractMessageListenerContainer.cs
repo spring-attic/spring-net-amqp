@@ -36,22 +36,14 @@ using IConnection = RabbitMQ.Client.IConnection;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
+    using Spring.Context;
+
     /// <summary>
     ///  An abstract message listener container.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public abstract class AbstractMessageListenerContainer : RabbitAccessor, IDisposable, IContainerDelegate
+    public abstract class AbstractMessageListenerContainer : RabbitAccessor, IDisposable, IContainerDelegate, IObjectNameAware, ILifecycle, IInitializingObject
     {
-        #region Private Members
-        #region Logging
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILog logger = LogManager.GetLogger(typeof(AbstractMessageListenerContainer));
-
-        #endregion
-
         /// <summary>
         /// The object name.
         /// </summary>
@@ -75,7 +67,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Flag for running.
         /// </summary>
-        private volatile bool running = false;
+        private volatile bool isRunning = false;
 
         /// <summary>
         /// Flag for lifecycle monitor.
@@ -111,12 +103,32 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// Flag for initialized.
         /// </summary>
         private bool initialized;
-        #endregion
 
         #region Properties
 
         /// <summary>
-        /// Gets or sets AcknowledgeMode.
+        /// <para>
+        /// Gets or sets AcknowledgeMode. 
+        /// Flag controlling the behaviour of the container with respect to message acknowledgement. The most common usage is
+        /// to let the container handle the acknowledgements (so the listener doesn't need to know about the channel or the
+        /// message).
+        /// </para>
+        /// <para>
+        /// Set to {@link AcknowledgeMode#MANUAL} if the listener will send the acknowledgements itself using
+        /// {@link Channel#basicAck(long, boolean)}. Manual acks are consistent with either a transactional or
+        /// non-transactional channel, but if you are doing no other work on the channel at the same other than receiving a
+        /// single message then the transaction is probably unnecessary.
+        /// </para>
+        /// <para>
+        /// Set to {@link AcknowledgeMode#NONE} to tell the broker not to expect any acknowledgements, and it will assume all
+        /// messages are acknowledged as soon as they are sent (this is "autoack" in native Rabbit broker terms). If
+        /// {@link AcknowledgeMode#NONE} then the channel cannot be transactional (so the container will fail on start up if
+        /// that flag is accidentally set).
+        /// </para>
+        /// <para> 
+        /// @param acknowledgeMode the acknowledge mode to set. Defaults to {@link AcknowledgeMode#AUTO}
+        /// @see AcknowledgeMode
+        /// </para>
         /// </summary>
         public AcknowledgeModeUtils.AcknowledgeMode AcknowledgeMode
         {
@@ -125,10 +137,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         /// <summary>
-        /// Gets the name of the queues to receive messages from
+        /// Gets or sets the name of the queues to receive messages from.
         /// </summary>
         /// <value>The name of the queues. Can not be null.</value>
-        /// <remarks></remarks>
         public string[] QueueNames
         {
             get
@@ -143,12 +154,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         /// <summary>
-        /// The set queues.
+        /// Sets the queues.
         /// </summary>
-        /// <param name="queues">
-        /// The queues.
-        /// </param>
-        ///
+        /// <value>The queues.</value>
         public Queue[] Queues
         {
             set
@@ -166,12 +174,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
 
+
         /// <summary>
-        /// The get required queue names.
+        /// Gets the required queue names.
         /// </summary>
-        /// <returns>
-        /// The required queue names.
-        /// </returns>
+        /// <returns>The required queue names.</returns>
         public string[] GetRequiredQueueNames()
         {
             AssertUtils.ArgumentNotNull(this.queueNames, "Queue");
@@ -181,41 +188,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
 
         /// <summary>
-        /// Gets or sets a value indicating whether ExposeListenerChannel. 
-        /// Exposes the listener channel to a registered 
-        /// <see cref="Spring.Messaging.Amqp.Rabbit.Core.IChannelAwareMessageListener"/> as well as to 
+        /// Gets or sets a value indicating whether ExposeListenerChannel.
+        /// Exposes the listener channel to a registered
+        /// <see cref="Spring.Messaging.Amqp.Rabbit.Core.IChannelAwareMessageListener"/> as well as to
         /// <see cref="Spring.Messaging.Amqp.Rabbit.Core.RabbitTemplate"/> calls.
         /// Default is true, reusing the listener's <see cref="IModel"/>
         /// </summary>
-        /// <remarks>Turn this off to expose a fresh Rabbit Channel fetched from the
-        /// same underlying Rabbit <see cref="RabbitMQ.Client.IConnection"/> instead.  Note that 
-        /// Channels managed by an external transaction manager will always get
-        /// exposed to <see cref="Spring.Messaging.Amqp.Rabbit.Core.RabbitTemplate"/>
-        /// calls.  So interms of RabbitTemplate exposure, this setting only affects locally
-        /// transacted Channels.
-        /// </remarks>
-        /// <value>
-        /// <c>true</c> if expose listener channel; otherwise, <c>false</c>.
-        /// </value>
-        /// <see cref="Spring.Messaging.Amqp.Rabbit.Core.IChannelAwareMessageListener"/>.
+        /// <value><c>true</c> if expose listener channel; otherwise, <c>false</c>.</value>
+        /// <see cref="Spring.Messaging.Amqp.Rabbit.Core.IChannelAwareMessageListener"/>
         public bool ExposeListenerChannel
         {
             get { return this.exposeListenerChannel; }
             set { this.exposeListenerChannel = value; }
         }
-        
+
         /// <summary>
         /// Gets or sets the message listener to register with the container.  This
         /// can be either a Spring <see cref="IMessageListener"/> object or
         /// a Spring <see cref="IChannelAwareMessageListener"/> object.
         /// </summary>
         /// <value>The message listener.</value>
-        /// <exception cref="ArgumentException">If the supplied listener</exception>
-        /// is not a 
-        /// <see cref="IMessageListener"/>
-        ///  or 
-        /// <see cref="IChannelAwareMessageListener"/>
-        /// <see cref="IMessageListener"/>
+        /// <exception cref="ArgumentException">If the supplied listener</exception> is not a <see cref="IMessageListener"/> or <see cref="IChannelAwareMessageListener"/> <see cref="IMessageListener"/>
         public object MessageListener
         {
             get
@@ -326,7 +319,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Initialize this container.
         /// </summary>
-        /// <exception cref="SystemException"></exception>
         public void Initialize()
         {
             try
@@ -347,8 +339,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Stop the shared Connection, call {@link #doShutdown()}, and close this container.
         /// </summary>
-        /// <exception cref="SystemException">
-        /// </exception>
         public void Shutdown()
         {
             this.logger.Debug("Shutting down Rabbit listener container");
@@ -371,7 +361,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 lock (this.lifecycleMonitor)
                 {
-                    this.running = false;
+                    this.isRunning = false;
                     Monitor.PulseAll(this.lifecycleMonitor); 
                 }
             }
@@ -401,11 +391,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
+        #region ILifecycle Implementation
         /// <summary>
         /// Start this container.
         /// </summary>
-        /// <exception cref="SystemException">
-        /// </exception>
         public void Start()
         {
             if (!this.initialized)
@@ -444,7 +433,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             lock (this.lifecycleMonitor)
             {
                 this.active = true;
-                this.running = true;
+                this.isRunning = true;
                 Monitor.PulseAll(this.lifecycleMonitor);
             }
         }
@@ -468,7 +457,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 lock (this.lifecycleMonitor)
                 {
-                    this.running = false;
+                    this.isRunning = false;
                     Monitor.PulseAll(this.lifecycleMonitor);
                 }
             }
@@ -480,10 +469,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="callback">
         /// The callback.
         /// </param>
-        public void Stop(Runnable callback)
+        public void Stop(Action callback)
         {
             this.Stop();
-            callback.Run();
+            callback.Invoke();
         }
 
         /// <summary>
@@ -496,16 +485,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Determine whether this container is currently running, that is, whether it has been started and not stopped yet.
         /// </summary>
-        /// <returns>
-        /// True if running, else false.
-        /// </returns>
-        public bool IsRunning()
+        /// <value><c>true</c> if this component is running; otherwise, <c>false</c>.</value>
+        public bool IsRunning
         {
-            lock (this.lifecycleMonitor)
+            get
             {
-                return this.running;
+                lock (this.lifecycleMonitor)
+                {
+                    return this.isRunning;
+                }
             }
         }
+        #endregion
 
         /// <summary>
         /// Invoke the registered ErrorHandler, if any. Log at error level otherwise.
@@ -544,40 +535,26 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <see cref="HandleListenerException"/>
         protected virtual void ExecuteListener(IModel channel, Message message)
         {
-            try
-            {
-                this.DoExecuteListener(channel, message);
-            }
-            catch (Exception ex)
-            {
-                this.HandleListenerException(ex);
-            }
-        }
-
-        /// <summary>
-        /// Executes the specified listener, 
-        /// committing or rolling back the transaction afterwards (if necessary).
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        protected virtual void DoExecuteListener(IModel channel, Message message)
-        {
-            if (!this.IsRunning())
+            if (!this.IsRunning)
             {
                 if (this.logger.IsWarnEnabled)
                 {
                     this.logger.Warn("Rejecting received message because of the listener container " + "having been stopped in the meantime: " + message);
                 }
 
-                this.RollbackIfNecessary(channel);
                 throw new MessageRejectedWhileStoppingException();
             }
 
-            this.InvokeListener(channel, message);
+            try
+            {
+                this.InvokeListener(channel, message);
+            }
+            catch (Exception ex)
+            {
+                this.HandleListenerException(ex);
+                throw ex;
+            }
+            
         }
 
         /// <summary>
@@ -667,123 +644,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         /// <summary>
-        /// Perform a commit or message acknowledgement, as appropriate
-        /// </summary>
-        /// <param name="channel">The channel to commit.</param>
-        /// <param name="message">The message to acknowledge.</param>
-        protected virtual void CommitIfNecessary(IModel channel, Message message)
-        {
-            var deliveryTag = message.MessageProperties.DeliveryTag;
-            var ackRequired = !this.AcknowledgeMode.IsAutoAck() && !this.AcknowledgeMode.IsManual();
-            if (this.IsChannelLocallyTransacted(channel))
-            {
-                if (ackRequired)
-                {
-                    channel.BasicAck((ulong)deliveryTag, true);
-                }
-
-                RabbitUtils.CommitIfNecessary(channel);
-            }
-            else if (this.IsChannelTransacted && ackRequired)
-            {
-                // Not locally transacted but it is transacted so it
-                // could be synchronized with an external transaction
-                ConnectionFactoryUtils.RegisterDeliveryTag(this.ConnectionFactory, channel, deliveryTag);
-            }
-            else if (ackRequired)
-            {
-                if (ackRequired)
-                {
-                    channel.BasicAck((ulong)deliveryTag, true);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Perform a rollback, if appropriate.
-        /// </summary>
-        /// <param name="channel">The channel to rollback.</param>
-        protected virtual void RollbackIfNecessary(IModel channel)
-        {
-            var ackRequired = !this.AcknowledgeMode.IsAutoAck() && !this.AcknowledgeMode.IsManual();
-            if (ackRequired)
-            {
-                /*
-                 * Re-queue messages and don't get them re-delivered to the same consumer, otherwise the broker just spins
-                 * trying to get us to accept the same message over and over
-                 */
-                try
-                {
-                    channel.BasicRecover(true);
-                }
-                catch (Exception e)
-                {
-                    throw new AmqpException(e);
-                }
-            }
-
-            if (this.IsChannelLocallyTransacted(channel))
-            {
-                // Transacted session created by this container -> rollback
-                RabbitUtils.RollbackIfNecessary(channel);
-            }
-        }
-
-        /// <summary>
-        /// Perform a rollback, handling rollback excepitons properly.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel to rollback.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="ex">
-        /// The thrown application exception.
-        /// </param>
-        protected virtual void RollbackOnExceptionIfNecessary(IModel channel, Message message, Exception ex)
-        {
-            var ackRequired = !this.AcknowledgeMode.IsAutoAck() && !this.AcknowledgeMode.IsManual();
-            try
-            {
-                if (this.IsChannelTransacted)
-                {
-                    if (this.logger.IsDebugEnabled)
-                    {
-                        this.logger.Debug("Initiating transaction rollback on application exception" + ex);
-                    }
-
-                    RabbitUtils.RollbackIfNecessary(channel);
-                }
-
-                if (message != null)
-                {
-                    if (ackRequired)
-                    {
-                        if (this.logger.IsDebugEnabled)
-                        {
-                            this.logger.Debug("Rejecting message");
-                        }
-
-                        // channel.BasicReject((ulong)message.MessageProperties.DeliveryTag, true);
-                        channel.BasicNack((ulong)message.MessageProperties.DeliveryTag, true, true);
-                    }
-
-                    if (this.IsChannelTransacted)
-                    {
-                        // Need to commit the reject (=nack)
-                        RabbitUtils.CommitIfNecessary(channel);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                this.logger.Error("Application exception overriden by rollback exception", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Determines whether the given Channel is locally transacted, that is, whether
         /// its transaction is managed by this listener container's Channel handling
         /// and not by an external transaction coordinator.
@@ -814,12 +674,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="ex">The exception to handle</param>
         protected virtual void HandleListenerException(Exception ex)
         {
-            if (ex is MessageRejectedWhileStoppingException)
-            {
-                // Internal exception - has been handled before.
-                return;
-            }
-
             if (this.IsActive)
             {
                 // Regular case: failed while active.
@@ -855,14 +709,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// Internal exception for message rejected while stopping.
-    /// </summary>
-    internal class MessageRejectedWhileStoppingException : SystemException 
-    {
-    }
+}
 
     /// <summary>
     /// Exception that indicates that the initial setup of this container's

@@ -20,6 +20,7 @@
 #endregion
 
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Spring.Messaging.Amqp.Core
 {
@@ -52,15 +53,15 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>
         /// The arguments.
         /// </summary>
-        private readonly IDictionary arguments;
+        private readonly IDictionary<string, object> arguments;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Queue"/> class. The queue is non-durable, non-exclusive and non auto-delete.
+        /// Initializes a new instance of the <see cref="Queue"/> class. The queue is durable, non-exclusive and non auto-delete.
         /// </summary>
         /// <param name="name">
         /// The name.
         /// </param>
-        public Queue(string name) : this(name, false, false, false)
+        public Queue(string name) : this(name, true, false, false)
         {
         }
 
@@ -114,7 +115,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="arguments">
         /// The arguments used to declare the queue.
         /// </param>
-        public Queue(string name, bool durable, bool exclusive, bool autoDelete, IDictionary arguments)
+        public Queue(string name, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
         {
             this.name = name;
             this.durable = durable;
@@ -159,7 +160,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>
         /// Gets Arguments.
         /// </summary>
-        public IDictionary Arguments
+        public IDictionary<string, object> Arguments
         {
             get { return this.arguments; }
         }

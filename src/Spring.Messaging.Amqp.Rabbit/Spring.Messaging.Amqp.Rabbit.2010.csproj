@@ -77,9 +77,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Spring.Data.1.3.2\lib\net40\Spring.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Spring.Threading">
-      <HintPath>..\..\lib\net\3.5\Spring.Threading.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -88,10 +85,13 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Connection\AbstractConnectionFactory.cs" />
     <Compile Include="Connection\CachedModel.cs" />
     <Compile Include="Connection\CachingConnectionFactory.cs" />
+    <Compile Include="Connection\CompositeChannelListener.cs" />
     <Compile Include="Connection\CompositeConnectionListener.cs" />
     <Compile Include="Connection\ConnectionFactoryUtils.cs" />
+    <Compile Include="Connection\IChannelListener.cs" />
     <Compile Include="Connection\IChannelProxy.cs" />
     <Compile Include="Connection\IConnection.cs" />
     <Compile Include="Connection\IConnectionFactory.cs" />
@@ -103,7 +103,6 @@
     <Compile Include="Connection\RabbitUtils.cs" />
     <Compile Include="Connection\ResourceFactory.cs" />
     <Compile Include="Connection\SimpleConnection.cs" />
-    <Compile Include="Connection\SingleConnectionFactory.cs" />
     <Compile Include="Core\ChannelCallbackDelegate.cs" />
     <Compile Include="Core\IChannelAwareMessageListener.cs" />
     <Compile Include="Core\IChannelCallback.cs" />
@@ -119,11 +118,39 @@
     <Compile Include="Listener\BlockingQueueConsumer.cs" />
     <Compile Include="Listener\FatalListenerExecutionException.cs" />
     <Compile Include="Listener\FatalListenerStartupException.cs" />
+    <Compile Include="Listener\MessageRejectedWhileStoppingException.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainer.cs" />
     <Compile Include="Retry\IMessageKeyGenerator.cs" />
     <Compile Include="Retry\IMessageRecoverer.cs" />
     <Compile Include="Retry\INewMessageIdentifier.cs" />
     <Compile Include="Support\DateExtensions.cs" />
+    <Compile Include="Support\DefaultMessagePropertiesConverter.cs" />
+    <Compile Include="Support\IMessagePropertiesConverter.cs" />
+    <Compile Include="Threading\AtomicTypes\AtomicBoolean.cs" />
+    <Compile Include="Threading\AtomicTypes\AtomicInteger.cs" />
+    <Compile Include="Threading\AtomicTypes\IAtomic.cs" />
+    <Compile Include="Threading\Collections\Generic\AbstractBlockingQueue.cs" />
+    <Compile Include="Threading\Collections\Generic\AbstractCollection.cs" />
+    <Compile Include="Threading\Collections\Generic\AbstractEnumerator.cs" />
+    <Compile Include="Threading\Collections\Generic\AbstractQueue.cs" />
+    <Compile Include="Threading\Collections\Generic\EnumerableToArrayBuffer.cs" />
+    <Compile Include="Threading\Collections\Generic\IBlockingQueue.cs" />
+    <Compile Include="Threading\Collections\Generic\IQueue.cs" />
+    <Compile Include="Threading\Collections\Generic\LinkedBlockingQueue.cs" />
+    <Compile Include="Threading\Collections\Generic\QueueBrokenException.cs" />
+    <Compile Include="Threading\Collections\Generic\SynchronousQueue.cs" />
+    <Compile Include="Threading\Helpers\FIFOWaitQueue.cs" />
+    <Compile Include="Threading\Helpers\IQueuedSync.cs" />
+    <Compile Include="Threading\Helpers\IWaitQueue.cs" />
+    <Compile Include="Threading\Helpers\WaitNode.cs" />
+    <Compile Include="Threading\Locks\ConditionVariable.cs" />
+    <Compile Include="Threading\Locks\FIFOConditionVariable.cs" />
+    <Compile Include="Threading\Locks\ICondition.cs" />
+    <Compile Include="Threading\Locks\ILock.cs" />
+    <Compile Include="Threading\Locks\ReentrantLock.cs" />
+    <Compile Include="Threading\SystemExtensions.cs" />
+    <Compile Include="Threading\Utility\SerializationUtilities.cs" />
+    <Compile Include="Threading\Utility\WaitTime.cs" />
     <Compile Include="Transaction\RabbitTransactionManager.cs" />
   </ItemGroup>
   <ItemGroup>

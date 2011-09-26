@@ -1,3 +1,4 @@
+
 #region License
 
 /*
@@ -25,48 +26,33 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <summary>
     /// A rabbit resource factory interface.
     /// </summary>
-    /// <author>Mark Pollack</author>
     public interface IResourceFactory
     {
         /// <summary>
         /// Get the channel.
         /// </summary>
-        /// <param name="holder">
-        /// The holder.
-        /// </param>
-        /// <returns>
-        /// The channel.
-        /// </returns>
+        /// <param name="holder">The holder.</param>
+        /// <returns>The channel.</returns>
         IModel GetChannel(RabbitResourceHolder holder);
 
         /// <summary>
         /// Get the connection.
         /// </summary>
-        /// <param name="rabbitResourceHolder">
-        /// The rabbit resource holder.
-        /// </param>
-        /// <returns>
-        /// The connection.
-        /// </returns>
+        /// <param name="rabbitResourceHolder">The rabbit resource holder.</param>
+        /// <returns>The connection.</returns>
         IConnection GetConnection(RabbitResourceHolder rabbitResourceHolder);
 
         /// <summary>
         /// Create the connection.
         /// </summary>
-        /// <returns>
-        /// The connection.
-        /// </returns>
+        /// <returns>The connection.</returns>
         IConnection CreateConnection();
 
         /// <summary>
         /// Create the channel.
         /// </summary>
-        /// <param name="connection">
-        /// The connection.
-        /// </param>
-        /// <returns>
-        /// The channel.
-        /// </returns>
+        /// <param name="connection">The connection.</param>
+        /// <returns>The channel.</returns>
         IModel CreateChannel(IConnection connection);
 
         /// <summary>

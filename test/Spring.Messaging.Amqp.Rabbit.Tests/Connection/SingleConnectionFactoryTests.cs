@@ -33,7 +33,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             mockConnectionFactory.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
 
             var called = new AtomicInteger(0);
-            var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+            var connectionFactory = new AbstractConnectionFactory(mockConnectionFactory.Object);
             var mockConnectionListener = new Mock<IConnectionListener>();
             mockConnectionListener.Setup(m => m.OnCreate(It.IsAny<IConnection>())).Callback((IConnection conn) => called.IncrementValueAndReturn());
             mockConnectionListener.Setup(m => m.OnClose(It.IsAny<IConnection>())).Callback((IConnection conn) => called.DecrementValueAndReturn());
@@ -72,7 +72,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             mockConnectionFactory.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
 
             var called = new AtomicInteger(0);
-            var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+            var connectionFactory = new AbstractConnectionFactory(mockConnectionFactory.Object);
             var con = connectionFactory.CreateConnection();
             Assert.AreEqual(0, called.Value);
 
@@ -115,7 +115,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             // simulate a dead connection
             mockConnection1.Setup(c => c.IsOpen).Returns(false);
 
-            var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+            var connectionFactory = new AbstractConnectionFactory(mockConnectionFactory.Object);
 
             var connection = connectionFactory.CreateConnection();
             
@@ -139,7 +139,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             var mockConnectionFactory = mocker.GetMock<RabbitMQ.Client.ConnectionFactory>();
 
-            var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+            var connectionFactory = new AbstractConnectionFactory(mockConnectionFactory.Object);
             connectionFactory.Dispose();
 
             mockConnectionFactory.Verify(c => c.CreateConnection(), Times.Never());

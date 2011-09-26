@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="Core\AddressTests.cs" />
     <Compile Include="Core\BindingBuilderTests.cs" />
+    <Compile Include="Core\MessagePropertiesTests.cs" />
     <Compile Include="Core\MessageTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

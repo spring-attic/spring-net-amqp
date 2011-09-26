@@ -19,7 +19,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <remarks></remarks>
         public static void Main(string[] args)
         {
-            var connectionFactory = new SingleConnectionFactory("localhost");
+            var connectionFactory = new AbstractConnectionFactory("localhost");
             connectionFactory.UserName = "guest";
             connectionFactory.Password = "guest";
 

@@ -200,7 +200,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             var template = new RabbitTemplate();
 
-            // SingleConnectionFactory connectionFactory = new SingleConnectionFactory();
+            // AbstractConnectionFactory connectionFactory = new AbstractConnectionFactory();
             var connectionFactory = new CachingConnectionFactory();
             connectionFactory.ChannelCacheSize = concurrentConsumers;
             connectionFactory.Port = BrokerTestUtils.GetPort();

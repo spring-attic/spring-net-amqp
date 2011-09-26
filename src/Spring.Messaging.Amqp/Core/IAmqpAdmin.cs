@@ -49,7 +49,7 @@ namespace Spring.Messaging.Amqp.Core
         /// </summary>
         /// <param name="queueName">Name of the queue.</param>
         /// <returns>true if the queue existed and was deleted.</returns>
-        bool DeleteQueue(string queueName);
+        bool DeleteQueue(string queueName); // TODO: Determine if noWait boolean argument should be included here...
 
         /// <summary>
         /// Deletes the queue.

@@ -24,6 +24,8 @@ using System.Collections;
 
 namespace Spring.Messaging.Amqp.Core
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Message Properties for an AMQP message.
     /// </summary>
@@ -34,6 +36,7 @@ namespace Spring.Messaging.Amqp.Core
 
         public static readonly string CONTENT_TYPE_TEXT_PLAIN = @"text/plain";
 
+        // TODO: Need to determine correct MIME type for this. We're not serializing java objects.
         public static readonly string CONTENT_TYPE_SERIALIZED_OBJECT = @"application/x-java-serialized-object";
 
         public static readonly string CONTENT_TYPE_JSON = @"application/json";
@@ -44,50 +47,53 @@ namespace Spring.Messaging.Amqp.Core
 
         private static readonly int DEFAULT_PRIORITY = 0;
 
-        private readonly IDictionary headers = new Hashtable();
+        private readonly IDictionary<string, object> headers = new Dictionary<string, object>();
 
+        // TODO: In the Java equivalent, this is market volatile, but it is not valid for this type due to the compiler.
         private DateTime timestamp;
 
-        private string messageId;
+        private volatile string messageId;
 
-        private string userId;
+        private volatile string userId;
 
-        private string appId;
+        private volatile string appId;
 
-        private string clusterId;
+        private volatile string clusterId;
 
-        private string type;
+        private volatile string type;
 
-        private byte[] correlationId;
+        private volatile byte[] correlationId;
 
-        private Address replyTo;
+        private volatile string replyTo;
 
-        private string contentType = DEFAULT_CONTENT_TYPE;
+        private volatile string contentType = DEFAULT_CONTENT_TYPE;
 
-        private string contentEncoding;
+        private volatile string contentEncoding;
 
+        // TODO: In the Java equivalent, this is market volatile, but it is not valid for this type due to the compiler.
         private long contentLength;
 
-        private MessageDeliveryMode deliveryMode = DEFAULT_DELIVERY_MODE;
+        private volatile MessageDeliveryMode deliveryMode = DEFAULT_DELIVERY_MODE;
 
-        private string expiration;
+        private volatile string expiration;
 
-        private int priority = DEFAULT_PRIORITY;
+        private volatile int priority = DEFAULT_PRIORITY;
 
-        private bool redelivered;
+        private volatile bool redelivered;
 
-        private string receivedExchange;
+        private volatile string receivedExchange;
 
-        private string receivedRoutingKey;
+        private volatile string receivedRoutingKey;
 
+        // TODO: In the Java equivalent, this is market volatile, but it is not valid for this type due to the compiler.
         private long deliveryTag;
 
-        private int messageCount;
+        private volatile int messageCount;
 
         /// <summary>
         /// Gets Headers.
         /// </summary>
-        public IDictionary Headers
+        public IDictionary<string, object> Headers
         {
             get { return this.headers; }
         }
@@ -156,12 +162,23 @@ namespace Spring.Messaging.Amqp.Core
         }
 
         /// <summary>
-        /// Gets or sets ReplyTo.
+        /// Gets or sets the reply to.
         /// </summary>
-        public Address ReplyTo
+        /// <value>The reply to.</value>
+        public string ReplyTo
         {
             get { return this.replyTo; }
             set { this.replyTo = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets reply to address.
+        /// </summary>
+        /// <value>The reply to address.</value>
+        public Address ReplyToAddress
+        {
+            get { return string.IsNullOrEmpty(this.replyTo) ? null : new Address(this.replyTo); }
+            set { this.replyTo = value == null ? string.Empty : value.ToString(); }
         }
 
         /// <summary>

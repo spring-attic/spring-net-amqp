@@ -199,7 +199,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="latch">The latch.</param>
         /// <param name="listener">The listener.</param>
         /// <remarks></remarks>
-        private void DoSunnyDayTest(CountDownLatch latch, object listener)
+        private void DoSunnyDayTest(CountdownEvent latch, object listener)
         {
             this.container = this.CreateContainer(listener);
             for (var i = 0; i < this.messageCount; i++)
@@ -207,7 +207,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 this.template.ConvertAndSend(this.queue.Name, i + "foo");
             }
             
-            var waited = latch.Await(new TimeSpan(0, 0, 0, Math.Max(2, this.messageCount / 40)));
+            var waited = latch.Wait(new TimeSpan(0, 0, 0, Math.Max(2, this.messageCount / 40)));
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
         }
@@ -218,7 +218,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="latch">The latch.</param>
         /// <param name="listener">The listener.</param>
         /// <remarks></remarks>
-        private void DoListenerWithExceptionTest(CountDownLatch latch, object listener)
+        private void DoListenerWithExceptionTest(CountdownEvent latch, object listener)
         {
             this.container = this.CreateContainer(listener);
             if (this.acknowledgeMode.TransactionAllowed())
@@ -239,7 +239,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             try
             {
-                var waited = latch.Await(new TimeSpan(0, 0, 0, (5 + Math.Max(1, this.messageCount / 20))));
+                var waited = latch.Wait(new TimeSpan(0, 0, 0, (5 + Math.Max(1, this.messageCount / 20))));
                 Assert.True(waited, "Timed out waiting for message");
             }
             finally
@@ -296,7 +296,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     {
         private AtomicInteger count = new AtomicInteger();
         private static ILog logger = LogManager.GetLogger(typeof(SimplePocoListener));
-        private readonly CountDownLatch latch;
+        private readonly CountdownEvent latch;
 
         private readonly bool fail;
 
@@ -305,7 +305,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public SimplePocoListener(CountDownLatch latch)
+        public SimplePocoListener(CountdownEvent latch)
             : this(latch, false)
         {
         }
@@ -316,7 +316,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <remarks></remarks>
-        public SimplePocoListener(CountDownLatch latch, bool fail)
+        public SimplePocoListener(CountdownEvent latch, bool fail)
         {
             this.latch = latch;
             this.fail = fail;
@@ -344,7 +344,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.CountDown();
+                this.latch.Signal();
             }
         }
     }
@@ -357,7 +357,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     {
         private AtomicInteger count = new AtomicInteger();
         private static ILog logger = LogManager.GetLogger(typeof(Listener));
-        private readonly CountDownLatch latch;
+        private readonly CountdownEvent latch;
 
         private readonly bool fail;
 
@@ -366,7 +366,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public Listener(CountDownLatch latch) : this(latch, false)
+        public Listener(CountdownEvent latch)
+            : this(latch, false)
         {
         }
 
@@ -376,7 +377,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <remarks></remarks>
-        public Listener(CountDownLatch latch, bool fail)
+        public Listener(CountdownEvent latch, bool fail)
         {
             this.latch = latch;
             this.fail = fail;
@@ -405,7 +406,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.CountDown();
+                this.latch.Signal();
             }
         }
     }
@@ -418,7 +419,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     {
         private AtomicInteger count = new AtomicInteger();
         private static ILog logger = LogManager.GetLogger(typeof(ChannelAwareListener));
-        private readonly CountDownLatch latch;
+        private readonly CountdownEvent latch;
 
         private readonly bool fail;
 
@@ -427,7 +428,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public ChannelAwareListener(CountDownLatch latch) : this(latch, false)
+        public ChannelAwareListener(CountdownEvent latch)
+            : this(latch, false)
         {
         }
 
@@ -437,7 +439,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <remarks></remarks>
-        public ChannelAwareListener(CountDownLatch latch, bool fail)
+        public ChannelAwareListener(CountdownEvent latch, bool fail)
         {
             this.latch = latch;
             this.fail = fail;
@@ -466,7 +468,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.CountDown();
+                this.latch.Signal();
             }
         }
     }

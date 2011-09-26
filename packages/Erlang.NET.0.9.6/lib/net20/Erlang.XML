@@ -1,0 +1,3519 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Erlang</name>
+    </assembly>
+    <members>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpOutputStream" -->
+        <member name="F:Erlang.NET.OtpOutputStream.defaultInitialSize">
+            The default initial size of the stream. * 
+        </member>
+        <member name="F:Erlang.NET.OtpOutputStream.defaultIncrement">
+            The default increment used when growing the stream. * 
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.#ctor">
+            Create a stream with the default initial size (2048 bytes).
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.#ctor(System.Int32)">
+            Create a stream with the specified initial size.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.#ctor(Erlang.NET.OtpErlangObject)">
+            Create a stream containing the encoded version of the given Erlang term.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.getPos">
+            Get the current position in the stream.
+            
+            @return the current position in the stream.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write(System.Byte)">
+            Write one byte to the stream.
+            
+            @param b
+                       the byte to write.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write(System.Byte[])">
+            Write an array of bytes to the stream.
+            
+            @param buf
+                       the array of bytes to write.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write1(System.Int64)">
+            Write the low byte of a value to the stream.
+            
+            @param n
+                       the value to use.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.writeN(System.Byte[])">
+            Write an array of bytes to the stream.
+            
+            @param buf
+                       the array of bytes to write.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.length">
+            Get the current capacity of the stream. As bytes are added the capacity
+            of the stream is increased automatically, however this method returns the
+            current size.
+            
+            @return the size of the internal buffer used by the stream.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.count">
+            Get the number of bytes in the stream.
+            
+            @return the number of bytes in the stream.
+            
+            @deprecated As of Jinterface 1.4, replaced by super.size().
+            @see #size()
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write2BE(System.Int64)">
+            Write the low two bytes of a value to the stream in big endian order.
+            
+            @param n
+                       the value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write4BE(System.Int64)">
+            Write the low four bytes of a value to the stream in big endian order.
+            
+            @param n
+                       the value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write8BE(System.Int64)">
+            Write the low eight (all) bytes of a value to the stream in big endian
+            order.
+            
+            @param n
+                       the value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.writeLE(System.Int64,System.Int32)">
+            Write any number of bytes in little endian format.
+            
+            @param n
+                       the value to use.
+            @param b
+                       the number of bytes to write from the little end.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write2LE(System.Int64)">
+            Write the low two bytes of a value to the stream in little endian order.
+            
+            @param n
+                       the value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write4LE(System.Int64)">
+            Write the low four bytes of a value to the stream in little endian order.
+            
+            @param n
+                       the value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write8LE(System.Int64)">
+            Write the low eight bytes of a value to the stream in little endian
+            order.
+            
+            @param n
+                       the value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.poke4BE(System.Int32,System.Int64)">
+            Write the low four bytes of a value to the stream in bif endian order, at
+            the specified position. If the position specified is beyond the end of
+            the stream, this method will have no effect.
+            
+            Normally this method should be used in conjunction with {@link #size()
+            size()}, when is is necessary to insert data into the stream before it is
+            known what the actual value should be. For example:
+            
+            <pre>
+            int pos = s.size();
+               s.write4BE(0); // make space for length data,
+                              // but final value is not yet known
+                [ ...more write statements...]
+               // later... when we know the length value
+               s.poke4BE(pos, length);
+            </pre>
+            
+            
+            @param offset
+                       the position in the stream.
+            @param n
+                       the value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_atom(System.String)">
+            Write a string to the stream as an Erlang atom.
+            
+            @param atom
+                       the string to write.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_binary(System.Byte[])">
+            Write an array of bytes to the stream as an Erlang binary.
+            
+            @param bin
+                       the array of bytes to write.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_bitstr(System.Byte[],System.Int32)">
+            Write an array of bytes to the stream as an Erlang bitstr.
+            
+            @param bin
+                       the array of bytes to write.
+            @param pad_bits
+                       the number of zero pad bits at the low end of the last byte
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_boolean(System.Boolean)">
+            Write a boolean value to the stream as the Erlang atom 'true' or 'false'.
+            
+            @param b
+                       the boolean value to write.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_byte(System.Byte)">
+            Write a single byte to the stream as an Erlang integer. The byte is
+            really an IDL 'octet', that is, unsigned.
+            
+            @param b
+                       the byte to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_char(System.Char)">
+            Write a character to the stream as an Erlang integer. The character may
+            be a 16 bit character, kind of IDL 'wchar'. It is up to the Erlang side
+            to take care of souch, if they should be used.
+            
+            @param c
+                       the character to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_double(System.Double)">
+            Write a double value to the stream.
+            
+            @param d
+                       the double to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_float(System.Single)">
+            Write a float value to the stream.
+            
+            @param f
+                       the float to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_long(System.Int64)">
+            Write a long to the stream.
+            
+            @param l
+                       the long to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_ulong(System.Int64)">
+            Write a positive long to the stream. The long is interpreted as a two's
+            complement unsigned long even if it is negative.
+            
+            @param ul
+                       the long to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_int(System.Int32)">
+            Write an integer to the stream.
+            
+            @param i
+                       the integer to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_uint(System.Int32)">
+            Write a positive integer to the stream. The integer is interpreted as a
+            two's complement unsigned integer even if it is negative.
+            
+            @param ui
+                       the integer to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_short(System.Int16)">
+            Write a short to the stream.
+            
+            @param s
+                       the short to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_ushort(System.Int16)">
+            Write a positive short to the stream. The short is interpreted as a two's
+            complement unsigned short even if it is negative.
+            
+            @param s
+                       the short to use.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_list_head(System.Int32)">
+            Write an Erlang list header to the stream. After calling this method, you
+            must write 'arity' elements to the stream followed by nil, or it will not
+            be possible to decode it later.
+            
+            @param arity
+                       the number of elements in the list.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_nil">
+            Write an empty Erlang list to the stream.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_tuple_head(System.Int32)">
+            Write an Erlang tuple header to the stream. After calling this method,
+            you must write 'arity' elements to the stream or it will not be possible
+            to decode it later.
+            
+            @param arity
+                       the number of elements in the tuple.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_pid(System.String,System.Int32,System.Int32,System.Int32)">
+            Write an Erlang PID to the stream.
+            
+            @param node
+                       the nodename.
+            
+            @param id
+                       an arbitrary number. Only the low order 15 bits will be used.
+            
+            @param serial
+                       another arbitrary number. Only the low order 13 bits will be
+                       used.
+            
+            @param creation
+                       yet another arbitrary number. Only the low order 2 bits will
+                       be used.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_port(System.String,System.Int32,System.Int32)">
+            Write an Erlang port to the stream.
+            
+            @param node
+                       the nodename.
+            
+            @param id
+                       an arbitrary number. Only the low order 28 bits will be used.
+            
+            @param creation
+                       another arbitrary number. Only the low order 2 bits will be
+                       used.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_ref(System.String,System.Int32,System.Int32)">
+            Write an old style Erlang ref to the stream.
+            
+            @param node
+                       the nodename.
+            
+            @param id
+                       an arbitrary number. Only the low order 18 bits will be used.
+            
+            @param creation
+                       another arbitrary number. Only the low order 2 bits will be
+                       used.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_ref(System.String,System.Int32[],System.Int32)">
+            Write a new style (R6 and later) Erlang ref to the stream.
+            
+            @param node
+                       the nodename.
+            
+            @param ids
+                       an array of arbitrary numbers. Only the low order 18 bits of
+                       the first number will be used. If the array contains only one
+                       number, an old style ref will be written instead. At most
+                       three numbers will be read from the array.
+            
+            @param creation
+                       another arbitrary number. Only the low order 2 bits will be
+                       used.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_string(System.String)">
+            Write a string to the stream.
+            
+            @param s
+                       the string to write.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_compressed(Erlang.NET.OtpErlangObject)">
+            Write an arbitrary Erlang term to the stream in compressed format.
+            
+            @param o
+                       the Erlang tem to write.
+        </member>
+        <member name="M:Erlang.NET.OtpOutputStream.write_any(Erlang.NET.OtpErlangObject)">
+            Write an arbitrary Erlang term to the stream.
+            
+            @param o
+                       the Erlang term to write.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangBoolean">
+            Provides a Java representation of Erlang booleans, which are special cases of
+            atoms with values 'true' and 'false'.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangAtom">
+            Provides a Java representation of Erlang atoms. Atoms can be created from
+            strings whose length is not more than {@link #maxAtomLength maxAtomLength}
+            characters.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangObject">
+            Base class of the Erlang data type classes. This class is used to represent
+            an arbitrary Erlang term.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangObject.ToString">
+            @return the printable representation of the object. This is usually
+                    similar to the representation used by Erlang for the same type of
+                    object.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangObject.encode(Erlang.NET.OtpOutputStream)">
+            Convert the object according to the rules of the Erlang external format.
+            This is mainly used for sending Erlang terms in messages, however it can
+            also be used for storing terms to disk.
+            
+            @param buf
+                           an output stream to which the encoded term should be
+                           written.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangObject.decode(Erlang.NET.OtpInputStream)">
+            Read binary data in the Erlang external format, and produce a
+            corresponding Erlang data type object. This method is normally used when
+            Erlang terms are received in messages, however it can also be used for
+            reading terms from disk.
+            
+            @param buf
+                           an input stream containing one or more encoded Erlang
+                           terms.
+            
+            @return an object representing one of the Erlang data types.
+            
+            @exception OtpErlangDecodeException
+                               if the stream does not contain a valid representation
+                               of an Erlang term.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangObject.Equals(System.Object)">
+            Determine if two Erlang objects are equal. In general, Erlang objects are
+            equal if the components they consist of are equal.
+            
+            @param o
+                           the object to compare to.
+            
+            @return true if the objects are identical.
+        </member>
+        <member name="F:Erlang.NET.OtpErlangAtom.maxAtomLength">
+            The maximun allowed length of an atom, in characters 
+        </member>
+        <member name="M:Erlang.NET.OtpErlangAtom.#ctor(System.String)">
+            Create an atom from the given string.
+            
+            @param atom
+                           the string to create the atom from.
+            
+            @exception java.lang.IllegalArgumentException
+                               if the string is null or contains more than
+                               {@link #maxAtomLength maxAtomLength} characters.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangAtom.#ctor(Erlang.NET.OtpInputStream)">
+            Create an atom from a stream containing an atom encoded in Erlang
+            external format.
+            
+            @param buf
+                           the stream containing the encoded atom.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang atom.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangAtom.#ctor(System.Boolean)">
+            Create an atom whose value is "true" or "false".
+        </member>
+        <member name="M:Erlang.NET.OtpErlangAtom.atomValue">
+            Get the actual string contained in this object.
+            
+            @return the raw string contained in this object, without regard to Erlang
+                    quoting rules.
+            
+            @see #toString
+        </member>
+        <member name="M:Erlang.NET.OtpErlangAtom.boolValue">
+            The boolean value of this atom.
+            
+            @return the value of this atom expressed as a boolean value. If the atom
+                    consists of the characters "true" (independent of case) the value
+                    will be true. For any other values, the value will be false.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpErlangAtom.ToString">
+            Get the printname of the atom represented by this object. The difference
+            between this method and {link #atomValue atomValue()} is that the
+            printname is quoted and escaped where necessary, according to the Erlang
+            rules for atom naming.
+            
+            @return the printname representation of this atom object.
+            
+            @see #atomValue
+        </member>
+        <member name="M:Erlang.NET.OtpErlangAtom.Equals(System.Object)">
+            Determine if two atoms are equal.
+            
+            @param o
+                           the other object to compare to.
+            
+            @return true if the atoms are equal, false otherwise.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangAtom.encode(Erlang.NET.OtpOutputStream)">
+            Convert this atom to the equivalent Erlang external representation.
+            
+            @param buf
+                           an output stream to which the encoded atom should be
+                           written.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBoolean.#ctor(System.Boolean)">
+            Create a boolean from the given value
+            
+            @param t
+                           the boolean value to represent as an atom.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBoolean.#ctor(Erlang.NET.OtpInputStream)">
+            Create a boolean from a stream containing an atom encoded in Erlang
+            external format. The value of the boolean will be true if the atom
+            represented by the stream is "true" without regard to case. For other
+            atom values, the boolean will have the value false.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang atom.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangException">
+            Base class for the other OTP erlang exception classes.
+        </member>
+        <member name="T:Erlang.NET.OtpException">
+            <summary>
+            Base class for the other OTP exception classes.
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:Erlang.NET.OtpException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Object"/> class.
+            </summary>
+            Provides no message.
+            <remarks></remarks>
+        </member>
+        <member name="M:Erlang.NET.OtpException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Erlang.NET.OtpException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            Provides a detailed message.
+            <remarks></remarks>
+        </member>
+        <member name="M:Erlang.NET.OtpException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Erlang.NET.OtpException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="cause">The cause.</param>
+            <remarks></remarks>
+        </member>
+        <member name="M:Erlang.NET.OtpErlangException.#ctor">
+            Provides no message.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangException.#ctor(System.String)">
+            Provides a detailed message.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangBitstr">
+            Provides a Java representation of Erlang bitstrs. An Erlang bitstr is an
+            Erlang binary with a length not an integral number of bytes (8-bit). Anything
+            can be represented as a sequence of bytes can be made into an Erlang bitstr.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBitstr.#ctor(System.Byte[])">
+            Create a bitstr from a byte array
+            
+            @param bin
+                           the array of bytes from which to create the bitstr.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBitstr.#ctor(System.Byte[],System.Int32)">
+            Create a bitstr with pad bits from a byte array.
+            
+            @param bin
+                           the array of bytes from which to create the bitstr.
+            @param pad_bits
+                           the number of unused bits in the low end of the last byte.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBitstr.#ctor(Erlang.NET.OtpInputStream)">
+            Create a bitstr from a stream containing a bitstr encoded in Erlang
+            external format.
+            
+            @param buf
+                           the stream containing the encoded bitstr.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang bitstr.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBitstr.#ctor(System.Object)">
+            Create a bitstr from an arbitrary Java Object. The object must implement
+            java.io.Serializable or java.io.Externalizable.
+            
+            @param o
+                           the object to serialize and create this bitstr from.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBitstr.binaryValue">
+            Get the byte array from a bitstr, padded with zero bits in the little end
+            of the last byte.
+            
+            @return the byte array containing the bytes for this bitstr.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBitstr.size">
+            Get the size in whole bytes of the bitstr, rest bits in the last byte not
+            counted.
+            
+            @return the number of bytes contained in the bintstr.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBitstr.getObject">
+            Get the java Object from the bitstr. If the bitstr contains a serialized
+            Java object, then this method will recreate the object.
+            
+            
+            @return the java Object represented by this bitstr, or null if the bitstr
+                    does not represent a Java Object.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBitstr.ToString">
+            Get the string representation of this bitstr object. A bitstr is printed
+            as #Bin&lt;N&gt;, where N is the number of bytes contained in the object
+            or #bin&lt;N-M&gt; if there are M pad bits.
+            
+            @return the Erlang string representation of this bitstr.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBitstr.encode(Erlang.NET.OtpOutputStream)">
+            Convert this bitstr to the equivalent Erlang external representation.
+            
+            @param buf
+                           an output stream to which the encoded bitstr should be
+                           written.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBitstr.Equals(System.Object)">
+            Determine if two bitstrs are equal. Bitstrs are equal if they have the
+            same byte length and tail length, and the array of bytes is identical.
+            
+            @param o
+                           the bitstr to compare to.
+            
+            @return true if the bitstrs contain the same bits, false otherwise.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangBitstr.PadBits">
+            Get the number of pad bits in the last byte of the bitstr. The pad bits
+            are zero and in the little end.
+            
+            @return the number of pad bits in the bitstr.
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpConnection" -->
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.AbstractConnection" -->
+        <member name="M:Erlang.NET.AbstractConnection.#ctor(Erlang.NET.OtpLocalNode,Erlang.NET.BufferedTcpClient)">
+            Accept an incoming connection from a remote node. Used by {@link
+            OtpSelf#accept() OtpSelf.accept()} to create a connection based on data
+            received when handshaking with the peer node, when the remote node is the
+            connection intitiator.
+            
+            @exception java.io.IOException if it was not possible to connect to the
+            peer.
+            
+            @exception OtpAuthException if handshake resulted in an authentication
+            error
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.#ctor(Erlang.NET.OtpLocalNode,Erlang.NET.OtpPeer)">
+            Intiate and open a connection to a remote node.
+            
+            @exception java.io.IOException if it was not possible to connect to the
+            peer.
+            
+            @exception OtpAuthException if handshake resulted in an authentication
+            error.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.deliver(System.Exception)">
+            Deliver communication exceptions to the recipient.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.deliver(Erlang.NET.OtpMsg)">
+            Deliver messages to the recipient.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.sendBuf(Erlang.NET.OtpErlangPid,System.String,Erlang.NET.OtpOutputStream)">
+            Send a pre-encoded message to a named process on a remote node.
+            
+            @param dest
+                       the name of the remote process.
+            @param payload
+                       the encoded message to send.
+            
+            @exception java.io.IOException
+                           if the connection is not active or a communication error
+                           occurs.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.sendBuf(Erlang.NET.OtpErlangPid,Erlang.NET.OtpErlangPid,Erlang.NET.OtpOutputStream)">
+            Send a pre-encoded message to a process on a remote node.
+            
+            @param dest
+                       the Erlang PID of the remote process.
+            @param msg
+                       the encoded message to send.
+            
+            @exception java.io.IOException
+                           if the connection is not active or a communication error
+                           occurs.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.sendLink(Erlang.NET.OtpErlangPid,Erlang.NET.OtpErlangPid)">
+            Create a link between the local node and the specified process on the
+            remote node. If the link is still active when the remote process
+            terminates, an exit signal will be sent to this connection. Use
+            {@link #sendUnlink unlink()} to remove the link.
+            
+            @param dest
+                       the Erlang PID of the remote process.
+            
+            @exception java.io.IOException
+                           if the connection is not active or a communication error
+                           occurs.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.sendUnlink(Erlang.NET.OtpErlangPid,Erlang.NET.OtpErlangPid)">
+            Remove a link between the local node and the specified process on the
+            remote node. This method deactivates links created with {@link #sendLink
+            link()}.
+            
+            @param dest
+                       the Erlang PID of the remote process.
+            
+            @exception java.io.IOException
+                           if the connection is not active or a communication error
+                           occurs.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.sendExit2(Erlang.NET.OtpErlangPid,Erlang.NET.OtpErlangPid,Erlang.NET.OtpErlangObject)">
+            Send an exit signal to a remote process.
+            
+            @param dest
+                       the Erlang PID of the remote process.
+            @param reason
+                       an Erlang term describing the exit reason.
+            
+            @exception java.io.IOException
+                           if the connection is not active or a communication error
+                           occurs.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.setTraceLevel(System.Int32)">
+            <p>
+            Set the trace level for this connection. Normally tracing is off by
+            default unless System property OtpConnection.trace was set.
+            </p>
+            
+            <p>
+            The following levels are valid: 0 turns off tracing completely, 1 shows
+            ordinary send and receive messages, 2 shows control messages such as link
+            and unlink, 3 shows handshaking at connection setup, and 4 shows
+            communication with Epmd. Each level includes the information shown by the
+            lower ones.
+            </p>
+            
+            @param level
+                       the level to set.
+            
+            @return the previous trace level.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.getTraceLevel">
+            Get the trace level for this connection.
+            
+            @return the current trace level.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.close">
+            Close the connection to the remote node.
+        </member>
+        <member name="M:Erlang.NET.AbstractConnection.isConnected">
+            Determine if the connection is still alive. Note that this method only
+            reports the status of the connection, and that it is possible that there
+            are unread messages waiting in the receive queue.
+            
+            @return true if the connection is alive.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.msgCount">
+            Return the number of messages currently waiting in the receive queue for
+            this connection.
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Erlang.NET.OtpConnection.receive" -->
+        <!-- Badly formed XML comment ignored for member "M:Erlang.NET.OtpConnection.receive(System.Int64)" -->
+        <!-- Badly formed XML comment ignored for member "M:Erlang.NET.OtpConnection.receiveBuf" -->
+        <!-- Badly formed XML comment ignored for member "M:Erlang.NET.OtpConnection.receiveBuf(System.Int64)" -->
+        <member name="M:Erlang.NET.OtpConnection.receiveMsg">
+            Receive a messge complete with sender and recipient information.
+            
+            @return an {@link OtpMsg OtpMsg} containing the header information about
+                    the sender and recipient, as well as the actual message contents.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+            
+            @exception OtpErlangExit
+                               if an exit signal is received from a process on the
+                               peer node, or if the connection is lost for any
+                               reason.
+            
+            @exception OtpAuthException
+                               if the remote node sends a message containing an
+                               invalid cookie.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.receiveMsg(System.Int64)">
+            Receive a messge complete with sender and recipient information. This
+            method blocks at most for the specified time.
+            
+            @param timeout
+                           the time in milliseconds that this operation will block.
+                           Specify 0 to poll the queue.
+            
+            @return an {@link OtpMsg OtpMsg} containing the header information about
+                    the sender and recipient, as well as the actual message contents.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+            
+            @exception OtpErlangExit
+                               if an exit signal is received from a process on the
+                               peer node, or if the connection is lost for any
+                               reason.
+            
+            @exception OtpAuthException
+                               if the remote node sends a message containing an
+                               invalid cookie.
+            
+            @exception InterruptedException
+                               if no message if the method times out before a message
+                               becomes available.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.send(Erlang.NET.OtpErlangPid,Erlang.NET.OtpErlangObject)">
+            Send a message to a process on a remote node.
+            
+            @param dest
+                           the Erlang PID of the remote process.
+            @param msg
+                           the message to send.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.send(System.String,Erlang.NET.OtpErlangObject)">
+            Send a message to a named process on a remote node.
+            
+            @param dest
+                           the name of the remote process.
+            @param msg
+                           the message to send.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.sendBuf(System.String,Erlang.NET.OtpOutputStream)">
+            Send a pre-encoded message to a named process on a remote node.
+            
+            @param dest
+                           the name of the remote process.
+            @param payload
+                           the encoded message to send.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.sendBuf(Erlang.NET.OtpErlangPid,Erlang.NET.OtpOutputStream)">
+            Send a pre-encoded message to a process on a remote node.
+            
+            @param dest
+                           the Erlang PID of the remote process.
+            @param msg
+                           the encoded message to send.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.sendRPC(System.String,System.String,Erlang.NET.OtpErlangObject[])">
+            Send an RPC request to the remote Erlang node. This convenience function
+            creates the following message and sends it to 'rex' on the remote node:
+            
+            <pre>
+            { self, { call, Mod, Fun, Args, user } }
+            </pre>
+            
+            <p>
+            Note that this method has unpredicatble results if the remote node is not
+            an Erlang node.
+            </p>
+            
+            @param mod
+                           the name of the Erlang module containing the function to
+                           be called.
+            @param fun
+                           the name of the function to call.
+            @param args
+                           an array of Erlang terms, to be used as arguments to the
+                           function.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.sendRPC(System.String,System.String,Erlang.NET.OtpErlangList)">
+            Send an RPC request to the remote Erlang node. This convenience function
+            creates the following message and sends it to 'rex' on the remote node:
+            
+            <pre>
+            { self, { call, Mod, Fun, Args, user } }
+            </pre>
+            
+            <p>
+            Note that this method has unpredicatble results if the remote node is not
+            an Erlang node.
+            </p>
+            
+            @param mod
+                           the name of the Erlang module containing the function to
+                           be called.
+            @param fun
+                           the name of the function to call.
+            @param args
+                           a list of Erlang terms, to be used as arguments to the
+                           function.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.receiveRPC">
+            Receive an RPC reply from the remote Erlang node. This convenience
+            function receives a message from the remote node, and expects it to have
+            the following format:
+            
+            <pre>
+            { rex, Term }
+            </pre>
+            
+            @return the second element of the tuple if the received message is a
+                    two-tuple, otherwise null. No further error checking is
+                    performed.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+            
+            @exception OtpErlangExit
+                               if an exit signal is received from a process on the
+                               peer node.
+            
+            @exception OtpAuthException
+                               if the remote node sends a message containing an
+                               invalid cookie.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.link(Erlang.NET.OtpErlangPid)">
+            Create a link between the local node and the specified process on the
+            remote node. If the link is still active when the remote process
+            terminates, an exit signal will be sent to this connection. Use
+            {@link #unlink unlink()} to remove the link.
+            
+            @param dest
+                           the Erlang PID of the remote process.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.unlink(Erlang.NET.OtpErlangPid)">
+            Remove a link between the local node and the specified process on the
+            remote node. This method deactivates links created with
+            {@link #link link()}.
+            
+            @param dest
+                           the Erlang PID of the remote process.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+        </member>
+        <member name="M:Erlang.NET.OtpConnection.exit(Erlang.NET.OtpErlangPid,Erlang.NET.OtpErlangObject)">
+            Send an exit signal to a remote process.
+            
+            @param dest
+                           the Erlang PID of the remote process.
+            @param reason
+                           an Erlang term describing the exit reason.
+            
+            @exception java.io.IOException
+                               if the connection is not active or a communication
+                               error occurs.
+        </member>
+        <member name="P:Erlang.NET.OtpConnection.Peer">
+            Get information about the node at the peer end of this connection.
+            
+            @return the {@link OtpPeer Node} representing the peer node.
+        </member>
+        <member name="P:Erlang.NET.OtpConnection.Self">
+            Get information about the node at the local end of this connection.
+            
+            @return the {@link OtpSelf Node} representing the local node.
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpMbox" -->
+        <member name="M:Erlang.NET.OtpMbox.registerName(System.String)">
+            <p>
+            Register or remove a name for this mailbox. Registering a name for a
+            mailbox enables others to send messages without knowing the
+            {@link OtpErlangPid pid} of the mailbox. A mailbox can have at most one
+            name; if the mailbox already had a name, calling this method will
+            supercede that name.
+            </p>
+            
+            @param name
+                           the name to register for the mailbox. Specify null to
+                           unregister the existing name from this mailbox.
+            
+            @return true if the name was available, or false otherwise.
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.receive">
+            Block until a message arrives for this mailbox.
+            
+            @return an {@link OtpErlangObject OtpErlangObject} representing the body
+                    of the next message waiting in this mailbox.
+            
+            @exception OtpErlangDecodeException
+                               if the message can not be decoded.
+            
+            @exception OtpErlangExit
+                               if a linked {@link OtpErlangPid pid} has exited or has
+                               sent an exit signal to this mailbox.
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.receive(System.Int64)">
+            Wait for a message to arrive for this mailbox.
+            
+            @param timeout
+                           the time, in milliseconds, to wait for a message before
+                           returning null.
+            
+            @return an {@link OtpErlangObject OtpErlangObject} representing the body
+                    of the next message waiting in this mailbox.
+            
+            @exception OtpErlangDecodeException
+                               if the message can not be decoded.
+            
+            @exception OtpErlangExit
+                               if a linked {@link OtpErlangPid pid} has exited or has
+                               sent an exit signal to this mailbox.
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.receiveBuf">
+            Block until a message arrives for this mailbox.
+            
+            @return a byte array representing the still-encoded body of the next
+                    message waiting in this mailbox.
+            
+            @exception OtpErlangExit
+                               if a linked {@link OtpErlangPid pid} has exited or has
+                               sent an exit signal to this mailbox.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.receiveBuf(System.Int64)">
+            Wait for a message to arrive for this mailbox.
+            
+            @param timeout
+                           the time, in milliseconds, to wait for a message before
+                           returning null.
+            
+            @return a byte array representing the still-encoded body of the next
+                    message waiting in this mailbox.
+            
+            @exception OtpErlangExit
+                               if a linked {@link OtpErlangPid pid} has exited or has
+                               sent an exit signal to this mailbox.
+            
+            @exception InterruptedException
+                               if no message if the method times out before a message
+                               becomes available.
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.receiveMsg">
+            Block until a message arrives for this mailbox.
+            
+            @return an {@link OtpMsg OtpMsg} containing the header information as
+                    well as the body of the next message waiting in this mailbox.
+            
+            @exception OtpErlangExit
+                               if a linked {@link OtpErlangPid pid} has exited or has
+                               sent an exit signal to this mailbox.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.receiveMsg(System.Int64)">
+            Wait for a message to arrive for this mailbox.
+            
+            @param timeout
+                           the time, in milliseconds, to wait for a message.
+            
+            @return an {@link OtpMsg OtpMsg} containing the header information as
+                    well as the body of the next message waiting in this mailbox.
+            
+            @exception OtpErlangExit
+                               if a linked {@link OtpErlangPid pid} has exited or has
+                               sent an exit signal to this mailbox.
+            
+            @exception InterruptedException
+                               if no message if the method times out before a message
+                               becomes available.
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.send(Erlang.NET.OtpErlangPid,Erlang.NET.OtpErlangObject)">
+            Send a message to a remote {@link OtpErlangPid pid}, representing either
+            another {@link OtpMbox mailbox} or an Erlang process.
+            
+            @param to
+                           the {@link OtpErlangPid pid} identifying the intended
+                           recipient of the message.
+            
+            @param msg
+                           the body of the message to send.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.send(System.String,Erlang.NET.OtpErlangObject)">
+            Send a message to a named mailbox created from the same node as this
+            mailbox.
+            
+            @param name
+                           the registered name of recipient mailbox.
+            
+            @param msg
+                           the body of the message to send.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.send(System.String,System.String,Erlang.NET.OtpErlangObject)">
+            Send a message to a named mailbox created from another node.
+            
+            @param name
+                           the registered name of recipient mailbox.
+            
+            @param node
+                           the name of the remote node where the recipient mailbox is
+                           registered.
+            
+            @param msg
+                           the body of the message to send.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.exit(Erlang.NET.OtpErlangObject)">
+            Close this mailbox with the given reason.
+            
+            <p>
+            After this operation, the mailbox will no longer be able to receive
+            messages. Any delivered but as yet unretrieved messages can still be
+            retrieved however.
+            </p>
+            
+            <p>
+            If there are links from this mailbox to other {@link OtpErlangPid pids},
+            they will be broken when this method is called and exit signals will be
+            sent.
+            </p>
+            
+            @param reason
+                           an Erlang term describing the reason for the exit.
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Erlang.NET.OtpMbox.exit(System.String)" -->
+        <member name="M:Erlang.NET.OtpMbox.exit(Erlang.NET.OtpErlangPid,Erlang.NET.OtpErlangObject)">
+            <p>
+            Send an exit signal to a remote {@link OtpErlangPid pid}. This method
+            does not cause any links to be broken, except indirectly if the remote
+            {@link OtpErlangPid pid} exits as a result of this exit signal.
+            </p>
+            
+            @param to
+                           the {@link OtpErlangPid pid} to which the exit signal
+                           should be sent.
+            
+            @param reason
+                           an Erlang term indicating the reason for the exit.
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.exit(Erlang.NET.OtpErlangPid,System.String)">
+            <p>
+            Equivalent to <code>exit(to, new
+            OtpErlangAtom(reason))</code>.
+            </p>
+            
+            @see #exit(OtpErlangPid, OtpErlangObject)
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.link(Erlang.NET.OtpErlangPid)">
+            <p>
+            Link to a remote mailbox or Erlang process. Links are idempotent, calling
+            this method multiple times will not result in more than one link being
+            created.
+            </p>
+            
+            <p>
+            If the remote process subsequently exits or the mailbox is closed, a
+            subsequent attempt to retrieve a message through this mailbox will cause
+            an {@link OtpErlangExit OtpErlangExit} exception to be raised. Similarly,
+            if the sending mailbox is closed, the linked mailbox or process will
+            receive an exit signal.
+            </p>
+            
+            <p>
+            If the remote process cannot be reached in order to set the link, the
+            exception is raised immediately.
+            </p>
+            
+            @param to
+                           the {@link OtpErlangPid pid} representing the object to
+                           link to.
+            
+            @exception OtpErlangExit
+                               if the {@link OtpErlangPid pid} referred to does not
+                               exist or could not be reached.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.unlink(Erlang.NET.OtpErlangPid)">
+            <p>
+            Remove a link to a remote mailbox or Erlang process. This method removes
+            a link created with {@link #link link()}. Links are idempotent; calling
+            this method once will remove all links between this mailbox and the
+            remote {@link OtpErlangPid pid}.
+            </p>
+            
+            @param to
+                           the {@link OtpErlangPid pid} representing the object to
+                           unlink from.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.ping(System.String,System.Int64)">
+            <p>
+            Create a connection to a remote node.
+            </p>
+            
+            <p>
+            Strictly speaking, this method is not necessary simply to set up a
+            connection, since connections are created automatically first time a
+            message is sent to a {@link OtpErlangPid pid} on the remote node.
+            </p>
+            
+            <p>
+            This method makes it possible to wait for a node to come up, however, or
+            check that a node is still alive.
+            </p>
+            
+            <p>
+            This method calls a method with the same name in {@link OtpNode#ping
+            Otpnode} but is provided here for convenience.
+            </p>
+            
+            @param node
+                           the name of the node to ping.
+            
+            @param timeout
+                           the time, in milliseconds, before reporting failure.
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.getNames">
+            <p>
+            Get a list of all known registered names on the same {@link OtpNode node}
+            as this mailbox.
+            </p>
+            
+            <p>
+            This method calls a method with the same name in {@link OtpNode#getNames
+            Otpnode} but is provided here for convenience.
+            </p>
+            
+            @return an array of Strings containing all registered names on this
+                    {@link OtpNode node}.
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.whereis(System.String)">
+            Determine the {@link OtpErlangPid pid} corresponding to a registered name
+            on this {@link OtpNode node}.
+            
+            <p>
+            This method calls a method with the same name in {@link OtpNode#whereis
+            Otpnode} but is provided here for convenience.
+            </p>
+            
+            @return the {@link OtpErlangPid pid} corresponding to the registered
+                    name, or null if the name is not known on this node.
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.close">
+            Close this mailbox.
+            
+            <p>
+            After this operation, the mailbox will no longer be able to receive
+            messages. Any delivered but as yet unretrieved messages can still be
+            retrieved however.
+            </p>
+            
+            <p>
+            If there are links from this mailbox to other {@link OtpErlangPid pids},
+            they will be broken when this method is called and exit signals with
+            reason 'normal' will be sent.
+            </p>
+            
+            <p>
+            This is equivalent to {@link #exit(String) exit("normal")}.
+            </p>
+        </member>
+        <member name="M:Erlang.NET.OtpMbox.Equals(System.Object)">
+            Determine if two mailboxes are equal.
+            
+            @return true if both Objects are mailboxes with the same identifying
+                    {@link OtpErlangPid pids}.
+        </member>
+        <member name="P:Erlang.NET.OtpMbox.Self">
+            <p>
+            Get the identifying {@link OtpErlangPid pid} associated with this
+            mailbox.
+            </p>
+            
+            <p>
+            The {@link OtpErlangPid pid} associated with this mailbox uniquely
+            identifies the mailbox and can be used to address the mailbox. You can
+            send the {@link OtpErlangPid pid} to a remote communicating part so that
+            he can know where to send his response.
+            </p>
+            
+            @return the self pid for this mailbox.
+        </member>
+        <member name="P:Erlang.NET.OtpMbox.Name">
+            Get the registered name of this mailbox.
+            
+            @return the registered name of this mailbox, or null if the mailbox had
+                    no registerd name.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangByte">
+            Provides a Java representation of Erlang integral types.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangLong">
+            Provides a Java representation of Erlang integral types. Erlang does not
+            distinguish between different integral types, however this class and its
+            subclasses {@link OtpErlangByte}, {@link OtpErlangChar},
+            {@link OtpErlangInt}, and {@link OtpErlangShort} attempt to map the Erlang
+            types onto the various Java integral types. Two additional classes,
+            {@link OtpErlangUInt} and {@link OtpErlangUShort} are provided for Corba
+            compatibility. See the documentation for IC for more information.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.#ctor(System.Int64)">
+            Create an Erlang integer from the given value.
+            
+            @param l
+                           the long value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.#ctor(Erlang.NET.BigInteger)">
+            Create an Erlang integer from the given value.
+            
+            @param val
+                           the long value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang integer from a stream containing an integer encoded in
+            Erlang external format.
+            
+            @param buf
+                           the stream containing the encoded value.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang integer.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.bigIntegerValue">
+            Get this number as a BigInteger.
+            
+            @return the value of this number, as a BigInteger.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.longValue">
+            Get this number as a long, or rather truncate all but the least
+            significant 64 bits from the 2's complement representation of this number
+            and return them as a long.
+            
+            @return the value of this number, as a long.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.isLong">
+            Determine if this value can be represented as a long without truncation.
+            
+            @return true if this value fits in a long, false otherwise.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.isULong">
+            Determine if this value can be represented as an unsigned long without
+            truncation, that is if the value is non-negative and its bit pattern
+            completely fits in a long.
+            
+            @return true if this value is non-negative and fits in a long false
+                    otherwise.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.bitLength">
+            Returns the number of bits in the minimal two's-complement representation
+            of this BigInteger, excluding a sign bit.
+            
+            @return number of bits in the minimal two's-complement representation of
+                    this BigInteger, excluding a sign bit.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.signum">
+            Return the signum function of this object.
+            
+            @return -1, 0 or 1 as the value is negative, zero or positive.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.intValue">
+            Get this number as an int.
+            
+            @return the value of this number, as an int.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as an int.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.uIntValue">
+            Get this number as a non-negative int.
+            
+            @return the value of this number, as an int.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as an int,
+                               or if the value is negative.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.shortValue">
+            Get this number as a short.
+            
+            @return the value of this number, as a short.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as a
+                               short.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.uShortValue">
+            Get this number as a non-negative short.
+            
+            @return the value of this number, as a short.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as a
+                               short, or if the value is negative.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.charValue">
+            Get this number as a char.
+            
+            @return the char value of this number.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as a char.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.byteValue">
+            Get this number as a byte.
+            
+            @return the byte value of this number.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as a byte.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.ToString">
+            Get the string representation of this number.
+            
+            @return the string representation of this number.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.encode(Erlang.NET.OtpOutputStream)">
+            Convert this number to the equivalent Erlang external representation.
+            
+            @param buf
+                           an output stream to which the encoded number should be
+                           written.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangLong.Equals(System.Object)">
+            Determine if two numbers are equal. Numbers are equal if they contain the
+            same value.
+            
+            @param o
+                           the number to compare to.
+            
+            @return true if the numbers have the same value.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangByte.#ctor(System.Byte)">
+            Create an Erlang integer from the given value.
+            
+            @param b
+                           the byte value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangByte.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang integer from a stream containing an integer encoded in
+            Erlang external format.
+            
+            @param buf
+                           the stream containing the encoded value.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang integer.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as a byte.
+        </member>
+        <member name="T:Erlang.NET.OtpNodeStatus">
+            <p>
+            Provides a callback mechanism for receiving status change information about
+            other nodes in the system. Register an instance of this class (or a subclass)
+            with your {@link OtpNode OtpNode} when you wish to be notified about such
+            status changes and other similar events.
+            </p>
+            
+            <p>
+            This class provides default handers that ignore all events. Applications are
+            expected to extend this class in order to act on events that are deemed
+            interesting.
+            </p>
+            
+            <p>
+            <b> Note that this class is likely to change in the near future </b>
+            </p>
+        </member>
+        <member name="M:Erlang.NET.OtpNodeStatus.remoteStatus(System.String,System.Boolean,System.Object)">
+            Notify about remote node status changes.
+            
+            @param node
+                           the node whose status change is being indicated by this
+                           call.
+            
+            @param up
+                           true if the node has come up, false if it has gone down.
+            
+            @param info
+                           additional info that may be available, for example an
+                           exception that was raised causing the event in question
+                           (may be null).
+            
+        </member>
+        <member name="M:Erlang.NET.OtpNodeStatus.localStatus(System.String,System.Boolean,System.Object)">
+            Notify about local node exceptions.
+            
+            @param node
+                           the node whose status change is being indicated by this
+                           call.
+            
+            @param up
+                           true if the node has come up, false if it has gone down.
+            
+            @param info
+                           additional info that may be available, for example an
+                           exception that was raised causing the event in question
+                           (may be null).
+        </member>
+        <member name="M:Erlang.NET.OtpNodeStatus.connAttempt(System.String,System.Boolean,System.Object)">
+            Notify about failed connection attempts.
+            
+            @param node
+                           The name of the remote node
+            
+            @param incoming
+                           The direction of the connection attempt, i.e. true for
+                           incoming, false for outgoing.
+            
+            @param info
+                           additional info that may be available, for example an
+                           exception that was raised causing the event in question
+                           (may be null).
+        </member>
+        <member name="T:Erlang.NET.OtpErlangPid">
+            Provides a Java representation of Erlang PIDs. PIDs represent Erlang
+            processes and consist of a nodename and a number of integers.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPid.#ctor(Erlang.NET.OtpLocalNode)">
+            Create a unique Erlang PID belonging to the local node.
+            
+            @param self
+                           the local node.
+            
+            @deprecated use OtpLocalNode:createPid() instead
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPid.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang PID from a stream containing a PID encoded in Erlang
+            external format.
+            
+            @param buf
+                           the stream containing the encoded PID.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang PID.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPid.#ctor(System.String,System.Int32,System.Int32,System.Int32)">
+            Create an Erlang pid from its components.
+            
+            @param node
+                           the nodename.
+            
+            @param id
+                           an arbitrary number. Only the low order 15 bits will be
+                           used.
+            
+            @param serial
+                           another arbitrary number. Only the low order 13 bits will
+                           be used.
+            
+            @param creation
+                           yet another arbitrary number. Only the low order 2 bits
+                           will be used.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPid.ToString">
+            Get the string representation of the PID. Erlang PIDs are printed as
+            #Pid&lt;node.id.serial&gt;
+            
+            @return the string representation of the PID.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPid.encode(Erlang.NET.OtpOutputStream)">
+            Convert this PID to the equivalent Erlang external representation.
+            
+            @param buf
+                           an output stream to which the encoded PID should be
+                           written.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPid.Equals(System.Object)">
+            Determine if two PIDs are equal. PIDs are equal if their components are
+            equal.
+            
+            @param port
+                           the other PID to compare to.
+            
+            @return true if the PIDs are equal, false otherwise.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangPid.Serial">
+            Get the serial number from the PID.
+            
+            @return the serial number from the PID.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangPid.Id">
+            Get the id number from the PID.
+            
+            @return the id number from the PID.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangPid.Creation">
+            Get the creation number from the PID.
+            
+            @return the creation number from the PID.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangPid.Node">
+            Get the node name from the PID.
+            
+            @return the node name from the PID.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangDouble">
+            Provides a Java representation of Erlang floats and doubles. Erlang defines
+            only one floating point numeric type, however this class and its subclass
+            {@link OtpErlangFloat} are used to provide representations corresponding to
+            the Java types Double and Float.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangDouble.#ctor(System.Double)">
+            Create an Erlang float from the given double value.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangDouble.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang float from a stream containing a double encoded in
+            Erlang external format.
+            
+            @param buf
+                           the stream containing the encoded value.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang float.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangDouble.doubleValue">
+            Get the value, as a double.
+            
+            @return the value of this object, as a double.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangDouble.floatValue">
+            Get the value, as a float.
+            
+            @return the value of this object, as a float.
+            
+            @exception OtpErlangRangeException
+                               if the value cannot be represented as a float.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangDouble.ToString">
+            Get the string representation of this double.
+            
+            @return the string representation of this double.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangDouble.encode(Erlang.NET.OtpOutputStream)">
+            Convert this double to the equivalent Erlang external representation.
+            
+            @param buf
+                           an output stream to which the encoded value should be
+                           written.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangDouble.Equals(System.Object)">
+            Determine if two floats are equal. Floats are equal if they contain the
+            same value.
+            
+            @param o
+                           the float to compare to.
+            
+            @return true if the floats have the same value.
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpEpmd" -->
+        <member name="M:Erlang.NET.OtpEpmd.useEpmdPort(System.Int32)">
+            Set the port number to be used to contact the epmd process.
+            Only needed when the default port is not desired and system environment
+            variable ERL_EPMD_PORT can not be read (applet).
+        </member>
+        <member name="M:Erlang.NET.OtpEpmd.lookupPort(Erlang.NET.AbstractNode)">
+            Determine what port a node listens for incoming connections on.
+            
+            @return the listen port for the specified node, or 0 if the node was not
+                    registered with Epmd.
+            
+            @exception java.io.IOException
+                           if there was no response from the name server.
+        </member>
+        <member name="M:Erlang.NET.OtpEpmd.publishPort(Erlang.NET.OtpLocalNode)">
+            Register with Epmd, so that other nodes are able to find and connect to
+            it.
+            
+            @param node
+                       the server node that should be registered with Epmd.
+            
+            @return true if the operation was successful. False if the node was
+                    already registered.
+            
+            @exception java.io.IOException
+                           if there was no response from the name server.
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Erlang.NET.OtpEpmd.unPublishPort(Erlang.NET.OtpLocalNode)" -->
+        <member name="T:Erlang.NET.OtpEpmd.OtpPublishedNode">
+            Provides an preliminary implementation of epmd in C#
+        </member>
+        <member name="T:Erlang.NET.AbstractNode">
+            <p>
+            Represents an OTP node.
+            </p>
+            
+            <p>
+            About nodenames: Erlang nodenames consist of two components, an alivename and
+            a hostname separated by '@'. Additionally, there are two nodename formats:
+            short and long. Short names are of the form "alive@hostname", while long
+            names are of the form "alive@host.fully.qualified.domainname". Erlang has
+            special requirements regarding the use of the short and long formats, in
+            particular they cannot be mixed freely in a network of communicating nodes,
+            however Jinterface makes no distinction. See the Erlang documentation for
+            more information about nodenames.
+            </p>
+            
+            <p>
+            The constructors for the AbstractNode classes will create names exactly as
+            you provide them as long as the name contains '@'. If the string you provide
+            contains no '@', it will be treated as an alivename and the name of the local
+            host will be appended, resulting in a shortname. Nodenames longer than 255
+            characters will be truncated without warning.
+            </p>
+            
+            <p>
+            Upon initialization, this class attempts to read the file .erlang.cookie in
+            the user's home directory, and uses the trimmed first line of the file as the
+            default cookie by those constructors lacking a cookie argument. If for any
+            reason the file cannot be found or read, the default cookie will be set to
+            the empty string (""). The location of a user's home directory is determined
+            using the system property "user.home", which may not be automatically set on
+            all platforms.
+            </p>
+            
+            <p>
+            Instances of this class cannot be created directly, use one of the subclasses
+            instead.
+            </p>
+        </member>
+        <member name="M:Erlang.NET.AbstractNode.#ctor(System.String)">
+            Create a node with the given name and the default cookie.
+        </member>
+        <member name="M:Erlang.NET.AbstractNode.#ctor(System.String,System.String)">
+            Create a node with the given name and cookie.
+        </member>
+        <member name="M:Erlang.NET.AbstractNode.setCookie(System.String)">
+            Set the authorization cookie used by this node.
+            
+            @return the previous authorization cookie used by this node.
+        </member>
+        <member name="P:Erlang.NET.AbstractNode.Node">
+            Get the name of this node.
+            
+            @return the name of the node represented by this object.
+        </member>
+        <member name="P:Erlang.NET.AbstractNode.Host">
+            Get the hostname part of the nodename. Nodenames are composed of two
+            parts, an alivename and a hostname, separated by '@'. This method returns
+            the part of the nodename following the '@'.
+            
+            @return the hostname component of the nodename.
+        </member>
+        <member name="P:Erlang.NET.AbstractNode.Alive">
+            Get the alivename part of the hostname. Nodenames are composed of two
+            parts, an alivename and a hostname, separated by '@'. This method returns
+            the part of the nodename preceding the '@'.
+            
+            @return the alivename component of the nodename.
+        </member>
+        <member name="P:Erlang.NET.AbstractNode.Cookie">
+            Get the authorization cookie used by this node.
+            
+            @return the authorization cookie used by this node.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangUShort">
+            Provides a Java representation of Erlang integral types.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangUShort.#ctor(System.Int16)">
+            Create an Erlang integer from the given value.
+            
+            @param s
+                           the non-negative short value to use.
+            
+            @exception OtpErlangRangeException
+                               if the value is negative.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangUShort.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang integer from a stream containing an integer encoded in
+            Erlang external format.
+            
+            @param buf
+                           the stream containing the encoded value.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang integer.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as a
+                               short, or the value is negative.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangPort">
+            Provides a Java representation of Erlang ports.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPort.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang port from a stream containing a port encoded in Erlang
+            external format.
+            
+            @param buf
+                           the stream containing the encoded port.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang port.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPort.#ctor(System.String,System.Int32,System.Int32)">
+            Create an Erlang port from its components.
+            
+            @param node
+                           the nodename.
+            
+            @param id
+                           an arbitrary number. Only the low order 28 bits will be
+                           used.
+            
+            @param creation
+                           another arbitrary number. Only the low order 2 bits will
+                           be used.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPort.ToString">
+            Get the string representation of the port. Erlang ports are printed as
+            #Port&lt;node.id&gt;.
+            
+            @return the string representation of the port.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPort.encode(Erlang.NET.OtpOutputStream)">
+            Convert this port to the equivalent Erlang external representation.
+            
+            @param buf
+                           an output stream to which the encoded port should be
+                           written.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangPort.Equals(System.Object)">
+            Determine if two ports are equal. Ports are equal if their components are
+            equal.
+            
+            @param o
+                           the other port to compare to.
+            
+            @return true if the ports are equal, false otherwise.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangPort.Id">
+            Get the id number from the port.
+            
+            @return the id number from the port.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangPort.Creation">
+            Get the creation number from the port.
+            
+            @return the creation number from the port.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangPort.Node">
+            Get the node name from the port.
+            
+            @return the node name from the port.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangChar">
+            Provides a Java representation of Erlang integral types.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangChar.#ctor(System.Char)">
+            Create an Erlang integer from the given value.
+            
+            @param c
+                           the char value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangChar.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang integer from a stream containing an integer encoded in
+            Erlang external format.
+            
+            @param buf
+                           the stream containing the encoded value.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang integer.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as a char.
+        </member>
+        <member name="T:Erlang.NET.OtpCookedConnection">
+            <p>
+            Maintains a connection between a Java process and a remote Erlang, Java or C
+            node. The object maintains connection state and allows data to be sent to and
+            received from the peer.
+            </p>
+            
+            <p>
+            Once a connection is established between the local node and a remote node,
+            the connection object can be used to send and receive messages between the
+            nodes.
+            </p>
+            
+            <p>
+            The various receive methods are all blocking and will return only when a
+            valid message has been received or an exception is raised.
+            </p>
+            
+            <p>
+            If an exception occurs in any of the methods in this class, the connection
+            will be closed and must be reopened in order to resume communication with the
+            peer.
+            </p>
+            
+            <p>
+            The message delivery methods in this class deliver directly to
+            {@link OtpMbox mailboxes} in the {@link OtpNode OtpNode} class.
+            </p>
+            
+            <p>
+            It is not possible to create an instance of this class directly.
+            OtpCookedConnection objects are created as needed by the underlying mailbox
+            mechanism.
+            </p>
+        </member>
+        <member name="T:Erlang.NET.OtpPeer">
+            Represents a remote OTP node. It acts only as a container for the nodename
+            and other node-specific information that is needed by the
+            {@link OtpConnection} class.
+        </member>
+        <member name="M:Erlang.NET.OtpPeer.#ctor(System.String)">
+            Create a peer node.
+            
+            @param node
+                           the name of the node.
+        </member>
+        <member name="M:Erlang.NET.OtpPeer.connect(Erlang.NET.OtpSelf)">
+            Create a connection to a remote node.
+            
+            @param self
+                           the local node from which you wish to connect.
+            
+            @return a connection to the remote node.
+            
+            @exception java.net.UnknownHostException
+                               if the remote host could not be found.
+            
+            @exception java.io.IOException
+                               if it was not possible to connect to the remote node.
+            
+            @exception OtpAuthException
+                               if the connection was refused by the remote node.
+            
+            @deprecated Use the corresponding method in {@link OtpSelf} instead.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangString">
+            Provides a Java representation of Erlang strings.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangString.#ctor(System.String)">
+            Create an Erlang string from the given string.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangString.#ctor(Erlang.NET.OtpErlangList)">
+             Create an Erlang string from a list of integers.
+             
+             @return an Erlang string with Unicode code units.
+            
+             @throws OtpErlangException
+                            for non-proper and non-integer lists.
+             @throws OtpErlangRangeException
+                            if an integer in the list is not
+                            a valid Unicode code point according to Erlang.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangString.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang string from a stream containing a string encoded in
+            Erlang external format.
+            
+            @param buf
+                       the stream containing the encoded string.
+            
+            @exception OtpErlangDecodeException
+                           if the buffer does not contain a valid external
+                           representation of an Erlang string.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangString.stringValue">
+            Get the actual string contained in this object.
+            
+            @return the raw string contained in this object, without regard to Erlang
+                    quoting rules.
+            
+            @see #toString
+        </member>
+        <member name="M:Erlang.NET.OtpErlangString.ToString">
+            Get the printable version of the string contained in this object.
+            
+            @return the string contained in this object, quoted.
+            
+            @see #stringValue
+        </member>
+        <member name="M:Erlang.NET.OtpErlangString.encode(Erlang.NET.OtpOutputStream)">
+            Convert this string to the equivalent Erlang external representation.
+            
+            @param buf
+                       an output stream to which the encoded string should be
+                       written.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangString.Equals(System.Object)">
+            Determine if two strings are equal. They are equal if they represent the
+            same sequence of characters. This method can be used to compare
+            OtpErlangStrings with each other and with Strings.
+            
+            @param o
+                       the OtpErlangString or String to compare to.
+            
+            @return true if the strings consist of the same sequence of characters,
+                    false otherwise.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangString.stringToCodePoints(System.String)">
+             Create Unicode code points from a String.
+             
+             @param  s
+                         a String to convert to an Unicode code point array
+            
+             @return the corresponding array of integers representing
+                     Unicode code points
+        </member>
+        <member name="M:Erlang.NET.OtpErlangString.isValidCodePoint(System.Int32)">
+             Validate a code point according to Erlang definition; Unicode 3.0.
+             That is; valid in the range U+0..U+10FFFF, but not in the range
+             U+D800..U+DFFF (surrogat pairs), nor U+FFFE..U+FFFF (non-characters).
+            
+             @param  cp
+                         the code point value to validate
+            
+             @return true if the code point is valid,
+                     false otherwise.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangString.newString(System.Byte[])">
+             Construct a String from a Latin-1 (ISO-8859-1) encoded byte array,
+             if Latin-1 is available, otherwise use the default encoding. 
+            
+        </member>
+        <member name="T:Erlang.NET.OtpErlangShort">
+            Provides a Java representation of Erlang integral types.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangShort.#ctor(System.Int16)">
+            Create an Erlang integer from the given value.
+            
+            @param s
+                           the short value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangShort.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang integer from a stream containing an integer encoded in
+            Erlang external format.
+            
+            @param buf
+                           the stream containing the encoded value.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang integer.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as a
+                               short.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangRangeException">
+            Exception raised when an attempt is made to create an Erlang term with data
+            that is out of range for the term in question.
+            
+            @see OtpErlangByte
+            @see OtpErlangChar
+            @see OtpErlangInt
+            @see OtpErlangUInt
+            @see OtpErlangShort
+            @see OtpErlangUShort
+            @see OtpErlangLong
+        </member>
+        <member name="M:Erlang.NET.OtpErlangRangeException.#ctor(System.String)">
+            Provides a detailed message.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangBinary">
+            Provides a Java representation of Erlang binaries. Anything that can be
+            represented as a sequence of bytes can be made into an Erlang binary.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBinary.#ctor(System.Byte[])">
+            Create a binary from a byte array
+            
+            @param bin
+                           the array of bytes from which to create the binary.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBinary.#ctor(Erlang.NET.OtpInputStream)">
+            Create a binary from a stream containing a binary encoded in Erlang
+            external format.
+            
+            @param buf
+                           the stream containing the encoded binary.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang binary.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBinary.#ctor(System.Object)">
+            Create a binary from an arbitrary Java Object. The object must implement
+            java.io.Serializable or java.io.Externalizable.
+            
+            @param o
+                           the object to serialize and create this binary from.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangBinary.encode(Erlang.NET.OtpOutputStream)">
+            Convert this binary to the equivalent Erlang external representation.
+            
+            @param buf
+                           an output stream to which the encoded binary should be
+                           written.
+        </member>
+        <member name="T:Erlang.NET.OtpNode">
+            <p>
+            Represents a local OTP node. This class is used when you do not wish to
+            manage connections yourself - outgoing connections are established as needed,
+            and incoming connections accepted automatically. This class supports the use
+            of a mailbox API for communication, while management of the underlying
+            communication mechanism is automatic and hidden from the application
+            programmer.
+            </p>
+            
+            <p>
+            Once an instance of this class has been created, obtain one or more mailboxes
+            in order to send or receive messages. The first message sent to a given node
+            will cause a connection to be set up to that node. Any messages received will
+            be delivered to the appropriate mailboxes.
+            </p>
+            
+            <p>
+            To shut down the node, call {@link #close close()}. This will prevent the
+            node from accepting additional connections and it will cause all existing
+            connections to be closed. Any unread messages in existing mailboxes can still
+            be read, however no new messages will be delivered to the mailboxes.
+            </p>
+            
+            <p>
+            Note that the use of this class requires that Epmd (Erlang Port Mapper
+            Daemon) is running on each cooperating host. This class does not start Epmd
+            automatically as Erlang does, you must start it manually or through some
+            other means. See the Erlang documentation for more information about this.
+            </p>
+        </member>
+        <member name="T:Erlang.NET.OtpLocalNode">
+            This class represents local node types. It is used to group the node types
+            {@link OtpNode OtpNode} and {@link OtpSelf OtpSelf}.
+        </member>
+        <member name="M:Erlang.NET.OtpLocalNode.#ctor(System.String)">
+            Create a node with the given name and the default cookie.
+        </member>
+        <member name="M:Erlang.NET.OtpLocalNode.#ctor(System.String,System.String)">
+            Create a node with the given name and cookie.
+        </member>
+        <member name="M:Erlang.NET.OtpLocalNode.setEpmd(System.Net.Sockets.TcpClient)">
+            Set the Epmd socket after publishing this nodes listen port to Epmd.
+            
+            @param s
+                           The socket connecting this node to Epmd.
+        </member>
+        <member name="M:Erlang.NET.OtpLocalNode.getEpmd">
+            Get the Epmd socket.
+            
+            @return The socket connecting this node to Epmd.
+        </member>
+        <member name="M:Erlang.NET.OtpLocalNode.closeEpmd">
+            Close the Epmd socket.
+            
+            @param s
+                           The socket connecting this node to Epmd.
+        </member>
+        <member name="M:Erlang.NET.OtpLocalNode.createPid">
+            Create an Erlang {@link OtpErlangPid pid}. Erlang pids are based upon
+            some node specific information; this method creates a pid using the
+            information in this node. Each call to this method produces a unique pid.
+            
+            @return an Erlang pid.
+        </member>
+        <member name="M:Erlang.NET.OtpLocalNode.createPort">
+            Create an Erlang {@link OtpErlangPort port}. Erlang ports are based upon
+            some node specific information; this method creates a port using the
+            information in this node. Each call to this method produces a unique
+            port. It may not be meaningful to create a port in a non-Erlang
+            environment, but this method is provided for completeness.
+            
+            @return an Erlang port.
+        </member>
+        <member name="M:Erlang.NET.OtpLocalNode.createRef">
+            Create an Erlang {@link OtpErlangRef reference}. Erlang references are
+            based upon some node specific information; this method creates a
+            reference using the information in this node. Each call to this method
+            produces a unique reference.
+            
+            @return an Erlang reference.
+        </member>
+        <member name="P:Erlang.NET.OtpLocalNode.Port">
+            Get the port number used by this node.
+            
+            @return the port number this server node is accepting connections on.
+        </member>
+        <member name="M:Erlang.NET.OtpNode.#ctor(System.String)">
+            <p>
+            Create a node using the default cookie. The default cookie is found by
+            reading the first line of the .erlang.cookie file in the user's home
+            directory. The home directory is obtained from the System property
+            "user.home".
+            </p>
+            
+            <p>
+            If the file does not exist, an empty string is used. This method makes no
+            attempt to create the file.
+            </p>
+            
+            @param node
+                       the name of this node.
+            
+            @exception IOException
+                           if communication could not be initialized.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpNode.#ctor(System.String,System.String)">
+            Create a node.
+            
+            @param node
+                       the name of this node.
+            
+            @param cookie
+                       the authorization cookie that will be used by this node when
+                       it communicates with other nodes.
+            
+            @exception IOException
+                           if communication could not be initialized.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpNode.#ctor(System.String,System.String,System.Int32)">
+            Create a node.
+            
+            @param node
+                       the name of this node.
+            
+            @param cookie
+                       the authorization cookie that will be used by this node when
+                       it communicates with other nodes.
+            
+            @param port
+                       the port number you wish to use for incoming connections.
+                       Specifying 0 lets the system choose an available port.
+            
+            @exception IOException
+                           if communication could not be initialized.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpNode.close">
+            Close the node. Unpublish the node from Epmd (preventing new connections)
+            and close all existing connections.
+        </member>
+        <member name="M:Erlang.NET.OtpNode.createMbox(System.Boolean)">
+            Create an unnamed {@link OtpMbox mailbox} that can be used to send and
+            receive messages with other, similar mailboxes and with Erlang processes.
+            Messages can be sent to this mailbox by using its associated
+            {@link OtpMbox#self pid}.
+            
+            @return a mailbox.
+        </member>
+        <member name="M:Erlang.NET.OtpNode.closeMbox(Erlang.NET.OtpMbox)">
+            Close the specified mailbox with reason 'normal'.
+            
+            @param mbox
+                       the mailbox to close.
+            
+                       <p>
+                       After this operation, the mailbox will no longer be able to
+                       receive messages. Any delivered but as yet unretrieved
+                       messages can still be retrieved however.
+                       </p>
+            
+                       <p>
+                       If there are links from the mailbox to other
+                       {@link OtpErlangPid pids}, they will be broken when this
+                       method is called and exit signals with reason 'normal' will be
+                       sent.
+                       </p>
+            
+        </member>
+        <member name="M:Erlang.NET.OtpNode.closeMbox(Erlang.NET.OtpMbox,Erlang.NET.OtpErlangObject)">
+            Close the specified mailbox with the given reason.
+            
+            @param mbox
+                       the mailbox to close.
+            @param reason
+                       an Erlang term describing the reason for the termination.
+            
+                       <p>
+                       After this operation, the mailbox will no longer be able to
+                       receive messages. Any delivered but as yet unretrieved
+                       messages can still be retrieved however.
+                       </p>
+            
+                       <p>
+                       If there are links from the mailbox to other
+                       {@link OtpErlangPid pids}, they will be broken when this
+                       method is called and exit signals with the given reason will
+                       be sent.
+                       </p>
+            
+        </member>
+        <member name="M:Erlang.NET.OtpNode.createMbox(System.String,System.Boolean)">
+            Create an named mailbox that can be used to send and receive messages
+            with other, similar mailboxes and with Erlang processes. Messages can be
+            sent to this mailbox by using its registered name or the associated
+            {@link OtpMbox#self pid}.
+            
+            @param name
+                       a name to register for this mailbox. The name must be unique
+                       within this OtpNode.
+            
+            @return a mailbox, or null if the name was already in use.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpNode.registerName(System.String,Erlang.NET.OtpMbox)">
+            <p>
+            Register or remove a name for the given mailbox. Registering a name for a
+            mailbox enables others to send messages without knowing the
+            {@link OtpErlangPid pid} of the mailbox. A mailbox can have at most one
+            name; if the mailbox already had a name, calling this method will
+            supercede that name.
+            </p>
+            
+            @param name
+                       the name to register for the mailbox. Specify null to
+                       unregister the existing name from this mailbox.
+            
+            @param mbox
+                       the mailbox to associate with the name.
+            
+            @return true if the name was available, or false otherwise.
+        </member>
+        <member name="M:Erlang.NET.OtpNode.getNames">
+            Get a list of all known registered names on this node.
+            
+            @return an array of Strings, containins all known registered names on
+                    this node.
+        </member>
+        <member name="M:Erlang.NET.OtpNode.whereis(System.String)">
+            Determine the {@link OtpErlangPid pid} corresponding to a registered name
+            on this node.
+            
+            @return the {@link OtpErlangPid pid} corresponding to the registered
+                    name, or null if the name is not known on this node.
+        </member>
+        <member name="M:Erlang.NET.OtpNode.registerStatusHandler(Erlang.NET.OtpNodeStatus)">
+            Register interest in certain system events. The {@link OtpNodeStatus
+            OtpNodeStatus} handler object contains callback methods, that will be
+            called when certain events occur.
+            
+            @param handler
+                       the callback object to register. To clear the handler, specify
+                       null as the handler to use.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpNode.ping(System.String,System.Int64)">
+            <p>
+            Determine if another node is alive. This method has the side effect of
+            setting up a connection to the remote node (if possible). Only a single
+            outgoing message is sent; the timeout is how long to wait for a response.
+            </p>
+            
+            <p>
+            Only a single attempt is made to connect to the remote node, so for
+            example it is not possible to specify an extremely long timeout and
+            expect to be notified when the node eventually comes up. If you wish to
+            wait for a remote node to be started, the following construction may be
+            useful:
+            </p>
+            
+            <pre>
+            // ping every 2 seconds until positive response
+            while (!me.ping(him, 2000))
+                ;
+            </pre>
+            
+            @param node
+                       the name of the node to ping.
+            
+            @param timeout
+                       the time, in milliseconds, to wait for response before
+                       returning false.
+            
+            @return true if the node was alive and the correct ping response was
+                    returned. false if the correct response was not returned on time.
+        </member>
+        <member name="T:Erlang.NET.OtpExternal">
+            Provides a collection of constants used when encoding and decoding Erlang
+            terms.
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.smallIntTag">
+            The tag used for small integers 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.intTag">
+            The tag used for integers 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.floatTag">
+            The tag used for floating point numbers 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.atomTag">
+            The tag used for atoms 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.refTag">
+            The tag used for old stype references 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.portTag">
+            The tag used for ports 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.pidTag">
+            The tag used for PIDs 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.smallTupleTag">
+            The tag used for small tuples 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.largeTupleTag">
+            The tag used for large tuples 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.nilTag">
+            The tag used for empty lists 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.stringTag">
+            The tag used for strings and lists of small integers 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.listTag">
+            The tag used for non-empty lists 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.binTag">
+            The tag used for binaries 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.bitBinTag">
+            The tag used for bitstrs 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.smallBigTag">
+            The tag used for small bignums 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.largeBigTag">
+            The tag used for large bignums 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.newFunTag">
+            The tag used for old new Funs 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.externalFunTag">
+            The tag used for external Funs (M:F/A) 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.newRefTag">
+            The tag used for new style references 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.funTag">
+            The tag used for old Funs 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.compressedTag">
+            The tag used for compressed terms 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.versionTag">
+            The version number used to mark serialized Erlang terms 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.erlMax">
+            The largest value that can be encoded as an integer 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.erlMin">
+            The smallest value that can be encoded as an integer 
+        </member>
+        <member name="F:Erlang.NET.OtpExternal.maxAtomLength">
+            The longest allowed Erlang atom 
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpErlangList" -->
+        <member name="M:Erlang.NET.OtpErlangList.#ctor">
+            Create an empty list.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.#ctor(System.String)">
+            Create a list of Erlang integers representing Unicode codePoints.
+            This method does not check if the string contains valid code points.
+            
+            @param str
+                       the characters from which to create the list.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.#ctor(Erlang.NET.OtpErlangObject)">
+            Create a list containing one element.
+            
+            @param elem
+                       the elememet to make the list from.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.#ctor(Erlang.NET.OtpErlangObject[])">
+            Create a list from an array of arbitrary Erlang terms.
+            
+            @param elems
+                       the array of terms from which to create the list.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.#ctor(Erlang.NET.OtpErlangObject[],Erlang.NET.OtpErlangObject)">
+            Create a list from an array of arbitrary Erlang terms. Tail can be
+            specified, if not null, the list will not be proper.
+            
+            @param elems
+                       array of terms from which to create the list
+            @param lastTail
+            @throws OtpErlangException
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.#ctor(Erlang.NET.OtpErlangObject[],System.Int32,System.Int32)">
+            Create a list from an array of arbitrary Erlang terms.
+            
+            @param elems
+                       the array of terms from which to create the list.
+            @param start
+                       the offset of the first term to insert.
+            @param count
+                       the number of terms to insert.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.#ctor(Erlang.NET.OtpInputStream)">
+            Create a list from a stream containing an list encoded in Erlang external
+            format.
+            
+            @param buf
+                       the stream containing the encoded list.
+            
+            @exception OtpErlangDecodeException
+                           if the buffer does not contain a valid external
+                           representation of an Erlang list.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.arity">
+            Get the arity of the list.
+            
+            @return the number of elements contained in the list.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.elementAt(System.Int32)">
+            Get the specified element from the list.
+            
+            @param i
+                       the index of the requested element. List elements are numbered
+                       as array elements, starting at 0.
+            
+            @return the requested element, of null if i is not a valid element index.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.elements">
+            Get all the elements from the list as an array.
+            
+            @return an array containing all of the list's elements.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.ToString">
+            Get the string representation of the list.
+            
+            @return the string representation of the list.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.encode(Erlang.NET.OtpOutputStream)">
+            Convert this list to the equivalent Erlang external representation. Note
+            that this method never encodes lists as strings, even when it is possible
+            to do so.
+            
+            @param buf
+                       An output stream to which the encoded list should be written.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.Equals(System.Object)">
+            Determine if two lists are equal. Lists are equal if they have the same
+            arity and all of the elements are equal.
+            
+            @param o
+                       the list to compare to.
+            
+            @return true if the lists have the same arity and all the elements are
+                    equal.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.isProper">
+            @return true if the list is proper, i.e. the last tail is nil
+        </member>
+        <member name="M:Erlang.NET.OtpErlangList.stringValue">
+             Convert a list of integers into a Unicode string,
+             interpreting each integer as a Unicode code point value.
+             
+             @return A java.lang.String object created through its
+                     constructor String(int[], int, int).
+            
+             @exception OtpErlangException
+                                for non-proper and non-integer lists.
+            
+             @exception OtpErlangRangeException
+                                if any integer does not fit into a Java int.
+            
+             @exception java.security.InvalidParameterException
+                                if any integer is not within the Unicode range.
+            
+             @see String#String(int[], int, int)
+            
+        </member>
+        <member name="F:Erlang.NET.OtpErlangList.Itr.start">
+            Index of element to be returned by subsequent call to next.
+        </member>
+        <member name="T:Erlang.NET.GenericQueue">
+            This class implements a generic FIFO queue. There is no upper bound on the
+            length of the queue, items are linked.
+        </member>
+        <member name="M:Erlang.NET.GenericQueue.#ctor">
+            Create an empty queue 
+        </member>
+        <member name="M:Erlang.NET.GenericQueue.flush">
+            Clear a queue 
+        </member>
+        <member name="M:Erlang.NET.GenericQueue.put(System.Object)">
+            Add an object to the tail of the queue.
+            
+            @param o
+                           Object to insert in the queue
+        </member>
+        <member name="M:Erlang.NET.GenericQueue.get">
+            Retrieve an object from the head of the queue, or block until one
+            arrives.
+            
+            @return The object at the head of the queue.
+        </member>
+        <member name="M:Erlang.NET.GenericQueue.get(System.Int64)">
+            Retrieve an object from the head of the queue, blocking until one arrives
+            or until timeout occurs.
+            
+            @param timeout
+                           Maximum time to block on queue, in ms. Use 0 to poll the
+                           queue.
+            
+            @exception InterruptedException
+                               if the operation times out.
+            
+            @return The object at the head of the queue, or null if none arrived in
+                    time.
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpSelf" -->
+        <member name="M:Erlang.NET.OtpSelf.#ctor(System.String)">
+            <p>
+            Create a self node using the default cookie. The default cookie is found
+            by reading the first line of the .erlang.cookie file in the user's home
+            directory. The home directory is obtained from the System property
+            "user.home".
+            </p>
+            
+            <p>
+            If the file does not exist, an empty string is used. This method makes no
+            attempt to create the file.
+            </p>
+            
+            @param node
+                           the name of this node.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpSelf.#ctor(System.String,System.String)">
+            Create a self node.
+            
+            @param node
+                           the name of this node.
+            
+            @param cookie
+                           the authorization cookie that will be used by this node
+                           when it communicates with other nodes.
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Erlang.NET.OtpSelf.publishPort" -->
+        <member name="M:Erlang.NET.OtpSelf.unPublishPort">
+            Unregister the server node's name and port number from the Erlang port
+            mapper, thus preventing any new connections from remote nodes.
+        </member>
+        <member name="M:Erlang.NET.OtpSelf.accept">
+            Accept an incoming connection from a remote node. A call to this method
+            will block until an incoming connection is at least attempted.
+            
+            @return a connection to a remote node.
+            
+            @exception java.io.IOException
+                               if a remote node attempted to connect but no common
+                               protocol was found.
+            
+            @exception OtpAuthException
+                               if a remote node attempted to connect, but was not
+                               authorized to connect.
+        </member>
+        <member name="M:Erlang.NET.OtpSelf.connect(Erlang.NET.OtpPeer)">
+            Open a connection to a remote node.
+            
+            @param other
+                           the remote node to which you wish to connect.
+            
+            @return a connection to the remote node.
+            
+            @exception java.net.UnknownHostException
+                               if the remote host could not be found.
+            
+            @exception java.io.IOException
+                               if it was not possible to connect to the remote node.
+            
+            @exception OtpAuthException
+                               if the connection was refused by the remote node.
+        </member>
+        <member name="P:Erlang.NET.OtpSelf.Pid">
+            Get the Erlang PID that will be used as the sender id in all "anonymous"
+            messages sent by this node. Anonymous messages are those sent via send
+            methods in {@link OtpConnection OtpConnection} that do not specify a
+            sender.
+            
+            @return the Erlang PID that will be used as the sender id in all
+                    anonymous messages sent by this node.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangUInt">
+            Provides a Java representation of Erlang integral types.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangUInt.#ctor(System.Int32)">
+            Create an Erlang integer from the given value.
+            
+            @param i
+                           the non-negative int value to use.
+            
+            @exception OtpErlangRangeException
+                               if the value is negative.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangUInt.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang integer from a stream containing an integer encoded in
+            Erlang external format.
+            
+            @param buf
+                           the stream containing the encoded value.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang integer.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as an int,
+                               or the value is negative.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangDecodeException">
+            <summary>
+            Exception raised when an attempt is made to create an Erlang term by decoding
+            a sequence of bytes that does not represent the type of term that was
+            requested.
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:Erlang.NET.OtpErlangDecodeException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Erlang.NET.OtpErlangDecodeException"/> class.
+            </summary>
+            <param name="msg">The MSG.</param>
+            <remarks></remarks>
+        </member>
+        <member name="M:Erlang.NET.OtpErlangDecodeException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Erlang.NET.OtpErlangDecodeException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="cause">The cause.</param>
+            <remarks></remarks>
+        </member>
+        <member name="T:Erlang.NET.OtpErlangRef">
+            Provides a Java representation of Erlang refs. There are two styles of Erlang
+            refs, old style (one id value) and new style (array of id values). This class
+            manages both types.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangRef.#ctor(Erlang.NET.OtpLocalNode)">
+            Create a unique Erlang ref belonging to the local node.
+            
+            @param self
+                           the local node.
+            
+            @deprecated use OtpLocalNode:createRef() instead
+        </member>
+        <member name="M:Erlang.NET.OtpErlangRef.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang ref from a stream containing a ref encoded in Erlang
+            external format.
+            
+            @param buf
+                           the stream containing the encoded ref.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang ref.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangRef.#ctor(System.String,System.Int32,System.Int32)">
+            Create an old style Erlang ref from its components.
+            
+            @param node
+                           the nodename.
+            
+            @param id
+                           an arbitrary number. Only the low order 18 bits will be
+                           used.
+            
+            @param creation
+                           another arbitrary number. Only the low order 2 bits will
+                           be used.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangRef.#ctor(System.String,System.Int32[],System.Int32)">
+            Create a new style Erlang ref from its components.
+            
+            @param node
+                           the nodename.
+            
+            @param ids
+                           an array of arbitrary numbers. Only the low order 18 bits
+                           of the first number will be used. If the array contains
+                           only one number, an old style ref will be written instead.
+                           At most three numbers will be read from the array.
+            
+            @param creation
+                           another arbitrary number. Only the low order 2 bits will
+                           be used.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangRef.isNewRef">
+            Determine whether this is a new style ref.
+            
+            @return true if this ref is a new style ref, false otherwise.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangRef.ToString">
+            Get the string representation of the ref. Erlang refs are printed as
+            #Ref&lt;node.id&gt;
+            
+            @return the string representation of the ref.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangRef.encode(Erlang.NET.OtpOutputStream)">
+            Convert this ref to the equivalent Erlang external representation.
+            
+            @param buf
+                           an output stream to which the encoded ref should be
+                           written.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangRef.Equals(System.Object)">
+            Determine if two refs are equal. Refs are equal if their components are
+            equal. New refs and old refs are considered equal if the node, creation
+            and first id numnber are equal.
+            
+            @param o
+                           the other ref to compare to.
+            
+            @return true if the refs are equal, false otherwise.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangRef.doHashCode">
+             Compute the hashCode value for a given ref. This function is compatible
+             with equal.
+            
+             @return the hashCode of the node.
+            
+        </member>
+        <member name="P:Erlang.NET.OtpErlangRef.Id">
+            Get the id number from the ref. Old style refs have only one id number.
+            If this is a new style ref, the first id number is returned.
+            
+            @return the id number from the ref.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangRef.Ids">
+            Get the array of id numbers from the ref. If this is an old style ref,
+            the array is of length 1. If this is a new style ref, the array has
+            length 3.
+            
+            @return the array of id numbers from the ref.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangRef.Creation">
+            Get the creation number from the ref.
+            
+            @return the creation number from the ref.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangRef.Node">
+            Get the node name from the ref.
+            
+            @return the node name from the ref.
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpErlangTuple" -->
+        <member name="M:Erlang.NET.OtpErlangTuple.#ctor(Erlang.NET.OtpErlangObject)">
+            Create a unary tuple containing the given element.
+            
+            @param elem
+                           the element to create the tuple from.
+            
+            @exception java.lang.IllegalArgumentException
+                               if the element is null.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangTuple.#ctor(Erlang.NET.OtpErlangObject[])">
+            Create a tuple from an array of terms.
+            
+            @param elems
+                           the array of terms to create the tuple from.
+            
+            @exception java.lang.IllegalArgumentException
+                               if the array is empty (null) or contains null
+                               elements.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangTuple.#ctor(Erlang.NET.OtpErlangObject[],System.Int32,System.Int32)">
+            Create a tuple from an array of terms.
+            
+            @param elems
+                           the array of terms to create the tuple from.
+            @param start
+                           the offset of the first term to insert.
+            @param count
+                           the number of terms to insert.
+            
+            @exception java.lang.IllegalArgumentException
+                               if the array is empty (null) or contains null
+                               elements.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangTuple.#ctor(Erlang.NET.OtpInputStream)">
+            Create a tuple from a stream containing an tuple encoded in Erlang
+            external format.
+            
+            @param buf
+                           the stream containing the encoded tuple.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang tuple.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangTuple.arity">
+            Get the arity of the tuple.
+            
+            @return the number of elements contained in the tuple.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangTuple.elementAt(System.Int32)">
+            Get the specified element from the tuple.
+            
+            @param i
+                           the index of the requested element. Tuple elements are
+                           numbered as array elements, starting at 0.
+            
+            @return the requested element, of null if i is not a valid element index.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangTuple.elements">
+            Get all the elements from the tuple as an array.
+            
+            @return an array containing all of the tuple's elements.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangTuple.ToString">
+            Get the string representation of the tuple.
+            
+            @return the string representation of the tuple.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangTuple.encode(Erlang.NET.OtpOutputStream)">
+            Convert this tuple to the equivalent Erlang external representation.
+            
+            @param buf
+                           an output stream to which the encoded tuple should be
+                           written.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangTuple.Equals(System.Object)">
+            Determine if two tuples are equal. Tuples are equal if they have the same
+            arity and all of the elements are equal.
+            
+            @param o
+                           the tuple to compare to.
+            
+            @return true if the tuples have the same arity and all the elements are
+                    equal.
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpErlangExit" -->
+        <member name="M:Erlang.NET.OtpErlangExit.#ctor(Erlang.NET.OtpErlangObject)">
+            Create an OtpErlangExit exception with the given reason.
+            
+            @param reason
+                           the reason this exit signal has been sent.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangExit.#ctor(System.String)">
+            <p>
+            Equivalent to <code>OtpErlangExit(new
+            OtpErlangAtom(reason)</code>.
+            </p>
+            
+            @param reason
+                           the reason this exit signal has been sent.
+            
+            @see #OtpErlangExit(OtpErlangObject)
+        </member>
+        <member name="M:Erlang.NET.OtpErlangExit.#ctor(Erlang.NET.OtpErlangObject,Erlang.NET.OtpErlangPid)">
+            Create an OtpErlangExit exception with the given reason and sender pid.
+            
+            @param reason
+                           the reason this exit signal has been sent.
+            
+            @param pid
+                           the pid that sent this exit.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangExit.#ctor(System.String,Erlang.NET.OtpErlangPid)">
+            <p>
+            Equivalent to <code>OtpErlangExit(new OtpErlangAtom(reason),
+            pid)</code>.
+            </p>
+            
+            @param reason
+                           the reason this exit signal has been sent.
+            
+            @param pid
+                           the pid that sent this exit.
+            
+            @see #OtpErlangExit(OtpErlangObject, OtpErlangPid)
+        </member>
+        <member name="P:Erlang.NET.OtpErlangExit.Reason">
+            Get the reason associated with this exit signal.
+        </member>
+        <member name="P:Erlang.NET.OtpErlangExit.Pid">
+            Get the pid that sent this exit.
+        </member>
+        <member name="T:Erlang.NET.OtpAuthException">
+            <summary>
+            Exception raised when a node attempts to establish a communication channel
+            when it is not authorized to do so, or when a node sends a message containing
+            an invalid cookie on an established channel.
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Erlang.NET.OtpAuthException.serialVersionUID">
+            <summary>
+            The serial version unique identifier.
+            </summary>
+        </member>
+        <member name="M:Erlang.NET.OtpAuthException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Erlang.NET.OtpAuthException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <remarks></remarks>
+        </member>
+        <member name="M:Erlang.NET.OtpAuthException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Erlang.NET.OtpAuthException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="cause">The cause.</param>
+            <remarks></remarks>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpServer" -->
+        <member name="M:Erlang.NET.OtpServer.#ctor(Erlang.NET.OtpSelf)">
+            Create an {@link OtpServer} from an existing {@link OtpSelf}.
+            
+            @param self
+                           an existing self node.
+            
+            @exception java.io.IOException
+                               if a ServerSocket could not be created.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpServer.#ctor(System.String,System.String)">
+            Create an OtpServer, using a vacant port chosen by the operating system.
+            To determine what port was chosen, call the object's {@link #port()}
+            method.
+            
+            @param node
+                           the name of the node.
+            
+            @param cookie
+                           the authorization cookie that will be used by this node
+                           when accepts connections from remote nodes.
+            
+            @exception java.io.IOException
+                               if a ServerSocket could not be created.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpServer.#ctor(System.String,System.String,System.Int32)">
+            Create an OtpServer, using the specified port number.
+            
+            @param node
+                           a name for this node, as above.
+            
+            @param cookie
+                           the authorization cookie that will be used by this node
+                           when accepts connections from remote nodes.
+            
+            @param port
+                           the port number to bind the socket to.
+            
+            @exception java.io.IOException
+                               if a ServerSocket could not be created or if the
+                               chosen port number was not available.
+            
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpMsg" -->
+        <member name="M:Erlang.NET.OtpMsg.getMsgBuf">
+            Get the payload from this message without deserializing it.
+            
+            @return the serialized Erlang term contained in this message.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpMsg.type">
+            <p>
+            Get the type marker from this message. The type marker identifies the
+            type of message. Valid values are the ``tag'' constants defined in this
+            class.
+            </p>
+            
+            <p>
+            The tab identifies not only the type of message but also the content of
+            the OtpMsg object, since different messages have different components, as
+            follows:
+            </p>
+            
+            <ul>
+            <li> sendTag identifies a "normal" message. The recipient is a
+            {@link OtpErlangPid Pid} and it is available through {@link
+            #getRecipientPid getRecipientPid()}. Sender information is not available.
+            The message body can be retrieved with {@link #getMsg getMsg()}. </li>
+            
+            <li> regSendTag also identifies a "normal" message. The recipient here is
+            a String and it is available through {@link #getRecipientName
+            getRecipientName()}. Sender information is available through
+            #getSenderPid getSenderPid()}. The message body can be retrieved with
+            {@link #getMsg getMsg()}. </li>
+            
+            <li> linkTag identifies a link request. The Pid of the sender is
+            available, as well as the Pid to which the link should be made. </li>
+            
+            <li> exitTag and exit2Tag messages are sent as a result of broken links.
+            Both sender and recipient Pids and are available through the
+            corresponding methods, and the "reason" is available through
+            {@link #getMsg getMsg()}. </li>
+            </ul>
+        </member>
+        <member name="M:Erlang.NET.OtpMsg.getMsg">
+            <p>
+            Deserialize and return a new copy of the message contained in this
+            OtpMsg.
+            </p>
+            
+            <p>
+            The first time this method is called the actual payload is deserialized
+            and the Erlang term is created. Calling this method subsequent times will
+            not cuase the message to be deserialized additional times, instead the
+            same Erlang term object will be returned.
+            </p>
+            
+            @return an Erlang term.
+            
+            @exception OtpErlangDecodeException
+                               if the byte stream could not be deserialized.
+            
+        </member>
+        <member name="M:Erlang.NET.OtpMsg.getRecipientName">
+            <p>
+            Get the name of the recipient for this message.
+            </p>
+            
+            <p>
+            Messages are sent to Pids or names. If this message was sent to a name
+            then the name is returned by this method.
+            </p>
+            
+            @return the name of the recipient, or null if the recipient was in fact a
+                    Pid.
+        </member>
+        <member name="M:Erlang.NET.OtpMsg.getRecipientPid">
+            <p>
+            Get the Pid of the recipient for this message, if it is a sendTag
+            message.
+            </p>
+            
+            <p>
+            Messages are sent to Pids or names. If this message was sent to a Pid
+            then the Pid is returned by this method. The recipient Pid is also
+            available for link, unlink and exit messages.
+            </p>
+            
+            @return the Pid of the recipient, or null if the recipient was in fact a
+                    name.
+        </member>
+        <member name="M:Erlang.NET.OtpMsg.getRecipient">
+            <p>
+            Get the name of the recipient for this message, if it is a regSendTag
+            message.
+            </p>
+            
+            <p>
+            Messages are sent to Pids or names. If this message was sent to a name
+            then the name is returned by this method.
+            </p>
+            
+            @return the Pid of the recipient, or null if the recipient was in fact a
+                    name.
+        </member>
+        <member name="M:Erlang.NET.OtpMsg.getSenderPid">
+            <p>
+            Get the Pid of the sender of this message.
+            </p>
+            
+            <p>
+            For messages sent to names, the Pid of the sender is included with the
+            message. The sender Pid is also available for link, unlink and exit
+            messages. It is not available for sendTag messages sent to Pids.
+            </p>
+            
+            @return the Pid of the sender, or null if it was not available.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangFloat">
+            Provides a Java representation of Erlang floats and doubles.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangFloat.#ctor(System.Single)">
+            Create an Erlang float from the given float value.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangFloat.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang float from a stream containing a float encoded in Erlang
+            external format.
+            
+            @param buf
+                           the stream containing the encoded value.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang float.
+            
+            @exception OtpErlangRangeException
+                               if the value cannot be represented as a Java float.
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Erlang.NET.OtpInputStream" -->
+        <member name="M:Erlang.NET.OtpInputStream.#ctor(System.Byte[])">
+            @param buf
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.#ctor(System.Byte[],System.Int32)">
+            Create a stream from a buffer containing encoded Erlang terms.
+            
+            @param flags
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.#ctor(System.Byte[],System.Int32,System.Int32,System.Int32)">
+            Create a stream from a buffer containing encoded Erlang terms at the
+            given offset and length.
+            
+            @param flags
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.getPos">
+            Get the current position in the stream.
+            
+            @return the current position in the stream.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.setPos(System.Int32)">
+            Set the current position in the stream.
+            
+            @param pos
+                       the position to move to in the stream. If pos indicates a
+                       position beyond the end of the stream, the position is move to
+                       the end of the stream instead. If pos is negative, the
+                       position is moved to the beginning of the stream instead.
+            
+            @return the previous position in the stream.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.readN(System.Byte[])">
+            Read an array of bytes from the stream. The method reads at most
+            buf.length bytes from the input stream.
+            
+            @return the number of bytes read.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.readN(System.Byte[],System.Int32,System.Int32)">
+            Read an array of bytes from the stream. The method reads at most len
+            bytes from the input stream into offset off of the buffer.
+            
+            @return the number of bytes read.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.peek">
+            Alias for peek1()
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.peek1">
+            Look ahead one position in the stream without consuming the byte found
+            there.
+            
+            @return the next byte in the stream, as an integer.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read1">
+            Read a one byte integer from the stream.
+            
+            @return the byte read, as an integer.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read2BE">
+            Read a two byte big endian integer from the stream.
+            
+            @return the bytes read, converted from big endian to an integer.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read4BE">
+            Read a four byte big endian integer from the stream.
+            
+            @return the bytes read, converted from big endian to an integer.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read2LE">
+            Read a two byte little endian integer from the stream.
+            
+            @return the bytes read, converted from little endian to an integer.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read4LE">
+            Read a four byte little endian integer from the stream.
+            
+            @return the bytes read, converted from little endian to an integer.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.readLE(System.Int32)">
+            Read a little endian integer from the stream.
+            
+            @param n
+                       the number of bytes to read
+            
+            @return the bytes read, converted from little endian to an integer.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.readBE(System.Int32)">
+            Read a bigendian integer from the stream.
+            
+            @param n
+                       the number of bytes to read
+            
+            @return the bytes read, converted from big endian to an integer.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_boolean">
+            Read an Erlang atom from the stream and interpret the value as a boolean.
+            
+            @return true if the atom at the current position in the stream contains
+                    the value 'true' (ignoring case), false otherwise.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not an atom.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_atom">
+            Read an Erlang atom from the stream.
+            
+            @return a String containing the value of the atom.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not an atom.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_binary">
+            Read an Erlang binary from the stream.
+            
+            @return a byte array containing the value of the binary.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not a binary.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_bitstr(System.Int32@)">
+            Read an Erlang bitstr from the stream.
+            
+            @param pad_bits
+                       an int array whose first element will be set to the number of
+                       pad bits in the last byte.
+            
+            @return a byte array containing the value of the bitstr.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not a bitstr.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_float">
+            Read an Erlang float from the stream.
+            
+            @return the float value.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not a float.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_double">
+            Read an Erlang float from the stream.
+            
+            @return the float value, as a double.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not a float.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_byte">
+            Read one byte from the stream.
+            
+            @return the byte read.
+            
+            @exception OtpErlangDecodeException
+                           if the next byte cannot be read.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_char">
+            Read a character from the stream.
+            
+            @return the character value.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not an integer that can
+                           be represented as a char.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_uint">
+            Read an unsigned integer from the stream.
+            
+            @return the integer value.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream can not be represented as a
+                           positive integer.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_int">
+            Read an integer from the stream.
+            
+            @return the integer value.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream can not be represented as
+                           an integer.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_ushort">
+            Read an unsigned short from the stream.
+            
+            @return the short value.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream can not be represented as a
+                           positive short.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_short">
+            Read a short from the stream.
+            
+            @return the short value.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream can not be represented as a
+                           short.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_ulong">
+            Read an unsigned long from the stream.
+            
+            @return the long value.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream can not be represented as a
+                           positive long.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_long">
+            Read a long from the stream.
+            
+            @return the long value.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream can not be represented as a
+                           long.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_integer_byte_array">
+            Read an integer from the stream.
+            
+            @return the value as a big endian 2's complement byte array.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not an integer.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_list_head">
+            Read a list header from the stream.
+            
+            @return the arity of the list.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not a list.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_tuple_head">
+            Read a tuple header from the stream.
+            
+            @return the arity of the tuple.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not a tuple.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_nil">
+            Read an empty list from the stream.
+            
+            @return zero (the arity of the list).
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not an empty list.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_pid">
+            Read an Erlang PID from the stream.
+            
+            @return the value of the PID.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not an Erlang PID.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_port">
+            Read an Erlang port from the stream.
+            
+            @return the value of the port.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not an Erlang port.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_ref">
+            Read an Erlang reference from the stream.
+            
+            @return the value of the reference
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not an Erlang reference.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_string">
+            Read a string from the stream.
+            
+            @return the value of the string.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not a string.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_compressed">
+            Read a compressed term from the stream
+            
+            @return the resulting uncompressed term.
+            
+            @exception OtpErlangDecodeException
+                           if the next term in the stream is not a compressed term.
+        </member>
+        <member name="M:Erlang.NET.OtpInputStream.read_any">
+            Read an arbitrary Erlang term from the stream.
+            
+            @return the Erlang term.
+            
+            @exception OtpErlangDecodeException
+                           if the stream does not contain a known Erlang type at the
+                           next position.
+        </member>
+        <member name="T:Erlang.NET.OtpErlangInt">
+            Provides a Java representation of Erlang integral types.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangInt.#ctor(System.Int32)">
+            Create an Erlang integer from the given value.
+            
+            @param i
+                           the int value to use.
+        </member>
+        <member name="M:Erlang.NET.OtpErlangInt.#ctor(Erlang.NET.OtpInputStream)">
+            Create an Erlang integer from a stream containing an integer encoded in
+            Erlang external format.
+            
+            @param buf
+                           the stream containing the encoded value.
+            
+            @exception OtpErlangDecodeException
+                               if the buffer does not contain a valid external
+                               representation of an Erlang integer.
+            
+            @exception OtpErlangRangeException
+                               if the value is too large to be represented as an int.
+        </member>
+    </members>
+</doc>

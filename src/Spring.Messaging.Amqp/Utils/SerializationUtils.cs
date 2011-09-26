@@ -74,6 +74,17 @@ namespace Spring.Messaging.Amqp.Utils
         }
 
         /// <summary>
+        /// Extension method to convert a string to a byte array with encoding.
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <param name="encodingString">The encoding string.</param>
+        /// <returns>The byte array.</returns>
+        public static byte[] ToByteArrayWithEncoding(this string str, string encodingString)
+        {
+            return SerializeString(str, encodingString);
+        }
+
+        /// <summary>
         /// Convert a byte array to a string.
         /// </summary>
         /// <param name="bytes">
@@ -97,6 +108,17 @@ namespace Spring.Messaging.Amqp.Utils
                     return stringMessage;
                 }
             }
+        }
+
+        /// <summary>
+        /// Extension method to convert a byte array to a string with encoding.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="encodingString">The encoding string.</param>
+        /// <returns>The string.</returns>
+        public static string ToStringWithEncoding(this byte[] bytes, string encodingString)
+        {
+            return DeserializeString(bytes, encodingString);
         }
 
         /// <summary>

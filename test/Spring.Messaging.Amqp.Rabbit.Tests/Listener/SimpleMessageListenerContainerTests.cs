@@ -30,7 +30,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestInconsistentTransactionConfiguration()
         {
-            var container = new SimpleMessageListenerContainer(new SingleConnectionFactory());
+            var container = new SimpleMessageListenerContainer(new AbstractConnectionFactory());
             container.MessageListener = new MessageListenerAdapter(this);
             container.QueueNames = new string[] { "foo" };
             container.IsChannelTransacted = false;
@@ -54,7 +54,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestInconsistentAcknowledgeConfiguration()
         {
-            var container = new SimpleMessageListenerContainer(new SingleConnectionFactory());
+            var container = new SimpleMessageListenerContainer(new AbstractConnectionFactory());
             container.MessageListener = new MessageListenerAdapter(this);
             container.QueueNames = new string[] { "foo" };
             container.IsChannelTransacted = true;
@@ -77,7 +77,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestDefaultConsumerCount()
         {
-            var container = new SimpleMessageListenerContainer(new SingleConnectionFactory());
+            var container = new SimpleMessageListenerContainer(new AbstractConnectionFactory());
             container.MessageListener = new MessageListenerAdapter(this);
             container.QueueNames = new string[] { "foo" };
             container.AutoStartup = false;
@@ -106,7 +106,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// A test connection factory.
     /// </summary>
     /// <remarks></remarks>
-    internal class TestConnectionFactory : SingleConnectionFactory
+    internal class TestConnectionFactory : AbstractConnectionFactory
     {
         /// <summary>
         /// Does the start.
@@ -115,6 +115,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         protected void DoStart()
         {
             // do nothing
+        }
+
+        public override IConnection CreateConnection()
+        {
+            // TODO
+            throw new NotImplementedException();
         }
     }
 

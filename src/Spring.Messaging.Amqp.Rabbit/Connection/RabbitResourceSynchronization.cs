@@ -76,7 +76,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 this.resourceHolder.RollbackAll();
             }
-            //super.afterCompletion(status);
+            
+            base.AfterCompletion((TransactionSynchronizationStatus)status);
         }
 
         /// <summary>

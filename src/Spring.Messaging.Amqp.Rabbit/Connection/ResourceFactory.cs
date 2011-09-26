@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <summary>
     /// Callback interface implementation.
     /// </summary>
-	/// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald</author>
     public class ResourceFactory : IResourceFactory
     {
         /// <summary>

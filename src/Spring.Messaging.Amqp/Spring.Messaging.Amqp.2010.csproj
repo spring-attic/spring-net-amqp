@@ -99,7 +99,6 @@
     <Compile Include="Core\Message.cs" />
     <Compile Include="Core\MessageDeliveryMode.cs" />
     <Compile Include="Core\MessageProperties.cs" />
-    <Compile Include="Core\MessagePostProcessorDelegate.cs" />
     <Compile Include="Core\Queue.cs" />
     <Compile Include="Core\TopicExchange.cs" />
     <Compile Include="ImmediateAcknowledgeAmqpException.cs" />

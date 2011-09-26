@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// The connection factory.
         /// </summary>
-        protected SingleConnectionFactory connectionFactory;
+        protected AbstractConnectionFactory connectionFactory;
 
         /// <summary>
         /// The broker admin.
@@ -140,7 +140,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         [Test]
         public void TestGetQueues()
         {
-            SingleConnectionFactory connectionFactory = new SingleConnectionFactory();
+            AbstractConnectionFactory connectionFactory = new AbstractConnectionFactory();
             connectionFactory.Port = BrokerTestUtils.GetAdminPort();
             Queue queue = new RabbitAdmin(connectionFactory).DeclareQueue();
             Assert.AreEqual("/", connectionFactory.VirtualHost);

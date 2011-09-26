@@ -1,15 +1,14 @@
-
-#region License
+﻿#region License
 
 /*
- * Copyright 2002-2010 the original author or authors.
- *
+ * Copyright (C) 2002-2010 the original author or authors.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,14 +18,17 @@
 
 #endregion
 
-namespace Spring.Messaging.Amqp.Core
+namespace Spring.Threading.Helpers
 {
     /// <summary>
-    /// A delegate for message post processing.
+    /// Used by <see cref="WaitNode"/>.
+    /// NOTE: this class is NOT present in java.util.concurrent.
     /// </summary>
-    /// <param name="message">
-    /// The message.
-    /// </param>
-    /// <returns>The Message.</returns>
-    public delegate Message MessagePostProcessorDelegate(Message message);
+    internal interface IQueuedSync // was WaitQueue.QueuedSync in BACKPORT_3_1
+    {
+        // invoked with sync on wait node, (atomically) just before enqueuing
+        bool Recheck(WaitNode node);
+        // invoked with sync on wait node, (atomically) just before signalling
+        void TakeOver(WaitNode node);
+    }
 }

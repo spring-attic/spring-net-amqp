@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Spring.Messaging.Amqp.Core
 {
@@ -44,7 +45,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="arguments">
         /// The arguments.
         /// </param>
-        public AnonymousQueue(IDictionary arguments) : base(Guid.NewGuid().ToString(), false, true, true, arguments)
+        public AnonymousQueue(IDictionary<string, object> arguments) : base(Guid.NewGuid().ToString(), false, true, true, arguments)
         {
         }
     }

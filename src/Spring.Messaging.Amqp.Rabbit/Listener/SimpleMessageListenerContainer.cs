@@ -33,8 +33,6 @@ using Spring.Aop.Support;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
-using Spring.Threading;
-using Spring.Threading.Execution;
 using Spring.Transaction;
 using Spring.Transaction.Interceptor;
 using Spring.Transaction.Support;
@@ -44,6 +42,10 @@ using Spring.Util;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
+    using System.Threading.Tasks;
+
+    using Spring.Messaging.Amqp.Rabbit.Support;
+
     /// <summary>
     /// A simple message listener container.
     /// </summary>
@@ -55,7 +57,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILog logger = LogManager.GetLogger(typeof (SimpleMessageListenerContainer));
+        private readonly new ILog logger = LogManager.GetLogger(typeof(SimpleMessageListenerContainer));
 
         #endregion
 
@@ -70,12 +72,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// The default prefetch count.
         /// </summary>
         public static readonly int DEFAULT_PREFETCH_COUNT = 1;
-
-        // TODO: Determine if this is the right default value! RabbitMQ blows up with anything != 0.
-        /// <summary>
-        /// The default prefetch size.
-        /// </summary>
-        public static readonly int DEFAULT_PREFETCH_SIZE = 0;
 
         /// <summary>
         /// The default shutdown timeout.
@@ -93,11 +89,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         private volatile int prefetchCount = DEFAULT_PREFETCH_COUNT;
 
         /// <summary>
-        /// The prefetch size.
-        /// </summary>
-        private volatile int prefetchSize = DEFAULT_PREFETCH_SIZE;
-
-        /// <summary>
         /// The transaction size.
         /// </summary>
         private volatile int txSize = 1;
@@ -105,7 +96,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The task executor.
         /// </summary>
-        private volatile IExecutorService taskExecutor = Executors.NewCachedThreadPool();
+        // private volatile IExecutorService taskExecutor = Executors.NewCachedThreadPool();
 
         /// <summary>
         /// The concurrent consumers.
@@ -157,6 +148,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         private ActiveObjectCounter<BlockingQueueConsumer> cancellationLock = new ActiveObjectCounter<BlockingQueueConsumer>();
 
+        /// <summary>
+        /// The message properties converter.
+        /// </summary>
+        private volatile IMessagePropertiesConverter messagePropertiesConverter = new DefaultMessagePropertiesConverter();
+
+        private ContainerDelegate containerDelegate;
+
+        /// <summary>
+        /// The proxy.
+        /// </summary>
+        internal IContainerDelegate proxy;
+
         #endregion
 
         #region Constructors
@@ -166,6 +169,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         public SimpleMessageListenerContainer()
         {
+            this.containerDelegate = new ContainerDelegate(this);
+            this.proxy = this.containerDelegate;
         }
 
         /// <summary>
@@ -177,6 +182,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public SimpleMessageListenerContainer(IConnectionFactory connectionFactory)
         {
             this.ConnectionFactory = connectionFactory;
+            this.containerDelegate = new ContainerDelegate(this);
+            this.proxy = this.containerDelegate;
         }
 
         #endregion
@@ -184,17 +191,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         #region Properties
 
         /// <summary>
-        /// Gets or sets AdviceChain.
+        /// Sets the advice chain.
         /// </summary>
+        /// <value>The advice chain.</value>
         public IAdvice[] AdviceChain
         {
-            get { return this.adviceChain; }
             set { this.adviceChain = value; }
         }
 
         /// <summary>
         /// Sets RecoveryInterval.
         /// </summary>
+        /// <value>The recovery interval.</value>
         public long RecoveryInterval
         {
             set { this.recoveryInterval = value; }
@@ -235,6 +243,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             set { this.shutdownTimeout = value; }
         }
 
+        /*
         /// <summary>
         /// Sets TaskExecutor.
         /// </summary>
@@ -246,6 +255,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 this.taskExecutor = value;
             }
         }
+        */
 
         /// <summary>
         /// Sets PrefetchCount.
@@ -253,14 +263,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public int PrefetchCount
         {
             set { this.prefetchCount = value; }
-        }
-
-        /// <summary>
-        /// Sets PrefetchSize.
-        /// </summary>
-        public int PrefetchSize
-        {
-            set { this.PrefetchSize = value; }
         }
 
         /// <summary>
@@ -287,6 +289,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             set { this.transactionAttribute = value; }
         }
 
+        public IMessagePropertiesConverter MessagePropertiesConverter
+        {
+            set
+            {
+                AssertUtils.ArgumentNotNull(value, "messagePropertiesConverter must not be null");
+                this.messagePropertiesConverter = value;
+            }
+        }
+
         /// <summary>
         /// Gets a value indicating whether SharedConnectionEnabled.
         /// </summary>
@@ -304,32 +315,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         #endregion
-
-        /// <summary>
-        /// Invoke the listener.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        public new void InvokeListener(IModel channel, Message message)
-        {
-            base.InvokeListener(channel, message);
-        }
-
-        //private void ContainerDelegate = new delegate() {
-        //    public void InvokeListener(IModel channel, Message message)
-        //    {
-        //        base.InvokeListener(channel, message);
-        //    }
-        //};    
-
-        /// <summary>
-        /// The proxy.
-        /// </summary>
-        internal IContainerDelegate proxy;
 
         /// <summary>
         /// Validate the configuration.
@@ -372,8 +357,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             factory.ProxyTargetType = false;
             factory.AddInterface(typeof(IContainerDelegate));
 
-            // TODO: Is this really the right target??? Doesn't seem right.
-            factory.Target = this; 
+            factory.Target = this.containerDelegate;
             this.proxy = (IContainerDelegate)factory.GetProxy();
         }
 
@@ -390,8 +374,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Perform start actions.
         /// </summary>
-        /// <exception cref="AmqpException">
-        /// </exception>
         protected override void DoStart()
         {
             base.DoStart();
@@ -405,13 +387,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     return;
                 }
 
-                var processors = new HashSet<AsyncMessageProcessingConsumer>();
+                var processors = new List<AsyncMessageProcessingConsumer>();
 
                 foreach (var consumer in this.consumers)
                 {
                     var processor = new AsyncMessageProcessingConsumer(consumer, this);
                     processors.Add(processor);
-                    this.taskExecutor.Execute(processor);
+                    var taskExecutor = new Task(processor.Run);
+                    taskExecutor.Start();
+
+                    // Old Spring.Threading way: this.taskExecutor.Execute(processor);
                 }
 
                 foreach (var processor in processors)
@@ -419,7 +404,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     var startupException = processor.GetStartupException();
                     if (startupException != null)
                     {
-                        throw new AmqpException("Fatal exception on listener startup", startupException);
+                        throw new AmqpIllegalStateException("Fatal exception on listener startup", startupException);
                     }
                 }
             }
@@ -439,7 +424,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         protected override void DoShutdown()
         {
-            if (!this.IsRunning())
+            if (!this.IsRunning)
             {
                 return;
             }
@@ -448,9 +433,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 this.logger.Info("Waiting for workers to finish.");
                 var finished = this.cancellationLock.Await(new TimeSpan(0, 0, 0, 0, (int)this.shutdownTimeout));
-                this.logger.Info(finished
-                                     ? "Successfully waited for workers to finish."
-                                     : "Workers not finished.  Forcing connections to close.");
+                this.logger.Info(finished ? "Successfully waited for workers to finish." : "Workers not finished.  Forcing connections to close.");
             }
             catch (ThreadInterruptedException e)
             {
@@ -509,8 +492,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             // There's no point prefetching less than the tx size, otherwise the consumer will stall because the broker
             // didn't get an ack for delivered messages
             var actualPrefetchCount = this.prefetchCount > this.txSize ? this.prefetchCount : this.txSize;
-            // return new BlockingQueueConsumer(this.ConnectionFactory, this.cancellationLock, this.AcknowledgeMode, this.IsChannelTransacted, this.prefetchCount, actualPrefetchCount, GetRequiredQueueNames());
-            return new BlockingQueueConsumer(this.ConnectionFactory, this.cancellationLock, this.AcknowledgeMode, this.IsChannelTransacted, this.prefetchCount, this.prefetchSize, GetRequiredQueueNames());
+            return new BlockingQueueConsumer(this.ConnectionFactory, this.messagePropertiesConverter, this.cancellationLock, this.AcknowledgeMode, this.IsChannelTransacted, actualPrefetchCount, this.GetRequiredQueueNames());
         }
 
         /// <summary>
@@ -519,8 +501,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="consumer">
         /// The consumer.
         /// </param>
-        /// <exception cref="Exception">
-        /// </exception>
         internal void Restart(BlockingQueueConsumer consumer)
         {
             lock (this.consumersMonitor)
@@ -542,14 +522,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     }
                     catch (Exception e)
                     {
-                        this.logger.Warn("Consumer died on restart. " + e.Source + ": " + e.Message);
+                        this.logger.Warn("Consumer failed irretrievably on restart. " + e.Source + ": " + e.Message);
 
-                        // Thrown into the void (probably) in a background thread.
-                        // Oh well, here goes...
+                        // Re-throw and have it logged properly by the caller.
                         throw e;
                     }
 
-                    this.taskExecutor.Execute(new AsyncMessageProcessingConsumer(consumer, this));
+                    var processor = new AsyncMessageProcessingConsumer(consumer, this);
+                    var taskExecutor = new Task(processor.Run);
+
+                    // Old way, using Spring.Threading: this.taskExecutor.Execute(new AsyncMessageProcessingConsumer(consumer, this));
                 }
             }
         }
@@ -604,7 +586,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             var channel = consumer.Channel;
 
-            Message lastMessage = null;
             for (var i = 0; i < this.txSize; i++)
             {
                 this.logger.Trace("Waiting for message from consumer.");
@@ -614,7 +595,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     break;
                 }
 
-                lastMessage = message;
                 try
                 {
                     this.ExecuteListener(channel, message);
@@ -625,34 +605,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception ex)
                 {
-                    this.RollbackOnExceptionIfNecessary(channel, message, ex);
+                    consumer.RollbackOnExceptionIfNecessary(channel, message, ex);
                     throw;
                 }
             }
 
-            if (lastMessage != null)
-            {
-                this.CommitIfNecessary(channel, lastMessage);
-                return true;
-            }
-
-            return false;
+            return consumer.CommitIfNecessary(this.IsChannelLocallyTransacted(channel));
         }
     }
 
     /// <summary>
     /// An asynchronous message processing consumer.
     /// </summary>
-    public class AsyncMessageProcessingConsumer : IRunnable
+    public class AsyncMessageProcessingConsumer
     {
-        #region Logging
-
         /// <summary>
         /// The logger.
         /// </summary>
         private readonly ILog logger = LogManager.GetLogger(typeof(AsyncMessageProcessingConsumer));
-
-        #endregion
 
         /// <summary>
         /// The consumer.
@@ -662,7 +632,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The start countdown latch.
         /// </summary>
-        private readonly CountDownLatch start;
+        private readonly CountdownEvent start;
 
         /// <summary>
         /// The startup exception.
@@ -687,7 +657,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             this.consumer = consumer;
             this.outer = outer;
-            this.start = new CountDownLatch(1);
+            this.start = new CountdownEvent(1);
         }
 
         /// <summary>
@@ -701,7 +671,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </exception>
         public FatalListenerStartupException GetStartupException()
         {
-            if (!this.start.Await(new TimeSpan(0, 0, 0, 0, 60000)))
+            if (!this.start.Wait(new TimeSpan(0, 0, 0, 0, 60000)))
             {
                 throw new System.TimeoutException("Timed out waiting for startup");
             }
@@ -722,7 +692,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 try
                 {
                     this.consumer.Start();
-                    this.start.CountDown();
+                    this.start.Signal();
                 }
                 catch (FatalListenerStartupException ex)
                 {
@@ -730,7 +700,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception t)
                 {
-                    this.start.CountDown();
+                    this.start.Signal();
                     this.HandleStartupFailure(t);
                     throw;
                 }
@@ -785,7 +755,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
 
             // In all cases count down to allow container to progress beyond startup
-            this.start.CountDown();
+            this.start.Signal();
 
             if (!this.outer.IsActive || aborted)
             {
@@ -856,16 +826,46 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         #endregion
     }
 
-            /// <summary>
-        /// An IContainerDelegate
+    /// <summary>
+    /// An IContainerDelegate
+    /// </summary>
+    public interface IContainerDelegate
+    {
+        /// <summary>
+        /// Invoke the listener.
         /// </summary>
-        public interface IContainerDelegate
+        /// <param name="channel">The channel.</param>
+        /// <param name="message">The message.</param>
+        void InvokeListener(IModel channel, Message message);
+    }
+
+    /// <summary>
+    /// A container delegate.
+    /// </summary>
+    internal class ContainerDelegate : IContainerDelegate
+    {
+        /// <summary>
+        /// The outer simple message listener container.
+        /// </summary>
+        private SimpleMessageListenerContainer outer;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContainerDelegate"/> class.
+        /// </summary>
+        /// <param name="outer">The outer.</param>
+        public ContainerDelegate(SimpleMessageListenerContainer outer)
         {
-            /// <summary>
-            /// Invoke the listener.
-            /// </summary>
-            /// <param name="channel">The channel.</param>
-            /// <param name="message">The message.</param>
-            void InvokeListener(IModel channel, Message message);
+            this.outer = outer;
         }
+
+        /// <summary>
+        /// Invoke the listener.
+        /// </summary>
+        /// <param name="channel">The channel.</param>
+        /// <param name="message">The message.</param>
+        public void InvokeListener(IModel channel, Message message)
+        {
+            this.outer.InvokeListener(channel, message);
+        }
+    }
 }

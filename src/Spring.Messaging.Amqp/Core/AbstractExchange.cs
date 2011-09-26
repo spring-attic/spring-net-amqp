@@ -55,7 +55,7 @@ namespace Spring.Messaging.Amqp.Core
         /// Initializes a new instance of the <see cref="AbstractExchange"/> class, given a name.
         /// </summary>
         /// <param name="name">The name of the exchange.</param>
-        public AbstractExchange(string name) : this(name, false, false)
+        public AbstractExchange(string name) : this(name, true, false)
         {
         }
 

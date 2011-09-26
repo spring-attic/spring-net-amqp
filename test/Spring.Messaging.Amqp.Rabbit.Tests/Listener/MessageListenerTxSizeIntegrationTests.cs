@@ -67,7 +67,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public void TestListenerTransactionalSunnyDay()
         {
             transactional = true;
-            CountDownLatch latch = new CountDownLatch(messageCount);
+            var latch = new CountdownEvent(messageCount);
             container = CreateContainer(new TxTestListener(latch, false, this));
             for (int i = 0; i < messageCount; i++)
             {
@@ -75,7 +75,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             int timeout = Math.Min(1 + messageCount / (4 * concurrentConsumers), 30);
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
-            var waited = latch.Await(new TimeSpan(0, 0, 0, timeout));
+            var waited = latch.Wait(new TimeSpan(0, 0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(template.ReceiveAndConvert(queue.Name));
         }
@@ -84,7 +84,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public void TestListenerTransactionalFails()
         {
             this.transactional = true;
-            var latch = new CountDownLatch(this.messageCount);
+            var latch = new CountdownEvent(this.messageCount);
             this.container = this.CreateContainer(new TxTestListener(latch, true, this));
             for (var i = 0; i < this.txSize; i++)
             {
@@ -93,7 +93,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             var timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
-            var waited = latch.Await(new TimeSpan(0, 0, 0, timeout));
+            var waited = latch.Wait(new TimeSpan(0, 0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
         }
@@ -124,7 +124,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         private ThreadLocal<int> count = new ThreadLocal<int>();
         private readonly MessageListenerTxSizeIntegrationTests outer;
 
-        private readonly CountDownLatch latch;
+        private readonly CountdownEvent latch;
 
         private readonly bool fail;
 
@@ -135,7 +135,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <param name="outer">The outer.</param>
         /// <remarks></remarks>
-        public TxTestListener(CountDownLatch latch, bool fail, MessageListenerTxSizeIntegrationTests outer)
+        public TxTestListener(CountdownEvent latch, bool fail, MessageListenerTxSizeIntegrationTests outer)
         {
             this.latch = latch;
             this.fail = fail;
@@ -181,7 +181,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.CountDown();
+                this.latch.Signal();
             }
         }
     }

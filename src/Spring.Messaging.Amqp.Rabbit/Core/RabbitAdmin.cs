@@ -30,17 +30,21 @@ using Spring.Util;
 
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
+    using System.Collections;
+
+    using Queue = Spring.Messaging.Amqp.Core.Queue;
+
     /// <summary>
     /// RabbitMQ implementation of portable AMQP administrative operations for AMQP >= 0.8
     /// </summary>
     /// <author>Mark Pollack</author>
     /// <author>Joe Fitzgerald</author>
-    public class RabbitAdmin : IAmqpAdmin, IInitializingObject
+    public class RabbitAdmin : IAmqpAdmin, IApplicationContextAware, IInitializingObject
     {
         /// <summary>
         /// The logger.
         /// </summary>
-        protected readonly ILog logger = LogManager.GetLogger(typeof(RabbitAdmin));
+        protected static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitAdmin));
 
         /// <summary>
         /// The rabbit template.
@@ -88,7 +92,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </summary>
         public bool AutoStartup
         {
-            get { return this.autoStartup; }
             set { this.autoStartup = value; }
         }
 
@@ -116,7 +119,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="exchange">The exchange.</param>
         public void DeclareExchange(IExchange exchange)
         {
-            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
+            this.rabbitTemplate.Execute<object>(channel =>
             {
                 this.DeclareExchanges(channel, exchange);
                 return null;
@@ -138,7 +141,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </returns>
         public bool DeleteExchange(string exchangeName)
         {
-            return this.rabbitTemplate.Execute(delegate(RabbitMQ.Client.IModel channel)
+            return this.rabbitTemplate.Execute(channel =>
             {
                 try
                 {
@@ -146,6 +149,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 }
                 catch (Exception e)
                 {
+                    Logger.Error("Could not delete exchange.", e);
                     return false;
                 }
 
@@ -159,7 +163,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="queue">The queue.</param>
         public void DeclareQueue(Queue queue)
         {
-            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
+            this.rabbitTemplate.Execute<object>(channel =>
             {
                 this.DeclareQueues(channel, queue);
                 return null;
@@ -174,8 +178,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         public Queue DeclareQueue()
         {
             var queueName = this.rabbitTemplate.Execute(channel => channel.QueueDeclare());
-            var q = new Queue(queueName, true, true, false);
-            return q;
+            var queue = new Queue(queueName.QueueName, false, true, true);
+            return queue;
         }
 
 
@@ -190,7 +194,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </returns>
         public bool DeleteQueue(string queueName)
         {
-            return this.rabbitTemplate.Execute(delegate(RabbitMQ.Client.IModel channel)
+            return this.rabbitTemplate.Execute(channel =>
             {
                 try
                 {
@@ -198,6 +202,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 }
                 catch (Exception e)
                 {
+                    Logger.Error("Could not delete queue.", e);
                     return false;
                 }
 
@@ -213,7 +218,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="empty">if set to <c>true</c> the queue should be deleted only if empty.</param>
         public void DeleteQueue(string queueName, bool unused, bool empty)
         {
-            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
+            this.rabbitTemplate.Execute<object>(channel =>
             {
                 channel.QueueDelete(queueName, unused, empty);
                 return null;
@@ -227,7 +232,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="noWait">if set to <c>true</c> [no wait].</param>
         public void PurgeQueue(string queueName, bool noWait)
         {
-            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
+            this.rabbitTemplate.Execute<object>(channel =>
             {
                 channel.QueuePurge(queueName);
                 return null;
@@ -242,7 +247,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </param>
         public void DeclareBinding(Binding binding)
         {
-            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
+            this.rabbitTemplate.Execute<object>(channel =>
             {
                 this.DeclareBindings(channel, binding);
                 return null;
@@ -255,7 +260,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="binding">Binding to remove.</param>
         public void RemoveBinding(Binding binding)
         {
-            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
+            this.rabbitTemplate.Execute<object>(channel =>
             {
                 if (binding.IsDestinationQueue())
                 {
@@ -288,15 +293,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                     return;
                 }
 
-                connectionFactory.AddConnectionListener(new AdminConnectionListener(this));
+                this.connectionFactory.AddConnectionListener(new AdminConnectionListener(this));
 
                 this.running = true;
             }
-            if (this.connectionFactory == null)
-            {
-                throw new InvalidOperationException("'ConnectionFactory' is required.");
-            }
-            this.rabbitTemplate = new RabbitTemplate(connectionFactory);
         }
 
         /// <summary>
@@ -307,15 +307,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             if (this.applicationContext == null)
             {
-                if (this.logger.IsDebugEnabled)
+                if (Logger.IsDebugEnabled)
                 {
-                    this.logger.Debug("no ApplicationContext has been set, cannot auto-declare Exchanges, Queues, and Bindings");
+                    Logger.Debug("no ApplicationContext has been set, cannot auto-declare Exchanges, Queues, and Bindings");
                 }
 
                 return;
             }
 
-            this.logger.Debug("Initializing declarations");
+            Logger.Debug("Initializing declarations");
             var exchanges = this.applicationContext.GetObjectsOfType(typeof(IExchange)).Values;
             var queues = this.applicationContext.GetObjectsOfType(typeof(Queue)).Values;
             var bindings = this.applicationContext.GetObjectsOfType(typeof(Binding)).Values;
@@ -324,15 +324,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             {
                 if (!exchange.Durable)
                 {
-                    this.logger.Warn("Auto-declaring a non-durable Exchange (" + exchange.Name +
-                                     "). It will be deleted by the broker if it shuts down, and can be redeclared by closing and reopening the connection.");
+                    Logger.Warn("Auto-declaring a non-durable Exchange (" 
+                        + exchange.Name +
+                        "). It will be deleted by the broker if it shuts down, and can be redeclared by closing and reopening the connection.");
                 }
                 if (exchange.AutoDelete)
                 {
-                    this.logger.Warn("Auto-declaring an auto-delete Exchange ("
-                                     + exchange.Name
-                                     +
-                                     "). It will be deleted by the broker if not in use (if all bindings are deleted), but will only be redeclared if the connection is closed and reopened.");
+                    Logger.Warn("Auto-declaring an auto-delete Exchange ("
+                        + exchange.Name
+                        + "). It will be deleted by the broker if not in use (if all bindings are deleted), but will only be redeclared if the connection is closed and reopened.");
                 }
             }
 
@@ -340,27 +340,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             {
                 if (!queue.Durable)
                 {
-                    this.logger.Warn("Auto-declaring a non-durable Queue ("
-                            + queue.Name
-                            + "). It will be redeclared if the broker stops and is restarted while the connection factory is alive, but all messages will be lost.");
+                    Logger.Warn("Auto-declaring a non-durable Queue ("
+                        + queue.Name
+                        + "). It will be redeclared if the broker stops and is restarted while the connection factory is alive, but all messages will be lost.");
                 }
 
                 if (queue.AutoDelete)
                 {
-                    this.logger.Warn("Auto-declaring an auto-delete Queue ("
-                            + queue.Name
-                            + "). It will be deleted deleted by the broker if not in use, and all messages will be lost.  Redeclared when the connection is closed and reopened.");
+                    Logger.Warn("Auto-declaring an auto-delete Queue ("
+                        + queue.Name
+                        + "). It will be deleted by the broker if not in use, and all messages will be lost.  Redeclared when the connection is closed and reopened.");
                 }
 
                 if (queue.Exclusive)
                 {
-                    this.logger.Warn("Auto-declaring an exclusive Queue ("
-                            + queue.Name
-                            + "). It cannot be accessed by consumers on another connection, and will be redeclared if the connection is reopened.");
+                    Logger.Warn("Auto-declaring an exclusive Queue ("
+                        + queue.Name
+                        + "). It cannot be accessed by consumers on another connection, and will be redeclared if the connection is reopened.");
                 }
             }
 
-            this.rabbitTemplate.Execute<object>(delegate(RabbitMQ.Client.IModel channel)
+            this.rabbitTemplate.Execute<object>(channel =>
             {
                 var exchangeArray = new IExchange[exchanges.Count];
                 var queueArray = new Queue[queues.Count];
@@ -376,7 +376,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 return null;
             });
 
-            this.logger.Debug("Declarations finished");
+            Logger.Debug("Declarations finished");
         }
         #endregion
 
@@ -393,10 +393,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             foreach (var exchange in exchanges)
             {
-                if (this.logger.IsDebugEnabled)
+                if (Logger.IsDebugEnabled)
                 {
-                    this.logger.Debug("declaring Exchange '" + exchange.Name + "'");
+                    Logger.Debug("declaring Exchange '" + exchange.Name + "'");
                 }
+                
                 channel.ExchangeDeclare(exchange.Name, exchange.ExchangeType, exchange.Durable, exchange.AutoDelete, exchange.Arguments);
             }
         }
@@ -416,16 +417,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             {
                 if (!queue.Name.StartsWith("amq."))
                 {
-                    if (this.logger.IsDebugEnabled)
+                    if (Logger.IsDebugEnabled)
                     {
-                        this.logger.Debug("Declaring Queue '" + queue.Name + "'");
+                        Logger.Debug("Declaring Queue '" + queue.Name + "'");
                     }
 
-                    channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments);
+                    channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, (IDictionary)queue.Arguments);
                 }
-                else if (this.logger.IsDebugEnabled)
+                else if (Logger.IsDebugEnabled)
                 {
-                    this.logger.Debug("Queue with name that starts with 'amq.' cannot be declared.");
+                    Logger.Debug("Queue with name that starts with 'amq.' cannot be declared.");
                 }
             }
         }
@@ -443,9 +444,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             foreach (var binding in bindings)
             {
-                if (this.logger.IsDebugEnabled)
+                if (Logger.IsDebugEnabled)
                 {
-                    this.logger.Debug("Binding destination [" + binding.Destination + " (" + binding.BindingDestinationType
+                    Logger.Debug("Binding destination [" + binding.Destination + " (" + binding.BindingDestinationType
                         + ")] to exchange [" + binding.Exchange + "] with routing key [" + binding.RoutingKey
                         + "]");
                 }

@@ -98,10 +98,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         public static RabbitResourceHolder GetTransactionalResourceHolder(IConnectionFactory connectionFactory, bool synchedLocalTransactionAllowed)
         {
             var holder = DoGetTransactionalResourceHolder(connectionFactory, new ResourceFactory(connectionFactory, synchedLocalTransactionAllowed));
-            if (synchedLocalTransactionAllowed)
-            {
-                // holder.declareTransactional();
-            }
 
             return holder;
         }
@@ -109,17 +105,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Obtain a RabbitMQ Channel that is synchronized with the current transaction, if any.
         /// </summary>
-        /// <param name="connectionFactory">
-        /// The connection factory.
-        /// </param>
-        /// <param name="resourceFactory">
-        /// The resource factory.
-        /// </param>
-        /// <returns>
-        /// The transactional Channel, or null if none found.
-        /// </returns>
-        /// <exception cref="AmqpException">
-        /// </exception>
+        /// <param name="connectionFactory">The connection factory.</param>
+        /// <param name="resourceFactory">The resource factory.</param>
+        /// <returns>The transactional Channel, or null if none found.</returns>
         private static RabbitResourceHolder DoGetTransactionalResourceHolder(IConnectionFactory connectionFactory, IResourceFactory resourceFactory)
         {
             AssertUtils.ArgumentNotNull(connectionFactory, "ConnectionFactory must not be null");
@@ -173,31 +161,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Release the resources.
         /// </summary>
-        /// <param name="resourceHolder">
-        /// The resource holder.
-        /// </param>
+        /// <param name="resourceHolder">The resource holder.</param>
         public static void ReleaseResources(RabbitResourceHolder resourceHolder)
         {
             if (resourceHolder == null || resourceHolder.SynchronizedWithTransaction)
             {
                 return;
             }
+
             RabbitUtils.CloseChannel(resourceHolder.Channel);
-            ReleaseConnection(resourceHolder.Connection);
+            RabbitUtils.CloseConnection(resourceHolder.Connection);
         }
 
         /// <summary>
         /// Bind a resource to a transaction.
         /// </summary>
-        /// <param name="resourceHolder">
-        /// The resource holder.
-        /// </param>
-        /// <param name="connectionFactory">
-        /// The connection factory.
-        /// </param>
-        /// <param name="synched">
-        /// The synched.
-        /// </param>
+        /// <param name="resourceHolder">The resource holder.</param>
+        /// <param name="connectionFactory">The connection factory.</param>
+        /// <param name="synched">The synched.</param>
         public static void BindResourceToTransaction(RabbitResourceHolder resourceHolder, IConnectionFactory connectionFactory, bool synched)
         {
             if (TransactionSynchronizationManager.HasResource(connectionFactory) || !TransactionSynchronizationManager.ActualTransactionActive || !synched)

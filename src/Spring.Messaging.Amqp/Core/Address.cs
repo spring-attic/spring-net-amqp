@@ -55,7 +55,7 @@ namespace Spring.Messaging.Amqp.Core
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Address"/> class given the exchange type,
-        ///  exchange name and routing key.
+        ///  exchange name and routing key. This will set the exchange type, name and the routing key explicitly.
         /// </summary>
         /// <param name="exchangeType">Type of the exchange.</param>
         /// <param name="exchangeName">Name of the exchange.</param>

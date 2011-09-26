@@ -57,7 +57,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         private RabbitTemplate CreateTemplate(int concurrentConsumers)
         {
             var template = new RabbitTemplate();
-            // SingleConnectionFactory connectionFactory = new SingleConnectionFactory();
+            // AbstractConnectionFactory connectionFactory = new AbstractConnectionFactory();
             var connectionFactory = new CachingConnectionFactory();
             connectionFactory.ChannelCacheSize = concurrentConsumers;
             connectionFactory.Port = BrokerTestUtils.GetPort();

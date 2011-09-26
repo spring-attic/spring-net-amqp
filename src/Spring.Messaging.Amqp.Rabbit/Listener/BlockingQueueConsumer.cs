@@ -25,10 +25,14 @@ using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Threading.AtomicTypes;
-using Spring.Threading.Collections.Generic;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
+    using System.Collections.Generic;
+
+    using Spring.Messaging.Amqp.Rabbit.Support;
+    using Spring.Threading.Collections.Generic;
+
     /// <summary>
     /// Specialized consumer encapsulating knowledge of the broker connections and having its own lifecycle (start and stop).
     /// </summary>
@@ -51,8 +55,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         private readonly int prefetchCount;
 
-        private readonly int prefetchSize;
-
         private readonly bool transactional;
 
         private IModel channel;
@@ -65,41 +67,37 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         private readonly IConnectionFactory connectionFactory;
 
+        private readonly IMessagePropertiesConverter messagePropertiesConverter;
+
         internal readonly ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter;
+
+        /// <summary>
+        /// The delivery tags.
+        /// </summary>
+        internal readonly List<long> deliveryTags = new List<long>();
 
         #endregion
 
         #region Constructors
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BlockingQueueConsumer"/> class.  Create a consumer. The consumer must not attempt to use the connection factory or communicate with the broker until it is started.
         /// </summary>
-        /// <param name="connectionFactory">
-        /// The connection factory.
-        /// </param>
-        /// <param name="activeObjectCounter">
-        /// The active object counter.
-        /// </param>
-        /// <param name="acknowledgeMode">
-        /// The acknowledge mode.
-        /// </param>
-        /// <param name="transactional">
-        /// The transactional.
-        /// </param>
-        /// <param name="prefetchCount">
-        /// The prefetch count.
-        /// </param>
-        /// <param name="queues">
-        /// The queues.
-        /// </param>
-        public BlockingQueueConsumer(IConnectionFactory connectionFactory, ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode, bool transactional, int prefetchCount, int prefetchSize, params string[] queues)
+        /// <param name="connectionFactory">The connection factory.</param>
+        /// <param name="messagePropertiesConverter">The message properties converter.</param>
+        /// <param name="activeObjectCounter">The active object counter.</param>
+        /// <param name="acknowledgeMode">The acknowledge mode.</param>
+        /// <param name="transactional">if set to <c>true</c> [transactional].</param>
+        /// <param name="prefetchCount">The prefetch count.</param>
+        /// <param name="queues">The queues.</param>
+        public BlockingQueueConsumer(IConnectionFactory connectionFactory, IMessagePropertiesConverter messagePropertiesConverter, ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode, bool transactional, int prefetchCount, params string[] queues)
         {
             this.connectionFactory = connectionFactory;
+            this.messagePropertiesConverter = messagePropertiesConverter;
             this.activeObjectCounter = activeObjectCounter;
             this.acknowledgeMode = acknowledgeMode;
             this.transactional = transactional;
             this.prefetchCount = prefetchCount;
-            this.prefetchSize = prefetchSize;
             this.queues = queues;
         }
 
@@ -107,11 +105,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         #region Properties
 
+        /// <summary>
+        /// Gets the channel.
+        /// </summary>
         public IModel Channel
         {
             get { return this.channel; }
         }
 
+        /// <summary>
+        /// Retrieve the consumer tag this consumer is
+        /// registered as; to be used when discussing this consumer
+        /// with the server, for instance with
+        /// IModel.BasicCancel().
+        /// </summary>
         public string ConsumerTag
         {
             get { return this.consumer.ConsumerTag; }
@@ -121,8 +128,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Check if we are in shutdown mode and if so throw an exception.
         /// </summary>
-        /// <exception cref="Exception">
-        /// </exception>
         private void CheckShutdown()
         {
             if (this.shutdown != null)
@@ -134,14 +139,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Handle the delivery.
         /// </summary>
-        /// <param name="delivery">
-        /// The delivery.
-        /// </param>
-        /// <returns>
-        /// The message.
-        /// </returns>
-        /// <exception cref="Exception">
-        /// </exception>
+        /// <param name="delivery">The delivery.</param>
+        /// <returns>The message.</returns>
         private Message Handle(Delivery delivery)
         {
             if ((delivery == null && this.shutdown != null))
@@ -157,7 +156,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var body = delivery.Body;
             var envelope = delivery.Envelope;
 
-            var messageProperties = RabbitUtils.CreateMessageProperties(delivery.Properties, envelope, "UTF-8");
+            var messageProperties = this.messagePropertiesConverter.ToMessageProperties(delivery.Properties, envelope, "UTF-8");
             messageProperties.MessageCount = 0;
             var message = new Message(body, messageProperties);
             if (this.logger.IsDebugEnabled)
@@ -165,6 +164,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 this.logger.Debug("Received message: " + message);
             }
 
+            this.deliveryTags.Add(messageProperties.DeliveryTag);
             return message;
         }
 
@@ -203,14 +203,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         public void Start()
         {
-            this.channel = ConnectionFactoryUtils.GetTransactionalResourceHolder((IConnectionFactory)connectionFactory, transactional).Channel;
+            if (this.logger.IsDebugEnabled)
+            {
+                this.logger.Debug("Starting consumer " + this);
+            }
+
+            this.channel = ConnectionFactoryUtils.GetTransactionalResourceHolder((IConnectionFactory)this.connectionFactory, this.transactional).Channel;
             this.consumer = new InternalConsumer(this.channel, this);
+            this.deliveryTags.Clear();
             this.activeObjectCounter.Add(this);
             try
             {
-                // Set basicQos before calling basicConsume (it is ignored if we are not transactional and the broker will
-                // send blocks of 100 messages)
-                this.channel.BasicQos((uint)this.prefetchSize, (ushort)this.prefetchCount, false);
+                if (!this.acknowledgeMode.IsAutoAck())
+                {
+                    // Set basicQos before calling basicConsume (otherwise if we are not acking the broker
+                    // will send blocks of 100 messages)
+                    // The Java client includes a convenience method BasicQos(ushort prefetchCount), which sets 0 as the prefetchSize and false as global
+                    this.channel.BasicQos(0, (ushort)prefetchCount, false);
+                }
+
                 foreach (var t in this.queues)
                 {
                     this.channel.QueueDeclarePassive(t);
@@ -229,7 +240,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     this.channel.BasicConsume(t, this.acknowledgeMode.IsAutoAck(), this.consumer);
                     if (this.logger.IsDebugEnabled)
                     {
-                        this.logger.Debug("Started " + this);
+                        this.logger.Debug("Started on queue '" + t + "': " + this);
                     }
                 }
             }
@@ -254,14 +265,128 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             // This one never throws exceptions...
             RabbitUtils.CloseChannel(this.channel);
+            this.deliveryTags.Clear();
         }
 
-        public string ToString() 
+        public string ToString()
         {
             return "Consumer: tag=[" + (this.consumer != null ? this.consumer.ConsumerTag : null) + "], channel=" + this.channel + ", acknowledgeMode=" + this.acknowledgeMode + " local queue size=" + this.queue.Count;
         }
+
+        /// <summary>
+        /// Perform a rollback, handling rollback excepitons properly.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel to rollback.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="ex">
+        /// The thrown application exception.
+        /// </param>
+        public virtual void RollbackOnExceptionIfNecessary(IModel channel, Message message, Exception ex)
+        {
+            var ackRequired = !this.acknowledgeMode.IsAutoAck() && !this.acknowledgeMode.IsManual();
+            try
+            {
+                if (this.transactional)
+                {
+                    if (this.logger.IsDebugEnabled)
+                    {
+                        this.logger.Debug("Initiating transaction rollback on application exception" + ex);
+                    }
+
+                    RabbitUtils.RollbackIfNecessary(channel);
+                }
+
+                if (ackRequired)
+                {
+                    if (this.logger.IsDebugEnabled)
+                    {
+                        this.logger.Debug("Rejecting message");
+                    }
+
+                    foreach (var deliveryTag in this.deliveryTags)
+                    {
+                        // channel.BasicReject((ulong)message.MessageProperties.DeliveryTag, true);
+                        channel.BasicNack((ulong)message.MessageProperties.DeliveryTag, true, true);
+                    }
+
+                    if (this.transactional)
+                    {
+                        // Need to commit the reject (=nack)
+                        RabbitUtils.CommitIfNecessary(channel);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                this.logger.Error("Application exception overriden by rollback exception", ex);
+                throw;
+            }
+            finally
+            {
+                this.deliveryTags.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Perform a commit or message acknowledgement, as appropriate
+        /// </summary>
+        /// <param name="locallyTransacted">if set to <c>true</c> [locally transacted].</param>
+        /// <returns>True if committed, else false.</returns>
+        public bool CommitIfNecessary(bool locallyTransacted)
+        {
+            if (this.deliveryTags == null || this.deliveryTags.Count < 1)
+            {
+                return false;
+            }
+
+            try
+            {
+                var ackRequired = !this.acknowledgeMode.IsAutoAck() && !this.acknowledgeMode.IsManual();
+
+                if (ackRequired)
+                {
+                    if (this.transactional && !locallyTransacted)
+                    {
+                        // Not locally transacted but it is transacted so it
+                        // could be synchronized with an external transaction
+                        foreach (var deliveryTag in this.deliveryTags)
+                        {
+                            ConnectionFactoryUtils.RegisterDeliveryTag(this.connectionFactory, this.channel, deliveryTag);
+                        }
+                    }
+                    else
+                    {
+                        if (this.deliveryTags != null && this.deliveryTags.Count > 0)
+                        {
+                            var copiedTags = new List<long>(this.deliveryTags);
+                            var deliveryTag = copiedTags[copiedTags.Count - 1];
+                            this.channel.BasicAck((ulong)deliveryTag, true);
+                        }
+                    }
+                }
+
+                if (locallyTransacted)
+                {
+                    // For manual acks we still need to commit
+                    RabbitUtils.CommitIfNecessary(this.channel);
+                }
+            }
+            finally
+            {
+                this.deliveryTags.Clear();
+            }
+
+            return true;
+        }
     }
 
+    /// <summary>
+    /// An internal consumer.
+    /// </summary>
     internal class InternalConsumer : DefaultBasicConsumer
     {
         /// <summary>
@@ -301,9 +426,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             if (this.logger.IsDebugEnabled)
             {
-                logger.Debug("Received shutdown signal for consumer tag=" + consumerTag + " , cause=" + sig.Cause);
+                this.logger.Debug("Received shutdown signal for consumer tag=" + consumerTag + " , cause=" + sig.Cause);
             }
-            outer.shutdown = sig;
+
+            this.outer.shutdown = sig;
+            this.outer.deliveryTags.Clear();
         }
 
         /// <summary>
@@ -325,18 +452,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Handle basic deliver.
         /// </summary>
-        /// <param name="consumerTag">
-        /// The consumer tag.
-        /// </param>
-        /// <param name="envelope">
-        /// The envelope.
-        /// </param>
-        /// <param name="properties">
-        /// The properties.
-        /// </param>
-        /// <param name="body">
-        /// The body.
-        /// </param>
+        /// <param name="consumerTag">The consumer tag.</param>
+        /// <param name="envelope">The envelope.</param>
+        /// <param name="properties">The properties.</param>
+        /// <param name="body">The body.</param>
         public void HandleBasicDeliver(string consumerTag, BasicGetResult envelope, IBasicProperties properties, byte[] body)
         {
             if (this.outer.cancelled)

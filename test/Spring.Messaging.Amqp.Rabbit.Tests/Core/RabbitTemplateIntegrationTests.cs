@@ -131,7 +131,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         [Test]
         public void TestSendAndReceiveTransactedWithUncachedConnection()
         {
-            var template = new RabbitTemplate(new SingleConnectionFactory());
+            var template = new RabbitTemplate(new AbstractConnectionFactory());
             template.IsChannelTransacted = true;
             template.ConvertAndSend(ROUTE, "message");
             var result = (string)template.ReceiveAndConvert(ROUTE);

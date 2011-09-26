@@ -41,7 +41,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         [Test]
         public void TestNoFailOnStartupWithMissingBroker()
         {
-            var connectionFactory = new SingleConnectionFactory("foo");
+            var connectionFactory = new AbstractConnectionFactory("foo");
             connectionFactory.Port = 434343;
             var applicationContext = new GenericApplicationContext();
             applicationContext.ObjectFactory.RegisterSingleton("foo", new Queue("queue"));
@@ -58,7 +58,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         [Test]
         public void TestFailOnFirstUseWithMissingBroker()
         {
-            var connectionFactory = new SingleConnectionFactory("foo");
+            var connectionFactory = new AbstractConnectionFactory("foo");
             connectionFactory.Port = 434343;
             var applicationContext = new GenericApplicationContext();
             applicationContext.ObjectFactory.RegisterSingleton("foo", new Queue("queue"));

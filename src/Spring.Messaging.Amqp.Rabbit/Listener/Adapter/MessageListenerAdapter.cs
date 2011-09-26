@@ -13,10 +13,15 @@ using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Support.Converter;
 using Spring.Util;
+using Spring.Messaging.Amqp.Utils;
 
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
 {
+    using System.Collections.Generic;
+
+    using Spring.Objects.Support;
+
     /// <summary>
     /// Message listener adapter that delegates the handling of messages to target
     /// listener methods via reflection, with flexible message type conversion.
@@ -70,14 +75,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
 
         #region Fields
 
-        #region Logging
-
         /// <summary>
         /// The logger.
         /// </summary>
         private readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerAdapter));
-
-        #endregion
 
         /// <summary>
         /// The handler object.
@@ -90,12 +91,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         private string defaultListenerMethod = ORIGINAL_DEFAULT_LISTENER_METHOD;
 
         /// <summary>
-        /// The processing expression.
-        /// </summary>
-        [Obsolete("Do we need this?", false)]
-        private IExpression processingExpression;
-
-        /// <summary>
         /// The default response routing key.
         /// </summary>
         private string responseRoutingKey = DEFAULT_RESPONSE_ROUTING_KEY;
@@ -103,7 +98,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <summary>
         /// The response exchange.
         /// </summary>
-        private string responseExchange;
+        private string responseExchange = string.Empty;
 
         /// <summary>
         /// Flag for mandatory publish.
@@ -119,6 +114,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// The message converter.
         /// </summary>
         private IMessageConverter messageConverter;
+
+        /// <summary>
+        /// The message properties converter.
+        /// </summary>
+        private volatile IMessagePropertiesConverter messagePropertiesConverter = new DefaultMessagePropertiesConverter();
 
         /// <summary>
         /// The encoding.
@@ -208,10 +208,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             set
             {
                 this.defaultListenerMethod = value;
-                this.processingExpression = Expression.Parse(this.defaultListenerMethod + "(#convertedObject)");
             }
         }
-
 
         /// <summary>
         /// Sets the routing key to use when sending response messages. This will be applied
@@ -324,6 +322,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
                             "IChannelAwareMessageListener delegate if it hasn't been invoked with a Channel itself");
                     }
                 }
+
                 if (typeof(IMessageListener).IsInstanceOfType(this.handlerObject))
                 {
                     ((IMessageListener)this.handlerObject).OnMessage(message);
@@ -334,42 +333,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             // Regular case: find a handler method reflectively.
             object convertedMessage = this.ExtractMessage(message);
 
-
-            IDictionary vars = new Hashtable();
-            vars["convertedObject"] = convertedMessage;
-
-            // Invoke message handler method and get result.
-            object result;
-            try
+            var methodName = this.GetListenerMethodName(message, convertedMessage);
+            if (methodName == null)
             {
-                result = this.processingExpression.GetValue(this.handlerObject, vars);
-            }
-            // Will only happen if dynamic method invocation falls back to standard reflection.
-            catch (TargetInvocationException ex)
-            {
-                Exception targetEx = ex.InnerException;
-                //TODO assuming EndOfStreamException came from Rabbit itself.
-                if (ObjectUtils.IsAssignable(typeof(EndOfStreamException), targetEx))
-                {
-                    throw ReflectionUtils.UnwrapTargetInvocationException(ex);
-                }
-                else
-                {
-                    throw new ListenerExecutionFailedException("Listener method '" + this.defaultListenerMethod + "' threw exception", targetEx);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new ListenerExecutionFailedException("Failed to invoke target method '" + this.defaultListenerMethod + "' with argument " + convertedMessage, ex);
+                throw new AmqpIllegalStateException("No default listener method specified: "
+                        + "Either specify a non-null value for the 'defaultListenerMethod' property or "
+                        + "override the 'getListenerMethodName' method.");
             }
 
+            // Invoke the handler method with appropriate arguments.
+            var listenerArguments = this.BuildListenerArguments(convertedMessage);
+            var result = this.InvokeListenerMethod(methodName, listenerArguments);
             if (result != null)
             {
                 this.HandleResult(result, message, channel);
             }
             else
             {
-                this.logger.Debug("No result object given - no result to handle");
+                this.logger.Trace("No result object given - no result to handle");
             }
         }
 
@@ -379,7 +360,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         protected virtual void InitDefaultStrategies()
         {
             this.MessageConverter = new SimpleMessageConverter();
-            this.processingExpression = Expression.Parse(this.defaultListenerMethod + "(#convertedObject)");
         }
 
         /// <summary>
@@ -423,9 +403,75 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <param name="extractedMessage">The converted Rabbit request message,
         /// to be passed into the listener method as argument.</param>
         /// <returns>the name of the listener method (never <code>null</code>)</returns>
-        protected virtual string GetHandlerMethodName(Message originalMessage, object extractedMessage)
+        protected virtual string GetListenerMethodName(Message originalMessage, object extractedMessage)
         {
             return this.DefaultListenerMethod;
+        }
+
+        /// Build an array of arguments to be passed into the target listener method. Allows for multiple method arguments to
+        /// be built from a single message object.
+        /// <para>
+        /// The default implementation builds an array with the given message object as sole element. This means that the
+        /// extracted message will always be passed into a <i>single</i> method argument, even if it is an array, with the
+        /// target method having a corresponding single argument of the array's type declared.
+        /// </para>
+        /// <para>
+        /// This can be overridden to treat special message content such as arrays differently, for example passing in each
+        /// element of the message array as distinct method argument.
+        /// @param extractedMessage the content of the message
+        /// @return the array of arguments to be passed into the listener method (each element of the array corresponding to
+        /// a distinct method argument)
+        /// </para>
+        protected object[] BuildListenerArguments(Object extractedMessage)
+        {
+            return new[] { extractedMessage };
+        }
+
+        /// <summary>
+        /// Invokes the specified listener method.
+        /// </summary>
+        /// <param name="methodName">The name of the listener method.</param>
+        /// <param name="arguments">The message arguments to be passed in.</param>
+        /// <returns>The result returned from the listener method.</returns>
+        protected object InvokeListenerMethod(string methodName, object[] arguments)
+        {
+            try
+            {
+                var methodInvoker = new MethodInvoker();
+                methodInvoker.TargetObject = this.handlerObject;
+                methodInvoker.TargetMethod = methodName;
+                methodInvoker.Arguments = arguments;
+                methodInvoker.Prepare();
+                return methodInvoker.Invoke();
+            }
+            catch (TargetInvocationException ex)
+            {
+                var targetEx = ex.InnerException;
+                if (targetEx != null && targetEx is IOException)
+                {
+                    throw new AmqpIOException("Error invoking listener method.", (IOException)targetEx);
+                }
+                else
+                {
+                    throw new ListenerExecutionFailedException("Listener method '" + methodName + "' threw exception", targetEx);
+                }
+            }
+            catch (Exception ex)
+            {
+                var arrayClass = new List<string>();
+                if (arguments != null)
+                {
+                    for (int i = 0; i < arguments.Length; i++)
+                    {
+                        arrayClass.Add(arguments[i].GetType().ToString());
+                    }
+                }
+
+                throw new ListenerExecutionFailedException(
+                    "Failed to invoke target method '" + methodName + "' with argument type = ["
+                    + StringUtils.CollectionToCommaDelimitedString(arrayClass) + "], value = [" + "]",
+                    ex);
+            }
         }
 
         /// <summary>
@@ -442,9 +488,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
                 {
                     this.logger.Debug("Listener method returned result [" + result + "] - generating response message for it");
                 }
+
                 var response = this.BuildMessage(channel, result);
                 this.PostProcessResponse(request, response);
-                var replyTo = GetReplyToAddress(request);
+                var replyTo = this.GetReplyToAddress(request);
                 this.SendResponse(channel, replyTo, response);
             }
             else
@@ -459,12 +506,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <summary>
         /// Get the received exchange.
         /// </summary>
-        /// <param name="request">
-        /// The request.
-        /// </param>
-        /// <returns>
-        /// The received exchange.
-        /// </returns>
+        /// <param name="request">The request.</param>
+        /// <returns>The received exchange.</returns>
         protected string GetReceivedExchange(Message request)
         {
             return request.MessageProperties.ReceivedExchange;
@@ -477,7 +520,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <param name="result">The content of the message, as returned from the listener method.</param>
         /// <returns>the Rabbit <code>Message</code> (never <code>null</code>)</returns>
         /// <exception cref="MessageConversionException">If there was an error in message conversion</exception>
-        protected virtual Message BuildMessage(IModel channel, object result)
+        protected Message BuildMessage(IModel channel, object result)
         {
             var converter = this.MessageConverter;
             if (converter != null)
@@ -502,13 +545,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <param name="response">The outgoing Rabbit message about to be sent.</param>
         protected virtual void PostProcessResponse(Message request, Message response)
         {
-            var correlation = System.Text.Encoding.UTF8.GetString(request.MessageProperties.CorrelationId);
-            if (correlation.Length == 0)
+            var correlation = request.MessageProperties.CorrelationId.ToStringWithEncoding("UTF-8");
+            if (string.IsNullOrWhiteSpace(correlation))
             {
-                correlation = request.MessageProperties.MessageId;
+                if (!string.IsNullOrWhiteSpace(request.MessageProperties.MessageId))
+                {
+                    correlation = request.MessageProperties.MessageId;
+                }
             }
 
-            response.MessageProperties.CorrelationId = System.Text.Encoding.UTF8.GetBytes(correlation);
+            response.MessageProperties.CorrelationId = correlation.ToByteArrayWithEncoding("UTF-8");
         }
 
         /// <summary>
@@ -528,7 +574,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <exception cref="InvalidOperationException">if no destination can be determined.</exception>
         protected virtual Address GetReplyToAddress(Message request)
         {
-            var replyTo = request.MessageProperties.ReplyTo;
+            var replyTo = request.MessageProperties.ReplyToAddress;
             if (replyTo == null)
             {
                 if (string.IsNullOrEmpty(this.responseExchange))
@@ -555,7 +601,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             try
             {
                 this.logger.Debug("Publishing response to exchanage = [" + replyTo.ExchangeName + "], routingKey = [" + replyTo.RoutingKey + "]");
-                channel.BasicPublish(replyTo.ExchangeName, replyTo.RoutingKey, this.mandatoryPublish, this.immediatePublish, RabbitUtils.ExtractBasicProperties(channel, message, this.encoding), message.Body);
+                channel.BasicPublish(replyTo.ExchangeName, replyTo.RoutingKey, this.mandatoryPublish, this.immediatePublish, this.messagePropertiesConverter.FromMessageProperties(channel, message.MessageProperties, this.encoding), message.Body);
             }
             catch (Exception ex)
             {
@@ -571,33 +617,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <param name="response">The outgoing message about to be sent.</param>
         protected virtual void PostProcessChannel(IModel channel, Message response)
         {
-        }
-    }
-
-    /// <summary>
-    /// Internal class combining a destination name and its target destination type (queue or topic).
-    /// </summary>
-    [Obsolete("Is this needed?", true)]
-    internal class DestinationNameHolder
-    {
-        private readonly string name;
-
-        private readonly bool isTopic;
-
-        public DestinationNameHolder(string name, bool isTopic)
-        {
-            this.name = name;
-            this.isTopic = isTopic;
-        }
-
-        public string Name
-        {
-            get { return name; }
-        }
-
-        public bool IsTopic
-        {
-            get { return isTopic; }
         }
     }
 }

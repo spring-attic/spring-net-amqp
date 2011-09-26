@@ -9,6 +9,5 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// <typeparam name="T">Type T</typeparam>
     /// <param name="channel">The channel.</param>
     /// <returns>Object of Type T.</returns>
-    /// <remarks></remarks>
     public delegate T ChannelCallbackDelegate<T>(IModel channel);
 }

@@ -17,7 +17,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <remarks></remarks>
         protected IConnectionFactory CreateConnectionFactory()
         {
-            var connectionFactory = new SingleConnectionFactory();
+            var connectionFactory = new AbstractConnectionFactory();
             connectionFactory.Port = BrokerTestUtils.GetPort();
             return connectionFactory;
         }

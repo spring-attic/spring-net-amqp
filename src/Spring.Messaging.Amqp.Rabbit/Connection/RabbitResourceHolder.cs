@@ -69,7 +69,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// The transactional flag.
         /// </summary>
-        private bool transactional;
+        private bool _channelTransactional;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitResourceHolder"/> class.
@@ -98,11 +98,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         /// <summary>
-        /// Gets a value indicating whether IsTransactional.
+        /// Gets a value indicating whether IsChannelTransactional.
         /// </summary>
-        public bool IsTransactional
+        public bool IsChannelTransactional
         {
-            get { return this.transactional; }
+            get { return this._channelTransactional; }
         }
 
         /// <summary>
@@ -253,7 +253,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             foreach (var connection in this.connections)
             {
-                ConnectionFactoryUtils.ReleaseConnection(connection);
+                RabbitUtils.CloseConnection(connection);
             }
 
             this.connections.Clear();
@@ -306,32 +306,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                         try
                         {
                             channel.BasicReject((ulong)deliveryTag, true);
-
-                            // Need to commit the reject (=nack)
-                            RabbitUtils.CommitIfNecessary(channel);
                         }
                         catch (Exception ex)
                         {
                             throw new AmqpException(ex);
                         }
                     }
-                }
-            }
-        }
 
-        /// <summary>
-        /// Call this method once the channel {@link Channel#txSelect()} has been called.
-        /// </summary>
-        public void DeclareTransactional() 
-        {
-            if (!SynchronizedWithTransaction && !this.transactional)
-            {
-                foreach (var channel in this.channels)
-                {
-                    RabbitUtils.DeclareTransactional(channel);
+                    // Need to commit the reject (=nack)
+                    RabbitUtils.CommitIfNecessary(channel);
                 }
-
-                this.transactional = this.channels.Count > 0;
             }
         }
     }
