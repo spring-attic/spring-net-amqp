@@ -280,6 +280,13 @@
 
   <target name="rebuild-solution" description="Rebuilds a given solution file">
     <echo message="Rebuilding solution '${project.buildsolutionfile}'" />
+	<if test="${project.sign}">
+      <copy todir="${root.dir}">
+      <fileset basedir="${root.dir}\..\..\">
+        <include name="Spring.Net.snk" />
+      </fileset>
+    </copy>
+	</if>
     <exec program="${msbuild.exe}">
       <arg value="${project.buildsolutionfile}"/>
       <arg value="/nologo" />
@@ -287,9 +294,6 @@
       <arg value="/verbosity:minimal" />
       <arg value="/property:OutDir=${project.buildoutputdir}/"/>
       <arg value="/property:Configuration=${project.buildconfiguration}" />
-      <arg value="/property:DefineExtraConstants=STRONG" if="${project.sign}" />
-      <arg value="/property:SignAssembly=true" if="${project.sign}" />
-      <arg value="/property:AssemblyOriginatorKeyFile=..\..\Spring.Net.snk" if="${project.sign}" />
     </exec>
   </target>
 
