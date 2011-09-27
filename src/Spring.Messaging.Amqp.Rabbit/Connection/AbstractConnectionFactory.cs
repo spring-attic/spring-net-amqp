@@ -119,7 +119,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Gets the channel listener.
         /// </summary>
-        public IChannelListener ChannelListener
+        public virtual IChannelListener ChannelListener
         {
             get { return this.channelListener; }
         }
@@ -127,7 +127,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Gets the connection listener.
         /// </summary>
-        public IConnectionListener ConnectionListener
+        public virtual IConnectionListener ConnectionListener
         {
             get { return this.connectionListener; }
         }
@@ -138,7 +138,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <value>
         /// The connection listeners.
         /// </value>
-        public IList<IConnectionListener> ConnectionListeners
+        public virtual IList<IConnectionListener> ConnectionListeners
         {
             set { this.connectionListener.Delegates = value; }
         }
@@ -149,7 +149,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <value>
         /// The channel listeners.
         /// </value>
-        public IList<IChannelListener> ChannelListeners
+        public virtual IList<IChannelListener> ChannelListeners
         {
             set { this.channelListener.Delegates = value; }
         }   
@@ -160,7 +160,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <param name="connectionListener">
         /// The listener.
         /// </param>
-        public void AddConnectionListener(IConnectionListener connectionListener)
+        public virtual void AddConnectionListener(IConnectionListener connectionListener)
         {
             this.connectionListener.AddDelegate(connectionListener);
         }
@@ -171,7 +171,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <param name="channelListener">
         /// The listener.
         /// </param>
-        public void AddChannelListener(IChannelListener channelListener)
+        public virtual void AddChannelListener(IChannelListener channelListener)
         {
             this.channelListener.AddDelegate(channelListener);
         }
@@ -186,7 +186,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// Create a connection.
         /// </summary>
         /// <returns>The connection.</returns>
-        public IConnection CreateBareConnection()
+        public virtual IConnection CreateBareConnection()
         {
             try
             {

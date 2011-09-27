@@ -145,6 +145,7 @@
     <Compile Include="Test\BrokerTestUtils.cs" />
     <Compile Include="Test\EnvironmentAvailable.cs" />
     <Compile Include="Test\AbstractRabbitIntegrationTest.cs" />
+    <Compile Include="Test\TestCategory.cs" />
     <Compile Include="Transaction\RabbitTransactionManagerIntegrationTests.cs" />
   </ItemGroup>
   <ItemGroup>

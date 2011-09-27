@@ -16,6 +16,8 @@ using Spring.Threading;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
+    [TestFixture]
+    [Category(TestCategory.Integration)]
     public class MessageListenerTxSizeIntegrationTests : AbstractRabbitIntegrationTest
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerTxSizeIntegrationTests));

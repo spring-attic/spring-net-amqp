@@ -22,7 +22,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// <summary>
     /// Simple message listener container integration tests.
     /// </summary>
-    /// <remarks></remarks>
     [TestFixture(1, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
     [TestFixture(1, 1, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
     [TestFixture(4, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
@@ -35,6 +34,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 10, false)]
+    [Category(TestCategory.Integration)]
     public class SimpleMessageListenerContainerIntegrationTests : AbstractRabbitIntegrationTest
     {
         private static ILog logger = LogManager.GetLogger(typeof(SimpleMessageListenerContainerIntegrationTests));

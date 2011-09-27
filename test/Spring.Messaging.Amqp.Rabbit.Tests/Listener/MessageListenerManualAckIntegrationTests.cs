@@ -14,6 +14,8 @@ using Spring.Messaging.Amqp.Rabbit.Test;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
+    [TestFixture]
+    [Category(TestCategory.Integration)]
     public class MessageListenerManualAckIntegrationTests : AbstractRabbitIntegrationTest
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerManualAckIntegrationTests));

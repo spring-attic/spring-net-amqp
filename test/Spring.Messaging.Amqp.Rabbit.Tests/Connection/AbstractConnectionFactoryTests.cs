@@ -3,16 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NUnit.Framework;
 using AutoMoq;
 using Moq;
+using NUnit.Framework;
 using RabbitMQ.Client;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Threading.AtomicTypes;
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
-    using Spring.Messaging.Amqp.Rabbit.Support;
-
     /// <summary>
     /// Abstract connection factory tests.
     /// </summary>

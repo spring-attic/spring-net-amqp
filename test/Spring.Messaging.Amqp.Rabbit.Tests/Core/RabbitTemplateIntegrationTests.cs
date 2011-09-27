@@ -22,7 +22,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// <summary>
     /// Rabbit template integration tests.
     /// </summary>
-    /// <remarks></remarks>
+    [TestFixture]
+    [Category(TestCategory.Integration)]
     public class RabbitTemplateIntegrationTests : AbstractRabbitIntegrationTest
     {
         #region Fixture Setup and Teardown

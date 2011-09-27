@@ -281,11 +281,11 @@
   <target name="rebuild-solution" description="Rebuilds a given solution file">
     <echo message="Rebuilding solution '${project.buildsolutionfile}'" />
 	<if test="${project.sign}">
-      <copy todir="${root.dir}">
-      <fileset basedir="${root.dir}\..\..\">
-        <include name="Spring.Net.snk" />
-      </fileset>
-    </copy>
+		<copy todir="${root.dir}">
+			<fileset basedir="${root.dir}\..\..\">
+				<include name="Spring.Net.snk" />
+			</fileset>
+		</copy>
 	</if>
     <exec program="${msbuild.exe}">
       <arg value="${project.buildsolutionfile}"/>

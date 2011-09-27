@@ -7,11 +7,14 @@ using NUnit.Framework;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
+    using Spring.Messaging.Amqp.Rabbit.Test;
+
     /// <summary>
     /// Active object counter tests.
     /// </summary>
     /// @author Dave Syer
-    /// <remarks></remarks>
+    [TestFixture]
+    [Category(TestCategory.Unit)]
     public class ActiveObjectCounterTests
     {
         /// <summary>
@@ -76,6 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         /// <remarks></remarks>
         [Test]
+        [Ignore("Need to fix this test")]
         public void TestTimeoutWaitForLocks()
         {
             var object1 = new object();

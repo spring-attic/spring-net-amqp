@@ -19,8 +19,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// <summary>
     /// Message listener broker interruption integration tests.
     /// </summary>
-    /// <remarks></remarks>
-    public class MessageListenerBrokerInterruptionIntegrationTests
+    [TestFixture]
+    [Category(TestCategory.Integration)]
+    public class MessageListenerBrokerInterruptionIntegrationTests : AbstractRabbitIntegrationTest
     {
         /// <summary>
         /// The logger.
@@ -71,12 +72,39 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         //@Rule
         //public static BrokerPanic panic = new BrokerPanic();
 
-        //@Rule
-        public BrokerRunning brokerIsRunning;
-
         private IConnectionFactory connectionFactory;
 
         private RabbitBrokerAdmin brokerAdmin;
+
+        #region Fixture Setup and Teardown
+        /// <summary>
+        /// Code to execute before fixture setup.
+        /// </summary>
+        public override void BeforeFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute before fixture teardown.
+        /// </summary>
+        public override void BeforeFixtureTearDown()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture setup.
+        /// </summary>
+        public override void AfterFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture teardown.
+        /// </summary>
+        public override void AfterFixtureTearDown()
+        {
+        }
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageListenerBrokerInterruptionIntegrationTests"/> class. 
@@ -89,16 +117,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             if (directory.Exists)
             {
                 directory.Delete(true);
-            }
-
-            logger.Debug("Setting up broker");
-            this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin();
-            
-            // panic.setBrokerAdmin(brokerAdmin);
-            if (environment.IsActive())
-            {
-                this.brokerAdmin.StartupTimeout = 10000;
-                this.brokerAdmin.StartNode();
             }
 
             this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);

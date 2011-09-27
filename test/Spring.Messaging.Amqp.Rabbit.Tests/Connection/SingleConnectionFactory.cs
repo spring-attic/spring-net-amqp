@@ -73,7 +73,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// Sets the connection listeners.
         /// </summary>
         /// <value>The connection listeners.</value>
-        public new IList<IConnectionListener> ConnectionListeners
+        public override IList<IConnectionListener> ConnectionListeners
         {
             set
             {
@@ -89,7 +89,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// Add a connection listener.
         /// </summary>
         /// <param name="listener">The listener.</param>
-        public new void AddConnectionListener(IConnectionListener listener)
+        public override void AddConnectionListener(IConnectionListener listener)
         {
             base.AddConnectionListener(listener);
 

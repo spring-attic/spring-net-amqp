@@ -17,8 +17,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
     /// <summary>
     /// Rabbit Transaction Manager Integration Tests.
     /// </summary>
-    /// <remarks></remarks>
-    public class RabbitTransactionManagerIntegrationTests
+    [TestFixture]
+    [Category(TestCategory.Integration)]
+    public class RabbitTransactionManagerIntegrationTests : AbstractRabbitIntegrationTest
     {
         /// <summary>
         /// The route.
@@ -34,12 +35,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// The transaction template.
         /// </summary>
         private TransactionTemplate transactionTemplate;
-
-        //@Rule
+        
+        #region Fixture Setup and Teardown
         /// <summary>
-        /// The broker is running.
+        /// Code to execute before fixture setup.
         /// </summary>
-        public BrokerRunning brokerIsRunning;
+        public override void BeforeFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute before fixture teardown.
+        /// </summary>
+        public override void BeforeFixtureTearDown()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture setup.
+        /// </summary>
+        public override void AfterFixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Code to execute after fixture teardown.
+        /// </summary>
+        public override void AfterFixtureTearDown()
+        {
+        }
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitTransactionManagerIntegrationTests"/> class. 

@@ -18,8 +18,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <summary>
     /// Caching connection factory integration tests.
     /// </summary>
-    /// <remarks></remarks>
     [TestFixture]
+    [Category(TestCategory.Integration)]
     public class CachingConnectionFactoryIntegrationTests : AbstractRabbitIntegrationTest
     {
         /// <summary>

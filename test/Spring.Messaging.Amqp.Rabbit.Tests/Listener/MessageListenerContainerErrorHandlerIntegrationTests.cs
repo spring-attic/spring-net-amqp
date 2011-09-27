@@ -20,7 +20,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// <summary>
     /// Message listener container error handler integration tests.
     /// </summary>
-    /// <remarks></remarks>
+    [TestFixture]
+    [Category(TestCategory.Integration)]
     public class MessageListenerContainerErrorHandlerIntegrationTests : AbstractRabbitIntegrationTest
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerErrorHandlerIntegrationTests));

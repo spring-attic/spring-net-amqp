@@ -15,7 +15,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// Used to verify raw Rabbit .NET Client behaviour for corner cases.
     /// </summary>
     /// @author Dave Syer
-    /// <remarks></remarks>
+    [TestFixture]
+    [Category(TestCategory.Integration)]
     public class UnackedRawIntegrationTests : AbstractRabbitIntegrationTest
     {
         private ConnectionFactory factory = new ConnectionFactory();

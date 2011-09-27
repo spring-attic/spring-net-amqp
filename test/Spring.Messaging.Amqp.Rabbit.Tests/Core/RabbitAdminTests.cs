@@ -6,13 +6,15 @@ using NUnit.Framework;
 using Spring.Context.Support;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
+using Spring.Messaging.Amqp.Rabbit.Test;
 
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
     /// <summary>
     /// Rabbit admin tests.
     /// </summary>
-    /// <remarks></remarks>
+    [TestFixture]
+    [Category(TestCategory.Unit)]
     public class RabbitAdminTests
     {
         /// <summary>

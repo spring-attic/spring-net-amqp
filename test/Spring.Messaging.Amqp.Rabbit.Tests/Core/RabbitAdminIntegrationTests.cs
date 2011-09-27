@@ -17,7 +17,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// <summary>
     /// Rabbit admin integration tests.
     /// </summary>
-    /// <remarks></remarks>
+    [TestFixture]
+    [Category(TestCategory.Integration)]
     public class RabbitAdminIntegrationTests : AbstractRabbitIntegrationTest
     {
         /// <summary>

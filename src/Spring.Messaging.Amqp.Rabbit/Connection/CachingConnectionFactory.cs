@@ -271,7 +271,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         {
             var targetChannel = this.CreateBareChannel(transactional);
 
-            var useWrapper = false;
+            var useWrapper = true;
             if (useWrapper)
             {
                 // Legacy Code - will wait until the new code tests correctly before removing.
@@ -438,6 +438,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.target = target;
             this.channelList = channelList;
             this.transactional = transactional;
+            this.outer = outer;
         }
 
         /// <summary>

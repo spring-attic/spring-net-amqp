@@ -16,7 +16,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// <summary>
     /// Simple message listener container tests.
     /// </summary>
-    /// <remarks></remarks>
+    [TestFixture]
+    [Category(TestCategory.Unit)]
     public class SimpleMessageListenerContainerTests
     {
 

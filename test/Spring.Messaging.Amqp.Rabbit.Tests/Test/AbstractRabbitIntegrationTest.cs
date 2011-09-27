@@ -10,7 +10,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
     /// <summary>
     /// A base class for integration tests, to ensure that the broker is started, and that it is shut down after the test is done.
     /// </summary>
-    /// <remarks></remarks>
     public abstract class AbstractRabbitIntegrationTest
     {
         /// <summary>

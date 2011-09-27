@@ -10,7 +10,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// <summary>
     /// Rabbit template performance integration tests.
     /// </summary>
-    /// <remarks></remarks>
+    [TestFixture]
+    [Category(TestCategory.Integration)]
     public class RabbitTemplatePerformanceIntegrationTests
     {
         /// <summary>

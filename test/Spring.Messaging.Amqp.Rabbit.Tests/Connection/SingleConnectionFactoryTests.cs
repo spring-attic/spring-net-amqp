@@ -1,22 +1,23 @@
 ﻿
 using System.Collections.Generic;
-
 using AutoMoq;
 using Moq;
 using NUnit.Framework;
-
+using RabbitMQ.Client;
+using Spring.Messaging.Amqp.Rabbit.Test;
 using Spring.Threading.AtomicTypes;
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
-    using RabbitMQ.Client;
-
     /// <summary>
     /// Tests for the single connection factory.
     /// </summary>
-    [TestFixture]
     public class SingleConnectionFactoryTests : AbstractConnectionFactoryTests
     {
+        public SingleConnectionFactoryTests()
+        {
+            
+        }
         /// <summary>
         /// Creates the connection factory.
         /// </summary>

@@ -16,6 +16,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// <summary>
     /// Rabbit Binding Integration Tests
     /// </summary>
+    [TestFixture]
+    [Category(TestCategory.Integration)]
     public class RabbitBindingIntegrationTests : AbstractRabbitIntegrationTest
     {
         /// <summary>
