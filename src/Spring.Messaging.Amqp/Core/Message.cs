@@ -22,7 +22,6 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using Spring.Messaging.Amqp.Support.Converter;
-using Spring.Messaging.Amqp.Utils;
 
 namespace Spring.Messaging.Amqp.Core
 {

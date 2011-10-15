@@ -21,8 +21,15 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
+using System.Text;
+
+using Common.Logging;
+
+using Newtonsoft.Json;
+
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Utils;
 
 namespace Spring.Messaging.Amqp.Support.Converter
 {
@@ -33,20 +40,43 @@ namespace Spring.Messaging.Amqp.Support.Converter
     public class JsonMessageConverter : AbstractMessageConverter
     {
         /// <summary>
+        /// The logger.
+        /// </summary>
+        public static ILog Logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
         /// The default charset.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1310:FieldNamesMustNotContainUnderscore", Justification = "Reviewed. Suppression is OK here.")] 
         public static readonly string DEFAULT_CHARSET = "utf-8";
 
         /// <summary>
         /// The default charset.
         /// </summary>
-        private readonly string defaultCharset = DEFAULT_CHARSET;
+        private volatile string defaultCharset = DEFAULT_CHARSET;
+
+        /// <summary>
+        /// The JSON Serializer
+        /// </summary>
+        private JsonSerializer jsonSerializer = new JsonSerializer();
 
         /// <summary>
         /// The ITypeMapper instance.
         /// </summary>
-        private ITypeMapper typeMapper = new TypeMapper();
+        private ITypeMapper typeMapper = new DefaultTypeMapper();
+
+        public JsonMessageConverter()
+        {
+            this.InitializeJsonSerializer();
+        }
+
+        /// <summary>
+        /// Sets the default charset.
+        /// </summary>
+        /// <value>The default charset.</value>
+        public string DefaultCharset
+        {
+            set { this.defaultCharset = value; }
+        }
 
         /// <summary>
         /// Sets TypeMapper.
@@ -54,6 +84,20 @@ namespace Spring.Messaging.Amqp.Support.Converter
         public ITypeMapper TypeMapper
         {
             set { this.typeMapper = value; }
+        }
+
+        /// <summary>
+        /// Sets the json serializer.
+        /// </summary>
+        /// <value>The json serializer.</value>
+        public JsonSerializer JsonSerializer
+        {
+            set { this.jsonSerializer = value; }
+        }
+
+        protected void InitializeJsonSerializer()
+        {
+            jsonSerializer.MissingMemberHandling = MissingMemberHandling.Ignore;
         }
 
         #region Implementation of IMessageConverter
@@ -84,7 +128,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
                     try
                     {
                         var targetType = this.typeMapper.ToType(message.MessageProperties);
-                        content = SerializationUtils.DeserializeJsonAsObject(message.Body, encoding, targetType);
+                        content = this.ConvertBytesToObject(message.Body, encoding, targetType);
                     }
                     catch (Exception e)
                     {
@@ -95,6 +139,30 @@ namespace Spring.Messaging.Amqp.Support.Converter
 
             return content ?? (content = message.Body);
         }
+
+        /// <summary>
+        /// Converts the bytes to object.
+        /// </summary>
+        /// <param name="body">The body.</param>
+        /// <param name="encoding">The encoding.</param>
+        /// <param name="targetType">Type of the target.</param>
+        /// <returns>The requested object.</returns>
+        private object ConvertBytesToObject(byte[] body, string encoding, Type targetType)
+        {
+            using (var ms = new MemoryStream(body))
+            {
+                var internalEncoding = Encoding.GetEncoding(encoding);
+
+                using (TextReader reader = new StreamReader(ms, internalEncoding, false))
+                {
+                    using (var jsonTextReader = new JsonTextReader(reader))
+                    {
+                        var result = jsonSerializer.Deserialize(jsonTextReader, targetType);
+                        return result;
+                    }
+                }
+            }
+	    }
 
         /// <summary>
         /// Overridden implementation of CreateMessage, to cater for Json serialization.
@@ -115,12 +183,17 @@ namespace Spring.Messaging.Amqp.Support.Converter
             byte[] bytes = null;
             try
             {
-                if (messageProperties == null)
-                {
-                    messageProperties = new MessageProperties();
-                }
+                var jsonString = string.Empty;
+                var sb = new StringBuilder(128);
+                var sw = new StringWriter(sb, CultureInfo.InvariantCulture);
 
-                bytes = SerializationUtils.SerializeJson(obj, this.defaultCharset);
+                using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+                {
+                    jsonSerializer.Serialize(jsonWriter, obj);
+                    jsonString = sw.ToString();
+                    var encoding = Encoding.GetEncoding(this.defaultCharset);
+                    bytes = encoding.GetBytes(jsonString);
+                }
             }
             catch (Exception e)
             {

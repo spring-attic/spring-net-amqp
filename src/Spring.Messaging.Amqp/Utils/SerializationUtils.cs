@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Spring.Messaging.Amqp.Utils
+namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
     /// Utilities for serialization and deserialization.
@@ -22,8 +22,10 @@ namespace Spring.Messaging.Amqp.Utils
         /// <returns>
         /// The byte array.
         /// </returns>
-        public static byte[] SerializeObject(ISerializable obj)
+        public static byte[] SerializeObject(object obj)
         {
+            if (obj == null || !obj.GetType().IsSerializable) return null;
+
             using (var stream = new MemoryStream())
             {
                 var b = new BinaryFormatter();

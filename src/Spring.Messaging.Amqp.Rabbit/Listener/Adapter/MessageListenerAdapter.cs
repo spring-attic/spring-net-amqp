@@ -13,7 +13,6 @@ using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Support.Converter;
 using Spring.Util;
-using Spring.Messaging.Amqp.Utils;
 
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter

@@ -9,7 +9,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <summary>
     /// A rabbit admin auth exception.
     /// </summary>
-    /// <remarks></remarks>
     public class RabbitAdminAuthException : OtpAuthException
     {
         /// <summary>
@@ -17,10 +16,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="cause">The cause.</param>
-        /// <remarks></remarks>
         public RabbitAdminAuthException(string message, OtpAuthException cause) : base(message, cause)
         {
-            //super(message, (com.ericsson.otp.erlang.OtpAuthException) cause.getCause());
         }
 
     }

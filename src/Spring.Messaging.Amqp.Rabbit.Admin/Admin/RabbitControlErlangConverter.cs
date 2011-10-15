@@ -108,7 +108,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         protected void InitializeConverterMap()
         {
             this.RegisterConverter("rabbit_auth_backend_internal", "list_users", new ListUsersConverter());
-            this.RegisterConverter("rabbit", "status", new StatusConverter());
+            this.RegisterConverter("rabbit", "status", new RabbitStatusConverter());
+            this.RegisterConverter("rabbit_mnesia", "status", new RabbitMnesiaStatusConverter());
             this.RegisterConverter("rabbit_amqqueue", "info_all", new QueueInfoAllConverter());
         }
 
@@ -168,10 +169,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 var erlangList = (OtpErlangList)erlangObject;
                 foreach (var obj in erlangList)
                 {
-                    var value = this.ExtractString(obj);
-                    if (value != null)
+                    if (obj is OtpErlangList)
                     {
-                        users.Add(value);
+                        var value = this.ExtractString(((OtpErlangTuple)((OtpErlangList)obj).elementAt(0)).elementAt(1));
+                        if (value != null)
+                        {
+                            users.Add(value);
+                        }
                     }
                 }
             }
@@ -206,7 +210,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// A status converter.
     /// </summary>
     /// <remarks></remarks>
-    public class StatusConverter : SimpleErlangConverter
+    public class RabbitStatusConverter : SimpleErlangConverter
     {
         /// <summary>
         /// Convert from an Erlang data type to a .NET data type.
@@ -227,13 +231,57 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 var runningAppTuple = (OtpErlangTuple)erlangList.elementAt(1);
                 var appList = (OtpErlangList)runningAppTuple.elementAt(1);
                 this.ExtractApplications(applications, appList);
+            }
 
-                var nodesTuple = (OtpErlangTuple)erlangList.elementAt(2);
+            return new RabbitStatus(applications, nodes, runningNodes);
+        }
+
+        /// <summary>
+        /// Extracts the applications.
+        /// </summary>
+        /// <param name="applications">The applications.</param>
+        /// <param name="appList">The app list.</param>
+        private void ExtractApplications(IList<Application> applications, OtpErlangList appList)
+        {
+            foreach (var appDescription in appList)
+            {
+                var appDescriptionTuple = (OtpErlangTuple)appDescription;
+                var name = appDescriptionTuple.elementAt(0).ToString();
+                var description = appDescriptionTuple.elementAt(1).ToString();
+                var version = appDescriptionTuple.elementAt(2).ToString();
+                applications.Add(new Application(name, description, version));
+            }
+        }
+    }
+
+    /// <summary>
+    /// A status converter.
+    /// </summary>
+    /// <remarks></remarks>
+    public class RabbitMnesiaStatusConverter : SimpleErlangConverter
+    {
+        /// <summary>
+        /// Convert from an Erlang data type to a .NET data type.
+        /// </summary>
+        /// <param name="erlangObject">The erlang object.</param>
+        /// <returns>The converted .NET object</returns>
+        /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
+        /// <remarks></remarks>
+        public override object FromErlang(OtpErlangObject erlangObject)
+        {
+            var applications = new List<Application>();
+            var nodes = new List<Node>();
+            var runningNodes = new List<Node>();
+            if (erlangObject is OtpErlangList)
+            {
+                var erlangList = (OtpErlangList)erlangObject;
+
+                var nodesTuple = (OtpErlangTuple)erlangList.elementAt(0);
                 var nodesList = (OtpErlangList)nodesTuple.elementAt(1);
                 this.ExtractNodes(nodes, nodesList);
 
 
-                var runningNodesTuple = (OtpErlangTuple)erlangList.elementAt(3);
+                var runningNodesTuple = (OtpErlangTuple)erlangList.elementAt(1);
                 nodesList = (OtpErlangList)runningNodesTuple.elementAt(1);
                 this.ExtractNodes(runningNodes, nodesList);
             }
@@ -253,24 +301,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             {
                 var nodeName = erlangNodeName.ToString();
                 nodes.Add(new Node(nodeName));
-            }
-        }
-
-        /// <summary>
-        /// Extracts the applications.
-        /// </summary>
-        /// <param name="applications">The applications.</param>
-        /// <param name="appList">The app list.</param>
-        /// <remarks></remarks>
-        private void ExtractApplications(IList<Application> applications, OtpErlangList appList)
-        {
-            foreach (var appDescription in appList)
-            {
-                var appDescriptionTuple = (OtpErlangTuple)appDescription;
-                var name = appDescriptionTuple.elementAt(0).ToString();
-                var description = appDescriptionTuple.elementAt(1).ToString();
-                var version = appDescriptionTuple.elementAt(2).ToString();
-                applications.Add(new Application(name, description, version));
             }
         }
     }

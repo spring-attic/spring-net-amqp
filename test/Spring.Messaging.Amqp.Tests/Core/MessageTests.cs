@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Utils;
 
 namespace Spring.Messaging.Amqp.Tests.Core
 {

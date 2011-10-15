@@ -24,7 +24,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         /// <summary>
         /// The admin node name.
         /// </summary>
-        public static readonly string ADMIN_NODE_NAME = GetAdminNodeName();
+        public static readonly string ADMIN_NODE_NAME = @"spring@localhost";
+        // public static readonly string ADMIN_NODE_NAME = GetAdminNodeName();
 
         /// <summary>
         /// Gets the name of the admin node.
@@ -114,7 +115,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         /// @param nodeName the name of the node
         /// @param port the port to listen on
         /// @return a {@link RabbitBrokerAdmin} instance
-        /// <remarks></remarks>
         public static RabbitBrokerAdmin GetRabbitBrokerAdmin(string nodeName, int port)
         {
             var brokerAdmin = new RabbitBrokerAdmin(nodeName, port);
@@ -123,6 +123,5 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
             brokerAdmin.StartupTimeout = 10000L;
             return brokerAdmin;
         }
-
     }
 }

@@ -85,6 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Admin\ErlangNetIntegrationTests.cs" />
     <Compile Include="Admin\RabbitBrokerAdminIntegrationTests.cs" />
     <Compile Include="Admin\RabbitBrokerAdminLifecycleIntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

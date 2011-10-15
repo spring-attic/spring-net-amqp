@@ -46,7 +46,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </summary>
         public override void AfterFixtureSetUp()
         {
-            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(ROUTE);
         }
 
         /// <summary>
@@ -73,6 +72,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         [SetUp]
         public void Create()
         {
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(ROUTE);
+            this.brokerIsRunning.Apply();
             var connectionFactory = new CachingConnectionFactory();
             connectionFactory.Port = BrokerTestUtils.GetPort();
             this.template = new RabbitTemplate(connectionFactory);

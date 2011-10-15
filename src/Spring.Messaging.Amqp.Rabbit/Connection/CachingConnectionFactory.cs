@@ -271,8 +271,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         {
             var targetChannel = this.CreateBareChannel(transactional);
 
-            var useWrapper = true;
-            if (useWrapper)
+            var useAdvisedClass = false;
+            if (useAdvisedClass)
             {
                 // Legacy Code - will wait until the new code tests correctly before removing.
                 this.ChannelListener.OnCreate(targetChannel, transactional);
@@ -280,10 +280,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
             else
             {
-                var factory = new ProxyFactory(typeof(IChannelProxy), new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this));
-                return (IChannelProxy)factory.GetProxy();
-            }
+                // var factory = new ProxyFactory(typeof(IChannelProxy), new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this));
+                // return (IChannelProxy)factory.GetProxy();
 
+                var factory = new ProxyFactory(typeof(IChannelProxy), new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this));
+                var channelProxy = (IChannelProxy)factory.GetProxy();
+                return channelProxy;
+            }
         }
         
         /// <summary>
@@ -456,7 +459,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </exception>
         public object Invoke(IMethodInvocation invocation)
         {
-            // TODO: Remove this.
             this.Logger.Info(string.Format("Method Intercepted: {0}", invocation.Method.Name));
 
             var methodName = invocation.Method.Name;

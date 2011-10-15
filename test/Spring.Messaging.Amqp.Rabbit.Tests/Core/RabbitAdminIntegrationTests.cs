@@ -65,6 +65,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </summary>
         public override void AfterFixtureSetUp()
         {
+            this.brokerIsRunning = BrokerRunning.IsRunning();
         }
 
         /// <summary>

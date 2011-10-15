@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Utils;
 using Spring.Util;
 
 namespace Spring.Messaging.Amqp.Rabbit.Support

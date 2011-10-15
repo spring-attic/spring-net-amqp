@@ -12,16 +12,32 @@ using Spring.Messaging.Amqp.Rabbit.Test;
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
+    [TestFixture]
+    [Category(TestCategory.LifecycleIntegration)]
     public class RabbitBrokerAdminLifecycleIntegrationTests
     {
         private static ILog logger = LogManager.GetLogger(typeof(RabbitBrokerAdminLifecycleIntegrationTests));
 
         private static readonly string NODE_NAME = "spring@" + Dns.GetHostName().ToUpper();
 
-        //@Rule
-        //public Log4jLevelAdjuster logLevel = new Log4jLevelAdjuster(Level.INFO, RabbitBrokerAdmin.class);
-
         public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
+
+        [TestFixtureSetUp]
+        public void SetUp()
+        {
+            environment.Apply();
+        }
+
+        [TestFixtureTearDown]
+        public void TearDown()
+        {
+            environment.Apply();
+            if (environment.IsActive())
+            {
+                var brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(NODE_NAME);
+                brokerAdmin.StopNode();
+            }
+        }
 
         /// <summary>
         /// Inits this instance.
@@ -47,7 +63,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Tests the start node.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestStartNode()
         {
@@ -122,7 +137,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Repeats the lifecycle.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void RepeatLifecycle()
         {
@@ -130,10 +144,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             {
                 this.TestStopAndStartBroker();
                 Thread.Sleep(200);
-                if (i % 5 == 0)
-                {
+                // if (i % 5 == 0)
+                // {
                     logger.Debug("i = " + i);
-                }
+                // }
             }
 
             var brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(NODE_NAME);
@@ -141,12 +155,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         }
 
         /// <summary>
-        /// Asserts the broker app running.
+        /// Asserts the broker app running. Asserts that the named-node is running.
         /// </summary>
         /// <param name="status">The status.</param>
-        /// Asserts that the named-node is running.
-        /// @param status
-        /// <remarks></remarks>
         private void AssertBrokerAppRunning(RabbitStatus status)
         {
             Assert.AreEqual(1, status.RunningNodes.Count);

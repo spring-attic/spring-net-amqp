@@ -22,6 +22,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         public const string Integration = "Integration";
 
         /// <summary>
+        /// Lifecycle Integration Test
+        /// </summary>
+        public const string LifecycleIntegration = "LifecycleIntegration";
+
+        /// <summary>
         /// Unit Test
         /// </summary>
         public const string Unit = "Unit";

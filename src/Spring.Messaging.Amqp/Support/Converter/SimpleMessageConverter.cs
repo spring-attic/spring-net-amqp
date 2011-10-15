@@ -24,7 +24,6 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Utils;
 
 namespace Spring.Messaging.Amqp.Support.Converter
 {
@@ -146,11 +145,12 @@ namespace Spring.Messaging.Amqp.Support.Converter
                 messageProperties.ContentType = MessageProperties.CONTENT_TYPE_TEXT_PLAIN;
                 messageProperties.ContentEncoding = this.defaultCharset;
             }
-            else if ((obj is ISerializable) || (obj != null && obj.GetType().IsSerializable))
+            else if ((obj.GetType().IsSerializable) || (obj != null && obj.GetType().IsSerializable))
             {
                 try
                 {
-                    bytes = SerializationUtils.SerializeObject((ISerializable)obj);
+                    
+                    bytes = SerializationUtils.SerializeObject(obj);
                 }
                 catch (Exception e)
                 {

@@ -27,6 +27,8 @@ using Spring.Erlang.Connection;
 namespace Spring.Erlang.Core
 {
     [TestFixture]
+    [Category("Integration")]
+    [Ignore("Replaced by tests in Spring.Messaging.Amqp.Rabbit.Admin.Tests.ErlangNetIntegrationTests...")]
     public class ErlangTemplateIntegrationTests
     {
         [Test]

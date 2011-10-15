@@ -11,6 +11,8 @@ using Spring.Messaging.Amqp.Rabbit.Test;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
+    using Common.Logging;
+
     /// <summary>
     /// Used to verify raw Rabbit .NET Client behaviour for corner cases.
     /// </summary>
@@ -19,6 +21,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     [Category(TestCategory.Integration)]
     public class UnackedRawIntegrationTests : AbstractRabbitIntegrationTest
     {
+        private ILog logger = LogManager.GetCurrentClassLogger();
+
         private ConnectionFactory factory = new ConnectionFactory();
         private IConnection conn;
         private IModel noTxChannel;
@@ -57,7 +61,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Inits this instance.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void Init()
         {
@@ -66,8 +69,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             this.conn = this.factory.CreateConnection();
             this.noTxChannel = this.conn.CreateModel();
             this.txChannel = this.conn.CreateModel();
-
-            // TODO: this should be: this.txChannel.BasicQos(1, 0, false);
+            
+            // Note: the Java client includes a convenience method with one int argument that sets the prefetchSize to 0 and global to false.
             this.txChannel.BasicQos(0, 1, false);
             this.txChannel.TxSelect();
 
@@ -86,7 +89,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Clears this instance.
         /// </summary>
-        /// <remarks></remarks>
         [TearDown]
         public void Clear()
         {
@@ -98,7 +100,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception e)
                 {
-                    Console.Write(e.StackTrace);
+                    logger.Error("An error occurred closing the channel", e);
                 }
             }
 
@@ -106,20 +108,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 try
                 {
-                    try
-                    {
-                        this.noTxChannel.QueueDelete("test.queue");
-                    }
-                    catch (Exception e)
-                    {
-                    }
-
-                    this.noTxChannel.Close();
+                    this.noTxChannel.QueueDelete("test.queue");
                 }
                 catch (Exception e)
                 {
-                    Console.Write(e.StackTrace);
+                    logger.Error("An error occurred deleting the queue 'test.queue'", e);
                 }
+
+                this.noTxChannel.Close();
             }
 
             this.conn.Close();
@@ -128,7 +124,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Tests the one publish unacked requeued.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestOnePublishUnackedRequeued()
         {
@@ -149,7 +144,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Tests the four publish unacked requeued.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestFourPublishUnackedRequeued()
         {

@@ -31,14 +31,6 @@ namespace Spring.Messaging.Amqp.Support.Converter
     public interface ITypeMapper
     {
         /// <summary>
-        /// Gets TypeIdFieldName.
-        /// </summary>
-        string TypeIdFieldName
-        {
-            get;
-        }
-
-        /// <summary>
         /// Convert from Type to string
         /// </summary>
         /// <param name="typeOfObjectToConvert">

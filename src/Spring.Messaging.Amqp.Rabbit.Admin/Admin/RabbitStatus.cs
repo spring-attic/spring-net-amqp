@@ -122,6 +122,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         public IList<Node> Nodes
         {
             get { return this.nodes; }
+            set { this.nodes = value; }
         }
 
         /// <summary>
@@ -131,6 +132,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         public IList<Node> RunningNodes
         {
             get { return this.runningNodes; }
+            set { this.runningNodes = value; }
         }
 
         /// <summary>
@@ -140,7 +142,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <remarks></remarks>
         public override string ToString()
         {
-            return string.Format("RunningApplications: {0}, Nodes: {1}, RunningNodes: {2}", this.runningApplications, this.nodes, this.runningNodes);
+            return string.Format("IsAlive: {0}, IsRunning: {1}, IsReady: {2}, RunningApplications: {3}, Nodes: {4}, RunningNodes: {5}", this.IsAlive, this.IsRunning, this.IsReady, this.runningApplications, this.nodes, this.runningNodes);
         }
     }
 }

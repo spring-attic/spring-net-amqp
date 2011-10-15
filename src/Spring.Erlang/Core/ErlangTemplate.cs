@@ -201,6 +201,7 @@ namespace Spring.Erlang.Core
             }
             catch (Exception ex)
             {
+                logger.Error("An error occurred executing the action", ex);
                 throw this.ConvertOtpAccessException(ex);
             }
             finally

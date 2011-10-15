@@ -58,8 +58,7 @@ namespace Spring.Erlang.Support
         /// <summary>
         /// Afters the properties set.
         /// </summary>
-        /// <remarks></remarks>
-        public void AfterPropertiesSet()
+        public virtual void AfterPropertiesSet()
         {
             AssertUtils.ArgumentNotNull(this.ConnectionFactory, "ConnectionFactory is required");
         }

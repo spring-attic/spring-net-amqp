@@ -37,6 +37,7 @@
   <property name="msbuild.exe" value="${net40.install.dir}\msbuild.exe" />
   
   <property name="skip-tests" value="false" overwrite="false" />
+  <property name="run-test-categories" value="Unit" overwrite="false" />
 
   <!-- MAIN TARGETS -->
  
@@ -312,6 +313,7 @@
         <property name="test.assemblyname" value="${path::get-file-name(filename)}" />
         <exec program="${tools.dir}\NUnit\bin\net-2.0\nunit-console-x86.exe" workingdir="${project.buildoutputdir}" verbose="true">
           <arg line="${test.assemblyname}" />
+		  <arg value="/include:${run-test-categories}" />
           <arg value="/xml:${test.assemblyname}-TestResults.xml" />
           <arg value="/nologo" />
           <arg value="/noshadow" />

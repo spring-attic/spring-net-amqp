@@ -30,9 +30,14 @@ using Spring.Messaging.Amqp.Rabbit.Test;
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
+    using Common.Logging;
+
     [TestFixture]
+    [Category(TestCategory.Integration)]
     public class RabbitBrokerAdminIntegrationTests
     {
+        private readonly ILog logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// The connection factory.
         /// </summary>
@@ -43,31 +48,43 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// </summary>
         private RabbitBrokerAdmin brokerAdmin;
 
+        /// <summary>
+        /// Determines whether the environment is available.
+        /// </summary>
+        public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
         /// <summary>
         /// Sets up.
         /// </summary>
-        /// <remarks></remarks>
-        [SetUp]
+        [TestFixtureSetUp]
         public void SetUp()
         {
-            //if (environment.isActive())
-            //{
-            // Set up broker admin for non-root user
-            this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(); //"rabbit@LOCALHOST", 5672);
-            this.brokerAdmin.StartBrokerApplication();
-            //panic.setBrokerAdmin(brokerAdmin);
-            // }
+            try
+            {
+                if (environment.IsActive())
+                {
+                    // Set up broker admin for non-root user
+                    this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(); //"rabbit@LOCALHOST", 5672);
+                    this.brokerAdmin.StartNode();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.Error("An error occurred during SetUp", ex);
+                Assert.Fail("An error occurred during SetUp.");
+            }
         }
 
         /// <summary>
         /// Tears down.
         /// </summary>
-        /// <remarks></remarks>
-        [TearDown]
+        [TestFixtureTearDown]
         public void TearDown()
         {
-            this.brokerAdmin.StopNode();
+            if(environment.IsActive())
+            {
+                this.brokerAdmin.StopNode();
+            }
         }
 
         /// <summary>
@@ -77,7 +94,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         [Test]
         public void UserCrud()
         {
-            List<String> users = this.brokerAdmin.ListUsers();
+            var users = this.brokerAdmin.ListUsers();
             if (users.Contains("joe"))
             {
                 this.brokerAdmin.DeleteUser("joe");
@@ -103,30 +120,42 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         [Test]
         public void IntegrationTestsUserCrudWithModuleAdapter()
         {
-
-            var adapter = new Dictionary<string, string>();
-            // Switch two functions with identical inputs!
-            adapter.Add("rabbit_auth_backend_internal%add_user", "rabbit_auth_backend_internal%change_password");
-            adapter.Add("rabbit_auth_backend_internal%change_password", "rabbit_auth_backend_internal%add_user");
-            brokerAdmin.ModuleAdapter = adapter;
-
-            var users = brokerAdmin.ListUsers();
-            if (users.Contains("joe"))
+            try
             {
-                brokerAdmin.DeleteUser("joe");
-            }
-            Thread.Sleep(200);
-            brokerAdmin.ChangeUserPassword("joe", "sales");
-            Thread.Sleep(200);
-            brokerAdmin.AddUser("joe", "trader");
-            Thread.Sleep(200);
-            users = brokerAdmin.ListUsers();
-            if (users.Contains("joe"))
-            {
-                Thread.Sleep(200);
-                brokerAdmin.DeleteUser("joe");
-            }
+                var adapter = new Dictionary<string, string>();
+                // Switch two functions with identical inputs!
+                adapter.Add("rabbit_auth_backend_internal%add_user", "rabbit_auth_backend_internal%change_password");
+                adapter.Add("rabbit_auth_backend_internal%change_password", "rabbit_auth_backend_internal%add_user");
+                brokerAdmin.ModuleAdapter = adapter;
 
+                var users = brokerAdmin.ListUsers();
+                if (users.Contains("joe"))
+                {
+                    brokerAdmin.DeleteUser("joe");
+                }
+
+                Thread.Sleep(1000);
+                brokerAdmin.ChangeUserPassword("joe", "sales");
+                Thread.Sleep(1000);
+                brokerAdmin.AddUser("joe", "trader");
+                Thread.Sleep(1000);
+                users = brokerAdmin.ListUsers();
+                if (users.Contains("joe"))
+                {
+                    Thread.Sleep(1000);
+                    brokerAdmin.DeleteUser("joe");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("An error occurred", ex);
+                throw;
+            }
+            finally
+            {
+                // Need to ensure that we reset the module adapter that we swizzled with above, otherwise our other tests will be unreliable.
+                this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin();
+            }
         }
 
         [Test]

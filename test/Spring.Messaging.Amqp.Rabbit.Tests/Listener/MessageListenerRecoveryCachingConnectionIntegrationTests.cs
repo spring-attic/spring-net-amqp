@@ -17,6 +17,11 @@ using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
+    /// <summary>
+    /// Message listener recovery caching connection integration tests.
+    /// </summary>
+    [TestFixture]
+    [Category(TestCategory.Integration)]
     public class MessageListenerRecoveryCachingConnectionIntegrationTests : AbstractRabbitIntegrationTest
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerRecoveryCachingConnectionIntegrationTests));

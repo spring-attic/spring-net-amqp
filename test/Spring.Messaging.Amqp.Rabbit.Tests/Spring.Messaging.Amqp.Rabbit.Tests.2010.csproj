@@ -141,6 +141,7 @@
     <Compile Include="Listener\SimpleMessageListenerContainerTests.cs" />
     <Compile Include="Listener\UnackedRawIntegrationTests.cs" />
     <Compile Include="Support\MoqExtensions.cs" />
+    <Compile Include="Test\BrokerPanic.cs" />
     <Compile Include="Test\BrokerRunning.cs" />
     <Compile Include="Test\BrokerTestUtils.cs" />
     <Compile Include="Test\EnvironmentAvailable.cs" />

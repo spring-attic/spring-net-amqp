@@ -33,14 +33,14 @@ namespace Spring.Messaging.Amqp.Support.Converter
         /// <returns>
         /// The Message.
         /// </returns>
-        public virtual Message ToMessage(object obj, MessageProperties messageProperties)
+        public Message ToMessage(object obj, MessageProperties messageProperties)
         {
             if (messageProperties == null)
             {
                 messageProperties = new MessageProperties();
             }
 
-            Message message = this.CreateMessage(obj, messageProperties);
+            var message = this.CreateMessage(obj, messageProperties);
             messageProperties = message.MessageProperties;
             if (this.createMessageIds && messageProperties.MessageId == null)
             {
