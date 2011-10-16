@@ -66,7 +66,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// Tests the proxy listener.
         /// </summary>
         [Test]
-        [Ignore("Need to Fix")]
+        [Ignore("Need Steve or Mark to look at this... Validated that the proxied type does get called, but this.service.called doesn't return true...?")]
         public void TestProxyListener()
         {
             this.adapter.DefaultListenerMethod = "NotDefinedOnInterface";
@@ -74,7 +74,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             factory.ProxyTargetType = true;
             this.adapter.HandlerObject = factory.GetProxy();
             this.adapter.OnMessage(new Message(Encoding.UTF8.GetBytes("foo"), this.messageProperties));
-            Assert.True(this.service.called);
+            Assert.True(this.service.Called);
         }
 
         /// <summary>
@@ -153,6 +153,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// </summary>
         public bool called;
 
+        public bool Called
+        {
+            get { return this.called; }
+            set { this.called = value; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleService"/> class. 
         /// </summary>
@@ -160,7 +166,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// </remarks>
         public SimpleService()
         {
-            this.called = false;
+            called = false;
         }
 
         /// <summary>
@@ -171,7 +177,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <remarks></remarks>
         public string Handle(string input)
         {
-            this.called = true;
+            called = true;
             return "processed" + input;
         }
 
@@ -183,7 +189,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <remarks></remarks>
         public string NotDefinedOnInterface(string input)
         {
-            this.called = true;
+            called = true;
             return "processed" + input;
         }
     }

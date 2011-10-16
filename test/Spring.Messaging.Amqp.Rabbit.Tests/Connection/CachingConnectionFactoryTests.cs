@@ -91,13 +91,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         /// <remarks></remarks>
         [Test]
-        [Ignore("Need to fix")]
         public void TestWithConnectionFactoryCacheSize()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
-            var mockConnection = mocker.GetMock<RabbitMQ.Client.IConnection>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<RabbitMQ.Client.IConnection>();
             var mockChannel1 = new Mock<IModel>();
             var mockChannel2 = new Mock<IModel>();
 
@@ -330,20 +327,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         /// <remarks></remarks>
         [Test]
-        [Ignore("Need to Fix")]
+        //[Ignore("Need to Fix")]
         public void TestWithConnectionFactoryDestroy()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<RabbitMQ.Client.ConnectionFactory>();
-            var mockConnection = mocker.GetMock<RabbitMQ.Client.IConnection>();
+            var mockConnectionFactory = new Mock<RabbitMQ.Client.ConnectionFactory>();
+            var mockConnection = new Mock<RabbitMQ.Client.IConnection>();
             var mockChannel1 = new Mock<IModel>();
             var mockChannel2 = new Mock<IModel>();
 
             Assert.AreNotSame(mockChannel1, mockChannel2);
 
             mockConnectionFactory.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
-            mockConnection.Setup(c => c.CreateModel()).ReturnsInOrder(mockChannel1.Object, mockChannel2.Object);
+            mockConnection.Setup(c => c.CreateModel()).ReturnsInOrder(mockChannel1.Object, mockChannel2.Object, mockChannel1.Object);
             mockConnection.Setup(c => c.IsOpen).Returns(true);
 
             // Called during physical close
@@ -375,7 +370,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             var target1 = ((IChannelProxy)ch1).GetTargetChannel();
             var target2 = ((IChannelProxy)ch2).GetTargetChannel();
 
-            // make sure mokito returned different mocks for the channel
+            // make sure Moq returned different mocks for the channel
             Assert.AreNotSame(target1, target2);
 
             ch1.Close();
@@ -405,7 +400,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// Tests the with listener.
         /// </summary>
         [Test]
-        [Ignore("Need to Fix")]
+        //[Ignore("Need to Fix")]
         public void TestWithListener()
         {
             var mocker = new AutoMoqer();

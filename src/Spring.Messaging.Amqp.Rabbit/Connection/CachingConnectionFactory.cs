@@ -340,12 +340,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 if (this.connection != null)
                 {
-                    // TODO: this.connection.Dispose();
-                    if (this.connection.IsOpen())
-                    {
-                        this.connection.Close();
-                    }
-
+                    this.connection.Dispose();
                     this.connection = null;
                 }
             }
@@ -502,7 +497,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 this.PhysicalClose();
                 return null;
             }
-            else if (methodName == "get_TargetChannel")
+            else if (methodName == "GetTargetChannel")
             {
                 // Handle getTargetChannel method: return underlying Channel.
                 return this.target;
@@ -569,14 +564,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
 
             // Allow for multiple close calls...
-            if (!this.channelList.Contains(proxy))
-            {
+            // TODO: Figure out why the proxied channels don't work with this.channelList.Contains()
+            // if (!this.channelList.Contains(proxy))
+            // {
                 if (this.Logger.IsTraceEnabled)
                 {
                     this.Logger.Trace("Returning cached Channel: " + this.target);
                 }
                 this.channelList.AddLast(proxy);
-            }
+            // }
         }
 
         /// <summary>

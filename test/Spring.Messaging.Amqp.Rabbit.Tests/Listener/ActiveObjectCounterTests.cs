@@ -79,7 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         /// <remarks></remarks>
         [Test]
-        [Ignore("Need to fix this test")]
+        //[Ignore("Need to fix this test")]
         public void TestTimeoutWaitForLocks()
         {
             var object1 = new object();
