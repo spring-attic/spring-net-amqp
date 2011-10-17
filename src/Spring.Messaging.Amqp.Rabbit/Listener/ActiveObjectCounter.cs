@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+
+using Common.Logging;
+
 using Spring.Messaging.Amqp.Rabbit.Support;
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
@@ -18,6 +21,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// <author>Joe Fitzgerald</author>
     public class ActiveObjectCounter<T>
     {
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// A lock dictionary.
         /// </summary>
@@ -48,9 +56,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 this.locks.TryRemove(obj, out remove);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                Logger.Error("Could not remove from locks.", ex);
+                // throw;
             }
 
             if (remove != null)
@@ -83,27 +92,34 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 foreach (var obj in objects)
                 {
                     CountdownEvent latchLock = null;
-                    this.locks.TryGetValue(obj, out latchLock);
+
+                    try
+                    {
+                        this.locks.TryGetValue(obj, out latchLock);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error("Error occurred getting object.", ex);
+                    }
+                    
                     if (latchLock == null)
                     {
                         continue;
                     }
 
                     t0 = DateTime.Now;
-                    if (latchLock.Wait(t1.Subtract(t0)))
+                    var t3 = t1.Subtract(t0);
+                    if (latchLock.Wait(t3.Milliseconds > 0 ? t3.Milliseconds : 0))
                     {
                         CountdownEvent removeResult;
                         try
                         {
-
                             this.locks.TryRemove(obj, out removeResult);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
-                            throw;
+                            Logger.Error("Error occurred removing lock.", ex);
                         }
-
-                        // TODO: Do something if removeResult is null?
                     }
                 }
             }

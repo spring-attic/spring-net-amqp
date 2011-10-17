@@ -79,6 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public void SetUp()
         {
             this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+            this.brokerIsRunning.Apply();
         }
 
         //@Rule
@@ -166,7 +167,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <remarks></remarks>
         private void DoTest(MessageCount level, Concurrency concurrency, TransactionModeUtils.TransactionMode transactionMode)
         {
-
             var messageCount = (int)level;
             var concurrentConsumers = (int)concurrency;
             var transactional = transactionMode.IsTransactional();

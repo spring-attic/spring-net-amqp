@@ -476,6 +476,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 return "Cached Rabbit Channel: " + this.target;
             }
+            else if (methodName == "GetConnection")
+            {
+                return ((RabbitMQ.Client.Impl.ModelBase)this.target).m_session.Connection;
+            }
             else if (methodName == "Close")
             {
                 // Handle close method: don't pass the call on.

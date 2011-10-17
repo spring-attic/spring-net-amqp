@@ -15,5 +15,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// The channel.
         /// </returns>
         IModel GetTargetChannel();
+
+        /// <summary>
+        /// Gets the connection.
+        /// </summary>
+        /// <returns>The connection associated with the channel.</returns>
+        RabbitMQ.Client.IConnection GetConnection();
     }
 }

@@ -125,6 +125,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             return this.target;
         }
 
+        public RabbitMQ.Client.IConnection GetConnection()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region Implementation of IModel

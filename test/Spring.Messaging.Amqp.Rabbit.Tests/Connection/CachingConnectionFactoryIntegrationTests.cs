@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using AutoMoq;
+
+using Common.Logging;
+
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
@@ -22,6 +25,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     [Category(TestCategory.Integration)]
     public class CachingConnectionFactoryIntegrationTests : AbstractRabbitIntegrationTest
     {
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// The connection factory.
         /// </summary>
@@ -190,11 +195,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         }
 
         [Test]
-        [Ignore("TODO")]
         public void TestHardErrorAndReconnect()
         {
-            throw new NotImplementedException();
-            /*
             var template = new RabbitTemplate(connectionFactory);
             var admin = new RabbitAdmin(connectionFactory);
             var queue = new Queue("foo");
@@ -204,53 +206,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             var latch = new CountdownEvent(1);
             try
             {
-                var mocker = new AutoMoqer();
-                var mockCallback = mocker.GetMock<IChannelCallback<object>>();
-                var mockShutdownListener = mocker.GetMock<ModelShutdownEventHandler>();
-                mockCallback.Setup(m => m.DoInRabbit(It.IsAny<IModel>())).Callback((IModel channel) =>
-                                                                                       {
-                                                                                           channel.getConnection().addShutdownListener(new ShutdownListener() {
-                            public void ShutdownCompleted(ShutdownSignalException cause) {
-                                logger.info("Error", cause);
+                template.Execute<object>((IModel channel) =>
+                    {
+                        ((IChannelProxy)channel).GetConnection().ConnectionShutdown += new ConnectionShutdownEventHandler(delegate
+                            {
+                                Logger.Info("Error");
                                 latch.Signal();
-                                // This will be thrown on the Connection thread just before it dies, so basically ignored
-                                throw new SystemException(cause);
-                            }
-                        });
-                        var tag = channel.BasicConsume(route, new DefaultConsumer(channel));
+                                /// This will be thrown on the Connection thread just before it dies, so basically ignored
+                                throw new SystemException();
+                            });
+
+                        var internalTag = channel.BasicConsume(route, false, new DefaultBasicConsumer(channel));
                         // Consume twice with the same tag is a hard error (connection will be reset)
-                        var result = channel.BasicConsume(route, false, tag, new DefaultConsumer(channel));
-                        Assert.Fail("Expected IOException, got: " + result);
+                        var internalResult = channel.BasicConsume(route, false, internalTag, new DefaultBasicConsumer(channel));
+                        Assert.Fail("Expected IOException, got: " + internalResult);
                         return null;
-                                                                                       });
-                template.Execute(new IChannelCallback<Object>() {
-                    public Object doInRabbit(Channel channel) throws Exception {
-                        channel.getConnection().addShutdownListener(new ShutdownListener() {
-                            public void shutdownCompleted(ShutdownSignalException cause) {
-                                logger.info("Error", cause);
-                                latch.countDown();
-                                // This will be thrown on the Connection thread just before it dies, so basically ignored
-                                throw new RuntimeException(cause);
-                            }
-                        });
-                        var tag = channel.basicConsume(route, new DefaultConsumer(channel));
-                        // Consume twice with the same tag is a hard error (connection will be reset)
-                        var result = channel.basicConsume(route, false, tag, new DefaultConsumer(channel));
-                        Assert.Fail("Expected IOException, got: " + result);
-                        return null;
-                    }
-                });
-                Assert.Fail("Expected AmqpConnectException");
+                    });
+
+                Assert.Fail("Expected AmqpIOException");
             } 
-            catch (AmqpConnectException e) {
+            catch (AmqpIOException e) 
+            {
                 // expected
             }
-            template.convertAndSend(route, "message");
-            assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
-            String result = (String) template.receiveAndConvert(route);
-            assertEquals("message", result);
-            result = (String) template.receiveAndConvert(route);
-            assertEquals(null, result);*/
+
+            template.ConvertAndSend(route, "message");
+            Assert.True(latch.Wait(1000));
+            var result = (string)template.ReceiveAndConvert(route);
+            Assert.AreEqual("message", result);
+            result = (string)template.ReceiveAndConvert(route);
+            Assert.AreEqual(null, result);
         }
     }
 }

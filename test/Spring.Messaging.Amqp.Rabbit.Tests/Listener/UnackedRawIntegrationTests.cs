@@ -127,6 +127,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestOnePublishUnackedRequeued()
         {
+            // TODO
             this.noTxChannel.BasicPublish(string.Empty, "test.queue", null, Encoding.UTF8.GetBytes("foo"));
 
             var callback = new QueueingBasicConsumer(this.txChannel);

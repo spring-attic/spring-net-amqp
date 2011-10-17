@@ -432,13 +432,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             try
             {
                 this.logger.Info("Waiting for workers to finish.");
-                var finished = this.cancellationLock.Await(new TimeSpan(0, 0, 0, 0, (int)this.shutdownTimeout));
+                var finished = this.cancellationLock.Await(new TimeSpan(this.shutdownTimeout*10000));
                 this.logger.Info(finished ? "Successfully waited for workers to finish." : "Workers not finished.  Forcing connections to close.");
             }
             catch (ThreadInterruptedException e)
             {
                 Thread.CurrentThread.Interrupt();
                 this.logger.Warn("Interrupted waiting for workers.  Continuing with shutdown.");
+            }
+            catch (Exception ex)
+            {
+                this.logger.Error("Error occurred shutting down workers.", ex);
             }
 
             lock (this.consumersMonitor)
