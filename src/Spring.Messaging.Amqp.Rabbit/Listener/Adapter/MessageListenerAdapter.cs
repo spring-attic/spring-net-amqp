@@ -441,7 +441,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
                 methodInvoker.TargetMethod = methodName;
                 methodInvoker.Arguments = arguments;
                 methodInvoker.Prepare();
-                return methodInvoker.Invoke();
+                var result = methodInvoker.Invoke();
+                if(result == MethodInvoker.Void)
+                {
+                    return null;
+                }
+                return result;
             }
             catch (TargetInvocationException ex)
             {

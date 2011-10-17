@@ -83,7 +83,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         {
             if(environment.IsActive())
             {
-                this.brokerAdmin.StopNode();
+                // this.brokerAdmin.StopNode();
             }
         }
 

@@ -274,7 +274,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             var value = Encoding.UTF8.GetString(message.Body);
             logger.Debug("Receiving: " + value);
-            this.latch.Signal();
+            if(this.latch.CurrentCount > 0) this.latch.Signal();
         }
     }
 }

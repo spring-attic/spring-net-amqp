@@ -241,7 +241,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public void HandleMessage(int value)
         {
             logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
-            this.latch.Signal();
+            if (this.latch.CurrentCount > 0) this.latch.Signal();
         }
 
         /// <summary>

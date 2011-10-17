@@ -138,6 +138,7 @@
     <Compile Include="Listener\MessageListenerRecoverySingleConnectionIntegrationTests.cs" />
     <Compile Include="Listener\MessageListenerTxSizeIntegrationTests.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainerIntegrationTests.cs" />
+    <Compile Include="Listener\SimpleMessageListenerContainerSunnyDayTest.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainerTests.cs" />
     <Compile Include="Listener\UnackedRawIntegrationTests.cs" />
     <Compile Include="Support\MoqExtensions.cs" />

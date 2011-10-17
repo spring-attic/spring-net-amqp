@@ -277,7 +277,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.Signal();
+                if (this.latch.CurrentCount > 0) this.latch.Signal();
             }
         }
     }
@@ -328,7 +328,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.Signal();
+                if(this.latch.CurrentCount > 0) this.latch.Signal();
             }
         }
     }
@@ -380,7 +380,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.Signal();
+                if (this.latch.CurrentCount > 0) this.latch.Signal();
             }
         }
     }

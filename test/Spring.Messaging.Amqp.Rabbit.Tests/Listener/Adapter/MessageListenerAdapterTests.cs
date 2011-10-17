@@ -46,7 +46,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             this.adapter.HandlerObject = handler;
 
             this.adapter.OnMessage(new Message(Encoding.UTF8.GetBytes("foo"), this.messageProperties));
-            Assert.True(this.service.called);
+            Assert.True(SimpleService.called);
         }
 
         /// <summary>
@@ -59,22 +59,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             this.adapter.DefaultListenerMethod = "Handle";
             this.adapter.HandlerObject = this.service;
             this.adapter.OnMessage(new Message(Encoding.UTF8.GetBytes("foo"), this.messageProperties));
-            Assert.True(this.service.called);
+            Assert.True(SimpleService.called);
         }
 
         /// <summary>
         /// Tests the proxy listener.
         /// </summary>
         [Test]
-        [Ignore("Need Steve or Mark to look at this... Validated that the proxied type does get called, but this.service.called doesn't return true...?")]
+        //[Ignore("Need Steve or Mark to look at this... Validated that the proxied type does get called, but this.service.called doesn't return true...?")]
         public void TestProxyListener()
         {
             this.adapter.DefaultListenerMethod = "NotDefinedOnInterface";
-            var factory = new ProxyFactory(this.service);
+            var factory = new ProxyFactory();
+            factory.Target = this.service;
             factory.ProxyTargetType = true;
             this.adapter.HandlerObject = factory.GetProxy();
             this.adapter.OnMessage(new Message(Encoding.UTF8.GetBytes("foo"), this.messageProperties));
-            Assert.True(this.service.Called);
+            Assert.True(SimpleService.called);
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             factory.ProxyTargetType = false;
             this.adapter.HandlerObject = factory.GetProxy();
             this.adapter.OnMessage(new Message(Encoding.UTF8.GetBytes("foo"), this.messageProperties));
-            Assert.True(this.service.called);
+            Assert.True(SimpleService.called);
         }
     }
 
@@ -122,7 +123,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <remarks></remarks>
         public string HandleMessage(string input)
         {
-            this.service.called = true;
+            SimpleService.called = true;
             return "processed" + input;
         }
     }
@@ -151,12 +152,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <summary>
         /// Whether this has been called.
         /// </summary>
-        public bool called;
+        public static bool called;
 
         public bool Called
         {
-            get { return this.called; }
-            set { this.called = value; }
+            get { return called; }
+            set { called = value; }
         }
 
         /// <summary>

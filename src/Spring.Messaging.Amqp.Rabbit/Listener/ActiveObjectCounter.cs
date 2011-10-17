@@ -64,7 +64,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             if (remove != null)
             {
-                remove.Signal();
+                if (remove.CurrentCount > 0)
+                {
+                    remove.Signal();
+                }
             }
         }
 

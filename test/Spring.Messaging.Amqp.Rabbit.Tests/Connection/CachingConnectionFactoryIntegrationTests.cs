@@ -211,7 +211,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                         ((IChannelProxy)channel).GetConnection().ConnectionShutdown += new ConnectionShutdownEventHandler(delegate
                             {
                                 Logger.Info("Error");
-                                latch.Signal();
+                                if (latch.CurrentCount > 0)
+                                {
+                                    latch.Signal();
+                                }
                                 /// This will be thrown on the Connection thread just before it dies, so basically ignored
                                 throw new SystemException();
                             });

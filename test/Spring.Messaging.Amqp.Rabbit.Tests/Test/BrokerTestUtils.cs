@@ -24,8 +24,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         /// <summary>
         /// The admin node name.
         /// </summary>
-        public static readonly string ADMIN_NODE_NAME = @"spring@localhost";
-        // public static readonly string ADMIN_NODE_NAME = GetAdminNodeName();
+        // public static readonly string ADMIN_NODE_NAME = @"rabbit@localhost";
+        public static readonly string ADMIN_NODE_NAME = GetAdminNodeName();
 
         /// <summary>
         /// Gets the name of the admin node.
@@ -36,7 +36,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         {
             var hostName = Dns.GetHostName();
             hostName = string.IsNullOrEmpty(hostName) ? "LOCALHOST" : hostName.Trim();
-            return "spring@" + hostName;
+            return "rabbit@" + hostName;
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         /// <remarks></remarks>
         public static RabbitBrokerAdmin GetRabbitBrokerAdmin()
         {
-            return GetRabbitBrokerAdmin(ADMIN_NODE_NAME, GetAdminPort());
+            return GetRabbitBrokerAdmin(GetAdminNodeName(), GetAdminPort());
         }
 
         /// <summary>

@@ -210,7 +210,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                latch.Signal();
+                if (latch.CurrentCount > 0) latch.Signal();
             }
         }
     }

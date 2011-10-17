@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+using Common.Logging;
+
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 
@@ -12,6 +15,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
     /// </summary>
     public abstract class AbstractRabbitIntegrationTest
     {
+        public static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
+
+        private RabbitBrokerAdmin brokerAdmin;
+
         /// <summary>
         /// Determines if the broker is running.
         /// </summary>
@@ -28,6 +36,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
             // Eventually add some kind of logic here to start up the broker if it is not running.
             this.AfterFixtureSetUp();
 
+            try
+            {
+                if (environment.IsActive())
+                {
+                    // Set up broker admin for non-root user
+                    this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(); //"rabbit@LOCALHOST", 5672);
+                    this.brokerAdmin.StartNode();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("An error occurred during SetUp", ex);
+                Assert.Fail("An error occurred during SetUp.");
+            }
             if (!this.brokerIsRunning.Apply())
             {
                 Assert.Ignore("Rabbit broker is not running. Ignoring integration test fixture.");

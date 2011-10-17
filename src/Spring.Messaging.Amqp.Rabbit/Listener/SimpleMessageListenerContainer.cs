@@ -704,7 +704,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception t)
                 {
-                    this.start.Signal();
+                    if (start.CurrentCount > 0)
+                    {
+                        this.start.Signal();
+                    }
                     this.HandleStartupFailure(t);
                     throw;
                 }
@@ -759,7 +762,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
 
             // In all cases count down to allow container to progress beyond startup
-            this.start.Signal();
+            if (start.CurrentCount > 0)
+            {
+                this.start.Signal();
+            }
 
             if (!this.outer.IsActive || aborted)
             {

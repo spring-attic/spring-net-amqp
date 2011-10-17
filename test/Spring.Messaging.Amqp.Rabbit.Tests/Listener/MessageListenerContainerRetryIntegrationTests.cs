@@ -247,14 +247,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                                                   }
                                                   catch (ThreadInterruptedException e)
                                                   {
-                                                      latch.Signal();
+                                                      if (latch.CurrentCount > 0) latch.Signal();
                                                       Thread.CurrentThread.Interrupt();
                                                       return;
                                                   }
                                               }
                                               for (var i = 0; i < count; i++)
                                               {
-                                                  latch.Signal();
+                                                  if (latch.CurrentCount > 0) latch.Signal();
                                               }
                                           });
                 var waited = latch.Wait(timeout * 1000);

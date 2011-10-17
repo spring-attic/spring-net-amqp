@@ -47,19 +47,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         private readonly AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode;
 
-        // @Rule
-        // public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.ERROR, RabbitTemplate.class,
-        // SimpleMessageListenerContainer.class, BlockingQueueConsumer.class, CachingConnectionFactory.class);
-
-        //@Rule
-        public BrokerRunning brokerIsRunning;
-
         #region Fixture Setup and Teardown
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
         public override void BeforeFixtureSetUp()
         {
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
         }
 
         /// <summary>
@@ -130,10 +124,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// Declares the queue.
         /// </summary>
         /// <remarks></remarks>
-        [SetUp]
         public void DeclareQueue()
         {
-            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+            this.brokerIsRunning.Apply();
             var connectionFactory = new CachingConnectionFactory();
             connectionFactory.ChannelCacheSize = this.concurrentConsumers;
             connectionFactory.Port = BrokerTestUtils.GetPort();
@@ -144,7 +137,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// Clears this instance.
         /// </summary>
         /// <remarks></remarks>
-        [TearDown]
         public void Clear()
         {
             // Wait for broker communication to finish before trying to stop container
@@ -163,8 +155,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestPocoListenerSunnyDay()
         {
+            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoSunnyDayTest(latch, new MessageListenerAdapter(new SimplePocoListener(latch)));
+            this.Clear();
         }
 
         /// <summary>
@@ -174,8 +168,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestListenerSunnyDay()
         {
+            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoSunnyDayTest(latch, new Listener(latch));
+            this.Clear();
         }
 
         /// <summary>
@@ -185,8 +181,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestChannelAwareListenerSunnyDay()
         {
+            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoSunnyDayTest(latch, new ChannelAwareListener(latch));
+            this.Clear();
         }
 
         /// <summary>
@@ -196,8 +194,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestPocoListenerWithException()
         {
+            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoListenerWithExceptionTest(latch, new MessageListenerAdapter(new SimplePocoListener(latch, true)));
+            this.Clear();
         }
 
         /// <summary>
@@ -207,8 +207,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestListenerWithException()
         {
+            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoListenerWithExceptionTest(latch, new Listener(latch, true));
+            this.Clear();
         }
 
         /// <summary>
@@ -218,8 +220,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         [Test]
         public void TestChannelAwareListenerWithException()
         {
+            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoListenerWithExceptionTest(latch, new ChannelAwareListener(latch, true));
+            this.Clear();
         }
 
 
@@ -374,7 +378,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.Signal();
+                if (this.latch.CurrentCount > 0) this.latch.Signal();
             }
         }
     }
@@ -436,7 +440,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.Signal();
+                if (this.latch.CurrentCount > 0) this.latch.Signal();
             }
         }
     }
@@ -498,7 +502,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                this.latch.Signal();
+                if(this.latch.CurrentCount > 0) this.latch.Signal();
             }
         }
     }

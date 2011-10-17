@@ -663,7 +663,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                                {
                                    try
                                    {
-                                       running.Signal();
+                                       if (running.CurrentCount > 0) running.Signal();
                                        var process = Process.Start(execute);
                                        process.WaitForExit();
                                        var exit = process.ExitCode;
