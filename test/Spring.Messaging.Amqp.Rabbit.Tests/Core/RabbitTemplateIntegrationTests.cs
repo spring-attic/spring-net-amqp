@@ -112,10 +112,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         [Test]
         public void TestSendAndReceiveWithPostProcessor()
         {
-            var mocker = new AutoMoqer();
-
-
-
             this.template.ConvertAndSend(
                 ROUTE,
                 (object)"message",

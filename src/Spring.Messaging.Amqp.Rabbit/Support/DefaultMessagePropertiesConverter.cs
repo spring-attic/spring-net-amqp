@@ -27,7 +27,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             var headers = source.Headers;
             if (headers != null && headers.Count > 0)
             {
-                foreach (KeyValuePair<string, object> entry in headers)
+                foreach (DictionaryEntry entry in headers)
                 {
                     var value = entry.Value;
 
@@ -38,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
                     }
                     */
 
-                    target.Headers[entry.Key] = value;
+                    target.Headers[(string)entry.Key] = value;
                 }
             }
 
