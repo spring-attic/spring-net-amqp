@@ -74,8 +74,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         private IConnectionFactory connectionFactory;
 
-        private RabbitBrokerAdmin brokerAdmin;
-
         #region Fixture Setup and Teardown
         /// <summary>
         /// Code to execute before fixture setup.
@@ -113,10 +111,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </remarks>
         public MessageListenerBrokerInterruptionIntegrationTests()
         {
-            var directory = new DirectoryInfo("target/rabbitmq");
-            if (directory.Exists)
+            try
             {
-                directory.Delete(true);
+                var directory = new DirectoryInfo("target/rabbitmq");
+                if (directory.Exists)
+                {
+                    directory.Delete(true);
+                }
+            }
+            catch (Exception)
+            {
+                Logger.Error("Could not delete directory. Assuming broker is running.");
             }
 
             this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);
@@ -190,20 +195,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
 
             Assert.True(latch.CurrentCount > 0, "No more messages to receive before broker stopped");
+            Logger.Info(string.Format("Latch.CurrentCount Before Shutdown: {0}", latch.CurrentCount));
             this.brokerAdmin.StopBrokerApplication();
             Assert.True(latch.CurrentCount > 0, "No more messages to receive after broker stopped");
+            Logger.Info(string.Format("Latch.CurrentCount After Shutdown: {0}", latch.CurrentCount));
             var waited = latch.Wait(500);
             Assert.False(waited, "Did not time out waiting for message");
 
             this.container.Stop();
             Assert.AreEqual(0, this.container.ActiveConsumerCount);
-
+            Logger.Info(string.Format("Latch.CurrentCount After Container Stop: {0}", latch.CurrentCount));
             this.brokerAdmin.StartBrokerApplication();
             queues = this.brokerAdmin.GetQueues();
             logger.Info("Queues: " + queues);
             container.Start();
+            Logger.Info(string.Format("Concurrent Consumers After Container Start: {0}", this.container.ActiveConsumerCount));
             Assert.AreEqual(this.concurrentConsumers, this.container.ActiveConsumerCount);
-
+            Logger.Info(string.Format("Latch.CurrentCount After Container Start: {0}", latch.CurrentCount));
             var timeout = Math.Min(4 + this.messageCount / (4 * this.concurrentConsumers), 30);
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             waited = latch.Wait(timeout * 1000);
@@ -274,6 +282,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             var value = Encoding.UTF8.GetString(message.Body);
             logger.Debug("Receiving: " + value);
+            Thread.Sleep(75);
             if(this.latch.CurrentCount > 0) this.latch.Signal();
         }
     }

@@ -480,10 +480,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                                     break;    
                                 
                             }
-
-                            queueInfoList.Add(queueInfo);
                         }
                     }
+
+                    queueInfoList.Add(queueInfo);
                 }
             }
 

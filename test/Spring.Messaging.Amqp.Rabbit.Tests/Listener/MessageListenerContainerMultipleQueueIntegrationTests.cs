@@ -33,13 +33,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         //@Rule
         public BrokerRunning brokerIsRunningAndQueue2Empty;
 
-        //@Rule
-        //public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.INFO, RabbitTemplate.class,
-        //		SimpleMessageListenerContainer.class, BlockingQueueConsumer.class);
-
-        //@Rule
-        //public ExpectedException exception = ExpectedException.none();
-
         #region Fixture Setup and Teardown
         /// <summary>
         /// Code to execute before fixture setup.
@@ -78,7 +71,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public void SetUp()
         {
             this.brokerIsRunningAndQueue1Empty = BrokerRunning.IsRunningWithEmptyQueues(queue1);
+            this.brokerIsRunningAndQueue1Empty.Apply();
             this.brokerIsRunningAndQueue2Empty = BrokerRunning.IsRunningWithEmptyQueues(queue2);
+            this.brokerIsRunningAndQueue2Empty.Apply();
         }
 
         /// <summary>
@@ -177,7 +172,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             container.Start();
             try
             {
-                var timeout = Math.Min((1 + messageCount) / concurrentConsumers, 30);
+                var timeout = Math.Min((1 + messageCount) / concurrentConsumers, 50);
+                Logger.Info("Timeout: " + timeout);
                 var waited = latch.Wait(timeout * 1000);
                 logger.Info("All messages recovered: " + waited);
                 Assert.AreEqual(concurrentConsumers, container.ActiveConsumerCount);
@@ -241,7 +237,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public void HandleMessage(int value)
         {
             logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
-            if (this.latch.CurrentCount > 0) this.latch.Signal();
+            this.latch.Signal();
         }
 
         /// <summary>

@@ -31,9 +31,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         // Mock error handler
         private Mock<IErrorHandler> errorHandler;
 
-        //@Rule
-        public BrokerRunning brokerIsRunning;
-
         #region Fixture Setup and Teardown
         /// <summary>
         /// Code to execute before fixture setup.
@@ -77,9 +74,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public void SetUp()
         {
             this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
-            var mocker = new AutoMoqer();
+            this.brokerIsRunning.Apply();
 
-            var mockErrorHandler = mocker.GetMock<IErrorHandler>();
+            var mockErrorHandler = new Mock<IErrorHandler>();
             this.errorHandler = mockErrorHandler;
         }
 
@@ -87,7 +84,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// Tests the error handler invoke exception from poco.
         /// </summary>
         /// <remarks></remarks>
-        [TearDown]
+        [Test]
         public void TestErrorHandlerInvokeExceptionFromPoco()
         {
             var messageCount = 3;
@@ -205,7 +202,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             container.AfterPropertiesSet();
             container.Start();
 
-            var waited = latch.Wait(500);
+            var waited = latch.Wait(1000);
             if (messageCount > 1)
             {
                 Assert.True(waited, "Expected to receive all messages before stop");
@@ -246,7 +243,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// <remarks></remarks>
     public class PocoThrowingExceptionListener
     {
-        private readonly ILog logger = LogManager.GetLogger(typeof(PocoThrowingExceptionListener));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(PocoThrowingExceptionListener));
         private CountdownEvent latch;
         private Exception exception;
 
@@ -271,13 +268,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             try
             {
-                this.logger.Debug("Message in poco: " + value);
+                Logger.Debug("Message in poco: " + value);
                 Thread.Sleep(100);
                 throw this.exception;
             }
             finally
             {
-                if (this.latch.CurrentCount > 0) this.latch.Signal();
+                Logger.Info("Latch Current Count: " + this.latch.CurrentCount);
+                this.latch.Signal();
             }
         }
     }
@@ -288,7 +286,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// <remarks></remarks>
     public class ThrowingExceptionListener : IMessageListener
     {
-        private readonly ILog logger = LogManager.GetLogger(typeof(ThrowingExceptionListener));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ThrowingExceptionListener));
         private CountdownEvent latch;
         private Exception exception;
 
@@ -314,7 +312,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             try
             {
                 var value = Encoding.UTF8.GetString(message.Body);
-                this.logger.Debug("Message in listener: " + value);
+                Logger.Debug("Message in listener: " + value);
                 try
                 {
                     Thread.Sleep(100);
@@ -328,7 +326,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                if(this.latch.CurrentCount > 0) this.latch.Signal();
+                Logger.Info("Latch Current Count: " + this.latch.CurrentCount);
+                this.latch.Signal();
             }
         }
     }
@@ -339,7 +338,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// <remarks></remarks>
     public class ThrowingExceptionChannelAwareListener : IChannelAwareMessageListener
     {
-        private readonly ILog logger = LogManager.GetLogger(typeof(ThrowingExceptionChannelAwareListener));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ThrowingExceptionChannelAwareListener));
         private CountdownEvent latch;
         private Exception exception;
 
@@ -366,7 +365,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             try
             {
                 var value = Encoding.UTF8.GetString(message.Body);
-                this.logger.Debug("Message in channel aware listener: " + value);
+                Logger.Debug("Message in channel aware listener: " + value);
                 try
                 {
                     Thread.Sleep(100);
@@ -380,7 +379,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
-                if (this.latch.CurrentCount > 0) this.latch.Signal();
+                Logger.Info("Latch Current Count: " + this.latch.CurrentCount);
+                this.latch.Signal();
             }
         }
     }

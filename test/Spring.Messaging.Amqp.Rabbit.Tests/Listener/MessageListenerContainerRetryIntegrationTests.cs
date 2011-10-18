@@ -24,10 +24,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerRetryIntegrationTests));
 
         private static Queue queue = new Queue("test.queue");
-
-        //@Rule
-        public BrokerRunning brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
-
+        
         #region Fixture Setup and Teardown
         /// <summary>
         /// Code to execute before fixture setup.
@@ -70,6 +67,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         private Spring.Aspects.RetryAdvice retryTemplate;
 
         private IMessageConverter messageConverter;
+
+        [SetUp]
+        public void Setup()
+        {
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+            this.brokerIsRunning.Apply();
+        }
 
         /// <summary>
         /// Creates the template.

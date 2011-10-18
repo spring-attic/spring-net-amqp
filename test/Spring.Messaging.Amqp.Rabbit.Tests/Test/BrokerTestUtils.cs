@@ -86,7 +86,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         /// <remarks></remarks>
         public static RabbitBrokerAdmin GetRabbitBrokerAdmin()
         {
-            return GetRabbitBrokerAdmin(GetAdminNodeName(), GetAdminPort());
+            return GetRabbitBrokerAdmin(GetAdminNodeName(), GetPort());
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         /// <remarks></remarks>
         public static RabbitBrokerAdmin GetRabbitBrokerAdmin(string nodeName)
         {
-            return GetRabbitBrokerAdmin(nodeName, GetAdminPort());
+            return GetRabbitBrokerAdmin(nodeName, GetPort());
         }
 
         /// <summary>

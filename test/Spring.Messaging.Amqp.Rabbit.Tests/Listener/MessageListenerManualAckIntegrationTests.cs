@@ -34,13 +34,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         private SimpleMessageListenerContainer container;
 
-        //@Rule
-        //public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.DEBUG, RabbitTemplate.class,
-        //		SimpleMessageListenerContainer.class, BlockingQueueConsumer.class);
-
-        //@Rule
-        public BrokerRunning brokerIsRunning;
-
         #region Fixture Setup and Teardown
         /// <summary>
         /// Code to execute before fixture setup.
@@ -79,6 +72,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public void CreateConnectionFactory()
         {
             this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+            this.brokerIsRunning.Apply();
             var connectionFactory = new CachingConnectionFactory();
             connectionFactory.ChannelCacheSize = this.concurrentConsumers;
             connectionFactory.Port = BrokerTestUtils.GetPort();

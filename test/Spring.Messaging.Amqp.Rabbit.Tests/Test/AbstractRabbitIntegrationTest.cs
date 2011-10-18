@@ -18,7 +18,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Test
         public static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
-        private RabbitBrokerAdmin brokerAdmin;
+        protected RabbitBrokerAdmin brokerAdmin;
 
         /// <summary>
         /// Determines if the broker is running.
