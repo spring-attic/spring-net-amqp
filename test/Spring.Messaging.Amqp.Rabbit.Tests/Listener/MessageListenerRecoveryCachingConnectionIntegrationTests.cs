@@ -325,7 +325,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <remarks></remarks>
         private int GetTimeout()
         {
-            return Math.Min(2 + this.messageCount / (4 * this.concurrentConsumers), 30);
+            return Math.Min(15 + this.messageCount / (4 * this.concurrentConsumers), 30);
         }
 
         /// <summary>

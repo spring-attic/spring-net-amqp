@@ -74,6 +74,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         public RabbitTransactionManagerIntegrationTests()
         {
             this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(ROUTE);
+            this.brokerIsRunning.Apply();
         }
 
         /// <summary>

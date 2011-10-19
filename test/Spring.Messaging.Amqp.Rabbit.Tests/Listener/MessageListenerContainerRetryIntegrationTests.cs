@@ -19,6 +19,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
     [TestFixture]
     [Category(TestCategory.Integration)]
+    [Ignore("Spring.NET doesn't support retry yet...")]
     public class MessageListenerContainerRetryIntegrationTests : AbstractRabbitIntegrationTest
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerRetryIntegrationTests));

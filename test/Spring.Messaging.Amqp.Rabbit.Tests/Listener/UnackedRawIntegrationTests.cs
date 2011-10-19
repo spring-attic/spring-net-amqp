@@ -19,6 +19,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// @author Dave Syer
     [TestFixture]
     [Category(TestCategory.Integration)]
+    [Ignore("Ignored in the spring-amqp also. Initiated discussion with the rabbitmq folks to determine why publish/consume/reject/consume won't work as expected...")]
     public class UnackedRawIntegrationTests : AbstractRabbitIntegrationTest
     {
         private ILog logger = LogManager.GetCurrentClassLogger();
@@ -136,7 +137,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             callback.Queue.Dequeue(1000, out next);
             Assert.IsNotNull(next);
             this.txChannel.BasicReject(((BasicDeliverEventArgs)next).DeliveryTag, true);
-            this.txChannel.TxRollback();
+            this.txChannel.TxCommit();
             
             var get = this.noTxChannel.BasicGet("test.queue", true);
             Assert.IsNotNull(get);
