@@ -270,23 +270,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         protected virtual IChannelProxy GetCachedChannelProxy(LinkedList<IChannelProxy> channelList, bool transactional)
         {
             var targetChannel = this.CreateBareChannel(transactional);
-
-            var useAdvisedClass = false;
-            if (useAdvisedClass)
-            {
-                // Legacy Code - will wait until the new code tests correctly before removing.
-                this.ChannelListener.OnCreate(targetChannel, transactional);
-                return new CachedModel(targetChannel, channelList, transactional, this);
-            }
-            else
-            {
-                // var factory = new ProxyFactory(typeof(IChannelProxy), new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this));
-                // return (IChannelProxy)factory.GetProxy();
-
-                var factory = new ProxyFactory(typeof(IChannelProxy), new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this));
-                var channelProxy = (IChannelProxy)factory.GetProxy();
-                return channelProxy;
-            }
+            
+            var factory = new ProxyFactory(typeof(IChannelProxy), new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this));
+            var channelProxy = (IChannelProxy)factory.GetProxy();
+            return channelProxy;
         }
         
         /// <summary>

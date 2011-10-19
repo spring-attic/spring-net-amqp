@@ -327,7 +327,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         /// <remarks></remarks>
         [Test]
-        //[Ignore("Need to Fix")]
         public void TestWithConnectionFactoryDestroy()
         {
             var mockConnectionFactory = new Mock<RabbitMQ.Client.ConnectionFactory>();
@@ -400,7 +399,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// Tests the with listener.
         /// </summary>
         [Test]
-        //[Ignore("Need to Fix")]
         public void TestWithListener()
         {
             var mocker = new AutoMoqer();

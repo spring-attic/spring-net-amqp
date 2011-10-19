@@ -192,7 +192,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             var exists = rabbitTemplate.Execute<bool>(delegate(IModel channel)
             {
                 var result = channel.QueueDeclarePassive(queue.Name);
-                connectionHolder.LazySet(((CachedModel)channel).Connection);
+                connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
                 return result != null;
             });
             Assert.True(exists, "Expected Queue to exist");
@@ -202,7 +202,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             exists = rabbitTemplate.Execute<bool>(delegate(IModel channel)
             {
                 var result = channel.QueueDeclarePassive(queue.Name);
-                connectionHolder.LazySet(((CachedModel)channel).Connection);
+                connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
                 return result != null;
             });
             Assert.True(exists, "Expected Queue to exist");
@@ -216,7 +216,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             exists = rabbitTemplate.Execute<bool>(delegate(IModel channel)
             {
                 var result = channel.QueueDeclarePassive(queue.Name);
-                connectionHolder.LazySet(((CachedModel)channel).Connection);
+                connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
                 return result != null;
             });
             Assert.True(exists, "Expected Queue to exist");
@@ -246,7 +246,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             var exists = rabbitTemplate.Execute<bool>(delegate(IModel channel)
             {
                 var result = channel.QueueDeclarePassive(queue.Name);
-                connectionHolder.LazySet(((CachedModel)channel).Connection);
+                connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
                 return result != null;
             });
             Assert.True(exists, "Expected Queue to exist");
@@ -262,7 +262,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             exists = rabbitTemplate.Execute<bool>(delegate(IModel channel)
             {
                 var result = channel.QueueDeclarePassive(queue.Name);
-                connectionHolder.LazySet(((CachedModel)channel).Connection);
+                connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
                 return result != null;
             });
             Assert.True(exists, "Expected Queue to exist");

@@ -35,6 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// A cached model.
     /// </summary>
     /// <author>Mark Pollack</author>
+    [Obsolete("End of Life", true)]
     public class CachedModel : IChannelProxy
     {
         #region Logging Definition
