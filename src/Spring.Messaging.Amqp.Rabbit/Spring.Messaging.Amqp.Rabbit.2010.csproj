@@ -92,6 +92,19 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Config\AbstractExchangeParser.cs" />
+    <Compile Include="Config\AdminParser.cs" />
+    <Compile Include="Config\BindingFactoryObject.cs" />
+    <Compile Include="Config\ConnectionFactoryParser.cs" />
+    <Compile Include="Config\DirectExchangeParser.cs" />
+    <Compile Include="Config\FanoutExchangeParser.cs" />
+    <Compile Include="Config\HeadersExchangeParser.cs" />
+    <Compile Include="Config\ListenerContainerParser.cs" />
+    <Compile Include="Config\NamespaceUtils.cs" />
+    <Compile Include="Config\QueueParser.cs" />
+    <Compile Include="Config\RabbitNamespaceHandler.cs" />
+    <Compile Include="Config\TemplateParser.cs" />
+    <Compile Include="Config\TopicExchangeParser.cs" />
     <Compile Include="Connection\AbstractConnectionFactory.cs" />
     <Compile Include="Connection\CachedModel.cs" />
     <Compile Include="Connection\CachingConnectionFactory.cs" />

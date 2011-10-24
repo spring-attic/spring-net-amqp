@@ -182,7 +182,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return queue;
         }
 
-
         /// <summary>
         /// Deletes the queue, without regard for whether it is in use or has messages on it 
         /// </summary>
