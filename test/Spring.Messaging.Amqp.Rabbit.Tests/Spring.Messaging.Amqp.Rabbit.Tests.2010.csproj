@@ -151,7 +151,20 @@
     <Compile Include="Transaction\RabbitTransactionManagerIntegrationTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\SampleAdmin.xml" />
+    <Content Include="Config\AdminParserTests-0-context.xml" />
+    <Content Include="Config\AdminParserTests-1-context.xml" />
+    <Content Include="Config\AdminParserTests-2-context.xml" />
+    <Content Include="Config\ConnectionFactoryParserTests-context.xml" />
+    <Content Include="Config\ExchangeParserIntegrationTests-context.xml" />
+    <Content Include="Config\ExchangeParserTests-context.xml" />
+    <Content Include="Config\ListenerContainerParserTests-context.xml" />
+    <Content Include="Config\ListenerContainerPlaceholderParserTests-context.xml" />
+    <Content Include="Config\QueueParserIllegalAnonymousTests-context.xml" />
+    <Content Include="Config\QueueParserIntegrationTests-context.xml" />
+    <Content Include="Config\QueueParserPlaceholderTests-context.xml" />
+    <Content Include="Config\QueueParserTests-context.xml" />
+    <Content Include="Config\RabbitNamespaceHandlerTests-context.xml" />
+    <Content Include="Config\TemplateParserTests-context.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gateways\" />

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects xmlns="http://www.springframework.net"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:rabbit="http://www.springframework.org/schema/rabbit">
+
+	<!-- One of 'rabbit-template' or 'rabbit-connection-factory' attributes 
+		must be set - context load should fail -->
+	<rabbit:admin />
+
+</objects>

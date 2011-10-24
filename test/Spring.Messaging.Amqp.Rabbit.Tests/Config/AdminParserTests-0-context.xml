@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects xmlns="http://www.springframework.net" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:rabbit="http://www.springframework.org/schema/rabbit">
+
+	<object id="ConnectionFactory" class="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory" />
+
+	<!-- Valid configuration -->
+	<rabbit:admin connection-factory="connectionFactory" />
+
+</objects>
