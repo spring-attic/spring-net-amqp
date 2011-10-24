@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:beans="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+<objects xmlns="http://www.springframework.net"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:rabbit="http://www.springframework.net/schema/rabbit"
+         xsi:schemaLocation="http://www.springframework.net/schema/rabbit http://www.springframework.net/schema/rabbit/spring-rabbit-1.0.xsd">
 
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="properties">
@@ -22,12 +18,12 @@
 
 	<rabbit:queue id="bar" />
 
-	<rabbit:listener-container id="container1" connection-factory="connectionFactory" acknowledge="manual" concurrency="${five}" transaction-size="${one}" auto-startup="${false}">
-		<rabbit:listener id="testListener" queue-names="foo, #{bar.name}" ref="testBean" method="handle"/>
+	<rabbit:listener-container id="container1" connection-factory="ConnectionFactory" acknowledge="manual" concurrency="${five}" transaction-size="${one}" auto-startup="${false}">
+		<rabbit:listener id="testListener" queue-names="foo, #{bar.name}" ref="TestObject" method="handle"/>
 	</rabbit:listener-container>
 
-	<bean id="connectionFactory" class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory"/>
+	<object id="ConnectionFactory" class="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory"/>
 
-	<bean id="testBean" class="org.springframework.amqp.rabbit.config.ListenerContainerParserTests$TestBean"/>
+	<object id="TestObject" class="org.springframework.amqp.rabbit.config.ListenerContainerParserTests$TestBean"/>
 
-</beans>
+</objects>

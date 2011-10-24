@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
-	xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<objects xmlns="http://www.springframework.net"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:rabbit="http://www.springframework.net/schema/rabbit"
+         xsi:schemaLocation="http://www.springframework.net/schema/rabbit http://www.springframework.net/schema/rabbit/spring-rabbit-1.0.xsd">
 
-	<direct-exchange name="direct-test"
-		xmlns="http://www.springframework.org/schema/rabbit">
+	<direct-exchange name="direct-test" xmlns="http://www.springframework.net/schema/rabbit">
 		<bindings>
 			<binding queue="foo" key="foo" />
 			<binding queue="bar" />
@@ -15,8 +13,7 @@
 		</bindings>
 	</direct-exchange>
 
-	<topic-exchange name="topic-test"
-		xmlns="http://www.springframework.org/schema/rabbit">
+	<topic-exchange name="topic-test" xmlns="http://www.springframework.net/schema/rabbit">
 		<bindings>
 			<binding queue="foo" pattern="foo.#" />
 			<binding queue="bar" pattern="bar.#" />
@@ -25,8 +22,7 @@
 		</bindings>
 	</topic-exchange>
 
-	<fanout-exchange name="fanout-test"
-		xmlns="http://www.springframework.org/schema/rabbit">
+	<fanout-exchange name="fanout-test" xmlns="http://www.springframework.net/schema/rabbit">
 		<bindings>
 			<binding queue="foo" />
 			<binding queue="bar" />
@@ -35,8 +31,7 @@
 		</bindings>
 	</fanout-exchange>
 
-	<headers-exchange name="headers-test"
-		xmlns="http://www.springframework.org/schema/rabbit">
+	<headers-exchange name="headers-test" xmlns="http://www.springframework.net/schema/rabbit">
 		<bindings>
 			<binding queue="foo" key="type" value="foo" />
 			<binding queue="bar" key="type" value="bar" />
@@ -53,6 +48,6 @@
 
 	<rabbit:admin id="admin-test" connection-factory="connectionFactory"/>
 
-	<bean id="connectionFactory" class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory"/>
+	<object id="connectionFactory" class="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory"/>
 
-</beans>
+</objects>
