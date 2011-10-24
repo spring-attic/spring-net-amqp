@@ -8,11 +8,12 @@ using Moq;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+using Spring.Messaging.Amqp.Rabbit.Transaction;
 using Spring.Transaction;
 using Spring.Transaction.Support;
 
-namespace Spring.Messaging.Amqp.Rabbit.Transaction
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
 {
     /// <summary>
     /// Rabbit Transaction Manager Integration Tests.

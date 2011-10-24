@@ -8,7 +8,7 @@ using Common.Logging;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 
-namespace Spring.Messaging.Amqp.Rabbit.Test
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
 {
     /// <summary>
     /// A base class for integration tests, to ensure that the broker is started, and that it is shut down after the test is done.

@@ -92,6 +92,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </summary>
         public bool AutoStartup
         {
+            get { return this.autoStartup; }
             set { this.autoStartup = value; }
         }
 

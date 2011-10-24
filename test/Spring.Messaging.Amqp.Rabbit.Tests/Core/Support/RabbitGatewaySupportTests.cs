@@ -6,9 +6,11 @@ using NUnit.Framework;
 using System.Linq;
 using System.Text;
 using Spring.Messaging.Amqp.Rabbit.Connection;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Core.Support;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 
-namespace Spring.Messaging.Amqp.Rabbit.Core.Support
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Core.Support
 {
     /// <summary>
     /// Rabbit gateway support tests.

@@ -7,9 +7,9 @@ using System.Threading;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 
-namespace Spring.Messaging.Amqp.Rabbit.Listener
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
     using Common.Logging;
 

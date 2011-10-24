@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Spring.Messaging.Amqp.Rabbit.Test
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
 {
     using System;
     using System.Collections.Generic;

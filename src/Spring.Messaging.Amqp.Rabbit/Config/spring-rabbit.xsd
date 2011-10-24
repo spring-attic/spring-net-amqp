@@ -373,9 +373,9 @@
 				]]>
         </xsd:documentation>
         <xsd:appinfo>
-          <tool:annotation kind="ref">
+          <!--<tool:annotation kind="ref">
             <tool:expected-type type="org.springframework.amqp.core.Queue" />
-          </tool:annotation>
+          </tool:annotation>-->
         </xsd:appinfo>
       </xsd:annotation>
     </xsd:attribute>
@@ -402,9 +402,9 @@
 						]]>
             </xsd:documentation>
             <xsd:appinfo>
-              <tool:annotation kind="ref">
+              <!--<tool:annotation kind="ref">
                 <tool:expected-type type="java.util.Map" />
-              </tool:annotation>
+              </tool:annotation>-->
             </xsd:appinfo>
           </xsd:annotation>
         </xsd:attribute>
@@ -422,9 +422,9 @@
 			]]>
       </xsd:documentation>
       <xsd:appinfo>
-        <tool:annotation>
+        <!--<tool:annotation>
           <tool:exports type="org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer" />
-        </tool:annotation>
+        </tool:annotation>-->
       </xsd:appinfo>
     </xsd:annotation>
     <xsd:complexType>
@@ -449,9 +449,9 @@
 					]]>
           </xsd:documentation>
           <xsd:appinfo>
-            <tool:annotation kind="ref">
+            <!--<tool:annotation kind="ref">
               <tool:expected-type type="org.springframework.amqp.rabbit.connection.ConnectionFactory" />
-            </tool:annotation>
+            </tool:annotation>-->
           </xsd:appinfo>
         </xsd:annotation>
       </xsd:attribute>
@@ -464,9 +464,9 @@
 					]]>
           </xsd:documentation>
           <xsd:appinfo>
-            <tool:annotation kind="ref">
+            <!--<tool:annotation kind="ref">
               <tool:expected-type type="java.util.concurrent.Executor" />
-            </tool:annotation>
+            </tool:annotation>-->
           </xsd:appinfo>
         </xsd:annotation>
       </xsd:attribute>
@@ -480,9 +480,9 @@
 					]]>
           </xsd:documentation>
           <xsd:appinfo>
-            <tool:annotation kind="ref">
+            <!--<tool:annotation kind="ref">
               <tool:expected-type type="org.springframework.amqp.support.converter.MessageConverter" />
-            </tool:annotation>
+            </tool:annotation>-->
           </xsd:appinfo>
         </xsd:annotation>
       </xsd:attribute>
@@ -495,9 +495,9 @@
 					]]>
           </xsd:documentation>
           <xsd:appinfo>
-            <tool:annotation kind="ref">
+            <!--<tool:annotation kind="ref">
               <tool:expected-type type="org.springframework.util.ErrorHandler" />
-            </tool:annotation>
+            </tool:annotation>-->
           </xsd:appinfo>
         </xsd:annotation>
       </xsd:attribute>
@@ -525,9 +525,9 @@
 					]]>
           </xsd:documentation>
           <xsd:appinfo>
-            <tool:annotation kind="ref">
+            <!--<tool:annotation kind="ref">
               <tool:expected-type type="org.springframework.transaction.PlatformTransactionManager" />
-            </tool:annotation>
+            </tool:annotation>-->
           </xsd:appinfo>
         </xsd:annotation>
       </xsd:attribute>
@@ -631,7 +631,7 @@
 				]]>
         </xsd:documentation>
         <xsd:appinfo>
-          <tool:annotation kind="ref" />
+          <!--<tool:annotation kind="ref" />-->
         </xsd:appinfo>
       </xsd:annotation>
     </xsd:attribute>
@@ -702,9 +702,9 @@
 					]]>
           </xsd:documentation>
           <xsd:appinfo>
-            <tool:annotation kind="ref">
+            <!--<tool:annotation kind="ref">
               <tool:expected-type type="org.springframework.amqp.rabbit.connection.ConnectionFactory" />
-            </tool:annotation>
+            </tool:annotation>-->
           </xsd:appinfo>
         </xsd:annotation>
       </xsd:attribute>
@@ -801,9 +801,9 @@
 					]]>
           </xsd:documentation>
           <xsd:appinfo>
-            <tool:annotation kind="ref">
+            <!--<tool:annotation kind="ref">
               <tool:expected-type type="org.springframework.amqp.support.converter.MessageConverter" />
-            </tool:annotation>
+            </tool:annotation>-->
           </xsd:appinfo>
         </xsd:annotation>
       </xsd:attribute>
@@ -815,9 +815,9 @@
 					]]>
           </xsd:documentation>
           <xsd:appinfo>
-            <tool:annotation kind="ref">
+            <!--<tool:annotation kind="ref">
               <tool:expected-type type="org.springframework.amqp.rabbit.connection.ConnectionFactory" />
-            </tool:annotation>
+            </tool:annotation>-->
           </xsd:appinfo>
         </xsd:annotation>
       </xsd:attribute>
@@ -905,9 +905,9 @@
 					]]>
           </xsd:documentation>
           <xsd:appinfo>
-            <tool:annotation kind="ref">
+            <!--<tool:annotation kind="ref">
               <tool:expected-type type="com.rabbitmq.client.ConnectionFactory" />
-            </tool:annotation>
+            </tool:annotation>-->
           </xsd:appinfo>
         </xsd:annotation>
       </xsd:attribute>

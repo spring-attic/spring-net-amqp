@@ -3,8 +3,10 @@ using System;
 using System.Text;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
+using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Tests.Connection;
 
-namespace Spring.Messaging.Amqp.Rabbit.Core
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
     /// <summary>
     /// A producer.

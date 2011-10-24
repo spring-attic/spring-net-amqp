@@ -1,8 +1,9 @@
 ﻿
 using Spring.Messaging.Amqp.Rabbit.Connection;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Tests.Connection;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 
-namespace Spring.Messaging.Amqp.Rabbit.Listener
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
     using NUnit.Framework;
 

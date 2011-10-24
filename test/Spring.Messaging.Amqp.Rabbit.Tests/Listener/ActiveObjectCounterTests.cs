@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace Spring.Messaging.Amqp.Rabbit.Listener
+using Spring.Messaging.Amqp.Rabbit.Listener;
+
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
-    using Spring.Messaging.Amqp.Rabbit.Test;
+    using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 
     /// <summary>
     /// Active object counter tests.

@@ -16,13 +16,13 @@
 
 	<rabbit:queue name="arguments">
 		<rabbit:queue-arguments>
-			<beans:entry key="foo" value="bar" />
+			<entry key="foo" value="bar" />
 		</rabbit:queue-arguments>
 	</rabbit:queue>
 
 	<rabbit:queue id="anonymousArguments">
 		<rabbit:queue-arguments>
-			<beans:entry key="foo" value="spam" />
+			<entry key="foo" value="spam" />
 		</rabbit:queue-arguments>
 	</rabbit:queue>
 

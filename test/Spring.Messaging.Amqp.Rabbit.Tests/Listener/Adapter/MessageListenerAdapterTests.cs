@@ -7,12 +7,13 @@ using NUnit.Framework;
 using Spring.Aop.Framework;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Support.Converter;
 using Spring.Threading.AtomicTypes;
 
-namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
 {
-    using Spring.Messaging.Amqp.Rabbit.Test;
+    using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 
     [TestFixture]
     [Category(TestCategory.Unit)]

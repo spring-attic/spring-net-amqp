@@ -1,0 +1,1175 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Spring.Core.Configuration</name>
+    </assembly>
+    <members>
+        <member name="T:Spring.Context.Attributes.AssemblyObjectDefinitionScanner">
+            <summary>
+            AssemblyTypeScanner that only accepts types that also meet the requirements of being ObjectDefintions.
+            </summary>
+        </member>
+        <member name="T:Spring.Context.Attributes.RequiredConstraintAssemblyTypeScanner">
+            <summary>
+            AssemblyTypeScanner that provides for applying a final hard-coded Required Constraint to all types found in the the scanned assemblies
+            in addition to respecting the constraints passed to it during its configuration.
+            </summary>
+        </member>
+        <member name="T:Spring.Context.Attributes.AssemblyTypeScanner">
+            <summary>
+            Scans Assebmlies for Types that satisfy a given set of constraints.
+            </summary>
+        </member>
+        <member name="T:Spring.Context.Attributes.IAssemblyTypeScanner">
+            <summary>
+            Scanner that can filter types from assemblies based on constraints.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.IAssemblyTypeScanner.AssemblyHavingType``1">
+            <summary>
+            Add the Assembly containing the specified <see cref="T:System.Type"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.IAssemblyTypeScanner.WithAssemblyFilter(System.Predicate{System.Reflection.Assembly})">
+            <summary>
+            Adds the predicate to the assembly filter constraints.
+            </summary>
+            <param name="assemblyPredicate">The assembly predicate.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.IAssemblyTypeScanner.WithIncludeFilter(System.Predicate{System.Type})">
+            <summary>
+            Adds the predicte to the include filter for <see cref="T:System.Type"/>.
+            </summary>
+            <param name="predicate">The predicate.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.IAssemblyTypeScanner.WithExcludeFilter(System.Predicate{System.Type})">
+            <summary>
+            Adds the predicte to the exclude filter for <see cref="T:System.Type"/>.
+            </summary>
+            <param name="predicate">The predicate.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.IAssemblyTypeScanner.IncludeTypes(System.Collections.Generic.IEnumerable{System.Type})">
+            <summary>
+            Includes the specific types.
+            </summary>
+            <param name="typeSource">The types.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.IAssemblyTypeScanner.IncludeType``1">
+            <summary>
+            Includes the type.
+            </summary>
+            <typeparam name="T">The <see cref="T:System.Type"/> to include.</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.IAssemblyTypeScanner.ExcludeType``1">
+            <summary>
+            Excludes the type.
+            </summary>
+            <typeparam name="T">The <see cref="T:System.Type"/> to exclude.</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.IAssemblyTypeScanner.Scan">
+            <summary>
+            Perform the Scan, applying all provided 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:Spring.Context.Attributes.AssemblyTypeScanner.Logger">
+            <summary>
+            Logger Instance.
+            </summary>
+        </member>
+        <member name="F:Spring.Context.Attributes.AssemblyTypeScanner.AssemblyLoadExclusionPredicates">
+            <summary>
+            Names of Assemblies to exclude from being loaded for scanning.
+            </summary>
+        </member>
+        <member name="F:Spring.Context.Attributes.AssemblyTypeScanner.AssemblyInclusionPredicates">
+            <summary>
+            Assembly Inclusion Predicates.
+            </summary>
+        </member>
+        <member name="F:Spring.Context.Attributes.AssemblyTypeScanner.TypeExclusionPredicates">
+            <summary>
+            Type Exclusion Predicates.
+            </summary>
+        </member>
+        <member name="F:Spring.Context.Attributes.AssemblyTypeScanner.TypeInclusionPredicates">
+            <summary>
+            Type Inclusion Predicates.
+            </summary>
+        </member>
+        <member name="F:Spring.Context.Attributes.AssemblyTypeScanner.TypeSources">
+            <summary>
+            Assemblies to scan.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.AssemblyHavingType``1">
+            <summary>
+            Assemblies the type of the having.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.ExcludeType``1">
+            <summary>
+            Excludes the type.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.IncludeType``1">
+            <summary>
+            Includes the type.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.IncludeTypes(System.Collections.Generic.IEnumerable{System.Type})">
+            <summary>
+            Includes the types.
+            </summary>
+            <param name="typeSource">The type source.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.Scan">
+            <summary>
+            Performs the Scan, respecting all filter settings.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.WithAssemblyFilter(System.Predicate{System.Reflection.Assembly})">
+            <summary>
+            Adds the assembly filter.
+            </summary>
+            <param name="assemblyPredicate">The assembly predicate.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.WithExcludeFilter(System.Predicate{System.Type})">
+            <summary>
+            Adds the exclude filter.
+            </summary>
+            <param name="predicate">The predicate.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.WithIncludeFilter(System.Predicate{System.Type})">
+            <summary>
+            Adds the include filter.
+            </summary>
+            <param name="predicate">The predicate.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.ApplyAssemblyFiltersTo(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            Applies the assembly filters to the assembly candidates.
+            </summary>
+            <param name="assemblyCandidates">The assembly candidates.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.IsCompoundPredicateSatisfiedBy(System.Type)">
+            <summary>
+            Determines whether the compound predicate is satisfied by the specified type.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>
+            	<c>true</c> if the compound predicate is satisfied by the specified type; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.IsExcludedType(System.Type)">
+            <summary>
+            Determines whether [is excluded type] [the specified type].
+            </summary>
+            <param name="type">The type.</param>
+            <returns>
+            	<c>true</c> if [is excluded type] [the specified type]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.IsIncludedAssembly(System.Reflection.Assembly)">
+            <summary>
+            Determines whether [is included assembly] [the specified assembly].
+            </summary>
+            <param name="assembly">The assembly.</param>
+            <returns>
+            	<c>true</c> if [is included assembly] [the specified assembly]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.IsIncludedType(System.Type)">
+            <summary>
+            Determines whether [is included type] [the specified type].
+            </summary>
+            <param name="type">The type.</param>
+            <returns>
+            	<c>true</c> if [is included type] [the specified type]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.SetDefaultFilters">
+            <summary>
+            Sets the default filters.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeScanner.DiscoverAssemblies(System.String,System.String)">
+            <summary>
+            Loads the assemblies found.
+            </summary>
+            <param name="folderPath">The folder path.</param>
+            <param name="extension">The extension.</param>
+        </member>
+        <member name="M:Spring.Context.Attributes.RequiredConstraintAssemblyTypeScanner.IsCompoundPredicateSatisfiedBy(System.Type)">
+            <summary>
+            Determines whether the compound predicate is satisfied by the specified type.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>
+            	<c>true</c> if the compound predicate is satisfied by the specified type; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.RequiredConstraintAssemblyTypeScanner.IsRequiredConstraintSatisfiedBy(System.Type)">
+            <summary>
+            Determines whether the required constraint is satisfied by the specified type.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>
+            	<c>true</c> if the required constraint is satisfied by the specified type; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyObjectDefinitionScanner.RegisterDefinitionsForTypes(Spring.Objects.Factory.Support.IObjectDefinitionRegistry,System.Collections.Generic.IEnumerable{System.Type})">
+            <summary>
+            Registers the defintions for types.
+            </summary>
+            <param name="registry">The registry.</param>
+            <param name="typesToRegister">The types to register.</param>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyObjectDefinitionScanner.ApplyAssemblyFiltersTo(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            Applies the assembly filters to the assembly candidates.
+            </summary>
+            <param name="assemblyCandidates">The assembly candidates.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyObjectDefinitionScanner.IsExcludedAssembly(System.Reflection.Assembly)">
+            <summary>
+            Determines whether the specified candidate is and excluded assembly.
+            </summary>
+            <param name="candidate">The candidate.</param>
+            <returns>
+            	<c>true</c> if the specified candidate is an excluded assembly ; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyObjectDefinitionScanner.IsRequiredConstraintSatisfiedBy(System.Type)">
+            <summary>
+            Determines whether the required constraint is satisfied by the specified type.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>
+            	<c>true</c> if the required constraint is satisfied by the specified type; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyObjectDefinitionScanner.SetDefaultFilters">
+            <summary>
+            Sets the default filters.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyObjectDefinitionScanner.ScanAndRegisterTypes(Spring.Objects.Factory.Support.IObjectDefinitionRegistry)">
+            <summary>
+            Scans the and register types.
+            </summary>
+            <param name="registry">The registry within which to register the types.</param>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyObjectDefinitionScanner.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Attributes.AssemblyObjectDefinitionScanner"/> class.
+            </summary>
+        </member>
+        <member name="T:Spring.Context.Attributes.AssemblyTypeSource">
+            <summary>
+            Represents a collection of Types.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeSource.#ctor(System.Reflection.Assembly)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Attributes.AssemblyTypeSource"/> class.
+            </summary>
+            <param name="assembly">The assembly.</param>
+        </member>
+        <member name="M:Spring.Context.Attributes.AssemblyTypeSource.GetEnumerator">
+            <summary>
+            Gets the enumerator.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Spring.Context.Attributes.AttributeConfigUtils">
+            <summary>
+            Utility class that allows for convenient registration of common <see cref="T:Spring.Objects.Factory.Config.IObjectPostProcessor"/>
+            and <see cref="T:Spring.Objects.Factory.Config.IObjectFactoryPostProcessor"/> definitions for attribute based configuration
+            </summary>
+            <seealso cref="T:Spring.Context.Attributes.ConfigurationClassObjectDefinitionReader"/>
+            <seealso cref="T:Spring.Objects.Factory.Attributes.RequiredAttributeObjectPostProcessor"/>
+            
+            <author>Mark Pollack (.NET)</author>
+            <author>Mark Fisher</author>
+            <author>Juergen Hoeller</author>
+            <author>Chris Beams</author>
+        </member>
+        <member name="F:Spring.Context.Attributes.AttributeConfigUtils.CONFIGURATION_ATTRIBUTE_PROCESSOR_OBJECT_NAME">
+            <summary>
+             The object name of the internally managed Configuration attribute processor.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.AttributeConfigUtils.RegisterAttributeConfigProcessors(Spring.Objects.Factory.Support.IObjectDefinitionRegistry)">
+            <summary>
+            Registers the attribute config processors.
+            </summary>
+            <param name="registry">The registry.</param>
+        </member>
+        <member name="T:Spring.Context.Attributes.ConfigurationAttribute">
+             <summary>
+             Indicates that a class declares one or more <see cref="T:Spring.Context.Attributes.DefinitionAttribute"/> methods and may be processed
+             by the Spring container to generate object definitions and service requests for those objects
+             at runtime.
+            
+             <para>Configuration is meta-annotated as a <see cref="T:Spring.Stereotype.ComponentAttribute"/>, therefore Configuration
+             classes are candidates for component-scanning.
+             </para>
+             <para>May be used in conjunction with the <see cref="T:Spring.Context.Attributes.LazyAttribute"/> attribute to indicate that all object
+             methods declared within this class are by default lazily initialized.
+            </para>
+             <h3>Constraints</h3>
+             <ul>
+                <li>Configuration classes must be non-sealed</li>
+                <li>Configuration classes must have a default/no-arg constructor</li>
+             </ul>
+             </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationAttribute.#ctor">
+            <summary>
+            Initializes a new instance of the ConfigurationAttribute class.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the Configuration class.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="T:Spring.Context.Attributes.ConfigurationClass">
+            <summary>
+            Represents an instance of the metadata that has been parsed from a class with the <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> applied to it.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClass.#ctor(System.String,System.Type)">
+            <summary>
+            Initializes a new instance of the ConfigurationClass class.
+            </summary>
+            <param name="objectName"></param>
+            <param name="type"></param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClass.AddImportedResource(System.String,System.Type)">
+            <summary>
+            Adds the imported resource.
+            </summary>
+            <param name="importedResource">The imported resource.</param>
+            <param name="readerClass">The reader class capable of interpreting the imported resource.</param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClass.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
+            </summary>
+            <param name="other">The <see cref="T:System.Object"/> to compare with this instance.</param>
+            <returns>
+            	<c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClass.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClass.Validate(Spring.Objects.Factory.Parsing.IProblemReporter)">
+            <summary>
+            Validates the specified <see cref="T:Spring.Context.Attributes.ConfigurationClass"/> and reports all discovered violations to the provided problem reporter for appropriate action.
+            </summary>
+            <param name="problemReporter">The problem reporter.</param>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClass.ConfigurationClassType">
+            <summary>
+            Gets the type of the configuration class.
+            </summary>
+            <value>The type of the configuration class.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClass.ImportedResources">
+            <summary>
+            Gets the imported resources.
+            </summary>
+            <value>The imported resources.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClass.Methods">
+            <summary>
+            Gets the methods.
+            </summary>
+            <value>The methods.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClass.ObjectName">
+            <summary>
+            Gets or sets the name of the object.
+            </summary>
+            <value>The name of the object.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClass.Resource">
+            <summary>
+            Gets the resource.
+            </summary>
+            <value>The resource.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClass.SimpleName">
+            <summary>
+            Gets the SimpleName of the object.
+            </summary>
+            <value>The simple name.</value>
+        </member>
+        <member name="T:Spring.Context.Attributes.ConfigurationClassAssemblyResource">
+            <summary>
+            Implementation of the IResource that represents an assembly containing one or more <see cref="T:Spring.Context.Attributes.ConfigurationClass"/> resources.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassAssemblyResource.#ctor(System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Object"/> class.
+            </summary>
+            <param name="type">The type.</param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassAssemblyResource.CreateRelative(System.String)">
+            <summary>
+            Creates a resource relative to this resource.
+            </summary>
+            <param name="relativePath">The path (always resolved as relative to this resource).</param>
+            <returns>The relative resource.</returns>
+            <exception cref="T:System.IO.IOException">
+            If the relative resource could not be created from the supplied
+            path.
+            </exception>
+            <exception cref="T:System.NotSupportedException">
+            If the resource does not support the notion of a relative path.
+            </exception>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassAssemblyResource.IsOpen">
+            <summary>
+            Does this resource represent a handle with an open stream?
+            </summary>
+            <value>
+            	<see langword="true"/> if this resource represents a handle with an
+            open stream.
+            </value>
+            <remarks>
+            	<p>
+            If <see langword="true"/>, the <see cref="T:System.IO.Stream"/>
+            cannot be read multiple times, and must be read and then closed to
+            avoid resource leaks.
+            </p>
+            	<p>
+            Will be <see langword="false"/> for all usual resource descriptors.
+            </p>
+            </remarks>
+            <seealso cref="P:Spring.Core.IO.IInputStreamSource.InputStream"/>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassAssemblyResource.Uri">
+            <summary>
+            Returns the <see cref="T:System.Uri"/> handle for this resource.
+            </summary>
+            <value>The <see cref="T:System.Uri"/> handle for this resource.</value>
+            <remarks>
+            	<p>
+            For safety, always check the value of the
+            <see cref="P:Spring.Core.IO.IResource.Exists"/> property prior to
+            accessing this property; resources that cannot be exposed as
+            a <see cref="T:System.Uri"/> will typically return
+            <see langword="false"/> from a call to the
+            <see cref="P:Spring.Core.IO.IResource.Exists"/> property.
+            </p>
+            </remarks>
+            <exception cref="T:System.IO.IOException">
+            If the resource is not available or cannot be exposed as a
+            <see cref="T:System.Uri"/>.
+            </exception>
+            <seealso cref="T:Spring.Core.IO.IResource"/>
+            <seealso cref="P:Spring.Core.IO.IResource.Exists"/>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassAssemblyResource.File">
+            <summary>
+            Returns a <see cref="T:System.IO.FileInfo"/> handle for this resource.
+            </summary>
+            <value>
+            The <see cref="T:System.IO.FileInfo"/> handle for this resource.
+            </value>
+            <remarks>
+            	<p>
+            For safety, always check the value of the
+            <see cref="P:Spring.Core.IO.IResource.Exists"/> property prior to
+            accessing this property; resources that cannot be exposed as
+            a <see cref="T:System.IO.FileInfo"/> will typically return
+            <see langword="false"/> from a call to the
+            <see cref="P:Spring.Core.IO.IResource.Exists"/> property.
+            </p>
+            </remarks>
+            <exception cref="T:System.IO.IOException">
+            If the resource is not available on a filesystem, or cannot be
+            exposed as a <see cref="T:System.IO.FileInfo"/> handle.
+            </exception>
+            <seealso cref="T:Spring.Core.IO.IResource"/>
+            <seealso cref="P:Spring.Core.IO.IResource.Exists"/>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassAssemblyResource.Description">
+            <summary>
+            Returns a description for this resource.
+            </summary>
+            <value>A description for this resource.</value>
+            <remarks>
+            	<p>
+            The description is typically used for diagnostics and other such
+            logging when working with the resource.
+            </p>
+            	<p>
+            Implementations are also encouraged to return this value from their
+            <see cref="M:System.Object.ToString"/> method.
+            </p>
+            </remarks>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassAssemblyResource.Exists">
+            <summary>
+            Does this resource actually exist in physical form?
+            </summary>
+            <value>
+            	<see langword="true"/> if this resource actually exists in physical
+            form (for example on a filesystem).
+            </value>
+            <remarks>
+            	<p>
+            An example of a resource that physically exists would be a
+            file on a local filesystem. An example of a resource that does not
+            physically exist would be an in-memory stream.
+            </p>
+            </remarks>
+            <seealso cref="P:Spring.Core.IO.IResource.File"/>
+            <seealso cref="P:Spring.Core.IO.IResource.Uri"/>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassAssemblyResource.InputStream">
+            <summary>
+            Return an <see cref="T:System.IO.Stream"/> for this resource.
+            </summary>
+            <value>An <see cref="T:System.IO.Stream"/>.</value>
+            <remarks>
+            	<note type="caution">
+            Clients of this interface must be aware that every access of this
+            property will create a <i>fresh</i>
+            		<see cref="T:System.IO.Stream"/>;
+            it is the responsibility of the calling code to close any such
+            <see cref="T:System.IO.Stream"/>.
+            </note>
+            </remarks>
+            <exception cref="T:System.IO.IOException">
+            If the stream could not be opened.
+            </exception>
+        </member>
+        <member name="T:Spring.Context.Attributes.ConfigurationClassEnhancer">
+            <summary>
+            Enhances Configuration classes by generating a dynamic proxy capable of 
+            interacting with the Spring container to respect object semantics.
+            </summary>
+            <author>Chris Beams</author>
+            <author>Juergen Hoeller</author>
+            <author>Bruno Baia (.NET)</author>
+            <seealso cref="T:Spring.Context.Attributes.ConfigurationClassPostProcessor"/>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassEnhancer.#ctor(Spring.Objects.Factory.Config.IConfigurableListableObjectFactory)">
+            <summary>
+            Creates a new instance of the <see cref="T:Spring.Context.Attributes.ConfigurationClassEnhancer"/> class.
+            </summary>
+            <param name="objectFactory">
+            The supplied ObjectFactory to check for the existence of object definitions.
+            </param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassEnhancer.Enhance(System.Type)">
+            <summary>
+            Generates a dynamic subclass of the specified Configuration class with a
+            container-aware interceptor capable of respecting scoping and other bean semantics.
+            </summary>
+            <param name="configClass">The Configuration class.</param>
+            <returns>The enhanced subclass.</returns>
+        </member>
+        <member name="T:Spring.Context.Attributes.ConfigurationClassEnhancer.IConfigurationClassInterceptor">
+            <summary>
+            Intercepts the invocation of any <see cref="T:Spring.Context.Attributes.DefinitionAttribute"/>-decorated methods in order 
+            to ensure proper handling of object semantics such as scoping and AOP proxying.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassEnhancer.IConfigurationClassInterceptor.ProcessDefinition(System.Reflection.MethodInfo,System.Object@)">
+            <summary>
+            Process the <see cref="T:Spring.Context.Attributes.DefinitionAttribute"/>-decorated method to check 
+            for the existence of this object.
+            </summary>
+            <param name="method">The method providing the object definition.</param>
+            <param name="instance">When this method returns true, contains the object definition.</param>
+            <returns>true if the object exists; otherwise, false.</returns>
+        </member>
+        <member name="T:Spring.Context.Attributes.ConfigurationClassMethod">
+            <summary>
+            Represents a <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> class method marked with the <see cref="T:Spring.Context.Attributes.DefinitionAttribute"/>.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassMethod.#ctor(System.Reflection.MethodInfo,Spring.Context.Attributes.ConfigurationClass)">
+            <summary>
+            Initializes a new instance of the ConfigurationClassMethod class.
+            </summary>
+            <param name="methodInfo"></param>
+            <param name="configurationClass"></param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassMethod.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents this instance.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents this instance.
+            </returns>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassMethod.Validate(Spring.Objects.Factory.Parsing.IProblemReporter)">
+            <summary>
+            Validates the specified problem reporter.
+            </summary>
+            <param name="problemReporter">The problem reporter.</param>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassMethod.ConfigurationClass">
+            <summary>
+            Gets the configuration class.
+            </summary>
+            <value>The configuration class.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassMethod.MethodMetadata">
+            <summary>
+            Gets the method metadata.
+            </summary>
+            <value>The method metadata.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassMethod.ResourceLocation">
+            <summary>
+            Gets the resource location.
+            </summary>
+            <value>The resource location.</value>
+        </member>
+        <member name="T:Spring.Context.Attributes.ConfigurationClassObjectDefinitionReader">
+            <summary>
+            Reads the class with the <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> applied and converts it into an <see cref="T:Spring.Objects.Factory.Config.IObjectDefinition"/> instance.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassObjectDefinitionReader.#ctor(Spring.Objects.Factory.Support.IObjectDefinitionRegistry,Spring.Objects.Factory.Parsing.IProblemReporter)">
+            <summary>
+            Initializes a new instance of the ConfigurationClassObjectDefinitionReader class.
+            </summary>
+            <param name="registry"></param>
+            <param name="problemReporter"></param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassObjectDefinitionReader.LoadObjectDefinitions(Spring.Collections.Generic.ISet{Spring.Context.Attributes.ConfigurationClass})">
+            <summary>
+            Loads the object definitions.
+            </summary>
+            <param name="configurationModel">The configuration model.</param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassObjectDefinitionReader.CheckConfigurationClassCandidate(Spring.Objects.Factory.Config.IObjectDefinition)">
+            <summary>
+            Checks the class to see if it is a candidate to be a <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> source.
+            </summary>
+            <param name="objectDefinition">The object definition.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Spring.Context.Attributes.ConfigurationClassParser">
+            <summary>
+            Parses classes with the <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> applied to them.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassParser.#ctor(Spring.Objects.Factory.Parsing.IProblemReporter)">
+            <summary>
+            Initializes a new instance of the ConfigurationClassParser class.
+            </summary>
+            <param name="problemReporter"></param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassParser.Parse(System.Type,System.String)">
+            <summary>
+            Parses the specified type.
+            </summary>
+            <param name="type">The type.</param>
+            <param name="objectName">Name of the object.</param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassParser.Validate">
+            <summary>
+            Validates this instance.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassParser.ProcessConfigurationClass(Spring.Context.Attributes.ConfigurationClass)">
+            <summary>
+            Processes the configuration class.
+            </summary>
+            <param name="configurationClass">The configuration class.</param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassParser.GetAllMethodsWithCustomAttributeForClass(System.Type,System.Type)">
+            <summary>
+            Gets all methods with custom attribute for class.
+            </summary>
+            <param name="theClass">The class.</param>
+            <param name="customAttribute">The custom attribute.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassParser.ConfigurationClasses">
+            <summary>
+            Gets the configuration classes.
+            </summary>
+            <value>The configuration classes.</value>
+        </member>
+        <member name="T:Spring.Context.Attributes.ConfigurationClassPostProcessor">
+            <summary>
+            Postprocesses the <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> applied types registered with the <see cref="T:Spring.Context.IApplicationContext"/>.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassPostProcessor.PostProcessObjectDefinitionRegistry(Spring.Objects.Factory.Support.IObjectDefinitionRegistry)">
+            <summary>
+            Postsprocesses the object definition registry.
+            </summary>
+            <param name="registry">The registry.</param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ConfigurationClassPostProcessor.PostProcessObjectFactory(Spring.Objects.Factory.Config.IConfigurableListableObjectFactory)">
+            <summary>
+            Postprocesses the object factory.
+            </summary>
+            <param name="objectFactory">The object factory.</param>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassPostProcessor.Order">
+            <summary>
+            Return the order value of this object, where a higher value means greater in
+            terms of sorting.
+            </summary>
+            <value></value>
+            <remarks>
+            	<p>
+            Normally starting with 0 or 1, with <see cref="F:System.Int32.MaxValue"/> indicating
+            greatest. Same order values will result in arbitrary positions for the affected
+            objects.
+            </p>
+            	<p>
+            Higher value can be interpreted as lower priority, consequently the first object
+            has highest priority.
+            </p>
+            </remarks>
+            <returns>The order value.</returns>
+        </member>
+        <member name="P:Spring.Context.Attributes.ConfigurationClassPostProcessor.ProblemReporter">
+            <summary>
+            Sets the problem reporter.
+            </summary>
+            <value>The problem reporter.</value>
+        </member>
+        <member name="T:Spring.Context.Attributes.DefinitionAttribute">
+            <summary>
+            Identifies the Method as providing and Object Definition.
+            </summary>
+        </member>
+        <member name="P:Spring.Context.Attributes.DefinitionAttribute.DestroyMethod">
+            <summary>
+            The optional name of a method to call on the Object instance upon closing the
+            application context, for example a Close() method on a DataSource.
+            The method must have no arguments but may throw any exception.
+            <para>
+            Note: Only invoked on objects whose lifecycle is under the full control of the
+            factory, which is always the case for singletons but not guaranteed 
+            for any other scope.
+            </para>
+            <see cref="T:Spring.Context.IConfigurableApplicationContext"/>
+            </summary>
+            <value>The destroy method.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.DefinitionAttribute.InitMethod">
+            <summary>
+            The optional name of a method to call on the object instance during initialization.
+            Not commonly used, given that the method may be called programmatically directly
+            within the body of a Object-annotated method.
+            </summary>
+            <value>The init method.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.DefinitionAttribute.Names">
+            <summary>
+            The name of this object, or if multiple, aliases for this object. If left unspecified
+            the name of the object is the name of the attributed method. If specified, the method
+            name is ignored.
+            </summary>
+            <value>The name.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.DefinitionAttribute.NamesToArray">
+            <summary>
+            Gets the comma-delimited list of names/aliases as an array.
+            </summary>
+            <value>The array of names.</value>
+        </member>
+        <member name="T:Spring.Context.Attributes.DependsOnAttribute">
+            <summary>
+            objects on which the current object depends. Any objects specified are guaranteed to be
+            created by the container before this object. Used infrequently in cases where a object
+            does not explicitly depend on another through properties or constructor arguments,
+            but rather depends on the side effects of another object's initialization.
+            <para>Note: This attribute will not be inherited by child object definitions,
+            hence it needs to be specified per concrete object definition.
+            </para>
+            <para>Using <see cref="T:Spring.Context.Attributes.DependsOnAttribute"/> at the class level has no effect unless component-scanning
+            is being used. If a <see cref="T:Spring.Context.Attributes.DependsOnAttribute"/>-attributed class is declared via XML,
+            <see cref="T:Spring.Context.Attributes.DependsOnAttribute"/> attribute metadata is ignored, and
+            &lt;object depends-on="..."/&gt; is respected instead.
+            </para>
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.DependsOnAttribute.#ctor(System.String[])">
+            <summary>
+            Initializes a new instance of the DependsOn class.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="P:Spring.Context.Attributes.DependsOnAttribute.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+            <value>The name.</value>
+        </member>
+        <member name="T:Spring.Context.Attributes.ImportAttribute">
+             <summary>
+             Indicates one or more <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> classes to import.
+            
+             <para>Provides functionality equivalent to the &lt;import/&gt; element in Spring XML.
+             Only supported for actual <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/>-attributed classes.
+             </para>
+            
+             <para>If XML or other non-<see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> object definition resources need to be
+             imported, use <see cref="T:Spring.Context.Attributes.ImportResourceAttribute"/>
+             </para>
+             </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ImportAttribute.#ctor(System.Type[])">
+            <summary>
+            Initializes a new instance of the Import class.
+            </summary>
+            <param name="types"></param>
+        </member>
+        <member name="P:Spring.Context.Attributes.ImportAttribute.Types">
+            <summary>
+            The <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> class or classes to import.
+            </summary>
+            <value>The type.</value>
+        </member>
+        <member name="T:Spring.Context.Attributes.ImportResourceAttribute">
+            <summary>
+            Supports providing one or more <see cref="T:Spring.Core.IO.IResource"/> implementations to import when creating <see cref="T:Spring.Objects.Factory.Support.RootObjectDefinition"/>s.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ImportResourceAttribute.#ctor(System.String[])">
+            <summary>
+            Initializes a new instance of the ImportResourceAttribute class.
+            </summary>
+            <param name="resources"></param>
+        </member>
+        <member name="M:Spring.Context.Attributes.ImportResourceAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the ImportResourceAttribute class.
+            </summary>
+            <param name="resource"></param>
+        </member>
+        <member name="P:Spring.Context.Attributes.ImportResourceAttribute.DefinitionReader">
+            <summary>
+            <see cref="T:Spring.Objects.Factory.Support.IObjectDefinitionReader"/> implementation to use when processing resources specified
+            by the <see cref="P:Spring.Context.Attributes.ImportResourceAttribute.Resources"/> attribute.
+            </summary>
+            <value>The <see cref="T:Spring.Objects.Factory.Support.IObjectDefinitionReader"/>.</value>
+        </member>
+        <member name="P:Spring.Context.Attributes.ImportResourceAttribute.Resources">
+            <summary>
+            Resource paths to import.  Resource-loading prefixes such as <code>assembly://</code> and
+            <code>file://</code>, etc may be used.
+            </summary>
+            <value>The resources.</value>
+        </member>
+        <member name="T:Spring.Context.Attributes.LazyAttribute">
+            <summary>
+            Indicates whether a object is to be lazily initialized.
+            
+            <para>If this attribute is not present on a Component or object definition, eager
+            initialization will occur. If present and set to true, the
+            object/Component will not be initialized until referenced by another object or
+            explicitly retrieved from the enclosing <see cref="T:Spring.Objects.Factory.IObjectFactory"/>.
+            If present and set to false, the object will be instantiated on startup by object factories
+            that perform eager initialization of singletons.
+            </para>
+            <para>
+            If Lazy is present on a <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> class, this indicates that all
+            <see cref="T:Spring.Context.Attributes.DefinitionAttribute"/> methods within that <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> should be lazily
+            initialized. If Lazy is present and false on a object method within a
+            Lazy-annotated Configuration class, this indicates overriding the 'default
+            lazy' behavior and that the object should be eagerly initialized.
+            </para>
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.LazyAttribute.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the LazyAttribute class.
+            </summary>
+            <param name="lazyInitialize"></param>
+        </member>
+        <member name="M:Spring.Context.Attributes.LazyAttribute.#ctor">
+            <summary>
+            Initializes a new instance of the LazyAttribute class.
+            </summary>
+        </member>
+        <member name="P:Spring.Context.Attributes.LazyAttribute.LazyInitialize">
+            <summary>
+            Whether lazy initialization should occur.
+            </summary>
+            <value><c>true</c> if [lazy initialize]; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="T:Spring.Context.Attributes.LinqExtensionMethods">
+            <summary>
+            Limited extension methods reproducing the small subset of LINQ that is needed in the code; required b/c the project targets .NET 2.0 where LINQ is not available.
+            </summary>
+        </member>
+        <member name="T:Spring.Context.Attributes.ReflectionOnlyUtils">
+            <summary>
+            Utilities to provide support for manipulating ReflectionOnly types in the <see cref="T:System.AppDomain"/>.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ReflectionOnlyUtils.ReflectionOnlyLoadWithPartialName(System.String)">
+            <summary>
+            Load the <see cref="T:System.Reflection.Assembly"/> into the ReflectionsOnly context based on its partial name.
+            </summary>
+            <param name="partialName">The partial name.</param>
+            <returns>The matching <see cref="T:System.Reflection.Assembly"/></returns>
+        </member>
+        <member name="T:Spring.Context.Attributes.ScopeAttribute">
+            <summary>
+            When used as a type-level attribute, indicates the name of a scope to use
+            for instances of the attributed type.
+            
+            <para>When used as a method-level attribute in conjunction with the
+            <see cref="T:Spring.Context.Attributes.DefinitionAttribute"/> attribute, indicates the name of a scope to use for
+            the instance returned from the method.
+            </para>
+            <para>In this context, scope means the lifecycle of an instance, such as
+            <code>singleton</code>, <code>prototype</code>, and so forth.
+            </para>
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Attributes.ScopeAttribute.#ctor(Spring.Objects.Factory.Support.ObjectScope)">
+            <summary>
+            Initializes a new instance of the Scope class.
+            </summary>
+            <param name="scope"></param>
+        </member>
+        <member name="P:Spring.Context.Attributes.ScopeAttribute.ObjectScope">
+            <summary>
+            Specifies the scope to use for the annotated object.
+            </summary>
+            <value>The scope.</value>
+        </member>
+        <member name="T:Spring.Context.Config.AttributeConfigObjectDefinitionParser">
+            <summary>
+            Object Defintion Parser for interpreting <see cref="T:Spring.Context.Attributes.ConfigurationAttribute"/> classes when primary configuration is peformed via XML.
+            </summary>
+        </member>
+        <member name="F:Spring.Context.Config.AttributeConfigObjectDefinitionParser.CONFIGURATION_ATTRIBUTE_PROCESSOR_OBJECT_NAME">
+            <summary>
+             The object name of the internally managed configuration attribute processor
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Config.AttributeConfigObjectDefinitionParser.ParseElement(System.Xml.XmlElement,Spring.Objects.Factory.Xml.ParserContext)">
+            <summary>
+            Parse the specified XmlElement and register the resulting
+            ObjectDefinitions with the <see cref="P:Spring.Objects.Factory.Xml.ParserContext.Registry"/> IObjectDefinitionRegistry
+            embedded in the supplied <see cref="T:Spring.Objects.Factory.Xml.ParserContext"/>
+            </summary>
+            <param name="element">The element to be parsed.</param>
+            <param name="parserContext">TThe object encapsulating the current state of the parsing process.
+            Provides access to a IObjectDefinitionRegistry</param>
+            <returns>The primary object definition.</returns>
+            <remarks>
+            	<p>
+            This method is never invoked if the parser is namespace aware
+            and was called to process the root node.
+            </p>
+            </remarks>
+        </member>
+        <member name="T:Spring.Context.Config.ComponentScanObjectDefinitionParser">
+            <summary>
+            Parses ObjectDefinitions from classes identified by an <see cref="T:Spring.Context.Attributes.AssemblyObjectDefinitionScanner"/>.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Config.ComponentScanObjectDefinitionParser.ParseElement(System.Xml.XmlElement,Spring.Objects.Factory.Xml.ParserContext)">
+            <summary>
+            Parse the specified XmlElement and register the resulting
+            ObjectDefinitions with the <see cref="P:Spring.Objects.Factory.Xml.ParserContext.Registry"/> IObjectDefinitionRegistry
+            embedded in the supplied <see cref="T:Spring.Objects.Factory.Xml.ParserContext"/>
+            </summary>
+            <param name="element">The element to be parsed.</param>
+            <param name="parserContext">TThe object encapsulating the current state of the parsing process.
+            Provides access to a IObjectDefinitionRegistry</param>
+            <returns>The primary object definition.</returns>
+            <remarks>
+            	<p>
+            This method is never invoked if the parser is namespace aware
+            and was called to process the root node.
+            </p>
+            </remarks>
+        </member>
+        <member name="M:Spring.Context.Config.ComponentScanObjectDefinitionParser.ConfigureScanner(Spring.Objects.Factory.Xml.ParserContext,System.Xml.XmlElement)">
+            <summary>
+            Configures the scanner.
+            </summary>
+            <param name="parserContext">The parser context.</param>
+            <param name="element">The element.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Spring.Context.Config.ContextNamespaceParser">
+            <summary>
+            	<code>NamespaceParser</code> allowing for the configuration of
+            declarative transaction management using either XML or using attributes.
+            This namespace handler is the central piece of functionality in the
+            Spring transaction management facilities and offers two appraoches
+            to declaratively manage transactions.
+            One approach uses transaction semantics defined in XML using the
+            <code>&lt;tx:advice&gt;</code> elements, the other uses attributes
+            in combination with the <code>&lt;tx:annotation-driven&gt;</code> element.
+            Both approached are detailed in the Spring reference manual.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Config.ContextNamespaceParser.Init">
+            <summary>
+            Register the <see cref="T:Spring.Objects.Factory.Xml.IObjectDefinitionParser"/> for the '<code>advice</code>' and
+            '<code>attribute-driven'</code> tags.
+            </summary>
+        </member>
+        <member name="T:Spring.Context.Support.GenericApplicationContextExtensions">
+            <summary>
+            Extensions to enable scanning on any AbstractApplicationContext-derived type.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Support.GenericApplicationContextExtensions.Scan(Spring.Context.Support.GenericApplicationContext,Spring.Context.Attributes.AssemblyObjectDefinitionScanner)">
+            <summary>
+            Scans for types using the provided scanner.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="scanner">The scanner.</param>
+        </member>
+        <member name="M:Spring.Context.Support.GenericApplicationContextExtensions.Scan(Spring.Context.Support.GenericApplicationContext,System.String,System.Predicate{System.Reflection.Assembly},System.Predicate{System.Type})">
+            <summary>
+            Scans for types that satisfy specified predicates located in the specified scan path.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="assemblyScanPath">The assembly scan path.</param>
+            <param name="assemblyPredicate">The assembly predicate.</param>
+            <param name="typePredicate">The type predicate.</param>
+        </member>
+        <member name="M:Spring.Context.Support.GenericApplicationContextExtensions.Scan(Spring.Context.Support.GenericApplicationContext,System.Predicate{System.Reflection.Assembly},System.Predicate{System.Type})">
+            <summary>
+            Scans for types that satisfy specified predicates.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="assemblyPredicate">The assembly predicate.</param>
+            <param name="typePredicate">The type predicate.</param>
+        </member>
+        <member name="M:Spring.Context.Support.GenericApplicationContextExtensions.ScanAllAssemblies(Spring.Context.Support.GenericApplicationContext)">
+            <summary>
+            Scans for types using the default scanner.
+            </summary>
+            <param name="context">The context.</param>
+        </member>
+        <member name="M:Spring.Context.Support.GenericApplicationContextExtensions.ScanWithAssemblyFilter(Spring.Context.Support.GenericApplicationContext,System.Predicate{System.Reflection.Assembly})">
+            <summary>
+            Scans the with assembly filter.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="assemblyPredicate">The assembly predicate.</param>
+        </member>
+        <member name="M:Spring.Context.Support.GenericApplicationContextExtensions.ScanWithTypeFilter(Spring.Context.Support.GenericApplicationContext,System.Predicate{System.Type})">
+            <summary>
+            Scans the with type filter.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="typePredicate">The type predicate.</param>
+        </member>
+        <member name="T:Spring.Context.ApplicationContextExtensions">
+            <summary>
+            Generic extensions for IApplicationContext
+            </summary>
+        </member>
+        <member name="M:Spring.Context.ApplicationContextExtensions.GetObject``1(Spring.Context.IApplicationContext,System.String)">
+            <summary>
+            Gets the object.
+            </summary>
+            <typeparam name="T">Type of Object to return.</typeparam>
+            <param name="context">The context.</param>
+            <param name="name">The name.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Spring.Context.ApplicationContextExtensions.GetObject``1(Spring.Context.IApplicationContext)">
+            <summary>
+            Gets the object.
+            </summary>
+            <typeparam name="T">Type of Object to return.</typeparam>
+            <param name="context">The context.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Spring.Context.Support.CodeConfigApplicationContext">
+            <summary>
+            ApplicationContext that can scan to identify object definitions
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Support.CodeConfigApplicationContext.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Support.GenericApplicationContext"/> class.
+            </summary>
+        </member>
+        <member name="M:Spring.Context.Support.CodeConfigApplicationContext.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Support.GenericApplicationContext"/> class.
+            </summary>
+            <param name="caseSensitive">if set to <c>true</c> names in the context are case sensitive.</param>
+        </member>
+        <member name="M:Spring.Context.Support.CodeConfigApplicationContext.#ctor(Spring.Objects.Factory.Support.DefaultListableObjectFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Support.GenericApplicationContext"/> class.
+            </summary>
+            <param name="objectFactory">The object factory instance to use for this context.</param>
+        </member>
+        <member name="M:Spring.Context.Support.CodeConfigApplicationContext.#ctor(Spring.Context.IApplicationContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Support.GenericApplicationContext"/> class.
+            </summary>
+            <param name="parent">The parent application context.</param>
+        </member>
+        <member name="M:Spring.Context.Support.CodeConfigApplicationContext.#ctor(System.String,System.Boolean,Spring.Context.IApplicationContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Support.GenericApplicationContext"/> class.
+            </summary>
+            <param name="name">The name of the application context.</param><param name="caseSensitive">if set to <c>true</c> names in the context are case sensitive.</param><param name="parent">The parent application context.</param>
+        </member>
+        <member name="M:Spring.Context.Support.CodeConfigApplicationContext.#ctor(Spring.Objects.Factory.Support.DefaultListableObjectFactory,Spring.Context.IApplicationContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Support.GenericApplicationContext"/> class.
+            </summary>
+            <param name="objectFactory">The object factory to use for this context</param><param name="parent">The parent applicaiton context.</param>
+        </member>
+        <member name="M:Spring.Context.Support.CodeConfigApplicationContext.#ctor(System.String,System.Boolean,Spring.Context.IApplicationContext,Spring.Objects.Factory.Support.DefaultListableObjectFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Context.Support.GenericApplicationContext"/> class.
+            </summary>
+            <param name="name">The name of the application context.</param><param name="caseSensitive">if set to <c>true</c> names in the context are case sensitive.</param><param name="parent">The parent application context.</param><param name="objectFactory">The object factory to use for this context</param>
+        </member>
+    </members>
+</doc>

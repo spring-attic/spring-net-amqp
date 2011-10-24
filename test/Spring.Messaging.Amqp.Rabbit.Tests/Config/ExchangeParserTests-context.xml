@@ -10,9 +10,9 @@
 
 	<rabbit:direct-exchange name="direct-override" auto-delete="true" durable="false"/>
 
-	<direct-exchange name="direct-arguments" xmlns="http://www.springframework.org/schema/rabbit">
+	<direct-exchange name="direct-arguments" xmlns="http://www.springframework.net/schema/rabbit">
 		<exchange-arguments>
-			<beans:entry key="foo" value="bar" />
+			<entry key="foo" value="bar" />
 		</exchange-arguments>
 	</direct-exchange>
 
@@ -20,6 +20,6 @@
 
 	<rabbit:fanout-exchange name="fanout"/>
 
-	<rabbit:headers-exchange name="headers" xmlns="http://www.springframework.org/schema/rabbit"/>
+	<rabbit:headers-exchange name="headers" xmlns="http://www.springframework.net/schema/rabbit"/>
 
 </objects>

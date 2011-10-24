@@ -9,7 +9,7 @@ using System.Text;
     using Spring.Messaging.Amqp.Rabbit.Core;
     using Spring.Util;
 
-namespace Spring.Messaging.Amqp.Rabbit.Test
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
 {
     public class BrokerRunning
     {

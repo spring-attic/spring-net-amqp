@@ -11,10 +11,11 @@ using NUnit.Framework;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 
-namespace Spring.Messaging.Amqp.Rabbit.Listener
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
     /// <summary>
     /// SimpleMessageListenerContainerSunnyDayTest Tests

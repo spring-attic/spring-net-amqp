@@ -24,12 +24,15 @@ using AutoMoq;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
+
+using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Support;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Tests.Support;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Threading.AtomicTypes;
 using Spring.Util;
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
 {
     /// <summary>
     /// Tests for the caching connection factory.
@@ -412,8 +415,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             var connectionFactory = new CachingConnectionFactory(mockConnectionFactory.Object);
 
             var mockConnectionListener = new Mock<IConnectionListener>();
-            mockConnectionListener.Setup(m => m.OnCreate(It.IsAny<IConnection>())).Callback((IConnection conn) => called.IncrementValueAndReturn());
-            mockConnectionListener.Setup(m => m.OnClose(It.IsAny<IConnection>())).Callback((IConnection conn) => called.DecrementValueAndReturn());
+            mockConnectionListener.Setup(m => m.OnCreate(It.IsAny<Spring.Messaging.Amqp.Rabbit.Connection.IConnection>())).Callback((Spring.Messaging.Amqp.Rabbit.Connection.IConnection conn) => called.IncrementValueAndReturn());
+            mockConnectionListener.Setup(m => m.OnClose(It.IsAny<Spring.Messaging.Amqp.Rabbit.Connection.IConnection>())).Callback((Spring.Messaging.Amqp.Rabbit.Connection.IConnection conn) => called.DecrementValueAndReturn());
 
             connectionFactory.ConnectionListeners = new List<IConnectionListener>() { mockConnectionListener.Object };
 

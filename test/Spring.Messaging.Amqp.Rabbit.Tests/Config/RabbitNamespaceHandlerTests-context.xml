@@ -48,6 +48,6 @@
 
 	<rabbit:admin id="admin-test" connection-factory="connectionFactory"/>
 
-	<object id="connectionFactory" class="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory"/>
+	<object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit" />
 
 </objects>

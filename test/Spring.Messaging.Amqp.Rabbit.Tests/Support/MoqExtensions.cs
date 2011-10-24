@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Moq.Language.Flow;
 
-namespace Spring.Messaging.Amqp.Rabbit.Support
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Support
 {
     /// <summary>
     /// Moq Extension methods.

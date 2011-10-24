@@ -11,6 +11,6 @@
 
 	<rabbit:connection-factory id="connectionFactory" />
 	
-	<object id="converter" class="org.springframework.amqp.support.converter.SerializerMessageConverter"/>
+	<object id="converter" type="Spring.Messaging.Amqp.Support.Converter.SerializerMessageConverter, Spring.Messaging.Amqp"/>
 
 </objects>

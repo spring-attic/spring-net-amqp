@@ -3,7 +3,7 @@ using System;
 using Common.Logging;
 using NUnit.Framework;
 
-namespace Spring.Messaging.Amqp.Rabbit.Test
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
 {
     /// <summary>
     /// Determines if the environment is available.

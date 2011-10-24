@@ -8,7 +8,7 @@ using System.Threading;
 using Common.Logging;
 using Erlang.NET;
 using NUnit.Framework;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {

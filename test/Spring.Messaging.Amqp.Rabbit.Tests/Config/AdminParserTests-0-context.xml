@@ -4,7 +4,7 @@
          xmlns:rabbit="http://www.springframework.net/schema/rabbit"
          xsi:schemaLocation="http://www.springframework.net/schema/rabbit http://www.springframework.net/schema/rabbit/spring-rabbit-1.0.xsd">
 
-	<object id="ConnectionFactory" class="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory" />
+	<object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit" />
 
 	<!-- Valid configuration -->
 	<rabbit:admin connection-factory="connectionFactory" />

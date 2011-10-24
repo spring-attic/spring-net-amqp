@@ -8,6 +8,6 @@
 
 	<rabbit:connection-factory id="native" connection-factory="connectionFactory" channel-cache-size="10" />
 
-  <object id="ConnectionFactory" class="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory" />
+  <object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit" />
 
 </objects>

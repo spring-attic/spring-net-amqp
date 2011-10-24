@@ -4,7 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+using Spring.Messaging.Amqp.Rabbit.Connection;
+
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
 {
     using System;
     using System.Collections.Generic;

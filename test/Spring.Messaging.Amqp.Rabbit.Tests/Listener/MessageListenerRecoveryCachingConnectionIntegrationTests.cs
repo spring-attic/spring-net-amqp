@@ -10,12 +10,13 @@ using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Threading.AtomicTypes;
 using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;
 
-namespace Spring.Messaging.Amqp.Rabbit.Listener
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
     /// <summary>
     /// Message listener recovery caching connection integration tests.

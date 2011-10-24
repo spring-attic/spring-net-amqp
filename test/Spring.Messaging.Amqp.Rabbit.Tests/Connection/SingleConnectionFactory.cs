@@ -6,7 +6,9 @@ using System.Text;
 
 using RabbitMQ.Client;
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+using Spring.Messaging.Amqp.Rabbit.Connection;
+
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
 {
     /// <summary>
     /// A single connection factory.
@@ -104,7 +106,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// Create a connection.
         /// </summary>
         /// <returns>The connection.</returns>
-        public override IConnection CreateConnection()
+        public override Spring.Messaging.Amqp.Rabbit.Connection.IConnection CreateConnection()
         {
             lock (this.connectionMonitor)
             {
@@ -139,7 +141,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// Does the create connection.
         /// </summary>
         /// <returns>The connection.</returns>
-        protected IConnection DoCreateConnection()
+        protected Spring.Messaging.Amqp.Rabbit.Connection.IConnection DoCreateConnection()
         {
             var connection = this.CreateBareConnection();
             return connection;

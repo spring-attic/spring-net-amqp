@@ -9,33 +9,33 @@
 	<rabbit:queue id="bar" />
 
 	<rabbit:listener-container id="container1" connection-factory="connectionFactory" acknowledge="manual" concurrency="5">
-		<rabbit:listener id="testListener" queue-names="foo, #{bar.name}" ref="testBean" method="handle"/>
+		<rabbit:listener id="testListener" queue-names="foo, #{bar.name}" ref="testObject" method="Handle"/>
 	</rabbit:listener-container>
 
 	<rabbit:listener-container id="container2" connection-factory="connectionFactory" acknowledge="manual" concurrency="5">
-		<rabbit:listener id="testListener" queues="foo, bar" ref="testBean" method="handle"/>
+		<rabbit:listener id="testListener" queues="foo, bar" ref="testObject" method="Handle"/>
 	</rabbit:listener-container>
 
 	<rabbit:listener-container id="container3" connection-factory="connectionFactory" advice-chain="adviceChain">
-		<rabbit:listener id="testListener" queues="foo" ref="testBean" method="handle"/>
+		<rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle"/>
 	</rabbit:listener-container>
 
 	<rabbit:listener-container id="container4" connection-factory="connectionFactory">
-		<rabbit:listener id="testListener" queues="foo" ref="testBean" method="handle"/>
+		<rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle"/>
 	</rabbit:listener-container>
 
-	<util:list id="adviceChain">
+	<!--<util:list id="adviceChain">
 		<bean class="org.springframework.amqp.rabbit.config.ListenerContainerParserTests$TestAdvice"/>
 		<bean class="org.springframework.amqp.rabbit.config.ListenerContainerParserTests$TestAdvice"/>
 		<bean class="org.springframework.amqp.rabbit.config.ListenerContainerParserTests$TestAdvice"/>
-	</util:list>
+	</util:list>-->
 
-	<bean class="org.springframework.amqp.rabbit.core.RabbitAdmin">
+	<object class="org.springframework.amqp.rabbit.core.RabbitAdmin">
 		<constructor-arg name="connectionFactory" ref="connectionFactory"/>
-	</bean>
+	</object>
 
-	<bean id="connectionFactory" class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory"/>
+  <object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit"/>
 
-	<bean id="testBean" class="org.springframework.amqp.rabbit.config.ListenerContainerParserTests$TestBean"/>
+  <object id="testObject" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestObject, Spring.Messaging.Amqp.Rabbit.Tests"/>
 
 </objects>

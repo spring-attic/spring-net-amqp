@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 using Spring.Messaging.Amqp.Rabbit.Admin;
 
-namespace Spring.Messaging.Amqp.Rabbit.Test
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
 {
     /// <summary>
     /// A broker panic rule.

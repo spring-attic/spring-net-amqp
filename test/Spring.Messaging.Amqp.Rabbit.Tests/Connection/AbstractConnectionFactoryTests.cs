@@ -7,10 +7,13 @@ using AutoMoq;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
+
+using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Support;
+using Spring.Messaging.Amqp.Rabbit.Tests.Support;
 using Spring.Threading.AtomicTypes;
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
 {
     /// <summary>
     /// Abstract connection factory tests.
@@ -41,8 +44,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             var connectionFactory = this.CreateConnectionFactory(mockConnectionFactory.Object);
             var connectionListeners = new List<IConnectionListener>();
             var mockConnectionListener = mocker.GetMock<IConnectionListener>();
-            mockConnectionListener.Setup(listener => listener.OnCreate(It.IsAny<IConnection>())).Callback(() => called.IncrementValueAndReturn());
-            mockConnectionListener.Setup(listener => listener.OnClose(It.IsAny<IConnection>())).Callback(() => called.DecrementValueAndReturn());
+            mockConnectionListener.Setup(listener => listener.OnCreate(It.IsAny<Spring.Messaging.Amqp.Rabbit.Connection.IConnection>())).Callback(() => called.IncrementValueAndReturn());
+            mockConnectionListener.Setup(listener => listener.OnClose(It.IsAny<Spring.Messaging.Amqp.Rabbit.Connection.IConnection>())).Callback(() => called.DecrementValueAndReturn());
             connectionListeners.Add(mockConnectionListener.Object);
             connectionFactory.ConnectionListeners = connectionListeners;
 
@@ -82,8 +85,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             
             var connectionListeners = new List<IConnectionListener>();
             var mockConnectionListener = mocker.GetMock<IConnectionListener>();
-            mockConnectionListener.Setup(listener => listener.OnCreate(It.IsAny<IConnection>())).Callback(() => called.IncrementValueAndReturn());
-            mockConnectionListener.Setup(listener => listener.OnClose(It.IsAny<IConnection>())).Callback(() => called.DecrementValueAndReturn());
+            mockConnectionListener.Setup(listener => listener.OnCreate(It.IsAny<Spring.Messaging.Amqp.Rabbit.Connection.IConnection>())).Callback(() => called.IncrementValueAndReturn());
+            mockConnectionListener.Setup(listener => listener.OnClose(It.IsAny<Spring.Messaging.Amqp.Rabbit.Connection.IConnection>())).Callback(() => called.DecrementValueAndReturn());
             connectionListeners.Add(mockConnectionListener.Object);
             connectionFactory.ConnectionListeners = connectionListeners;
 

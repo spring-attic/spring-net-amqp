@@ -13,10 +13,11 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Admin;
+using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 
-namespace Spring.Messaging.Amqp.Rabbit.Connection
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
 {
     /// <summary>
     /// Caching connection factory integration tests.

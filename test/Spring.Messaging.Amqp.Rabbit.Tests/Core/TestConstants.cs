@@ -19,7 +19,7 @@
 
 #endregion
 
-namespace Spring.Messaging.Amqp.Rabbit.Core
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
     /// <summary>
     /// Test constants. 

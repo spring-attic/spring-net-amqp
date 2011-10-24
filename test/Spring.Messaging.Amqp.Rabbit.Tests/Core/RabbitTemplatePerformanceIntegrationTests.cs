@@ -3,9 +3,10 @@ using System.Threading;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 
-namespace Spring.Messaging.Amqp.Rabbit.Core
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
     /// <summary>
     /// Rabbit template performance integration tests.

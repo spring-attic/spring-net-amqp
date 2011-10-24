@@ -5,8 +5,9 @@ using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Framing.Impl.v0_9_1;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Core;
 
-namespace Spring.Messaging.Amqp.Rabbit.Core
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
     /// <summary>
     /// Queue Utilities

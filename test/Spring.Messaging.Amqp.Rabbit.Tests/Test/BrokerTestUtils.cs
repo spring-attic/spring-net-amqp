@@ -2,7 +2,7 @@
 using System.Net;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 
-namespace Spring.Messaging.Amqp.Rabbit.Test
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
 {
     /// <summary>
     /// Global convenience class for all integration tests, carrying constants and other utilities for broker set up.

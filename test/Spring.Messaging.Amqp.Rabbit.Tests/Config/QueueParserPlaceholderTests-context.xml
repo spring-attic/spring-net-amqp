@@ -4,7 +4,7 @@
          xmlns:rabbit="http://www.springframework.net/schema/rabbit"
          xsi:schemaLocation="http://www.springframework.net/schema/rabbit http://www.springframework.net/schema/rabbit/spring-rabbit-1.0.xsd">
 
-	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<object type="Spring.Objects.Factory.Config.PropertyPlaceholderConfigurer, Spring.Core">
 		<property name="properties">
 			<props>
 				<prop key="foo">foo</prop>
@@ -12,7 +12,7 @@
 				<prop key="bar">bar</prop>
 			</props>
 		</property>
-	</bean>
+	</object>
 
 	<rabbit:queue name="${foo}" />
 
@@ -26,13 +26,13 @@
 
 	<rabbit:queue name="arguments">
 		<rabbit:queue-arguments>
-			<beans:entry key="foo" value="${bar}" />
+			<entry key="foo" value="${bar}" />
 		</rabbit:queue-arguments>
 	</rabbit:queue>
 
 	<rabbit:queue id="anonymousArguments">
 		<rabbit:queue-arguments>
-			<beans:entry key="foo" value="spam" />
+			<entry key="foo" value="spam" />
 		</rabbit:queue-arguments>
 	</rabbit:queue>
 

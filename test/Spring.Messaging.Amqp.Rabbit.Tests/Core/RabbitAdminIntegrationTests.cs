@@ -8,11 +8,12 @@ using Spring.Context.Support;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
-using Spring.Messaging.Amqp.Rabbit.Test;
+using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Threading.AtomicTypes;
 using IConnection = RabbitMQ.Client.IConnection;
 
-namespace Spring.Messaging.Amqp.Rabbit.Core
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
     /// <summary>
     /// Rabbit admin integration tests.

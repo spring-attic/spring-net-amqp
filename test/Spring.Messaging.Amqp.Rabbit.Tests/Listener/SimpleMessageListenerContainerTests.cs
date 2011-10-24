@@ -4,14 +4,17 @@ using System.Linq;
 using System.Text;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
+using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using NUnit.Framework;
-using Spring.Messaging.Amqp.Rabbit.Test;
+
+using Spring.Messaging.Amqp.Rabbit.Tests.Connection;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Transaction;
 using Spring.Transaction.Support;
 using Spring.Util;
 
-namespace Spring.Messaging.Amqp.Rabbit.Listener
+namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
     /// <summary>
     /// Simple message listener container tests.
