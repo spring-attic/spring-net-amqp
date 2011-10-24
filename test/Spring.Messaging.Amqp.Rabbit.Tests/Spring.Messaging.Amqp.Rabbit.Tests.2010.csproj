@@ -115,6 +115,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\AdminParserTests.cs" />
+    <Compile Include="Config\ConnectionFactoryParserTests.cs" />
+    <Compile Include="Config\ExchangeParserTests.cs" />
     <Compile Include="Config\TestObject.cs" />
     <Compile Include="Connection\AbstractConnectionFactoryTests.cs" />
     <Compile Include="Connection\CachingConnectionFactoryIntegrationTests.cs" />
@@ -153,6 +155,7 @@
     <Compile Include="Test\EnvironmentAvailable.cs" />
     <Compile Include="Test\AbstractRabbitIntegrationTest.cs" />
     <Compile Include="Test\TestCategory.cs" />
+    <Compile Include="Test\XmlObjectFactoryExtensions.cs" />
     <Compile Include="Transaction\RabbitTransactionManagerIntegrationTests.cs" />
   </ItemGroup>
   <ItemGroup>

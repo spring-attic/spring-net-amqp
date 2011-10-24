@@ -12,6 +12,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// <summary>
     /// Namespace handler for Rabbit.
     /// </summary>
+    [
+    NamespaceParser(
+        Namespace = "http://www.springframework.net/schema/rabbit",
+        SchemaLocationAssemblyHint = typeof(RabbitNamespaceHandler),
+        SchemaLocation = "/Spring.Messaging.Amqp.Rabbit.Config/spring-rabbit.xsd"
+        )
+    ]
     public class RabbitNamespaceHandler : NamespaceParserSupport
     {
         public override void Init()

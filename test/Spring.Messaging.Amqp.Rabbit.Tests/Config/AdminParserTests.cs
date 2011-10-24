@@ -14,8 +14,11 @@ using Spring.Context;
 using Spring.Context.Config;
 using Spring.Context.Support;
 using Spring.Core.IO;
+using Spring.Messaging.Amqp.Rabbit.Config;
+using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+using Spring.Objects.Factory;
 using Spring.Objects.Factory.Parsing;
 using Spring.Objects.Factory.Xml;
 using Spring.Util;
@@ -27,7 +30,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     /// AdminParser Tests
     /// </summary>
     [TestFixture]
-    [Category(TestCategory.Integration)]
+    [Category(TestCategory.Unit)]
     public class AdminParserTests
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -44,6 +47,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         private string adminBeanName;
 
         private bool initialisedWithTemplate;
+        
+        [TestFixtureSetUp]
+        public void Setup()
+        {
+            NamespaceParserRegistry.RegisterParser(typeof(RabbitNamespaceHandler));
+        }
 
         [Test]
         public void TestInvalid()
@@ -75,19 +84,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             RabbitAdmin admin;
             if (StringUtils.HasText(adminBeanName))
             {
-                admin = beanFactory.GetObject(adminBeanName, typeof(RabbitAdmin)) as RabbitAdmin;
+                admin = beanFactory.GetObject<RabbitAdmin>(adminBeanName);
             }
             else
             {
-                admin = beanFactory.GetObject(typeof(RabbitAdmin).Name) as RabbitAdmin;
+                admin = beanFactory.GetObject<RabbitAdmin>();
             }
             Assert.AreEqual(expectedAutoStartup, admin.AutoStartup);
-            Assert.AreEqual(
-                beanFactory.GetObject(typeof(ConnectionFactory).Name), admin.RabbitTemplate.ConnectionFactory);
+            Assert.AreEqual(beanFactory.GetObject<IConnectionFactory>(), admin.RabbitTemplate.ConnectionFactory);
 
             if (initialisedWithTemplate)
             {
-                Assert.AreEqual(beanFactory.GetObject(typeof(RabbitTemplate).Name), admin.RabbitTemplate);
+                Assert.AreEqual(beanFactory.GetObject<RabbitTemplate>(), admin.RabbitTemplate);
             }
 
         }
@@ -97,12 +105,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             XmlObjectFactory beanFactory = null;
             try
             {
-                var resourceNames = typeof(AdminParserTests).Assembly.GetManifestResourceNames();
-                foreach (var resourceNameString in resourceNames)
-                {
-                    var info = typeof(AdminParserTests).Assembly.GetManifestResourceInfo(resourceNameString);
-                    Logger.Info(resourceNameString);
-                }
                 // Resource file name template: <class-name>-<contextIndex>-context.xml
                 var resourceName = @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/" + typeof(AdminParserTests).Name + "-" + contextIndex + "-context.xml";
                 Logger.Info("Resource Name: " + resourceName);
@@ -113,15 +115,22 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                     Assert.Fail("Context " + resource + " suppose to fail");
                 }
             }
-            catch (ObjectDefinitionParsingException e)
+            catch (Exception e)
             {
-                if (validContext)
+                if (e is ObjectDefinitionParsingException || e is ObjectDefinitionStoreException)
                 {
-                    // Context expected to be valid - throw an exception up
-                    throw e;
-                }
+                    if (validContext)
+                    {
+                        // Context expected to be valid - throw an exception up
+                        throw e;
+                    }
 
-                Logger.Warn("Failure was expected", e);
+                    Logger.Warn("Failure was expected", e);
+                }
+                else
+                {
+                    throw;
+                }
             }
             return beanFactory;
         }

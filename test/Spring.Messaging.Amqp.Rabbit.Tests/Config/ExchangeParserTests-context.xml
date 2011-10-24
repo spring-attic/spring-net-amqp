@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects xmlns="http://www.springframework.net"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:rabbit="http://www.springframework.net/schema/rabbit"
-         xsi:schemaLocation="http://www.springframework.net/schema/rabbit http://www.springframework.net/schema/rabbit/spring-rabbit-1.0.xsd">
+         xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
 	<rabbit:direct-exchange name="direct" />
 
@@ -12,8 +11,10 @@
 
 	<direct-exchange name="direct-arguments" xmlns="http://www.springframework.net/schema/rabbit">
 		<exchange-arguments>
-			<entry key="foo" value="bar" />
-		</exchange-arguments>
+      <map>
+        <entry key="foo" value="bar" />
+      </map>
+    </exchange-arguments>
 	</direct-exchange>
 
 	<rabbit:topic-exchange name="topic" />

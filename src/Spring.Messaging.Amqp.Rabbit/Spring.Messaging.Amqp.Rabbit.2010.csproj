@@ -184,7 +184,7 @@
     <None Include="..\..\Spring.Net.snk">
       <Link>Spring.Net.snk</Link>
     </None>
-    <None Include="Config\spring-rabbit.xsd" />
+    <EmbeddedResource Include="Config\spring-rabbit.xsd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -71,7 +71,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="queue-arguments" type="mapType">
+  <xsd:element name="queue-arguments" type="map">
     <xsd:annotation>
       <xsd:documentation source="java:java.util.Map">
         <![CDATA[
@@ -306,7 +306,7 @@
     </xsd:attribute>
   </xsd:complexType>
 
-  <xsd:element name="exchange-arguments" type="mapType">
+  <xsd:element name="exchange-arguments" type="map">
     <xsd:annotation>
       <xsd:documentation source="java:java.util.Map">
         <![CDATA[
@@ -381,7 +381,7 @@
     </xsd:attribute>
   </xsd:complexType>
 
-  <xsd:element name="binding-arguments" type="mapType">
+  <xsd:element name="binding-arguments" type="map">
     <xsd:annotation>
       <xsd:documentation source="java:java.util.Map">
         <![CDATA[
@@ -391,26 +391,27 @@
     </xsd:annotation>
   </xsd:element>
 
-  <xsd:complexType name="mapType">
-    <xsd:complexContent>
-      <xsd:extension base="beans:mapType">
-        <xsd:attribute name="ref" use="optional">
-          <xsd:annotation>
-            <xsd:documentation source="java:java.util.Map">
-              <![CDATA[
-						The bean name of the Map to pass to the broker when this component is declared.
-						]]>
-            </xsd:documentation>
-            <xsd:appinfo>
-              <!--<tool:annotation kind="ref">
-                <tool:expected-type type="java.util.Map" />
-              </tool:annotation>-->
-            </xsd:appinfo>
-          </xsd:annotation>
-        </xsd:attribute>
-      </xsd:extension>
-    </xsd:complexContent>
+  <xsd:complexType name="map">
+    <xsd:sequence>
+      <xsd:element ref="map"/>
+    </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:element name="map">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="unbounded" ref="entry"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="entry">
+    <xsd:complexType>
+      <xsd:attribute name="key" use="required"/>
+      <xsd:attribute name="value"/>
+      <xsd:attribute name="value-ref" type="xsd:NCName"/>
+    </xsd:complexType>
+  </xsd:element>
 
   <xsd:element name="listener-container">
     <xsd:annotation>

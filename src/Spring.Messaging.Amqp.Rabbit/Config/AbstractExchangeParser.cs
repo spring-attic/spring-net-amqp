@@ -61,8 +61,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             var argumentsElement = argumentsElements != null && argumentsElements.Count == 1 ? argumentsElements[0] as XmlElement : null;
 		    if (argumentsElement != null) 
             {
-			    var map = parserContext.ParserHelper.ParseCustomElement(argumentsElement, builder.RawObjectDefinition);
-			    builder.AddConstructorArg(map);
+                try
+                {
+                    var map = parserContext.ParserHelper.ParseCustomElement(argumentsElement, builder.RawObjectDefinition);
+                    builder.AddConstructorArg(map);
+                }
+                catch (Exception e)
+                {
+                    throw;
+                }
+                
 		    }
 
 	    }
