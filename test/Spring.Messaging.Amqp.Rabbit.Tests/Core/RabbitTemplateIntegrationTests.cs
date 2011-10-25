@@ -88,7 +88,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         public void TestSendToNonExistentAndThenReceive()
         {
             // If transacted then the commit fails on send, so we get a nice synchronous exception
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             try
             {
                 this.template.ConvertAndSend(string.Empty, "no.such.route", "message");
@@ -149,7 +149,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [Test]
         public void TestSendAndReceiveTransacted()
         {
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             this.template.ConvertAndSend(ROUTE, "message");
             var result = (string)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual("message", result);
@@ -164,7 +164,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         public void TestSendAndReceiveTransactedWithUncachedConnection()
         {
             var template = new RabbitTemplate(new SingleConnectionFactory());
-            template.IsChannelTransacted = true;
+            template.ChannelTransacted = true;
             template.ConvertAndSend(ROUTE, "message");
             var result = (string)template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual("message", result);
@@ -178,7 +178,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [Test]
         public void TestSendAndReceiveTransactedWithImplicitRollback()
         {
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             this.template.ConvertAndSend(ROUTE, "message");
 
             // Rollback of manual receive is implicit because the channel is
@@ -245,7 +245,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() => (string)this.template.ReceiveAndConvert(ROUTE));
             
             this.template.ConvertAndSend(ROUTE, "message");
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             var result = (string)new TransactionTemplate(new TestTransactionManager()).Execute(mockCallback.Object);
             Assert.AreEqual("message", result);
             result = (string)this.template.ReceiveAndConvert(ROUTE);
@@ -266,7 +266,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             this.template.ConvertAndSend(ROUTE, "message");
 
             // Should just result in auto-ack (not synched with external tx)
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             var result = (string)new TransactionTemplate(new TestTransactionManager()).Execute(mockCallback.Object);
             Assert.AreEqual("message", result);
             result = (string)this.template.ReceiveAndConvert(ROUTE);
@@ -292,7 +292,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                                                                                                    });
 
             // Makes receive (and send in principle) transactional
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             this.template.ConvertAndSend(ROUTE, "message");
             try 
             {
@@ -328,7 +328,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                                                                                                    });
 
             // Makes receive non-transactional
-            this.template.IsChannelTransacted = false;
+            this.template.ChannelTransacted = false;
             this.template.ConvertAndSend(ROUTE, "message");
             try
             {
@@ -361,7 +361,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                                                                                                        return null;
                                                                                                    });
 
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             new TransactionTemplate(new TestTransactionManager()).Execute(mockCallback.Object);
             var result = (string)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual("message", result);
@@ -385,7 +385,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                                                                                                        this.template.ConvertAndSend(ROUTE, "message");
                                                                                                        throw new PlannedException();
                                                                                                    });
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             try
             {
                 new TransactionTemplate(new TestTransactionManager()).Execute(mockCallback.Object);

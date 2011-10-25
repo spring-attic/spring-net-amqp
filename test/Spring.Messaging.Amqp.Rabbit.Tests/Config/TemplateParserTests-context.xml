@@ -5,11 +5,10 @@
 
 	<rabbit:template id="template" connection-factory="connectionFactory" />
 
-	<rabbit:template id="kitchenSink" connection-factory="connectionFactory" channel-transacted="true"
-		encoding="UTF-8" exchange="foo" queue="bar" routing-key="spam" message-converter="converter" reply-timeout="1000" />
+	<rabbit:template id="kitchenSink" connection-factory="connectionFactory" channel-transacted="true" encoding="UTF-8" exchange="foo" queue="bar" routing-key="spam" message-converter="converter" reply-timeout="1000" />
 
 	<rabbit:connection-factory id="connectionFactory" />
 	
-	<object id="converter" type="Spring.Messaging.Amqp.Support.Converter.SerializerMessageConverter, Spring.Messaging.Amqp"/>
+	<object id="converter" type="Spring.Messaging.Amqp.Support.Converter.SimpleMessageConverter, Spring.Messaging.Amqp"/>
 
 </objects>

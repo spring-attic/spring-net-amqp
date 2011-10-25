@@ -3,9 +3,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-	<rabbit:queue name="foo" />
+	<rabbit:queue id="foo" name="foo" />
 
-	<rabbit:queue name="override" durable="true" auto-delete="true" exclusive="true" />
+	<rabbit:queue id="override" name="override" durable="true" auto-delete="true" exclusive="true" />
 
 	<rabbit:queue id="alias" name="spam" />
 
@@ -13,15 +13,19 @@
 
 	<rabbit:queue id="anonymous" />
 
-	<rabbit:queue name="arguments">
+	<rabbit:queue id="arguments" name="arguments">
 		<rabbit:queue-arguments>
-			<entry key="foo" value="bar" />
-		</rabbit:queue-arguments>
+      <rabbit:map>
+        <rabbit:entry key="foo" value="bar" />
+      </rabbit:map>
+    </rabbit:queue-arguments>
 	</rabbit:queue>
 
 	<rabbit:queue id="anonymousArguments">
 		<rabbit:queue-arguments>
-			<entry key="foo" value="spam" />
+      <rabbit:map>
+        <rabbit:entry key="foo" value="spam"/>
+      </rabbit:map>
 		</rabbit:queue-arguments>
 	</rabbit:queue>
 

@@ -310,7 +310,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.TxSize = this.txSize;
             container.PrefetchCount = this.txSize;
             container.ConcurrentConsumers = this.concurrentConsumers;
-            container.IsChannelTransacted = this.transactional;
+            container.ChannelTransacted = this.transactional;
             container.AcknowledgeMode = this.acknowledgeMode;
             if (this.externalTransaction)
             {

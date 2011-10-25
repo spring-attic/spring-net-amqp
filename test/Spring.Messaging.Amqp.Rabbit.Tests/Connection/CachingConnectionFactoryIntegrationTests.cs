@@ -170,7 +170,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         {
             var template1 = new RabbitTemplate(this.connectionFactory);
             var template2 = new RabbitTemplate(this.connectionFactory);
-            template1.IsChannelTransacted = true;
+            template1.ChannelTransacted = true;
 
             var admin = new RabbitAdmin(this.connectionFactory);
             var queue = admin.DeclareQueue();

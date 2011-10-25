@@ -3,11 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-	<rabbit:queue name="foo" />
+	<rabbit:queue id="foo" name="foo" />
 
-	<rabbit:queue name="arguments">
-		<rabbit:queue-arguments value-type="long">
-			<entry key="x-message-ttl" value="100" />
+	<rabbit:queue id="arguments" name="arguments">
+		<rabbit:queue-arguments> <!-- value-type="long"> -->
+      <rabbit:map>
+        <rabbit:entry key="x-message-ttl" value="100" />
+      </rabbit:map>
 		</rabbit:queue-arguments>
 	</rabbit:queue>
 

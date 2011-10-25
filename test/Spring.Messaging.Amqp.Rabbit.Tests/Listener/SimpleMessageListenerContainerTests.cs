@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var container = new SimpleMessageListenerContainer(new SingleConnectionFactory());
             container.MessageListener = new MessageListenerAdapter(this);
             container.QueueNames = new string[] { "foo" };
-            container.IsChannelTransacted = false;
+            container.ChannelTransacted = false;
             container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.NONE;
             container.TransactionManager = new TestTransactionManager();
 
@@ -61,7 +61,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var container = new SimpleMessageListenerContainer(new SingleConnectionFactory());
             container.MessageListener = new MessageListenerAdapter(this);
             container.QueueNames = new string[] { "foo" };
-            container.IsChannelTransacted = true;
+            container.ChannelTransacted = true;
             container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.NONE;
 
             try

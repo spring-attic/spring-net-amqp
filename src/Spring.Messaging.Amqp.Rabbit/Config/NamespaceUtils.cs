@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Xml;
 
 using Spring.Core;
@@ -51,7 +52,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <returns>True if successful, else false.</returns>
         public static bool SetValueIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName)
         {
-            return SetValueIfAttributeDefined(builder, element, attributeName, Conventions.AttributeNameToPropertyName(attributeName));
+            return SetValueIfAttributeDefined(builder, element, attributeName, Conventions.AttributeNameToPropertyName(Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(attributeName)));
         }
 
         /// <summary>

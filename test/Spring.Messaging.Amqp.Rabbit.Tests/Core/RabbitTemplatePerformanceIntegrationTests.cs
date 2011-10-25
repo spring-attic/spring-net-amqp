@@ -127,7 +127,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [Repeat(2000)]
         public void TestSendAndReceiveTransacted()
         {
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             this.template.ConvertAndSend(ROUTE, "message");
             var result = (string)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual("message", result);

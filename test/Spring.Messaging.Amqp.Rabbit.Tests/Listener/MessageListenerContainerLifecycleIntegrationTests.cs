@@ -176,7 +176,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var listener = new LifecyclePocoListener(latch);
             container.MessageListener = new MessageListenerAdapter(listener);
             container.AcknowledgeMode = transactionMode.AcknowledgeMode();
-            container.IsChannelTransacted = transactionMode.IsTransactional();
+            container.ChannelTransacted = transactionMode.IsTransactional();
             container.ConcurrentConsumers = concurrentConsumers;
 
             if (transactionMode.Prefetch() > 0)

@@ -193,7 +193,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var container = new SimpleMessageListenerContainer(template.ConnectionFactory);
             container.MessageListener = listener;
             container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.NONE;
-            container.IsChannelTransacted = false;
+            container.ChannelTransacted = false;
             container.ConcurrentConsumers = concurrentConsumers;
 
             container.PrefetchCount = messageCount;

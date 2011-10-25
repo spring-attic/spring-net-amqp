@@ -8,6 +8,7 @@ using System.Xml;
 using Spring.Messaging.Amqp.Core;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
+using Spring.Util;
 
 namespace Spring.Messaging.Amqp.Rabbit.Config
 {
@@ -51,7 +52,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 parserContext.ReaderContext.ReportFatalException(element, "Queue must have either id or name (or both)");
             }
 
-            NamespaceUtils.AddConstructorArgValueIfAttributeDefined(builder, element, "name");
+            var success = NamespaceUtils.AddConstructorArgValueIfAttributeDefined(builder, element, "name");
 
             if (!NamespaceUtils.IsAttributeDefined(element, "name"))
             {
@@ -85,7 +86,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
         private bool AttributeHasIllegalOverride(XmlElement element, string name, string allowed)
         {
-            return element.GetAttributeNode(name) != null && element.GetAttributeNode(name).Specified && !allowed.Equals(element.GetAttribute(name));
+            var result = element.GetAttributeNode(name) != null && element.GetAttributeNode(name).Specified && !allowed.Equals(element.GetAttribute(name));
+            return result;
         }
     }
 }

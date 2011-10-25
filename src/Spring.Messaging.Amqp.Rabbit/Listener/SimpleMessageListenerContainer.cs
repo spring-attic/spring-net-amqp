@@ -496,7 +496,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             // There's no point prefetching less than the tx size, otherwise the consumer will stall because the broker
             // didn't get an ack for delivered messages
             var actualPrefetchCount = this.prefetchCount > this.txSize ? this.prefetchCount : this.txSize;
-            return new BlockingQueueConsumer(this.ConnectionFactory, this.messagePropertiesConverter, this.cancellationLock, this.AcknowledgeMode, this.IsChannelTransacted, actualPrefetchCount, this.GetRequiredQueueNames());
+            return new BlockingQueueConsumer(this.ConnectionFactory, this.messagePropertiesConverter, this.cancellationLock, this.AcknowledgeMode, this.ChannelTransacted, actualPrefetchCount, this.GetRequiredQueueNames());
         }
 
         /// <summary>
@@ -720,7 +720,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     try
                     {
                         // Will come back false when the queue is drained
-                        continuable = this.outer.ReceiveAndExecute(this.consumer) && !this.outer.IsChannelTransacted;
+                        continuable = this.outer.ReceiveAndExecute(this.consumer) && !this.outer.ChannelTransacted;
                     }
                     catch (ListenerExecutionFailedException ex)
                     {

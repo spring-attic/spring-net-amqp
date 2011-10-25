@@ -11,5 +11,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     /// </summary>
     public class TestObject
     {
+        /// <summary>
+        /// Handles the specified string.
+        /// </summary>
+        /// <param name="s">The string.</param>
+        public void Handle(string s)
+        {
+            
+        }
     }
 }

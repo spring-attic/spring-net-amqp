@@ -15,7 +15,7 @@
 		<rabbit:listener id="testListener" queues="foo, bar" ref="testObject" method="Handle"/>
 	</rabbit:listener-container>
 
-	<rabbit:listener-container id="container3" connection-factory="connectionFactory" advice-chain="adviceChain">
+	<rabbit:listener-container id="container3" connection-factory="connectionFactory"> <!-- TODO: advice-chain="adviceChain"> -->
 		<rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle"/>
 	</rabbit:listener-container>
 
@@ -23,13 +23,17 @@
 		<rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle"/>
 	</rabbit:listener-container>
 
-	<!--<util:list id="adviceChain">
-		<bean class="org.springframework.amqp.rabbit.config.ListenerContainerParserTests$TestAdvice"/>
-		<bean class="org.springframework.amqp.rabbit.config.ListenerContainerParserTests$TestAdvice"/>
-		<bean class="org.springframework.amqp.rabbit.config.ListenerContainerParserTests$TestAdvice"/>
-	</util:list>-->
+	<!--
+  TODO
+  <list id="adviceChain">
+		<object type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests"/>
+		<object type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests"/>
+		<object type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests"/>
+	</list>
+  
+  -->
 
-	<object class="org.springframework.amqp.rabbit.core.RabbitAdmin">
+	<object type="Spring.Messaging.Amqp.Rabbit.Core.RabbitAdmin, Spring.Messaging.Amqp.Rabbit">
 		<constructor-arg name="connectionFactory" ref="connectionFactory"/>
 	</object>
 

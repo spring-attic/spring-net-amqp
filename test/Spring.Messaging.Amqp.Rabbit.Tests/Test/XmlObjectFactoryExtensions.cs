@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Spring.Objects.Factory;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
 
@@ -43,6 +44,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <returns>The requested object.</returns>
         public static T GetObject<T>(this XmlObjectFactory factory, string name)
         {
+            /*var objectsForType = factory.GetObjectNamesForType(typeof(T));
+
+            if (objectsForType.Count() > 0)
+            {
+                foreach(var objectForType in objectsForType)
+                {
+                    if(objectForType == name)
+                    {
+                        return (T)factory.GetObject(objectForType);
+                    }
+                }
+            }*/
+
+            return (T)factory.GetObject(name, typeof(T));
+        }
+
+        public static T GetObject<T>(this IObjectFactory factory, string name)
+        {
+
             return (T)factory.GetObject(name, typeof(T));
         }
     }

@@ -27,7 +27,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             var template = new RabbitTemplate();
             template.ConnectionFactory = connectionFactory;
-            template.IsChannelTransacted = true;
+            template.ChannelTransacted = true;
             template.AfterPropertiesSet();
 
             var routingKey = TestConstants.ROUTING_KEY;

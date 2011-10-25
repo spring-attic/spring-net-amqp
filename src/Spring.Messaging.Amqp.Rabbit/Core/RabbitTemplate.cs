@@ -373,7 +373,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return Execute<Message>(
                 channel =>
                     {
-                        var response = channel.BasicGet(queueName, !IsChannelTransacted);
+                        var response = channel.BasicGet(queueName, !this.ChannelTransacted);
 
                         // Response can be null is the case that there is no message on the queue.
                         if (response != null)
@@ -384,7 +384,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                                 channel.BasicAck(deliveryTag, false);
                                 channel.TxCommit();
                             }
-                            else if (IsChannelTransacted)
+                            else if (this.ChannelTransacted)
                             {
                                 // Not locally transacted but it is transacted so it
                                 // could be synchronized with an external transaction
@@ -684,7 +684,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <returns>True if locally transacted, else false.</returns>
         protected bool ChannelLocallyTransacted(RabbitMQ.Client.IModel channel)
         {
-            return IsChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
+            return this.ChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
         }
 
         /// <summary>

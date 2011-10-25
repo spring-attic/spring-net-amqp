@@ -86,7 +86,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.TxSize = txSize;
             container.PrefetchCount = txSize;
             container.ConcurrentConsumers = concurrentConsumers;
-            container.IsChannelTransacted = transactional;
+            container.ChannelTransacted = transactional;
             container.AcknowledgeMode = acknowledgeMode;
             if (externalTransaction)
             {

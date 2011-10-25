@@ -58,9 +58,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether IsChannelTransacted.
+        /// Gets or sets a value indicating whether ChannelTransacted.
         /// </summary>
-        public bool IsChannelTransacted
+        public bool ChannelTransacted
         {
             get { return this.transactional; }
             set { this.transactional = value; }
@@ -125,7 +125,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </returns>
         protected RabbitResourceHolder GetTransactionalResourceHolder()
         {
-            return ConnectionFactoryUtils.GetTransactionalResourceHolder(this.connectionFactory, this.IsChannelTransacted);
+            return ConnectionFactoryUtils.GetTransactionalResourceHolder(this.connectionFactory, this.ChannelTransacted);
         }
 
         /// <summary>

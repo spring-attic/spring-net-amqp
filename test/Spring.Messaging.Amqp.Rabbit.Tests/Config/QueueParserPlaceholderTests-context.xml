@@ -5,17 +5,17 @@
 
 	<object type="Spring.Objects.Factory.Config.PropertyPlaceholderConfigurer, Spring.Core">
 		<property name="properties">
-			<props>
-				<prop key="foo">foo</prop>
-				<prop key="true">true</prop>
-				<prop key="bar">bar</prop>
-			</props>
+      <dictionary>
+        <entry key="foo" value="foo" />
+        <entry key="true" value="true" />
+        <entry key="bar" value="bar" />
+      </dictionary>
 		</property>
 	</object>
 
 	<rabbit:queue name="${foo}" />
 
-	<rabbit:queue name="override" durable="${true}" auto-delete="${true}" exclusive="${true}" />
+	<rabbit:queue id="override" name="override" durable="${true}" auto-delete="${true}" exclusive="${true}" />
 
 	<rabbit:queue id="alias" name="spam" />
 
@@ -23,15 +23,19 @@
 
 	<rabbit:queue id="anonymous" />
 
-	<rabbit:queue name="arguments">
+	<rabbit:queue id="arguments" name="arguments">
 		<rabbit:queue-arguments>
-			<entry key="foo" value="${bar}" />
+      <rabbit:map>
+        <rabbit:entry key="foo" value="${bar}" />
+      </rabbit:map>
 		</rabbit:queue-arguments>
 	</rabbit:queue>
 
 	<rabbit:queue id="anonymousArguments">
 		<rabbit:queue-arguments>
-			<entry key="foo" value="spam" />
+      <rabbit:map>
+        <rabbit:entry key="foo" value="spam" />
+      </rabbit:map>
 		</rabbit:queue-arguments>
 	</rabbit:queue>
 

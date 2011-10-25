@@ -4,13 +4,13 @@
          xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
 	<object type="Spring.Objects.Factory.Config.PropertyPlaceholderConfigurer, Spring.Core">
-		<property name="properties">
-			<props>
-				<prop key="five">5</prop>
-				<prop key="one">1</prop>
-				<prop key="false">false</prop>
-			</props>
-		</property>
+    <property name="Properties">
+      <name-values>
+        <add key="five" value="5" />
+        <add key="one" value="1" />
+        <add key="false" value="false" />
+      </name-values>
+    </property>
 	</object>
 
 	<rabbit:queue name="foo" />

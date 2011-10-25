@@ -87,7 +87,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         {
             var connectionFactory = new CachingConnectionFactory();
             this.template = new RabbitTemplate(connectionFactory);
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             var transactionManager = new RabbitTransactionManager(connectionFactory);
             this.transactionTemplate = new TransactionTemplate(transactionManager);
             this.transactionTemplate.TransactionIsolationLevel = IsolationLevel.Unspecified;
@@ -151,7 +151,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
                                                                                                    });
 
             // Makes receive (and send in principle) transactional
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             this.template.ConvertAndSend(ROUTE, "message");
             try
             {
@@ -184,7 +184,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
                                                                                                        template.ConvertAndSend(ROUTE, "message");
                                                                                                        return null;
                                                                                                    });
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             this.transactionTemplate.Execute(mockCallback.Object);
             var result = (string)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual("message", result);
@@ -207,7 +207,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
                                                                                                        template.ConvertAndSend(ROUTE, "message");
                                                                                                        throw new PlannedException();
                                                                                                    });
-            this.template.IsChannelTransacted = true;
+            this.template.ChannelTransacted = true;
             try
             {
                 this.transactionTemplate.Execute(mockCallback.Object);

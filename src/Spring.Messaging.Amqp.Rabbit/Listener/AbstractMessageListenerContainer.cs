@@ -293,7 +293,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 this.exposeListenerChannel || !this.AcknowledgeMode.IsManual(),
                 "You cannot acknowledge messages manually if the channel is not exposed to the listener " + "(please check your configuration and set exposeListenerChannel=true or acknowledgeMode!=MANUAL)");
             AssertUtils.State(
-                !(this.AcknowledgeMode.IsAutoAck() && IsChannelTransacted),
+                !(this.AcknowledgeMode.IsAutoAck() && this.ChannelTransacted),
                 "The acknowledgeMode is NONE (autoack in Rabbit terms) which is not consistent with having a " + "transactional channel. Either use a different AcknowledgeMode or make sure channelTransacted=false");
             this.ValidateConfiguration();
             this.Initialize();
@@ -656,10 +656,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <returns>
         /// <c>true</c> if the is channel locally transacted; otherwise, <c>false</c>.
         /// </returns>
-        /// <see cref="RabbitAccessor.IsChannelTransacted"/>
+        /// <see cref="RabbitAccessor.ChannelTransacted"/>
         protected virtual bool IsChannelLocallyTransacted(IModel channel)
         {
-            return this.IsChannelTransacted;
+            return this.ChannelTransacted;
         }
 
         /// <summary>

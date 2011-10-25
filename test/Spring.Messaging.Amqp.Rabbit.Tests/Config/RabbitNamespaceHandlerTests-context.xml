@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-	<direct-exchange name="direct-test" xmlns="http://www.springframework.net/schema/rabbit">
+	<direct-exchange id="direct-test" name="direct-test" xmlns="http://www.springframework.net/schema/rabbit">
 		<bindings>
 			<binding queue="foo" key="foo" />
 			<binding queue="bar" />
@@ -12,7 +12,7 @@
 		</bindings>
 	</direct-exchange>
 
-	<topic-exchange name="topic-test" xmlns="http://www.springframework.net/schema/rabbit">
+	<topic-exchange id="topic-test" name="topic-test" xmlns="http://www.springframework.net/schema/rabbit">
 		<bindings>
 			<binding queue="foo" pattern="foo.#" />
 			<binding queue="bar" pattern="bar.#" />
@@ -21,7 +21,7 @@
 		</bindings>
 	</topic-exchange>
 
-	<fanout-exchange name="fanout-test" xmlns="http://www.springframework.net/schema/rabbit">
+	<fanout-exchange id="fanout-test" name="fanout-test" xmlns="http://www.springframework.net/schema/rabbit">
 		<bindings>
 			<binding queue="foo" />
 			<binding queue="bar" />
@@ -30,7 +30,7 @@
 		</bindings>
 	</fanout-exchange>
 
-	<headers-exchange name="headers-test" xmlns="http://www.springframework.net/schema/rabbit">
+	<headers-exchange id="headers-test" name="headers-test" xmlns="http://www.springframework.net/schema/rabbit">
 		<bindings>
 			<binding queue="foo" key="type" value="foo" />
 			<binding queue="bar" key="type" value="bar" />
@@ -39,7 +39,7 @@
 		</bindings>
 	</headers-exchange>
 
-	<rabbit:queue name="foo" />
+	<rabbit:queue id="foo" name="foo" />
 
 	<rabbit:queue id="spam" name="bar" />
 

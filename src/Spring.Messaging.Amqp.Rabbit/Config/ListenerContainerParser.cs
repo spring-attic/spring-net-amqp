@@ -69,7 +69,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
         public IObjectDefinition ParseElement(XmlElement element, ParserContext parserContext)
         {
-            var compositeDef = new ObjectDefinitionHolder(parserContext.ParserHelper.ParseCustomElement(element), element.LocalName);
+            // var compositeDef = new GenericObjectDefinition(); //parserContext.ParserHelper.ParseCustomElement(element), element.LocalName);
             // parserContext.ContainingObjectDefinition = parserContext.ParserHelper.pushContainingComponent(compositeDef);
 
             var childNodes = element.ChildNodes;
@@ -86,13 +86,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 }
             }
 
-            parserContext.Registry.RegisterObjectDefinition(compositeDef.ObjectName, compositeDef.ObjectDefinition);
+            // parserContext.Registry.RegisterObjectDefinition(compositeDef.ObjectName, compositeDef.ObjectDefinition);
             return null;
         }
 
         private void ParseListener(XmlElement listenerEle, XmlElement containerEle, ParserContext parserContext) {
 		var listenerDef = new RootObjectDefinition();
-		// listenerDef.setSource(parserContext.extractSource(listenerEle));
+		//listenerDef.ResourceDescription = parserContext.setSource(parserContext.extractSource(listenerEle));
 
 		String aRef = listenerEle.GetAttribute(REF_ATTRIBUTE);
 		if (!StringUtils.HasText(aRef)) {
@@ -137,7 +137,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 		listenerDef.ObjectTypeName = "Spring.Messaging.Amqp.Rabbit.Listener.Adapter.MessageListenerAdapter";
         containerDef.PropertyValues.Add("MessageListener", listenerDef);
 
-        String containerBeanName = containerEle.GetAttribute(ID_ATTRIBUTE);
+        var containerBeanName = containerEle.GetAttribute(ID_ATTRIBUTE);
 		// If no bean id is given auto generate one using the ReaderContext's BeanNameGenerator
         if (!StringUtils.HasText(containerBeanName))
         {
