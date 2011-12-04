@@ -67,9 +67,9 @@
     <Reference Include="Erlang, Version=0.9.5.0, Culture=neutral, PublicKeyToken=dd1e4028f8bbbc5a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Erlang.NET.0.9.6\lib\net20\Erlang.dll</HintPath>
     </Reference>
-    <Reference Include="RabbitMQ.Client, Version=2.6.1.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
+    <Reference Include="RabbitMQ.Client, Version=2.7.0.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\RabbitMQ.Client.2.6.1\lib\net30\RabbitMQ.Client.dll</HintPath>
+      <HintPath>..\..\packages\RabbitMQ.Client.2.7.0\lib\net30\RabbitMQ.Client.dll</HintPath>
     </Reference>
     <Reference Include="Spring.Core, Version=1.3.2.40943, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
