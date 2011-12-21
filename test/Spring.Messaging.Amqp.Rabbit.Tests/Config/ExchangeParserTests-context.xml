@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-	<rabbit:direct-exchange name="direct" />
+	<rabbit:direct-exchange id="direct" name="direct" />
 
 	<rabbit:direct-exchange id="alias" name="direct-alias" />
 
-	<rabbit:direct-exchange name="direct-override" auto-delete="true" durable="false"/>
+	<rabbit:direct-exchange id="direct-override" name="direct-override" auto-delete="false" durable="true"/>
 
-	<direct-exchange name="direct-arguments" xmlns="http://www.springframework.net/schema/rabbit">
+	<direct-exchange id="direct-arguments" name="direct-arguments" xmlns="http://www.springframework.net/schema/rabbit">
 		<exchange-arguments>
       <map>
         <entry key="foo" value="bar" />
@@ -17,10 +17,10 @@
     </exchange-arguments>
 	</direct-exchange>
 
-	<rabbit:topic-exchange name="topic" />
+	<rabbit:topic-exchange id="topic" name="topic" />
 
-	<rabbit:fanout-exchange name="fanout"/>
+	<rabbit:fanout-exchange id="fanout" name="fanout"/>
 
-	<rabbit:headers-exchange name="headers" xmlns="http://www.springframework.net/schema/rabbit"/>
+	<rabbit:headers-exchange id="headers" name="headers" xmlns="http://www.springframework.net/schema/rabbit"/>
 
 </objects>

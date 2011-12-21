@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         {
 		    return typeof(DirectExchange);
 	    }
-
+        
         protected override AbstractObjectDefinition ParseBinding(string exchangeName, XmlElement binding, ParserContext parserContext)
         {
             var builder = ObjectDefinitionBuilder.GenericObjectDefinition(typeof(BindingFactoryObject));
