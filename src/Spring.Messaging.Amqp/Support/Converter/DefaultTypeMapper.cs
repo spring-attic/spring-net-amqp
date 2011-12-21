@@ -23,6 +23,9 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+
+using Common.Logging;
+
 using Spring.Objects.Factory;
 using System;
 using System.Collections;
@@ -38,6 +41,8 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// </summary>
     public class DefaultTypeMapper : ITypeMapper, IInitializingObject
     {
+        private static ILog Logger = LogManager.GetCurrentClassLogger();
+
         public static readonly string DEFAULT_TYPEID_FIELD_NAME = "__TypeId__";
         
         private IDictionary<string, Type> idTypeMapping = new Dictionary<string, Type>();
@@ -122,25 +127,34 @@ namespace Spring.Messaging.Amqp.Support.Converter
         /// </returns>
         private Type ToType(string typeId)
         {
-            if (this.idTypeMapping.ContainsKey(typeId))
+            Logger.Trace(m => m("Converting TypeId: [{0}] to a Type", typeId));
+            if(this.idTypeMapping == null) Logger.Trace(m => m("Warning - idTypeMapping is null."));
+            if (this.idTypeMapping != null && this.idTypeMapping.ContainsKey(typeId))
             {
+                Logger.Trace(m => m("Returning existing Type from idTypeMapping"));
                 return this.idTypeMapping[typeId];
             }
 
+            Logger.Trace(m => m("defaultDictionaryTypeId Is: [{0}]", this.defaultDictionaryTypeId));
             if (typeId.Equals(this.defaultDictionaryTypeId))
             {
+                Logger.Trace(m => m("Returning defaultDictionaryTypeId"));
                 return this.defaultDictionaryType;
             }
 
             try
             {
+                Logger.Trace(m => m("Resolving type with typeId: [{0}]", typeId));
                 return TypeResolutionUtils.ResolveType(typeId);
             }
             catch (Exception ex)
             {
                 #region TODO: Determine if we should be this forgiving :) This doesn't come for free, and could result in unpredictable behavior!
+                Logger.Error(m => m("An exception was caught resolving the type: {0}", typeId), ex);
                 try
                 {
+                    /* Commenting this out to avoid an AccessViolationException in certain (but not all) environments. Better make sure you have the typemappings set in config :)...
+                    
                     var candidateAssemblies = (from a in AppDomain.CurrentDomain.GetAssemblies()
                                                where
                                                    !a.FullName.ToLower().StartsWith("mscorlib")
@@ -156,8 +170,12 @@ namespace Spring.Messaging.Amqp.Support.Converter
                             return candidateType;
                         }
                     }
+                    */
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Logger.Error(m => m("An exception was caught trying to use the fallback type resolution method."), e);
+                }
                 #endregion
 
                 throw new MessageConversionException("failed to resolve type name [" + typeId + "]", ex);
