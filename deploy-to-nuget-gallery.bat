@@ -1,0 +1,1 @@
+for /f %%a in ('dir /b /s .\build\*.nupkg') do call tools\NuGet\NuGet.exe push %%a
