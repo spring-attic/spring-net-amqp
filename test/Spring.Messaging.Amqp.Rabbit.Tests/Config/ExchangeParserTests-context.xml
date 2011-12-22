@@ -13,6 +13,7 @@
 		<exchange-arguments>
       <map>
         <entry key="foo" value="bar" />
+        <entry key="bar" value="baz" />
       </map>
     </exchange-arguments>
 	</direct-exchange>

@@ -101,6 +101,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.IsNotNull(exchange);
             Assert.AreEqual("direct-arguments", exchange.Name);
             Assert.AreEqual("bar", exchange.Arguments["foo"]);
+            Assert.AreEqual("baz", exchange.Arguments["bar"]);
         }
     }
 }
