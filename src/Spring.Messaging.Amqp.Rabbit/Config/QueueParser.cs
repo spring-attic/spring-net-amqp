@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using Spring.Messaging.Amqp.Core;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
 using Spring.Util;
+using Queue = Spring.Messaging.Amqp.Core.Queue;
 
 namespace Spring.Messaging.Amqp.Rabbit.Config
 {
@@ -74,11 +76,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
             }
 
-            var argumentsElement = element.GetElementsByTagName(ARGUMENTS_ELEMENT);
+            var argumentsElement = element.GetElementsByTagName(ARGUMENTS_ELEMENT, element.NamespaceURI);
 
             if (argumentsElement != null && argumentsElement.Count == 1)
             {
-                var map = parserContext.ParserHelper.ParseCustomElement(argumentsElement[0] as XmlElement, builder.RawObjectDefinition);
+                var parser = new MapEntryElementParser();
+
+                var map = ConvertToTypedDictionary<string, object>(parser.ParseArgumentsElement(argumentsElement[0] as XmlElement, parserContext));
                 builder.AddConstructorArg(map);
             }
 
@@ -89,5 +93,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             var result = element.GetAttributeNode(name) != null && element.GetAttributeNode(name).Specified && !allowed.Equals(element.GetAttribute(name));
             return result;
         }
+
+        private Dictionary<TKey, TValue> ConvertToTypedDictionary<TKey, TValue>(IDictionary dictionary)
+        {
+            var result = new Dictionary<TKey, TValue>();
+
+            foreach (DictionaryEntry entry in dictionary)
+            {
+                result.Add((TKey)entry.Key, (TValue)entry.Value);
+            }
+
+            return result;
+        }
     }
+
 }

@@ -23,7 +23,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     /// </summary>
     [TestFixture]
     [Category(TestCategory.Unit)]
-    [Ignore("Need to fix...")]
     public class QueueParserTests
     {
         protected IObjectFactory beanFactory;
@@ -85,15 +84,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         }
 
         [Test]
+        [Ignore]
         public void testAnonymousQueue()
         {
             Queue queue = beanFactory.GetObject<Queue>("anonymous");
             Assert.IsNotNull(queue);
-            Assert.AreNotSame("anonymous", queue.Name);
+            Assert.AreNotEqual(queue.Name, "anonymous");
             Assert.True(queue is AnonymousQueue);
-            Assert.False(queue.Durable);
-            Assert.True(queue.Exclusive);
-            Assert.True(queue.AutoDelete);
+            Assert.False(queue.Durable,"Durable is incorrect value");
+            Assert.True(queue.Exclusive, "Exclusive is incorrect value");
+            Assert.True(queue.AutoDelete, "AutoDelete is incorrect value");
         }
 
         [Test]
@@ -102,6 +102,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Queue queue = beanFactory.GetObject<Queue>("arguments");
             Assert.IsNotNull(queue);
             Assert.AreEqual("bar", queue.Arguments["foo"]);
+            Assert.AreEqual("baz", queue.Arguments["bar"]);
         }
 
         [Test]
@@ -110,6 +111,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Queue queue = beanFactory.GetObject<Queue>("anonymousArguments");
             Assert.IsNotNull(queue);
             Assert.AreEqual("spam", queue.Arguments["foo"]);
+            Assert.AreEqual("more-spam", queue.Arguments["bar"]);
         }
 
         [Test]

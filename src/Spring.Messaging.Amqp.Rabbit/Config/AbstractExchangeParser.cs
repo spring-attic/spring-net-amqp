@@ -64,7 +64,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             {
                 try
                 {
-                    var parser = new ExchangeArgumentsElementParser();
+                    var parser = new MapEntryElementParser();
 
                     var map = parser.ParseArgumentsElement(argumentsElement, parserContext);
                     builder.AddConstructorArg(map);
@@ -79,24 +79,5 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 	    }
 
         protected abstract AbstractObjectDefinition ParseBinding(String exchangeName, XmlElement binding, ParserContext parserContext);
-    }
-
-    //TODO: after more of this core functionality is exposed in the Spring.Core ObjectDefintionParserHelper class,
-    // this Rabbit-Argument-specific Dictionary parser can be removed
-    internal class ExchangeArgumentsElementParser : ObjectsNamespaceParser
-    {
-        public IDictionary ParseArgumentsElement(XmlElement mapEle, ParserContext parserContext)
-        {
-            return ParseDictionaryElement(mapEle, string.Empty, parserContext);
-        }
-
-        //have to override the SelectNodes method b/c the base class impl. hard-codes the SPRING namespace prefix if none is provided
-        //  (and we need a special-case XPath expression too)
-        protected override XmlNodeList SelectNodes(XmlElement element, string childElementName)
-        {
-            XmlNamespaceManager nsManager = new XmlNamespaceManager(new NameTable());
-            nsManager.AddNamespace("rabbit", element.NamespaceURI);
-            return element.SelectNodes("descendant::rabbit" + ":" + childElementName, nsManager);
-        }
     }
 }
