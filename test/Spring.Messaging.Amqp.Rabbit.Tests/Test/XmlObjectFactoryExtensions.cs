@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,13 +16,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
     /// </summary>
     public static class XmlObjectFactoryExtensions
     {
-        /// <summary>
-        /// Gets the object.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="factory">The factory.</param>
-        /// <returns>The requested object.</returns>
-        public static T GetObject<T>(this XmlObjectFactory factory)
+
+        public static T GetObject<T>(this IListableObjectFactory factory)
         {
             var objectsForType = factory.GetObjectNamesForType(typeof(T));
 
@@ -29,41 +25,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
             {
                 return (T)factory.GetObject(objectsForType[0]);
             }
-            else
-            {
-                return default(T);
-            }
-        }
-
-        /// <summary>
-        /// Gets the object.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="factory">The factory.</param>
-        /// <param name="name">The name.</param>
-        /// <returns>The requested object.</returns>
-        public static T GetObject<T>(this XmlObjectFactory factory, string name)
-        {
-            /*var objectsForType = factory.GetObjectNamesForType(typeof(T));
-
-            if (objectsForType.Count() > 0)
-            {
-                foreach(var objectForType in objectsForType)
-                {
-                    if(objectForType == name)
-                    {
-                        return (T)factory.GetObject(objectForType);
-                    }
-                }
-            }*/
-
-            return (T)factory.GetObject(name, typeof(T));
+            
+            //TODO: determine why this behavior is provided as a fall-back to not finding the object in the container...
+            return default(T);
         }
 
         public static T GetObject<T>(this IObjectFactory factory, string name)
         {
-
             return (T)factory.GetObject(name, typeof(T));
+        }
+
+        public static IDictionary GetObjectsOfType<T>(this IListableObjectFactory factory)
+        {
+            return factory.GetObjectsOfType(typeof (T));
         }
     }
 }
