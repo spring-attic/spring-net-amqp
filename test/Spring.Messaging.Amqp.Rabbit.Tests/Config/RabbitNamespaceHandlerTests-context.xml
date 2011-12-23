@@ -21,7 +21,7 @@
 		</bindings>
 	</topic-exchange>
 
-	<fanout-exchange id="fanout-test" name="fanout-test" xmlns="http://www.springframework.net/schema/rabbit">
+  <fanout-exchange id="fanout-test" name="fanout-test" xmlns="http://www.springframework.net/schema/rabbit">
 		<bindings>
 			<binding queue="foo" />
 			<binding queue="bar" />
@@ -40,11 +40,13 @@
 	</headers-exchange>
 
 	<rabbit:queue id="foo" name="foo" />
-
+	
+  <rabbit:queue id="bar" name="bar" />
+  
 	<rabbit:queue id="spam" name="bar" />
 
 	<rabbit:queue id="bucket" />
-
+	
 	<rabbit:admin id="admin-test" connection-factory="connectionFactory"/>
 
 	<object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit" />

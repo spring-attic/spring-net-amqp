@@ -75,10 +75,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 	    }
 
         [Test]
-        [Ignore("Need to fix...")]
         public void testBindings() 
         {
-		    var bindings = beanFactory.GetObjectsOfType(typeof(Binding));
+		    var bindings = beanFactory.GetObjectsOfType<Binding>();
 		    // 4 for each exchange type
 		    Assert.AreEqual(16, bindings.Count);
 	    }
