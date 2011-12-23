@@ -58,13 +58,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 		    NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, DURABLE_ATTRIBUTE, true);
 		    NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, AUTO_DELETE_ATTRIBUTE,false);
 
-		    var argumentsElements = element.GetElementsByTagName(ARGUMENTS_ELEMENT);
+		    var argumentsElements = element.GetElementsByTagName(ARGUMENTS_ELEMENT, element.NamespaceURI);
             var argumentsElement = argumentsElements != null && argumentsElements.Count == 1 ? argumentsElements[0] as XmlElement : null;
 		    if (argumentsElement != null) 
             {
                 try
                 {
-                    var parser = new ArgumentsElementParser();
+                    var parser = new ExchangeArgumentsElementParser();
 
                     var map = parser.ParseArgumentsElement(argumentsElement, parserContext);
                     builder.AddConstructorArg(map);
@@ -83,7 +83,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
     //TODO: after more of this core functionality is exposed in the Spring.Core ObjectDefintionParserHelper class,
     // this Rabbit-Argument-specific Dictionary parser can be removed
-    internal class ArgumentsElementParser : ObjectsNamespaceParser
+    internal class ExchangeArgumentsElementParser : ObjectsNamespaceParser
     {
         public IDictionary ParseArgumentsElement(XmlElement mapEle, ParserContext parserContext)
         {
