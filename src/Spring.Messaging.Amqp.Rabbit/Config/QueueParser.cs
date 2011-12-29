@@ -20,6 +20,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     public class QueueParser : AbstractSingleObjectDefinitionParser
     {
         private static readonly string ARGUMENTS_ELEMENT = "queue-arguments";
+        
+        private static readonly string ARGUMENTS_PROPERTY = "Arguments";
 
         private static readonly string DURABLE_ATTRIBUTE = "durable";
 
@@ -78,12 +80,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
             var argumentsElement = element.GetElementsByTagName(ARGUMENTS_ELEMENT, element.NamespaceURI);
 
-            if (argumentsElement != null && argumentsElement.Count == 1)
+            if (argumentsElement.Count == 1)
             {
-                var parser = new MapEntryElementParser();
+                var parser = new ArgumentEntryElementParser();
+                var map = parser.ParseArgumentsElement(argumentsElement[0] as XmlElement, parserContext);
 
-                var map = ConvertToTypedDictionary<string, object>(parser.ParseArgumentsElement(argumentsElement[0] as XmlElement, parserContext));
-                builder.AddConstructorArg(map);
+                builder.AddPropertyValue(ARGUMENTS_PROPERTY, map);
+                builder.AddConstructorArg(parser.ConvertToTypedDictionary<string, object>(map));
             }
 
         }
@@ -94,17 +97,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             return result;
         }
 
-        private Dictionary<TKey, TValue> ConvertToTypedDictionary<TKey, TValue>(IDictionary dictionary)
-        {
-            var result = new Dictionary<TKey, TValue>();
-
-            foreach (DictionaryEntry entry in dictionary)
-            {
-                result.Add((TKey)entry.Key, (TValue)entry.Value);
-            }
-
-            return result;
-        }
+       
     }
 
 }

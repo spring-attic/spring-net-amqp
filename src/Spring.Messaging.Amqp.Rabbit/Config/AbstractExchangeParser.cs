@@ -20,15 +20,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     {
         private static readonly string ARGUMENTS_ELEMENT = "exchange-arguments";
 
-	    private static readonly string DURABLE_ATTRIBUTE = "durable";
+        private static readonly string ARGUMENTS_PROPERTY = "Arguments";
 
-	    private static readonly string AUTO_DELETE_ATTRIBUTE = "auto-delete";
+        private static readonly string DURABLE_ATTRIBUTE = "durable";
 
-	    private static string BINDINGS_ELE = "bindings";
+        private static readonly string AUTO_DELETE_ATTRIBUTE = "auto-delete";
 
-	    private static string BINDING_ELE = "binding";
+        private static string BINDINGS_ELE = "bindings";
 
-	    protected static readonly string BINDING_QUEUE_ATTR = "queue";
+        private static string BINDING_ELE = "binding";
+
+        protected static readonly string BINDING_QUEUE_ATTR = "queue";
 
         protected override bool ShouldGenerateIdAsFallback
         {
@@ -38,45 +40,38 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             }
         }
 
-        protected override void DoParse(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder) 
+        protected override void DoParse(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder)
         {
-		    var exchangeName = element.GetAttribute("name");
-		    builder.AddConstructorArg(new TypedStringValue(exchangeName));
-		    var bindingsElements = element.GetElementsByTagName(BINDINGS_ELE);
+            var exchangeName = element.GetAttribute("name");
+            builder.AddConstructorArg(new TypedStringValue(exchangeName));
+            var bindingsElements = element.GetElementsByTagName(BINDINGS_ELE);
 
-            var bindingsElement = (bindingsElements != null && bindingsElements.Count == 1) ? bindingsElements[0] as XmlElement : null;
-		    if (bindingsElement != null)
-		    {
-		        var bindings = bindingsElement.GetElementsByTagName(BINDING_ELE);
-			    foreach (var binding in bindingsElement) 
-                {
-				    var beanDefinition = ParseBinding(exchangeName, binding as XmlElement, parserContext);
-				    RegisterObjectDefinition(new ObjectDefinitionHolder(beanDefinition, parserContext.ReaderContext.GenerateObjectName(beanDefinition)), parserContext.Registry);
-			    }
-		    }
-
-		    NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, DURABLE_ATTRIBUTE, true);
-		    NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, AUTO_DELETE_ATTRIBUTE,false);
-
-		    var argumentsElements = element.GetElementsByTagName(ARGUMENTS_ELEMENT, element.NamespaceURI);
-            var argumentsElement = argumentsElements != null && argumentsElements.Count == 1 ? argumentsElements[0] as XmlElement : null;
-		    if (argumentsElement != null) 
+            var bindingsElement = (bindingsElements.Count == 1) ? bindingsElements[0] as XmlElement : null;
+            if (bindingsElement != null)
             {
-                try
+                var bindings = bindingsElement.GetElementsByTagName(BINDING_ELE);
+                foreach (var binding in bindingsElement)
                 {
-                    var parser = new MapEntryElementParser();
-
-                    var map = parser.ParseArgumentsElement(argumentsElement, parserContext);
-                    builder.AddConstructorArg(map);
+                    var beanDefinition = ParseBinding(exchangeName, binding as XmlElement, parserContext);
+                    RegisterObjectDefinition(new ObjectDefinitionHolder(beanDefinition, parserContext.ReaderContext.GenerateObjectName(beanDefinition)), parserContext.Registry);
                 }
-                catch (Exception e)
-                {
-                    throw;
-                }
-                
-		    }
+            }
 
-	    }
+            NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, DURABLE_ATTRIBUTE, true);
+            NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, AUTO_DELETE_ATTRIBUTE, false);
+
+            var argumentsElements = element.GetElementsByTagName(ARGUMENTS_ELEMENT, element.NamespaceURI);
+            var argumentsElement = argumentsElements.Count == 1 ? argumentsElements[0] as XmlElement : null;
+            
+            if (argumentsElement != null)
+            {
+                var parser = new ArgumentEntryElementParser();
+                var map = parser.ParseArgumentsElement(argumentsElement, parserContext);
+
+                builder.AddPropertyValue(ARGUMENTS_PROPERTY, parser.ConvertToTypedDictionary<string, object>(map));
+                builder.AddConstructorArg(map);
+            }
+        }
 
         protected abstract AbstractObjectDefinition ParseBinding(String exchangeName, XmlElement binding, ParserContext parserContext);
     }

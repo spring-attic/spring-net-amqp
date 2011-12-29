@@ -99,7 +99,7 @@
     <Compile Include="Config\FanoutExchangeParser.cs" />
     <Compile Include="Config\HeadersExchangeParser.cs" />
     <Compile Include="Config\ListenerContainerParser.cs" />
-    <Compile Include="Config\MapEntryElementParser.cs" />
+    <Compile Include="Config\ArgumentEntryElementParser.cs" />
     <Compile Include="Config\NamespaceUtils.cs" />
     <Compile Include="Config\QueueParser.cs" />
     <Compile Include="Config\RabbitNamespaceHandler.cs" />

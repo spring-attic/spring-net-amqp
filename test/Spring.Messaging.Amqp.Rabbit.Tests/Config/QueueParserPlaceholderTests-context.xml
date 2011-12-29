@@ -1,44 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects xmlns="http://www.springframework.net"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-	<object type="Spring.Objects.Factory.Config.PropertyPlaceholderConfigurer, Spring.Core">
-		<property name="properties">
-      <dictionary>
-        <entry key="foo" value="foo" />
-        <entry key="true" value="true" />
-        <entry key="bar" value="bar" />
-      </dictionary>
-		</property>
-	</object>
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-	<rabbit:queue name="${foo}" />
+  <object type="Spring.Objects.Factory.Config.PropertyPlaceholderConfigurer, Spring.Core">
+    <property name="properties">
+      <name-values>
+        <add key="foo" value="foo" />
+        <add key="true" value="true" />
+        <add key="bar" value="bar" />
+        <add key="baz" value="baz" />
+      </name-values>
+    </property>
+  </object>
 
-	<rabbit:queue id="override" name="override" durable="${true}" auto-delete="${true}" exclusive="${true}" />
+  <object id="placeholder-sanity-check" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.PlaceholderSanityCheckTestObject, Spring.Messaging.Amqp.Rabbit.Tests">
+    <property name="Name">
+      <value>${foo}</value>
+    </property>
+  </object>
 
-	<rabbit:queue id="alias" name="spam" />
+  <rabbit:queue id="foo" name="${foo}" />
 
-	<rabbit:queue id="overrideAlias" name="bar" durable="true" auto-delete="true" exclusive="true" />
+  <rabbit:queue id="override" name="override" durable="${true}" auto-delete="${true}" exclusive="${true}" />
 
-	<rabbit:queue id="anonymous" />
+  <rabbit:queue id="alias" name="spam" />
 
-	<rabbit:queue id="arguments" name="arguments">
-		<rabbit:queue-arguments>
-      <rabbit:map>
-        <rabbit:entry key="foo" value="${bar}" />
-      </rabbit:map>
-		</rabbit:queue-arguments>
-	</rabbit:queue>
+  <rabbit:queue id="overrideAlias" name="bar" durable="true" auto-delete="true" exclusive="true" />
 
-	<rabbit:queue id="anonymousArguments">
-		<rabbit:queue-arguments>
-      <rabbit:map>
-        <rabbit:entry key="foo" value="spam" />
-      </rabbit:map>
-		</rabbit:queue-arguments>
-	</rabbit:queue>
+  <rabbit:queue id="anonymous" />
 
-	<rabbit:queue id="anonymousOverride" durable="false" auto-delete="true" exclusive="true" />
+  <rabbit:queue id="arguments" name="arguments">
+    <rabbit:queue-arguments>
+      <entry key="foo" value="${bar}" />
+      <entry key="bar" value="${baz}" />
+    </rabbit:queue-arguments>
+  </rabbit:queue>
+
+  <rabbit:queue id="anonymousArguments">
+    <rabbit:queue-arguments>
+      <entry key="foo" value="spam" />
+      <entry key="bar" value="more-spam" />
+    </rabbit:queue-arguments>
+  </rabbit:queue>
+
+  <rabbit:queue id="anonymousOverride" durable="false" auto-delete="true" exclusive="true" />
 
 </objects>

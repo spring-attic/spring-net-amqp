@@ -15,19 +15,15 @@
 
   <rabbit:queue id="arguments" name="arguments">
     <rabbit:queue-arguments>
-      <rabbit:map>
-        <rabbit:entry key="foo" value="bar" />
-        <rabbit:entry key="bar" value="baz" />
-      </rabbit:map>
+        <entry key="foo" value="bar" />
+        <entry key="bar" value="baz" />
     </rabbit:queue-arguments>
   </rabbit:queue>
 
   <rabbit:queue id="anonymousArguments">
     <rabbit:queue-arguments>
-      <rabbit:map>
-        <rabbit:entry key="foo" value="spam"/>
-        <rabbit:entry key="bar" value="more-spam"/>
-      </rabbit:map>
+        <entry key="foo" value="spam"/>
+        <entry key="bar" value="more-spam"/>
     </rabbit:queue-arguments>
   </rabbit:queue>
 
