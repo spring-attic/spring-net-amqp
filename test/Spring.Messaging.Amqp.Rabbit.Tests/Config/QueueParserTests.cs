@@ -127,12 +127,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         }
 
         [Test]
+        [Ignore("id <--> name parity NOT IMPLEMENTED")]
         public void WhenExplicitIdSetWithoutExplicitName_ObjectRegistrationUsesIdAsObjectDefintionName()
         {
             Assert.That(objectFactory.ContainsObject("explicit-id-but-no-explicit-name"), Is.True);
         }
 
         [Test]
+        [Ignore("id <--> name parity NOT IMPLEMENTED")]
         public void WhenExplicitIdSetWithoutExplicitName_IdIsUsedAsQueueName()
         {
             const string objectIdentifier = "explicit-id-but-no-explicit-name";
@@ -142,12 +144,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         }
         
         [Test]
+        [Ignore("id <--> name parity NOT IMPLEMENTED")]
         public void WhenExplicitNameSetWithoutExplicitId_ObjectRegistrationUsesNameAsObjectDefintionName()
         {
             Assert.That(objectFactory.ContainsObject("explicit-name-but-no-explicit-id"), Is.True);
         }
 
         [Test]
+        [Ignore("id <--> name parity NOT IMPLEMENTED")]
         public void WhenExplicitNameSetWithoutExplicitId_NameIsUsedAsQueueName()
         {
             const string objectIdentifier = "explicit-name-but-no-explicit-id";
@@ -157,6 +161,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         }   
         
         [Test]
+        [Ignore("id <--> name parity NOT IMPLEMENTED")]
         public void WhenExplicitIdAndExplicitNameSet_ObjectRegistrationUsesIdAsObjectDefintionName_and_NameIsUsedAsQueueName()
         {
             var queue = objectFactory.GetObject<Queue>("explicit-id-and-explicit-name");
