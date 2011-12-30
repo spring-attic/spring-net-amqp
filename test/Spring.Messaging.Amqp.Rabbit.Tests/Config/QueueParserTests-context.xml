@@ -3,8 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
+  <rabbit:queue id="explicit-id-but-no-explicit-name" />
+  <rabbit:queue name="explicit-name-but-no-explicit-id" />
+  <rabbit:queue id="explicit-id-and-explicit-name" name="the-queue-name" />
+  
   <rabbit:queue id="foo" name="foo" />
-
+  
   <rabbit:queue id="override" name="override" durable="true" auto-delete="true" exclusive="true" />
 
   <rabbit:queue id="alias" name="spam" />

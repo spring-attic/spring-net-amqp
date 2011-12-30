@@ -188,7 +188,7 @@
     <EmbeddedResource Include="Config\ListenerContainerPlaceholderParserTests-context.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Config\QueueParserIllegalAnonymousTests-context.xml" />
+    <EmbeddedResource Include="Config\QueueParserTestsIllegalAnonymous-context.xml" />
     <EmbeddedResource Include="Config\QueueParserIntegrationTests-context.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>

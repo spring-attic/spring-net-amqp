@@ -167,10 +167,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 		if (StringUtils.HasText(queues)) {
 			var names = StringUtils.CommaDelimitedListToStringArray(queues);
 			var values = new ManagedList();
-			for (int i = 0; i < names.Length; i++) {
-				values.Add(new RuntimeObjectReference(names[i].Trim()));
+			foreach (string t in names)
+			{
+			    values.Add(new RuntimeObjectReference(t.Trim()));
 			}
-			containerDef.PropertyValues.Add("Queues", values);
+		    containerDef.PropertyValues.Add("Queues", values);
 		}
 
 		// Register the listener and fire event

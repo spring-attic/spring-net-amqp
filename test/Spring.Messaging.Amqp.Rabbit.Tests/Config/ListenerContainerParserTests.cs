@@ -27,7 +27,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     /// </summary>
     [TestFixture]
     [Category(TestCategory.Unit)]
-    [Ignore]
     public class ListenerContainerParserTests
     {
         private XmlObjectFactory beanFactory;

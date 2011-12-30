@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -25,7 +26,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     [Category(TestCategory.Unit)]
     public class QueueParserTests
     {
-        protected IObjectFactory beanFactory;
+        protected IObjectFactory objectFactory;
 
         /// <summary>
         /// Setups this instance.
@@ -38,13 +39,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                 + typeof(QueueParserTests).Name + "-context.xml";
             var resource = new AssemblyResource(resourceName);
-            beanFactory = new XmlObjectFactory(resource);
+            objectFactory = new XmlObjectFactory(resource);
         }
 
         [Test]
         public void testQueue()
         {
-            Queue queue = beanFactory.GetObject<Queue>("foo");
+            Queue queue = objectFactory.GetObject<Queue>("foo");
             Assert.IsNotNull(queue);
             Assert.AreEqual("foo", queue.Name);
             Assert.True(queue.Durable);
@@ -55,7 +56,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testAliasQueue()
         {
-            Queue queue = beanFactory.GetObject<Queue>("alias");
+            Queue queue = objectFactory.GetObject<Queue>("alias");
             Assert.IsNotNull(queue);
             Assert.AreEqual("spam", queue.Name);
             Assert.AreNotSame("alias", queue.Name);
@@ -64,7 +65,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testOverrideQueue()
         {
-            Queue queue = beanFactory.GetObject<Queue>("override");
+            Queue queue = objectFactory.GetObject<Queue>("override");
             Assert.IsNotNull(queue);
             Assert.AreEqual("override", queue.Name);
             Assert.True(queue.Durable);
@@ -75,7 +76,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testOverrideAliasQueue()
         {
-            Queue queue = beanFactory.GetObject<Queue>("overrideAlias");
+            Queue queue = objectFactory.GetObject<Queue>("overrideAlias");
             Assert.IsNotNull(queue);
             Assert.AreEqual("bar", queue.Name);
             Assert.True(queue.Durable);
@@ -87,11 +88,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Ignore]
         public void testAnonymousQueue()
         {
-            Queue queue = beanFactory.GetObject<Queue>("anonymous");
+            Queue queue = objectFactory.GetObject<Queue>("anonymous");
             Assert.IsNotNull(queue);
             Assert.AreNotEqual(queue.Name, "anonymous");
             Assert.True(queue is AnonymousQueue);
-            Assert.False(queue.Durable,"Durable is incorrect value");
+            Assert.False(queue.Durable, "Durable is incorrect value");
             Assert.True(queue.Exclusive, "Exclusive is incorrect value");
             Assert.True(queue.AutoDelete, "AutoDelete is incorrect value");
         }
@@ -99,7 +100,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testArgumentsQueue()
         {
-            Queue queue = beanFactory.GetObject<Queue>("arguments");
+            Queue queue = objectFactory.GetObject<Queue>("arguments");
             Assert.IsNotNull(queue);
             Assert.AreEqual("bar", queue.Arguments["foo"]);
             Assert.AreEqual("baz", queue.Arguments["bar"]);
@@ -108,7 +109,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testAnonymousArgumentsQueue()
         {
-            Queue queue = beanFactory.GetObject<Queue>("anonymousArguments");
+            Queue queue = objectFactory.GetObject<Queue>("anonymousArguments");
             Assert.IsNotNull(queue);
             Assert.AreEqual("spam", queue.Arguments["foo"]);
             Assert.AreEqual("more-spam", queue.Arguments["bar"]);
@@ -117,24 +118,51 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testIllegalAnonymousQueue()
         {
-            try
-            {
                 var resourceName =
                     @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                     + typeof(QueueParserTests).Name + "IllegalAnonymous-context.xml";
                 var resource = new AssemblyResource(resourceName);
-                beanFactory = new XmlObjectFactory(resource);
 
-                Queue queue = beanFactory.GetObject<Queue>("anonymous");
-                Assert.IsNotNull(queue);
-                Assert.AreNotSame("bucket", queue.Name);
-                Assert.True(queue is AnonymousQueue);
-            }
-            catch (ObjectDefinitionStoreException e)
-            {
-                // Expected
-            }
+                Assert.Throws<ObjectDefinitionStoreException>(() => new XmlObjectFactory(resource),"Parser fails to reject invalid state of anonymous queues");
+        }
 
+        [Test]
+        public void WhenExplicitIdSetWithoutExplicitName_ObjectRegistrationUsesIdAsObjectDefintionName()
+        {
+            Assert.That(objectFactory.ContainsObject("explicit-id-but-no-explicit-name"), Is.True);
+        }
+
+        [Test]
+        public void WhenExplicitIdSetWithoutExplicitName_IdIsUsedAsQueueName()
+        {
+            const string objectIdentifier = "explicit-id-but-no-explicit-name";
+
+            var queue = objectFactory.GetObject<Queue>(objectIdentifier);
+            Assert.That(queue.Name, Is.EqualTo(objectIdentifier));
+        }
+        
+        [Test]
+        public void WhenExplicitNameSetWithoutExplicitId_ObjectRegistrationUsesNameAsObjectDefintionName()
+        {
+            Assert.That(objectFactory.ContainsObject("explicit-name-but-no-explicit-id"), Is.True);
+        }
+
+        [Test]
+        public void WhenExplicitNameSetWithoutExplicitId_NameIsUsedAsQueueName()
+        {
+            const string objectIdentifier = "explicit-name-but-no-explicit-id";
+
+            var queue = objectFactory.GetObject<Queue>(objectIdentifier);
+            Assert.That(queue.Name, Is.EqualTo(objectIdentifier));
+        }   
+        
+        [Test]
+        public void WhenExplicitIdAndExplicitNameSet_ObjectRegistrationUsesIdAsObjectDefintionName_and_NameIsUsedAsQueueName()
+        {
+            var queue = objectFactory.GetObject<Queue>("explicit-id-and-explicit-name");
+            Assert.That(queue.Name, Is.EqualTo("the-queue-name"));
         }
     }
+
+
 }

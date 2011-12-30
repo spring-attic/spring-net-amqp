@@ -17,6 +17,7 @@ using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Objects.Factory;
 using Spring.Objects.Factory.Xml;
+using Spring.Util;
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 {
@@ -25,10 +26,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     /// </summary>
     [TestFixture]
     [Category(TestCategory.Unit)]
-    [Ignore("Need to fix...")]
     public class ListenerContainerPlaceholderParserTests
     {
-        protected IObjectFactory beanFactory;
+        protected IObjectFactory objectFactory;
 
         /// <summary>
         /// Setups this instance.
@@ -40,32 +40,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             var resourceName =
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                 + typeof(ListenerContainerPlaceholderParserTests).Name + "-context.xml";
-            var resource = new AssemblyResource(resourceName);
-            beanFactory = new XmlApplicationContext(resourceName);
+            //var resource = new AssemblyResource(resourceName);
+            objectFactory = new XmlApplicationContext(resourceName);
         }
 
         [TestFixtureTearDown]
-        public void closeBeanFactory()
+        public void closeObjectFactory()
         {
-            if (beanFactory != null)
+            if (objectFactory != null)
             {
-                ((IConfigurableApplicationContext)beanFactory).Dispose(); ;
+                objectFactory.Dispose();
             }
         }
 
         [Test]
         public void testParseWithQueueNames()
         {
-		    var container = beanFactory.GetObject<SimpleMessageListenerContainer>("container1");
+		    var container = objectFactory.GetObject<SimpleMessageListenerContainer>("container1");
 		    Assert.AreEqual(AcknowledgeModeUtils.AcknowledgeMode.MANUAL, container.AcknowledgeMode);
-		    Assert.AreEqual(beanFactory.GetObject<IConnectionFactory>("connectionFactory"), container.ConnectionFactory);
+		    Assert.AreEqual(objectFactory.GetObject<IConnectionFactory>("connectionFactory"), container.ConnectionFactory);
 		    Assert.AreEqual(typeof(MessageListenerAdapter), container.MessageListener.GetType());
-		    var listenerAccessor = container.MessageListener;
-            Assert.AreEqual(beanFactory.GetObject<TestObject>("testObject"), ((MessageListenerAdapter)listenerAccessor).HandlerObject);
+            Assert.AreEqual(5, ReflectionUtils.GetInstanceFieldValue(container, "concurrentConsumers"));
+            Assert.AreEqual(1,ReflectionUtils.GetInstanceFieldValue(container, "txSize"));
+		    Assert.IsFalse(container.AutoStartup,"auto-startup placeholder not processed correctly");
+
+            var listenerAccessor = container.MessageListener;
+            Assert.AreEqual(objectFactory.GetObject<TestObject>("testObject"), ((MessageListenerAdapter)listenerAccessor).HandlerObject);
             
             Assert.AreEqual("Handle", ((MessageListenerAdapter)listenerAccessor).DefaultListenerMethod); 
 
-		    var queue = beanFactory.GetObject<Queue>("bar");
+		    var queue = objectFactory.GetObject<Queue>("bar");
             var queueNamesForVerification = "[";
             foreach (var queueName in container.QueueNames)
             {

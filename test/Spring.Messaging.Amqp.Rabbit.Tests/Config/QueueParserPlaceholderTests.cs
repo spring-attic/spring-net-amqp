@@ -36,21 +36,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                 + typeof(QueueParserPlaceholderTests).Name + "-context.xml";
             //var resource = new AssemblyResource(resourceName);
-            beanFactory = new XmlApplicationContext(resourceName);
+            objectFactory = new XmlApplicationContext(resourceName);
         }
 
 
         [Test]
         public void PropertyPlaceHolderConfigurerCanConfigPropertyOnNonRabbitObject()
         {
-            var obj = beanFactory.GetObject<PlaceholderSanityCheckTestObject>("placeholder-sanity-check");
+            var obj = objectFactory.GetObject<PlaceholderSanityCheckTestObject>("placeholder-sanity-check");
             Assert.That(obj.Name, Is.EqualTo("foo"),"PropertyConfiguration infrastructure is not working as expected.");
         }
 
         [Test]
         public void CanGetRabbitQueue()
         {
-            var obj = beanFactory.GetObject<Queue>("arguments");
+            var obj = objectFactory.GetObject<Queue>("arguments");
             Assert.That(obj.Arguments["foo"], Is.EqualTo("bar"));
             Assert.That(obj.Arguments["bar"], Is.EqualTo("baz"));
         }
@@ -61,9 +61,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [TestFixtureTearDown]
 	    public void closeBeanFactory() 
         {
-		    if (beanFactory != null) 
+		    if (objectFactory != null) 
             {
-			    ((IConfigurableApplicationContext)beanFactory).Dispose();
+			    ((IConfigurableApplicationContext)objectFactory).Dispose();
             }
 	    }
     }
