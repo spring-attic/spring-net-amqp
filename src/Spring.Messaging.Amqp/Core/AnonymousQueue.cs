@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="AnonymousQueue"/> class.
         /// </summary>
-        public AnonymousQueue() : base(null)
+        public AnonymousQueue() : this(null)
         {
         }
 

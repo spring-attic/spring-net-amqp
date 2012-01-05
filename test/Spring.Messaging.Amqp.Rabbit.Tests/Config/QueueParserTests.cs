@@ -85,7 +85,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         }
 
         [Test]
-        [Ignore]
         public void testAnonymousQueue()
         {
             Queue queue = objectFactory.GetObject<Queue>("anonymous");
