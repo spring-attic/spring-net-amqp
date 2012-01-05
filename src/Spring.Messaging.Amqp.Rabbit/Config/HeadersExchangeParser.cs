@@ -32,7 +32,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             var map = new Hashtable();
             var key = binding.GetAttribute("key");
             var value = binding.GetAttribute("value");
-            map.Add(new TypedStringValue(key), new TypedStringValue(value));
+            map.Add(key, value);
 
             builder.AddPropertyValue("Arguments", map);
 

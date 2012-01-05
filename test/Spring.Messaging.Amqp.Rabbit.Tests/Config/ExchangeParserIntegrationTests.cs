@@ -25,7 +25,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     /// </summary>
     [TestFixture]
     [Category(TestCategory.Integration)]
-    [Ignore("Need to fix...")]
     public class ExchangeParserIntegrationTests : AbstractDependencyInjectionSpringContextTests
     {
         public static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -38,9 +37,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         protected IExchange fanoutTest;
 
-        protected Queue queue;
-
-        public ExchangeParserIntegrationTests()
+        protected Queue bucket;
+        
+      public ExchangeParserIntegrationTests()
         {
             PopulateProtectedVariables = true;
         }
@@ -66,6 +65,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         {
             NamespaceParserRegistry.RegisterParser(typeof(RabbitNamespaceHandler));
 
+            Environment.SetEnvironmentVariable("BROKER_INTEGRATION_TEST", "meaningless-flag-value-here");
+
             try
             {
                 if (environment.IsActive())
@@ -89,13 +90,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testBindingsDeclared()
         {
+            const string messagePayload = "message";
+
             var template = new RabbitTemplate(connectionFactory);
-            template.ConvertAndSend(fanoutTest.Name, string.Empty, "message");
+            template.ConvertAndSend(fanoutTest.Name, string.Empty, messagePayload);
             Thread.Sleep(200);
             // The queue is anonymous so it will be deleted at the end of the test, but it should get the message as long as
             // we use the same connection
-            var result = (String)template.ReceiveAndConvert(queue.Name);
-            Assert.AreEqual("message", result);
+            var result = (String)template.ReceiveAndConvert(bucket.Name);
+            Assert.AreEqual(messagePayload, result);
         }
     }
 }

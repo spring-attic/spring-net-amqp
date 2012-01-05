@@ -44,7 +44,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         {
             var exchangeName = element.GetAttribute("name");
             builder.AddConstructorArg(new TypedStringValue(exchangeName));
-            var bindingsElements = element.GetElementsByTagName(BINDINGS_ELE);
+            var bindingsElements = element.GetElementsByTagName(BINDINGS_ELE, element.NamespaceURI);
 
             var bindingsElement = (bindingsElements.Count == 1) ? bindingsElements[0] as XmlElement : null;
             if (bindingsElement != null)
