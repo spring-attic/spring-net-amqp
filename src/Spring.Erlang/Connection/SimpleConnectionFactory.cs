@@ -150,13 +150,23 @@ namespace Spring.Erlang.Connection
 
             try
             {
+                selfNodeNameToUse = selfNodeNameToUse.Trim();
+
+                if(!string.IsNullOrWhiteSpace(peerNodeName))
+                {
+                    var peerNodeNameParts = peerNodeName.Split('@');
+
+                    if (peerNodeNameParts.Length == 2)
+                        selfNodeNameToUse += "@" + peerNodeNameParts[1];
+                }
+
                 if (StringUtils.HasText(this.cookie))
                 {
-                    this.otpSelf = new OtpSelf(selfNodeNameToUse.Trim(), this.cookie);
+                    this.otpSelf = new OtpSelf(selfNodeNameToUse, this.cookie);
                 }
                 else
                 {
-                    this.otpSelf = new OtpSelf(selfNodeNameToUse.Trim());
+                    this.otpSelf = new OtpSelf(selfNodeNameToUse);
                 }
             }
             catch (IOException e)

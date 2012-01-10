@@ -146,28 +146,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
-        /// </summary>
-        public RabbitBrokerAdmin() : this(DEFAULT_NODE_NAME)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
-        /// Create an instance by supplying the erlang node name (e.g. "rabbit@myserver"), or simply the hostname (if the
-        /// alive name is "rabbit").
-        /// </summary>
-        /// <param name="nodeName">The node name or hostname to use.</param>
-        public RabbitBrokerAdmin(string nodeName) : this(nodeName, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
         /// Create an instance by supplying the erlang node name and cookie (unique string).
         /// </summary>
         /// <param name="nodeName">The node name or hostname to use.</param>
         /// <param name="cookie">The cookie value to use.</param>
-        public RabbitBrokerAdmin(string nodeName, string cookie) : this(nodeName, DEFAULT_PORT, cookie)
+        public RabbitBrokerAdmin(string nodeName = null, string cookie = null) : this(nodeName ?? DEFAULT_NODE_NAME, DEFAULT_PORT, cookie)
         {
         }
 
