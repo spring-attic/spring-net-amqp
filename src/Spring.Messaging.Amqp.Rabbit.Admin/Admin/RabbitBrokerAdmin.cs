@@ -146,28 +146,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
-        /// </summary>
-        public RabbitBrokerAdmin() : this(DEFAULT_NODE_NAME)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
-        /// Create an instance by supplying the erlang node name (e.g. "rabbit@myserver"), or simply the hostname (if the
-        /// alive name is "rabbit").
-        /// </summary>
-        /// <param name="nodeName">The node name or hostname to use.</param>
-        public RabbitBrokerAdmin(string nodeName) : this(nodeName, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
         /// Create an instance by supplying the erlang node name and cookie (unique string).
         /// </summary>
         /// <param name="nodeName">The node name or hostname to use.</param>
         /// <param name="cookie">The cookie value to use.</param>
-        public RabbitBrokerAdmin(string nodeName, string cookie) : this(nodeName, DEFAULT_PORT, cookie)
+        public RabbitBrokerAdmin(string nodeName = null, string cookie = null) : this(nodeName ?? DEFAULT_NODE_NAME, DEFAULT_PORT, cookie)
         {
         }
 
@@ -359,10 +342,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// </summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>The value.</returns>
-        public int AddVhost(string vhostPath)
+        public void AddVhost(string vhostPath)
         {
-            // TODO Auto-generated method stub
-            return 0;
+            this.ExecuteAndConvertRpc<object>("rabbit_vhost", "add", this.GetBytes(vhostPath));
         }
 
         /// <summary>
@@ -370,10 +352,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// </summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>The value.</returns>
-        public int DeleteVhost(string vhostPath)
+        public void DeleteVhost(string vhostPath)
         {
-            // TODO Auto-generated method stub
-            return 0;
+            this.ExecuteAndConvertRpc<object>("rabbit_vhost", "delete", this.GetBytes(vhostPath));
         }
 
         /// <summary>
@@ -383,9 +364,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="configure">The configure.</param>
         /// <param name="read">The read.</param>
         /// <param name="write">The write.</param>
-        public void SetPermissions(string username, Regex configure, Regex read, Regex write)
+        public void SetPermissions(string username, string configure, string read, string write)
         {
-            // TODO Auto-generated method stub
+            this.ExecuteAndConvertRpc<object>("rabbit_auth_backend_internal", "set_permissions", this.GetBytes(username), DEFAULT_VHOST, this.GetBytes(configure), this.GetBytes(read), this.GetBytes(write));
         }
 
         /// <summary>
@@ -396,9 +377,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="read">The read.</param>
         /// <param name="write">The write.</param>
         /// <param name="vhostPath">The vhost path.</param>
-        public void SetPermissions(string username, Regex configure, Regex read, Regex write, string vhostPath)
+        public void SetPermissions(string username, string configure, string read, string write, string vhostPath)
         {
-            // TODO Auto-generated method stub
+            this.ExecuteAndConvertRpc<object>("rabbit_auth_backend_internal", "set_permissions", this.GetBytes(username), this.GetBytes(vhostPath), this.GetBytes(configure), this.GetBytes(read), this.GetBytes(write));
         }
 
         /// <summary>

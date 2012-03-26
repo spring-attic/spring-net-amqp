@@ -91,7 +91,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>The value.</returns>
         /// <remarks></remarks>
-        int AddVhost(string vhostPath);
+        void AddVhost(string vhostPath);
 
         /// <summary>
         /// Deletes the vhost.
@@ -99,7 +99,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>The value.</returns>
         /// <remarks></remarks>
-        int DeleteVhost(string vhostPath);
+        void DeleteVhost(string vhostPath);
 
         // permissions
 
@@ -111,7 +111,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="read">The read.</param>
         /// <param name="write">The write.</param>
         /// <remarks></remarks>
-        void SetPermissions(string username, Regex configure, Regex read, Regex write);
+        void SetPermissions(string username, string configure, string read, string write);
 
         /// <summary>
         /// Sets the permissions.
@@ -122,7 +122,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="write">The write.</param>
         /// <param name="vhostPath">The vhost path.</param>
         /// <remarks></remarks>
-        void SetPermissions(string username, Regex configure, Regex read, Regex write, string vhostPath);
+        void SetPermissions(string username, string configure, string read, string write, string vhostPath);
 
         /// <summary>
         /// Clears the permissions.
