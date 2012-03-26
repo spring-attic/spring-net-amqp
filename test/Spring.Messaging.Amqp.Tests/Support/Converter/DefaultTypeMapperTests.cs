@@ -94,7 +94,7 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
             this.typeMapper.FromType(typeof(SimpleTrade), props);
 
             var typeName = props.Headers[this.typeMapper.TypeIdFieldName];
-            Assert.That(typeName, Is.EqualTo(typeof(SimpleTrade).Name));
+            Assert.That(typeName, Is.EqualTo(typeof(SimpleTrade).FullName));
         }
 
         [Test]
@@ -110,7 +110,6 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
         }   
 	
         [Test]
-        // [Ignore("This doesn't make sense for .NET")]
         public void ShouldConvertAnyHashtableToUseDictionaries()
         {
             typeMapper.FromType(typeof(Hashtable), props);

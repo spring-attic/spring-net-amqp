@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 
 using Spring.Messaging.Amqp.Core;
+using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
 using Spring.Util;
@@ -20,7 +21,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     public class QueueParser : AbstractSingleObjectDefinitionParser
     {
         private static readonly string ARGUMENTS_ELEMENT = "queue-arguments";
-        
+
         private static readonly string ARGUMENTS_PROPERTY = "Arguments";
 
         private static readonly string DURABLE_ATTRIBUTE = "durable";
@@ -82,11 +83,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
             if (argumentsElement.Count == 1)
             {
-                var parser = new ArgumentEntryElementParser();
-                var map = parser.ParseArgumentsElement(argumentsElement[0] as XmlElement, parserContext);
+                var parser = new ObjectDefinitionParserHelper(parserContext);
+                var map = parser.ParseMapElement(argumentsElement[0] as XmlElement, builder.RawObjectDefinition);
 
-                builder.AddPropertyValue(ARGUMENTS_PROPERTY, map);
-                builder.AddConstructorArg(parser.ConvertToTypedDictionary<string, object>(map));
+                var convertedMap = parser.ConvertToManagedDictionary<string, object>(map);
+                
+                builder.AddConstructorArg(convertedMap);
             }
 
         }
@@ -97,7 +99,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             return result;
         }
 
-       
+
     }
 
 }

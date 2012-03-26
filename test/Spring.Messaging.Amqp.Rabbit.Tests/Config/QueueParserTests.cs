@@ -7,7 +7,7 @@ using System.Text;
 
 using NUnit.Framework;
 
-using Spring.Context.Config;
+//using Spring.Context.Config;
 using Spring.Context.Support;
 using Spring.Context;
 using Spring.Core.IO;
@@ -117,56 +117,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testIllegalAnonymousQueue()
         {
-                var resourceName =
-                    @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
-                    + typeof(QueueParserTests).Name + "IllegalAnonymous-context.xml";
-                var resource = new AssemblyResource(resourceName);
+            var resourceName =
+                @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
+                + typeof(QueueParserTests).Name + "IllegalAnonymous-context.xml";
+            var resource = new AssemblyResource(resourceName);
 
-                Assert.Throws<ObjectDefinitionStoreException>(() => new XmlObjectFactory(resource),"Parser fails to reject invalid state of anonymous queues");
+            Assert.Throws<ObjectDefinitionStoreException>(() => new XmlObjectFactory(resource), "Parser fails to reject invalid state of anonymous queues");
         }
 
-        [Test]
-        [Ignore("id <--> name parity NOT IMPLEMENTED")]
-        public void WhenExplicitIdSetWithoutExplicitName_ObjectRegistrationUsesIdAsObjectDefintionName()
-        {
-            Assert.That(objectFactory.ContainsObject("explicit-id-but-no-explicit-name"), Is.True);
-        }
-
-        [Test]
-        [Ignore("id <--> name parity NOT IMPLEMENTED")]
-        public void WhenExplicitIdSetWithoutExplicitName_IdIsUsedAsQueueName()
-        {
-            const string objectIdentifier = "explicit-id-but-no-explicit-name";
-
-            var queue = objectFactory.GetObject<Queue>(objectIdentifier);
-            Assert.That(queue.Name, Is.EqualTo(objectIdentifier));
-        }
-        
-        [Test]
-        [Ignore("id <--> name parity NOT IMPLEMENTED")]
-        public void WhenExplicitNameSetWithoutExplicitId_ObjectRegistrationUsesNameAsObjectDefintionName()
-        {
-            Assert.That(objectFactory.ContainsObject("explicit-name-but-no-explicit-id"), Is.True);
-        }
-
-        [Test]
-        [Ignore("id <--> name parity NOT IMPLEMENTED")]
-        public void WhenExplicitNameSetWithoutExplicitId_NameIsUsedAsQueueName()
-        {
-            const string objectIdentifier = "explicit-name-but-no-explicit-id";
-
-            var queue = objectFactory.GetObject<Queue>(objectIdentifier);
-            Assert.That(queue.Name, Is.EqualTo(objectIdentifier));
-        }   
-        
-        [Test]
-        [Ignore("id <--> name parity NOT IMPLEMENTED")]
-        public void WhenExplicitIdAndExplicitNameSet_ObjectRegistrationUsesIdAsObjectDefintionName_and_NameIsUsedAsQueueName()
-        {
-            var queue = objectFactory.GetObject<Queue>("explicit-id-and-explicit-name");
-            Assert.That(queue.Name, Is.EqualTo("the-queue-name"));
-        }
     }
-
-
 }

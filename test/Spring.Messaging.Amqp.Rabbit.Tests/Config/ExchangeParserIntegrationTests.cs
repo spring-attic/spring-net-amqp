@@ -65,8 +65,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         {
             NamespaceParserRegistry.RegisterParser(typeof(RabbitNamespaceHandler));
 
-            Environment.SetEnvironmentVariable("BROKER_INTEGRATION_TEST", "meaningless-flag-value-here");
-
             try
             {
                 if (environment.IsActive())

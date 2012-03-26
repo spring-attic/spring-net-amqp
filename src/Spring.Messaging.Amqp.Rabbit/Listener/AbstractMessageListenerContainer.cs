@@ -307,7 +307,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         /// <summary>
-        /// Calls {@link #shutdown()} when the BeanFactory destroys the container instance.
+        /// Calls {@link #shutdown()} when the ObjectFactory destroys the container instance.
         /// </summary>
         public void Dispose()
         {

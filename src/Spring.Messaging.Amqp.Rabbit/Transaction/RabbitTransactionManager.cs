@@ -59,10 +59,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         private IConnectionFactory connectionFactory;
 
         /**
-         * Create a new RabbitTransactionManager for bean-style usage.
+         * Create a new RabbitTransactionManager for object-style usage.
          * <p>
          * Note: The ConnectionFactory has to be set before using the instance. This constructor can be used to prepare a
-         * RabbitTemplate via a BeanFactory, typically setting the ConnectionFactory via setConnectionFactory.
+         * RabbitTemplate via a ObjectFactory, typically setting the ConnectionFactory via setConnectionFactory.
          * <p>
          * Turns off transaction synchronization by default, as this manager might be used alongside a datastore-based
          * Spring transaction manager like DataSourceTransactionManager, which has stronger needs for synchronization. Only

@@ -45,6 +45,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         {
             var obj = objectFactory.GetObject<PlaceholderSanityCheckTestObject>("placeholder-sanity-check");
             Assert.That(obj.Name, Is.EqualTo("foo"),"PropertyConfiguration infrastructure is not working as expected.");
+            Assert.That(obj.Arguments["foo"], Is.EqualTo("foo"));
         }
 
         [Test]
@@ -59,7 +60,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
 
         [TestFixtureTearDown]
-	    public void closeBeanFactory() 
+	    public void closeObjectFactory() 
         {
 		    if (objectFactory != null) 
             {
@@ -72,5 +73,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     public class PlaceholderSanityCheckTestObject
     {
         public string Name { get; set; }
+        public IDictionary<string, object> Arguments { get; set; }
     }
 }

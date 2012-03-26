@@ -51,7 +51,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <remarks></remarks>
         public void Apply()
         {
-            logger.Info("Evironment: " + this.key + " active=" + this.IsActive());
+            logger.Info("Environment: " + this.key + " active=" + this.IsActive());
             Assume.That(this.IsActive());
         }
 

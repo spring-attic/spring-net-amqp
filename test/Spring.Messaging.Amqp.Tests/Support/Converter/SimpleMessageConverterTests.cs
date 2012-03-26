@@ -79,13 +79,13 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
 		    properties.ContentType = MessageProperties.CONTENT_TYPE_SERIALIZED_OBJECT;
             var binaryFormatter = new BinaryFormatter();
             var byteStream = new MemoryStream();
-            var testBean = new TestObject("foo");
-            binaryFormatter.Serialize(byteStream, testBean);
+            var testObject = new TestObject("foo");
+            binaryFormatter.Serialize(byteStream, testObject);
 		    var bytes = byteStream.ToArray();
 		    var message = new Message(bytes, properties);
 		    var result = converter.FromMessage(message);
 		    Assert.AreEqual(typeof(TestObject), result.GetType());
-		    Assert.AreEqual(testBean, result);
+		    Assert.AreEqual(testObject, result);
 	    }
 
         [Test]
@@ -117,15 +117,15 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
         public void SerializedObjectToMessage()
         {
 		    var converter = new SimpleMessageConverter();
-		    var testBean = new TestObject("foo");
-		    var message = converter.ToMessage(testBean, new MessageProperties());
+		    var testObject = new TestObject("foo");
+		    var message = converter.ToMessage(testObject, new MessageProperties());
 		    var contentType = message.MessageProperties.ContentType;
 		    var body = message.Body;
 		    Assert.AreEqual("application/x-java-serialized-object", contentType);
             var binaryFormatter = new BinaryFormatter();
             var byteStream = new MemoryStream(body);
             var deserializedObject = (TestObject)binaryFormatter.Deserialize(byteStream);
-		    Assert.AreEqual(testBean, deserializedObject);
+		    Assert.AreEqual(testObject, deserializedObject);
 	    }
 
         [Serializable]

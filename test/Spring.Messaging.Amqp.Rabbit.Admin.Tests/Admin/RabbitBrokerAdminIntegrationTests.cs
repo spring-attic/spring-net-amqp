@@ -84,7 +84,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         {
             if(environment.IsActive())
             {
-                // this.brokerAdmin.StopNode();
+                //after tests, broker often remains in an inconsistent state and unable to accept new connections;
+                // by stopping the running broker after these tests are complete, we ensure add'l tests will function properly
+                this.brokerAdmin.StopNode();
             }
         }
 

@@ -137,11 +137,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 		listenerDef.ObjectTypeName = "Spring.Messaging.Amqp.Rabbit.Listener.Adapter.MessageListenerAdapter";
         containerDef.PropertyValues.Add("MessageListener", listenerDef);
 
-        var containerBeanName = containerEle.GetAttribute(ID_ATTRIBUTE);
-		// If no bean id is given auto generate one using the ReaderContext's BeanNameGenerator
-        if (!StringUtils.HasText(containerBeanName))
+        var containerObjectName = containerEle.GetAttribute(ID_ATTRIBUTE);
+		// If no object id is given auto generate one using the ReaderContext's ObjectNameGenerator
+        if (!StringUtils.HasText(containerObjectName))
         {
-			containerBeanName = parserContext.ReaderContext.GenerateObjectName(containerDef);
+			containerObjectName = parserContext.ReaderContext.GenerateObjectName(containerDef);
 		}
 
 		if (!NamespaceUtils.IsAttributeDefined(listenerEle, QUEUE_NAMES_ATTRIBUTE)
@@ -175,36 +175,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 		}
 
 		// Register the listener and fire event
-		parserContext.Registry.RegisterObjectDefinition(containerBeanName, containerDef);
+		parserContext.Registry.RegisterObjectDefinition(containerObjectName, containerDef);
 	}
 
         private IObjectDefinition ParseContainer(XmlElement listenerEle, XmlElement containerEle, ParserContext parserContext) {
 		var containerDef = new RootObjectDefinition(typeof(SimpleMessageListenerContainer));
 		// TODO? containerDef.(parserContext.ParserHelper.(containerEle));
 
-		var connectionFactoryBeanName = "RabbitConnectionFactory";
+		var connectionFactoryObjectName = "RabbitConnectionFactory";
 		if (containerEle.HasAttribute(CONNECTION_FACTORY_ATTRIBUTE)) {
-            connectionFactoryBeanName = containerEle.GetAttribute(CONNECTION_FACTORY_ATTRIBUTE);
-			if (!StringUtils.HasText(connectionFactoryBeanName)) {
+            connectionFactoryObjectName = containerEle.GetAttribute(CONNECTION_FACTORY_ATTRIBUTE);
+			if (!StringUtils.HasText(connectionFactoryObjectName)) {
 				parserContext.ReaderContext.ReportFatalException(containerEle,
 						"Listener container 'connection-factory' attribute contains empty value.");
 			}
 		}
-		if (StringUtils.HasText(connectionFactoryBeanName)) {
+		if (StringUtils.HasText(connectionFactoryObjectName)) {
             containerDef.PropertyValues.Add("ConnectionFactory",
-					new RuntimeObjectReference(connectionFactoryBeanName));
+					new RuntimeObjectReference(connectionFactoryObjectName));
 		}
 
-        String taskExecutorBeanName = containerEle.GetAttribute(TASK_EXECUTOR_ATTRIBUTE);
-        if (StringUtils.HasText(taskExecutorBeanName))
+        String taskExecutorObjectName = containerEle.GetAttribute(TASK_EXECUTOR_ATTRIBUTE);
+        if (StringUtils.HasText(taskExecutorObjectName))
         {
-            containerDef.PropertyValues.Add("TaskExecutor", new RuntimeObjectReference(taskExecutorBeanName));
+            containerDef.PropertyValues.Add("TaskExecutor", new RuntimeObjectReference(taskExecutorObjectName));
 		}
 
-        String errorHandlerBeanName = containerEle.GetAttribute(ERROR_HANDLER_ATTRIBUTE);
-        if (StringUtils.HasText(errorHandlerBeanName))
+        String errorHandlerObjectName = containerEle.GetAttribute(ERROR_HANDLER_ATTRIBUTE);
+        if (StringUtils.HasText(errorHandlerObjectName))
         {
-            containerDef.PropertyValues.Add("ErrorHandler", new RuntimeObjectReference(errorHandlerBeanName));
+            containerDef.PropertyValues.Add("ErrorHandler", new RuntimeObjectReference(errorHandlerObjectName));
 		}
 
 		AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = ParseAcknowledgeMode(containerEle, parserContext);
@@ -213,10 +213,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             containerDef.PropertyValues.Add("AcknowledgeMode", acknowledgeMode);
 		}
 
-		String transactionManagerBeanName = containerEle.GetAttribute(TRANSACTION_MANAGER_ATTRIBUTE);
-        if (StringUtils.HasText(transactionManagerBeanName))
+		String transactionManagerObjectName = containerEle.GetAttribute(TRANSACTION_MANAGER_ATTRIBUTE);
+        if (StringUtils.HasText(transactionManagerObjectName))
         {
-            containerDef.PropertyValues.Add("TransactionManager", new RuntimeObjectReference(transactionManagerBeanName));
+            containerDef.PropertyValues.Add("TransactionManager", new RuntimeObjectReference(transactionManagerObjectName));
 		}
 
         String concurrency = containerEle.GetAttribute(CONCURRENCY_ATTRIBUTE);

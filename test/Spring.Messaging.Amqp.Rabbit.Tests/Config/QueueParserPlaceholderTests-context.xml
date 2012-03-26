@@ -17,6 +17,11 @@
     <property name="Name">
       <value>${foo}</value>
     </property>
+    <property name="Arguments">
+      <dictionary key-type="System.String" value-type="System.Object">
+        <entry key="foo" value="${foo}" />
+      </dictionary>
+    </property>
   </object>
 
   <rabbit:queue id="foo" name="${foo}" />

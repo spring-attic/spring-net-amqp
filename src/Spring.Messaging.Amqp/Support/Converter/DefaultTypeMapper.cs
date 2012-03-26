@@ -113,7 +113,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
                 return this.defaultDictionaryTypeId;
             }
 
-            return typeOfObjectToConvert.Name;
+            return typeOfObjectToConvert.FullName;
         }
 
         /// <summary>

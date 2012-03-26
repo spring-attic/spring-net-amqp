@@ -52,8 +52,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 var bindings = bindingsElement.GetElementsByTagName(BINDING_ELE);
                 foreach (var binding in bindingsElement)
                 {
-                    var beanDefinition = ParseBinding(exchangeName, binding as XmlElement, parserContext);
-                    RegisterObjectDefinition(new ObjectDefinitionHolder(beanDefinition, parserContext.ReaderContext.GenerateObjectName(beanDefinition)), parserContext.Registry);
+                    var objectDefinition = ParseBinding(exchangeName, binding as XmlElement, parserContext);
+                    RegisterObjectDefinition(new ObjectDefinitionHolder(objectDefinition, parserContext.ReaderContext.GenerateObjectName(objectDefinition)), parserContext.Registry);
                 }
             }
 
@@ -65,10 +65,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             
             if (argumentsElement != null)
             {
-                var parser = new ArgumentEntryElementParser();
-                var map = parser.ParseArgumentsElement(argumentsElement, parserContext);
+                //var parser = new ArgumentEntryElementParser();
+                //var map = parser.ParseArgumentsElement(argumentsElement, parserContext);
+                
+                var parser = new ObjectDefinitionParserHelper(parserContext);
+                var map = parser.ParseMapElement(argumentsElement, builder.RawObjectDefinition);
+                
 
-                builder.AddPropertyValue(ARGUMENTS_PROPERTY, parser.ConvertToTypedDictionary<string, object>(map));
+                builder.AddPropertyValue(ARGUMENTS_PROPERTY, parser.ConvertToManagedDictionary<string, object>(map));
                 builder.AddConstructorArg(map);
             }
         }

@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     [Category(TestCategory.Unit)]
     public class TemplateParserTests
     {
-        private XmlObjectFactory beanFactory;
+        private XmlObjectFactory objectFactory;
 
         /// <summary>
         /// Setups this instance.
@@ -36,20 +36,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                 + typeof(TemplateParserTests).Name + "-context.xml";
             var resource = new AssemblyResource(resourceName);
-            beanFactory = new XmlObjectFactory(resource);
+            objectFactory = new XmlObjectFactory(resource);
         }
 
         [Test]
         public void testTemplate()
         {
-            var template = beanFactory.GetObject<IAmqpTemplate>("template");
+            var template = objectFactory.GetObject<IAmqpTemplate>("template");
             Assert.IsNotNull(template);
         }
 
         [Test]
         public void testKitchenSink()
         {
-            var template = beanFactory.GetObject<RabbitTemplate>("kitchenSink");
+            var template = objectFactory.GetObject<RabbitTemplate>("kitchenSink");
             Assert.IsNotNull(template);
             Assert.True(template.MessageConverter is SimpleMessageConverter);
         }

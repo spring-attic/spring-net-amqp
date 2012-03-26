@@ -11,7 +11,7 @@ using NUnit.Framework;
 using RabbitMQ.Client;
 
 using Spring.Context;
-using Spring.Context.Config;
+//using Spring.Context.Config;
 using Spring.Context.Support;
 using Spring.Core.IO;
 using Spring.Messaging.Amqp.Rabbit.Config;
@@ -44,7 +44,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         private bool expectedAutoStartup;
 
-        private string adminBeanName;
+        private string adminObjectName;
 
         private bool initialisedWithTemplate;
         
@@ -73,8 +73,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         private void DoTest()
         {
             // Create context
-            XmlObjectFactory beanFactory = LoadContext();
-            if (beanFactory == null)
+            XmlObjectFactory objectFactory = LoadContext();
+            if (objectFactory == null)
             {
                 // Context was invalid
                 return;
@@ -82,34 +82,34 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
             // Validate values
             RabbitAdmin admin;
-            if (StringUtils.HasText(adminBeanName))
+            if (StringUtils.HasText(adminObjectName))
             {
-                admin = beanFactory.GetObject<RabbitAdmin>(adminBeanName);
+                admin = objectFactory.GetObject<RabbitAdmin>(adminObjectName);
             }
             else
             {
-                admin = beanFactory.GetObject<RabbitAdmin>();
+                admin = objectFactory.GetObject<RabbitAdmin>();
             }
             Assert.AreEqual(expectedAutoStartup, admin.AutoStartup);
-            Assert.AreEqual(beanFactory.GetObject<IConnectionFactory>(), admin.RabbitTemplate.ConnectionFactory);
+            Assert.AreEqual(objectFactory.GetObject<IConnectionFactory>(), admin.RabbitTemplate.ConnectionFactory);
 
             if (initialisedWithTemplate)
             {
-                Assert.AreEqual(beanFactory.GetObject<RabbitTemplate>(), admin.RabbitTemplate);
+                Assert.AreEqual(objectFactory.GetObject<RabbitTemplate>(), admin.RabbitTemplate);
             }
 
         }
 
         private XmlObjectFactory LoadContext()
         {
-            XmlObjectFactory beanFactory = null;
+            XmlObjectFactory objectFactory = null;
             try
             {
                 // Resource file name template: <class-name>-<contextIndex>-context.xml
                 var resourceName = @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/" + typeof(AdminParserTests).Name + "-" + contextIndex + "-context.xml";
                 Logger.Info("Resource Name: " + resourceName);
                 var resource = new AssemblyResource(resourceName);
-                beanFactory = new XmlObjectFactory(resource);
+                objectFactory = new XmlObjectFactory(resource);
                 if (!validContext)
                 {
                     Assert.Fail("Context " + resource + " suppose to fail");
@@ -132,7 +132,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                     throw;
                 }
             }
-            return beanFactory;
+            return objectFactory;
         }
     }
 }

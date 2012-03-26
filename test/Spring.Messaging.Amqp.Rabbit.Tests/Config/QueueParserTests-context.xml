@@ -3,12 +3,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-  <rabbit:queue id="explicit-id-but-no-explicit-name" />
-  <rabbit:queue name="explicit-name-but-no-explicit-id" />
-  <rabbit:queue id="explicit-id-and-explicit-name" name="the-queue-name" />
-  
+  <!--<object name="appConfigPropertyHolder"
+            type="Spring.Objects.Factory.Config.PropertyPlaceholderConfigurer, Spring.Core" />-->
+
   <rabbit:queue id="foo" name="foo" />
-  
+
   <rabbit:queue id="override" name="override" durable="true" auto-delete="true" exclusive="true" />
 
   <rabbit:queue id="alias" name="spam" />
@@ -19,15 +18,15 @@
 
   <rabbit:queue id="arguments" name="arguments">
     <rabbit:queue-arguments>
-        <entry key="foo" value="bar" />
-        <entry key="bar" value="baz" />
+      <entry key="foo" value="bar" />
+      <entry key="bar" value="baz" />
     </rabbit:queue-arguments>
   </rabbit:queue>
 
   <rabbit:queue id="anonymousArguments">
     <rabbit:queue-arguments>
-        <entry key="foo" value="spam"/>
-        <entry key="bar" value="more-spam"/>
+      <entry key="foo" value="spam"/>
+      <entry key="bar" value="more-spam"/>
     </rabbit:queue-arguments>
   </rabbit:queue>
 

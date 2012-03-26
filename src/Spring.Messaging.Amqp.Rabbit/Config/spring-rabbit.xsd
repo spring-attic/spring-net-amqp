@@ -271,7 +271,7 @@
       <xsd:annotation>
         <xsd:documentation>
           <![CDATA[
-          The id of the exchange bean definition in case it is different than the name.
+          The id of the exchange object definition in case it is different than the name.
         ]]>
         </xsd:documentation>
       </xsd:annotation>
@@ -369,7 +369,7 @@
       <xsd:annotation>
         <xsd:documentation source="java:org.springframework.amqp.core.Queue">
           <![CDATA[
-        The bean name of the Queue to bind to this exchange.
+        The object name of the Queue to bind to this exchange.
         ]]>
         </xsd:documentation>
         <xsd:appinfo>
@@ -399,7 +399,7 @@
             <xsd:documentation>
             <!-- source="java:java.util.Map" -->
               <![CDATA[
-            The bean name of the Map to pass to the broker when this component is declared.
+            The object name of the Map to pass to the broker when this component is declared.
             ]]>
             </xsd:documentation>
             <xsd:appinfo>
@@ -436,7 +436,7 @@
         <xsd:annotation>
           <xsd:documentation>
             <![CDATA[
-  Optional bean id for the container.
+  Optional object id for the container.
           ]]>
           </xsd:documentation>
         </xsd:annotation>
@@ -446,7 +446,7 @@
           <xsd:documentation>
             <![CDATA[
   A reference to the org.springframework.amqp.rabbit.connection.ConnectionFactory.
-  Default referenced bean name is "rabbitConnectionFactory".
+  Default referenced object name is "rabbitConnectionFactory".
           ]]>
           </xsd:documentation>
           <xsd:appinfo>
@@ -617,7 +617,7 @@
       <xsd:annotation>
         <xsd:documentation>
           <![CDATA[
-  The queues (bean references) for this listener as a comma-separated list. Either this or queue-names is required.
+  The queues (object references) for this listener as a comma-separated list. Either this or queue-names is required.
         ]]>
         </xsd:documentation>
       </xsd:annotation>
@@ -626,7 +626,7 @@
       <xsd:annotation>
         <xsd:documentation>
           <![CDATA[
-  The bean name of the listener object, implementing
+  The object name of the listener object, implementing
   the MessageListener/ChannelAwareMessageListener interface
   or defining the specified listener method. Required.
         ]]>
@@ -641,7 +641,7 @@
         <xsd:documentation>
           <![CDATA[
   The name of the listener method to invoke. If not specified,
-  the target bean is supposed to implement the MessageListener
+  the target object is supposed to implement the MessageListener
   or ChannelAwareMessageListener interface.
         ]]>
         </xsd:documentation>
@@ -689,7 +689,7 @@
         <xsd:annotation>
           <xsd:documentation>
             <![CDATA[
-  Unique name for this rabbit admin used as a bean definition identifier.
+  Unique name for this rabbit admin used as a object definition identifier.
           ]]>
           </xsd:documentation>
         </xsd:annotation>
@@ -735,7 +735,7 @@
         <xsd:annotation>
           <xsd:documentation>
             <![CDATA[
-  Unique name for this rabbit template used as a bean definition identifier.
+  Unique name for this rabbit template used as a object definition identifier.
           ]]>
           </xsd:documentation>
         </xsd:annotation>
@@ -838,7 +838,7 @@
         <xsd:annotation>
           <xsd:documentation>
             <![CDATA[
-  Unique name for this rabbit connection factory used as a bean definition identifier.
+  Unique name for this rabbit connection factory used as a object definition identifier.
           ]]>
           </xsd:documentation>
         </xsd:annotation>
@@ -902,7 +902,7 @@
           <xsd:documentation>
             <![CDATA[
   Reference to native rabbit connection factory, where you can specify native features like heartbeat.  The other properties (host, port) etc. on this element 
-  override the ones on the native connection factory (which is used as a parent bean definition).
+  override the ones on the native connection factory (which is used as a parent object definition).
           ]]>
           </xsd:documentation>
           <xsd:appinfo>

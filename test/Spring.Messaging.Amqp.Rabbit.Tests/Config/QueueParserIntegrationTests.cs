@@ -25,6 +25,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     [Category(TestCategory.Integration)]
     public class QueueParserIntegrationTests : AbstractRabbitIntegrationTest
     {
+        
+
         public override void BeforeFixtureSetUp()
         {
         }
@@ -48,8 +50,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             this.brokerIsRunning.Apply();
         }
 
-        protected XmlObjectFactory beanFactory;
-
+        protected XmlObjectFactory objectFactory;
+        
         /// <summary>
         /// Setups this instance.
         /// </summary>
@@ -61,13 +63,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                 + typeof(QueueParserIntegrationTests).Name + "-context.xml";
             var resource = new AssemblyResource(resourceName);
-            beanFactory = new XmlObjectFactory(resource);
+            objectFactory = new XmlObjectFactory(resource);
         }
 
         [Test]
         public void testArgumentsQueue()
         {
-            var queue = beanFactory.GetObject<Queue>("arguments");
+            var queue = objectFactory.GetObject<Queue>("arguments");
             Assert.IsNotNull(queue);
 
             var template = new RabbitTemplate(new CachingConnectionFactory(BrokerTestUtils.GetPort()));

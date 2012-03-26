@@ -21,7 +21,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     [Category(TestCategory.Unit)]
     public class ConnectionFactoryParserTests
     {
-        private XmlObjectFactory beanFactory;
+        private XmlObjectFactory objectFactory;
 
         [TestFixtureSetUp]
         public void Setup()
@@ -29,13 +29,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             NamespaceParserRegistry.RegisterParser(typeof(RabbitNamespaceHandler));
             var resourceName = @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/" + typeof(ConnectionFactoryParserTests).Name + "-context.xml";
             var resource = new AssemblyResource(resourceName);
-            beanFactory = new XmlObjectFactory(resource);
+            objectFactory = new XmlObjectFactory(resource);
         }
 
         [Test]
         public void testKitchenSink() 
         {
-            var connectionFactory = beanFactory.GetObject<CachingConnectionFactory>("kitchenSink");
+            var connectionFactory = objectFactory.GetObject<CachingConnectionFactory>("kitchenSink");
 		    Assert.IsNotNull(connectionFactory);
 		    Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
 	    }	
@@ -43,7 +43,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testNative() 
         {
-		    var connectionFactory = beanFactory.GetObject<CachingConnectionFactory>("native");
+		    var connectionFactory = objectFactory.GetObject<CachingConnectionFactory>("native");
 		    Assert.IsNotNull(connectionFactory);
 		    Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
 	    }

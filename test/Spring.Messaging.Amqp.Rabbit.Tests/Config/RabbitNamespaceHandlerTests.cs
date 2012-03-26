@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     [Category(TestCategory.Unit)]
     public class RabbitNamespaceHandlerTests
     {
-        private XmlObjectFactory beanFactory;
+        private XmlObjectFactory objectFactory;
 
         /// <summary>
         /// Setups this instance.
@@ -36,13 +36,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                 + typeof(RabbitNamespaceHandlerTests).Name + "-context.xml";
             var resource = new AssemblyResource(resourceName);
-            beanFactory = new XmlObjectFactory(resource);
+            objectFactory = new XmlObjectFactory(resource);
         }
 
         [Test]
 	    public void testQueue() 
         {
-		    var queue = beanFactory.GetObject<Queue>("foo");
+		    var queue = objectFactory.GetObject<Queue>("foo");
 		    Assert.IsNotNull(queue);
 		    Assert.AreEqual("foo", queue.Name);
 	    }
@@ -50,7 +50,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testAliasQueue() 
         {
-		    var queue = beanFactory.GetObject<Queue>("spam");
+		    var queue = objectFactory.GetObject<Queue>("spam");
 		    Assert.IsNotNull(queue);
 		    Assert.AreNotSame("spam", queue.Name);
 		    Assert.AreEqual("bar", queue.Name);
@@ -59,7 +59,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testAnonymousQueue() 
         {
-		    var queue = beanFactory.GetObject<Queue>("bucket");
+		    var queue = objectFactory.GetObject<Queue>("bucket");
 		    Assert.IsNotNull(queue);
 		    Assert.AreNotSame("bucket", queue.Name);
 		    Assert.True(queue is AnonymousQueue);
@@ -68,16 +68,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testExchanges() 
         {
-		    Assert.IsNotNull(beanFactory.GetObject<DirectExchange>("direct-test"));
-		    Assert.IsNotNull(beanFactory.GetObject<TopicExchange>("topic-test"));
-		    Assert.IsNotNull(beanFactory.GetObject<FanoutExchange>("fanout-test"));
-		    Assert.IsNotNull(beanFactory.GetObject<HeadersExchange>("headers-test"));
+		    Assert.IsNotNull(objectFactory.GetObject<DirectExchange>("direct-test"));
+		    Assert.IsNotNull(objectFactory.GetObject<TopicExchange>("topic-test"));
+		    Assert.IsNotNull(objectFactory.GetObject<FanoutExchange>("fanout-test"));
+		    Assert.IsNotNull(objectFactory.GetObject<HeadersExchange>("headers-test"));
 	    }
 
         [Test]
         public void testBindings() 
         {
-		    var bindings = beanFactory.GetObjectsOfType<Binding>();
+		    var bindings = objectFactory.GetObjectsOfType<Binding>();
 		    // 4 for each exchange type
 		    Assert.AreEqual(16, bindings.Count);
 	    }
@@ -85,7 +85,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void testAdmin()
         {
-		    Assert.IsNotNull(beanFactory.GetObject<RabbitAdmin>("admin-test"));
+		    Assert.IsNotNull(objectFactory.GetObject<RabbitAdmin>("admin-test"));
 	    }
     }
 }

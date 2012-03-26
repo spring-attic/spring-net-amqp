@@ -603,6 +603,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 {
                     this.ExecuteListener(channel, message);
                 }
+                //TODO: this is caught its never thrown (related to need to port StatefulOperationRetryOperationsInterceptor...!)
                 catch (ImmediateAcknowledgeAmqpException e)
                 {
                     break;

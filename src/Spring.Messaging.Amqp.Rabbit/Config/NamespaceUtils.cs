@@ -190,29 +190,29 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             return elementId;
         }
 
-        public static IObjectDefinition ParseInnerBeanDefinition(XmlElement element, ParserContext parserContext) 
+        public static IObjectDefinition ParseInnerObjectDefinition(XmlElement element, ParserContext parserContext) 
         {
-		    // parses out inner bean definition for concrete implementation if defined
+		    // parses out inner object definition for concrete implementation if defined
 		    var childElements = element.GetElementsByTagName("object");
 
             // IObjectDefinition innerComponentDefinition = null;
 		    if (childElements != null && childElements.Count == 1)
 		    {
-		        var beanElement = childElements[0] as XmlElement;
-		        var bdHolder = parserContext.ParserHelper.ParseObjectDefinitionElement(beanElement);
+		        var objectElement = childElements[0] as XmlElement;
+		        var bdHolder = parserContext.ParserHelper.ParseObjectDefinitionElement(objectElement);
 
 		        // ObjectDefinitionParserDelegate delegate = parserContext.getDelegate();
-		        // BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(beanElement);
-		        // bdHolder = delegate.decorateBeanDefinitionIfRequired(beanElement, bdHolder);
+		        // ObjectDefinitionHolder odHolder = delegate.parseObjectDefinitionElement(objectElement);
+		        // odHolder = delegate.decorateObjectDefinitionIfRequired(objectElement, bdHolder);
 		        var inDef = bdHolder.ObjectDefinition as IConfigurableObjectDefinition;
-		        var beanName = ObjectDefinitionReaderUtils.GenerateObjectName(inDef, parserContext.Registry);
-		        parserContext.Registry.RegisterObjectDefinition(beanName, inDef);
+		        var objectName = ObjectDefinitionReaderUtils.GenerateObjectName(inDef, parserContext.Registry);
+		        parserContext.Registry.RegisterObjectDefinition(objectName, inDef);
 		        return inDef;
 		    }
 
             return null;
             /* var aRef = element.GetAttribute(REF_ATTRIBUTE);
-		    AssertUtils.IsTrue(!(StringUtils.HasText(aRef) && innerComponentDefinition != null), "Ambiguous definition. Inner object " + (innerComponentDefinition == null ? innerComponentDefinition : innerComponentDefinition.ObjectDefinition.getBeanClassName()) + " declaration and \"ref\" " + aRef + " are not allowed together.");
+		    AssertUtils.IsTrue(!(StringUtils.HasText(aRef) && innerComponentDefinition != null), "Ambiguous definition. Inner object " + (innerComponentDefinition == null ? innerComponentDefinition : innerComponentDefinition.ObjectDefinition.getObjectClassName()) + " declaration and \"ref\" " + aRef + " are not allowed together.");
 		    return innerComponentDefinition; */
         }
     }
