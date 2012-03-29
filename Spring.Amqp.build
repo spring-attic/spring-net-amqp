@@ -68,7 +68,7 @@
     <property name="project.buildtype" value="daily" />
     <property name="product.fullname" value="${product.name} (Daily build from ${datetime::get-month(datetime.now)}/${datetime::get-day(datetime.now)}/${datetime::get-year(datetime.now)})" />
     <property name="project.zip-filename" value="Spring.Messaging.Amqp-${datetime::get-year(datetime.now)}${string::pad-left(datetime::get-month(datetime.now), 2, '0')}${string::pad-left(datetime::get-day(datetime.now), 2, '0')}-${string::pad-left(datetime::get-hour(datetime.now), 2, '0')}${string::pad-left(datetime::get-minute(datetime.now), 2, '0')}.zip" />
-    
+    <property name="run-test-categories" value="Unit,Integration,LifecycleIntegration" overwrite="true" />
     <call target="package-deploy"/>
   </target>
 
