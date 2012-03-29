@@ -618,6 +618,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             var rabbitStartCommand = rabbitHome + @"\" + rabbitStartScript;
             var execute = new ProcessStartInfo(rabbitStartCommand);
 
+            execute.WindowStyle = ProcessWindowStyle.Minimized;
+
             if (this.rabbitLogBaseDirectory != null)
             {
                 execute.EnvironmentVariables.Add("RABBITMQ_LOG_BASE", this.rabbitLogBaseDirectory);
