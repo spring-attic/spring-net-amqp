@@ -16,7 +16,7 @@ using Spring.Threading.AtomicTypes;
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
     [TestFixture]
-    [Category(TestCategory.Integration)]
+    [Category(TestCategory.LifecycleIntegration)]
     public class MessageListenerContainerLifecycleIntegrationTests : AbstractRabbitIntegrationTest
     {
         /// <summary>
