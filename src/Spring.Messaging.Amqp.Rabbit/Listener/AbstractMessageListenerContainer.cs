@@ -21,9 +21,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Common.Logging;
 using RabbitMQ.Client;
+using Spring.Core;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
@@ -325,7 +327,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 lock (this.lifecycleMonitor)
                 {
-                    Monitor.PulseAll(this.lifecycleMonitor); 
+                    Monitor.PulseAll(this.lifecycleMonitor);
                 }
 
                 this.DoInitialize();
@@ -345,7 +347,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             lock (this.lifecycleMonitor)
             {
                 this.active = false;
-                Monitor.PulseAll(this.lifecycleMonitor); 
+                Monitor.PulseAll(this.lifecycleMonitor);
             }
 
             // Shut down the invokers.
@@ -362,7 +364,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 lock (this.lifecycleMonitor)
                 {
                     this.isRunning = false;
-                    Monitor.PulseAll(this.lifecycleMonitor); 
+                    Monitor.PulseAll(this.lifecycleMonitor);
                 }
             }
         }
@@ -554,7 +556,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 this.HandleListenerException(ex);
                 throw ex;
             }
-            
+
         }
 
         /// <summary>
@@ -615,13 +617,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception e)
                 {
-                    throw this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
+                    ThrowOrWarnBasedOnRootCauseOfException(e);
                 }
             }
             finally
             {
                 ConnectionFactoryUtils.ReleaseResources(resourceHolder);
             }
+        }
+
+        private void ThrowOrWarnBasedOnRootCauseOfException(Exception exception)
+        {
+            if (!IsFromHandleMethodResolutionFailure(exception))
+            {
+                throw this.WrapToListenerExecutionFailedExceptionIfNeeded(exception);
+            }
+
+            //TODO: probably need to shunt the message off to a Dead-Letter Queue b/c at this point its 100% underliverable
+            logger.Warn(string.Format("{0} is unable to resolve proper method to handle the message!", this.GetType()), exception);
+        }
+
+        private bool IsFromHandleMethodResolutionFailure(Exception exception)
+        {
+            bool flag = exception is ArgumentException;
+
+            if (exception.InnerException != null)
+            {
+                flag = IsFromHandleMethodResolutionFailure(exception.InnerException);
+            }
+
+            return flag;
         }
 
         /// <summary>
@@ -639,7 +664,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             catch (Exception e)
             {
-                throw this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
+                ThrowOrWarnBasedOnRootCauseOfException(e);
             }
         }
 
@@ -709,7 +734,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         #endregion
-}
+    }
 
     /// <summary>
     /// Exception that indicates that the initial setup of this container's
@@ -722,7 +747,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// Initializes a new instance of the <see cref="SharedConnectionNotInitializedException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public SharedConnectionNotInitializedException(string message) : base(message)
+        public SharedConnectionNotInitializedException(string message)
+            : base(message)
         {
         }
     }

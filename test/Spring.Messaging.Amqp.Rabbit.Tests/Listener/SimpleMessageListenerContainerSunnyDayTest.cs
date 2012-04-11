@@ -32,7 +32,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         public void Setup()
         {
             var brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
-            
+
             brokerIsRunning.Apply();
             var connectionFactory = new CachingConnectionFactory();
             connectionFactory.ChannelCacheSize = 1;
@@ -61,7 +61,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             var latch = new CountdownEvent(messageCount);
 
-            container = CreateContainer(new MessageListenerAdapter(new SimplePocoListener(latch)), this.template, queue.Name, txSize,concurrentConsumers,transactional,acknowledgeMode,externalTransaction);
+            container = CreateContainer(new MessageListenerAdapter(new SimplePocoListener(latch)), this.template, queue.Name, txSize, concurrentConsumers, transactional, acknowledgeMode, externalTransaction);
             for (var i = 0; i < messageCount; i++)
             {
                 this.template.ConvertAndSend(this.queue.Name, i + "foo");
@@ -71,6 +71,39 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
         }
+
+        [Test]
+        public void TestSingleRainyDayScenario()
+        {
+            int concurrentConsumers;
+            AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode;
+            int messageCount;
+            SimpleMessageListenerContainer container;
+            int txSize;
+            bool externalTransaction;
+            bool transactional;
+
+
+            messageCount = 1;
+            concurrentConsumers = 1;
+            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            transactional = false;
+            txSize = 1;
+            externalTransaction = false;
+
+            var latch = new CountdownEvent(messageCount);
+
+            container = CreateContainer(new MessageListenerAdapter(new SimplePocoListener(latch)), this.template, queue.Name, txSize, concurrentConsumers, transactional, acknowledgeMode, externalTransaction);
+            for (var i = 0; i < messageCount; i++)
+            {
+                this.template.ConvertAndSend(this.queue.Name, i); //guaranteed to fail b/c there's no HandleMessage(int) overload on SimplePocoListener
+            }
+
+            var waited = latch.Wait(new TimeSpan(0, 0, 0, Math.Max(2, messageCount / 40)));
+            Assert.False(waited, "Should have timed out waiting for message since no handler should match it!");
+        }
+
+
 
         /// <summary>
         /// Creates the container.

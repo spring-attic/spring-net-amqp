@@ -382,6 +382,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 if (this.latch.CurrentCount > 0) this.latch.Signal();
             }
         }
+
+        //this is a bogus overload (TestAtttribute is used since its not ever to be passed) that should never be matched
+        // by a message handler method
+        // (retain this so that we can test against ambiguity in multi-handler-method-resolution)
+        public void HandleMessage(TestAttribute value)
+        {
+            throw new InvalidOperationException("We should never get here since this overload should never be matched!");
+        }
     }
 
     /// <summary>

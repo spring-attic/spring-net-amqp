@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using Common.Logging;
 using RabbitMQ.Client;
+using Spring.Core;
 using Spring.Expressions;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
@@ -336,8 +337,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             if (methodName == null)
             {
                 throw new AmqpIllegalStateException("No default listener method specified: "
-                        + "Either specify a non-null value for the 'defaultListenerMethod' property or "
-                        + "override the 'getListenerMethodName' method.");
+                        + "Either specify a non-null value for the 'DefaultListenerMethod' property or "
+                        + "override the 'GetListenerMethodName' method.");
             }
 
             // Invoke the handler method with appropriate arguments.
@@ -442,7 +443,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
                 methodInvoker.Arguments = arguments;
                 methodInvoker.Prepare();
                 var result = methodInvoker.Invoke();
-                if(result == MethodInvoker.Void)
+                if (result == MethodInvoker.Void)
                 {
                     return null;
                 }
@@ -462,20 +463,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             }
             catch (Exception ex)
             {
-                var arrayClass = new List<string>();
-                if (arguments != null)
-                {
-                    for (int i = 0; i < arguments.Length; i++)
-                    {
-                        arrayClass.Add(arguments[i].GetType().ToString());
-                    }
-                }
-
-                throw new ListenerExecutionFailedException(
-                    "Failed to invoke target method '" + methodName + "' with argument type = ["
-                    + StringUtils.CollectionToCommaDelimitedString(arrayClass) + "], value = [" + "]",
-                    ex);
+                throw new ListenerExecutionFailedException(BuildInvocationFailureMessage(methodName, arguments), ex);
             }
+        }
+
+        private string BuildInvocationFailureMessage(string methodName, object[] arguments)
+        {
+            return "Failed to invoke target method '" + methodName + "' with argument types = ["
+                   + StringUtils.CollectionToCommaDelimitedString(GetArgumentTypes(arguments)) + "], values = ["
+                   + StringUtils.CollectionToCommaDelimitedString(arguments) + "]";
+        }
+
+        private List<string> GetArgumentTypes(object[] arguments)
+        {
+            var argumentTypes = new List<string>();
+            if (arguments != null)
+            {
+                for (int i = 0; i < arguments.Length; i++)
+                {
+                    argumentTypes.Add(arguments[i].GetType().ToString());
+                }
+            }
+            return argumentTypes;
         }
 
         /// <summary>
