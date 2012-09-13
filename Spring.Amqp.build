@@ -18,7 +18,7 @@
   <property name="product.url" value="http://www.springframework.net/" />
   <property name="product.description" value="The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions." />
   
-  <property name="product.version" value="0.9.6" />
+  <property name="product.version" value="0.9.8" />
   <!-- alpha / beta# / rc# -->
   <property name="product.releasetype" value="" />
   <property name="product.fullname" value="${product.name} ${product.version}" if="${(product.releasetype == '')}" />

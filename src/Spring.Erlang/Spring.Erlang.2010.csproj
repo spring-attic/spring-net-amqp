@@ -60,9 +60,8 @@
     <AssemblyOriginatorKeyFile>..\..\Spring.Net.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Common.Logging.2.0.0\lib\2.0\Common.Logging.dll</HintPath>
+    <Reference Include="Common.Logging">
+      <HintPath>..\..\packages\Common.Logging.2.1.1\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Erlang, Version=0.9.5.0, Culture=neutral, PublicKeyToken=dd1e4028f8bbbc5a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Erlang.NET.0.9.6\lib\net20\Erlang.dll</HintPath>

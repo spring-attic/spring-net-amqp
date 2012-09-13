@@ -28,4 +28,5 @@ log.txt*
 
 /*.Amqp.build~
 /package/
+*.nupkg
 src/CommonAssemblyInfo.cs
