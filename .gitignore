@@ -13,7 +13,7 @@
 *.log
 *.[Cc]ache
 [Oo]bj
-[Bb]in
+src/**/[Bb]in
 [Dd]ebug*/
 [Rr]elease*/
 
