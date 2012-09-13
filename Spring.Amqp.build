@@ -311,7 +311,7 @@
       </in>
       <do>
         <property name="test.assemblyname" value="${path::get-file-name(filename)}" />
-        <exec program="${tools.dir}\NUnit\bin\nunit-console.exe" workingdir="${project.buildoutputdir}" verbose="true">
+        <exec program="${tools.dir}\NUnit\bin\nunit-console-x86.exe" workingdir="${project.buildoutputdir}" verbose="true">
           <arg line="${test.assemblyname}" />
 		  <arg value="/include:${run-test-categories}" />
           <arg value="/xml:${test.assemblyname}-TestResults.xml" />
