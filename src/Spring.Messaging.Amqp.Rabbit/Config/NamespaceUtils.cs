@@ -1,16 +1,27 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="NamespaceUtils.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System.Threading;
 using System.Xml;
-
 using Spring.Core;
 using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Config
 {
@@ -19,14 +30,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// </summary>
     public class NamespaceUtils
     {
-        static readonly string BASE_PACKAGE = "Spring.Messaging.Amqp.Rabbit.Config";
-	    static readonly string REF_ATTRIBUTE = "ref";
-	    static readonly string METHOD_ATTRIBUTE = "method";
-	    static readonly string ORDER = "order";
+        private static readonly string BASE_PACKAGE = "Spring.Messaging.Amqp.Rabbit.Config";
+        private static readonly string REF_ATTRIBUTE = "ref";
+        private static readonly string METHOD_ATTRIBUTE = "method";
+        private static readonly string ORDER = "order";
 
-        /// <summary>
-        /// Sets the value if attribute defined.
-        /// </summary>
+        /// <summary>Sets the value if attribute defined.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="element">The element.</param>
         /// <param name="attributeName">Name of the attribute.</param>
@@ -40,36 +49,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 builder.AddPropertyValue(propertyName, new TypedStringValue(attributeValue));
                 return true;
             }
+
             return false;
         }
 
-        /// <summary>
-        /// Sets the value if attribute defined.
-        /// </summary>
+        /// <summary>Sets the value if attribute defined.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="element">The element.</param>
         /// <param name="attributeName">Name of the attribute.</param>
         /// <returns>True if successful, else false.</returns>
-        public static bool SetValueIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName)
-        {
-            return SetValueIfAttributeDefined(builder, element, attributeName, Conventions.AttributeNameToPropertyName(Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(attributeName)));
-        }
+        public static bool SetValueIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName) { return SetValueIfAttributeDefined(builder, element, attributeName, Conventions.AttributeNameToPropertyName(Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(attributeName))); }
 
-        /// <summary>
-        /// Determines whether [is attribute defined] [the specified element].
-        /// </summary>
+        /// <summary>Determines whether [is attribute defined] [the specified element].</summary>
         /// <param name="element">The element.</param>
         /// <param name="attributeName">Name of the attribute.</param>
         /// <returns><c>true</c> if [is attribute defined] [the specified element]; otherwise, <c>false</c>.</returns>
         public static bool IsAttributeDefined(XmlElement element, string attributeName)
         {
             var value = element.GetAttribute(attributeName);
-            return (StringUtils.HasText(value));
+            return StringUtils.HasText(value);
         }
 
-        /// <summary>
-        /// Adds the constructor arg value if attribute defined.
-        /// </summary>
+        /// <summary>Adds the constructor arg value if attribute defined.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="element">The element.</param>
         /// <param name="attributeName">Name of the attribute.</param>
@@ -82,12 +83,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 builder.AddConstructorArg(new TypedStringValue(value));
                 return true;
             }
+
             return false;
         }
 
-        /// <summary>
-        /// Adds the constructor arg boolean value if attribute defined.
-        /// </summary>
+        /// <summary>Adds the constructor arg boolean value if attribute defined.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="element">The element.</param>
         /// <param name="attributeName">Name of the attribute.</param>
@@ -105,9 +105,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             }
         }
 
-        /// <summary>
-        /// Adds the constructor arg ref if attribute defined.
-        /// </summary>
+        /// <summary>Adds the constructor arg ref if attribute defined.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="element">The element.</param>
         /// <param name="attributeName">Name of the attribute.</param>
@@ -120,12 +118,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 builder.AddConstructorArgReference(value);
                 return true;
             }
+
             return false;
         }
 
-        /// <summary>
-        /// Adds the constructor arg parent ref if attribute defined.
-        /// </summary>
+        /// <summary>Adds the constructor arg parent ref if attribute defined.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="element">The element.</param>
         /// <param name="attributeName">Name of the attribute.</param>
@@ -140,12 +137,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 builder.AddConstructorArg(child.ObjectDefinition);
                 return true;
             }
+
             return false;
         }
 
-        /// <summary>
-        /// Sets the reference if attribute defined.
-        /// </summary>
+        /// <summary>Sets the reference if attribute defined.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="element">The element.</param>
         /// <param name="attributeName">Name of the attribute.</param>
@@ -159,24 +155,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 builder.AddPropertyReference(propertyName, attributeValue);
                 return true;
             }
+
             return false;
         }
 
-        /// <summary>
-        /// Sets the reference if attribute defined.
-        /// </summary>
+        /// <summary>Sets the reference if attribute defined.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="element">The element.</param>
         /// <param name="attributeName">Name of the attribute.</param>
         /// <returns><c>true</c> if [is attribute defined] [the specified element]; otherwise, <c>false</c>.</returns>
-        public static bool SetReferenceIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName)
-        {
-            return SetReferenceIfAttributeDefined(builder, element, attributeName,Conventions.AttributeNameToPropertyName(attributeName));
-        }
+        public static bool SetReferenceIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName) { return SetReferenceIfAttributeDefined(builder, element, attributeName, Conventions.AttributeNameToPropertyName(attributeName)); }
 
-        /// <summary>
-        /// Creates the element description.
-        /// </summary>
+        /// <summary>Creates the element description.</summary>
         /// <param name="element">The element.</param>
         /// <returns>The element description.</returns>
         public static string CreateElementDescription(XmlElement element)
@@ -187,30 +177,36 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             {
                 elementId += " with id='" + id + "'";
             }
+
             return elementId;
         }
 
-        public static IObjectDefinition ParseInnerObjectDefinition(XmlElement element, ParserContext parserContext) 
+        /// <summary>The parse inner object definition.</summary>
+        /// <param name="element">The element.</param>
+        /// <param name="parserContext">The parser context.</param>
+        /// <returns>The Spring.Objects.Factory.Config.IObjectDefinition.</returns>
+        public static IObjectDefinition ParseInnerObjectDefinition(XmlElement element, ParserContext parserContext)
         {
-		    // parses out inner object definition for concrete implementation if defined
-		    var childElements = element.GetElementsByTagName("object");
+            // parses out inner object definition for concrete implementation if defined
+            var childElements = element.GetElementsByTagName("object");
 
             // IObjectDefinition innerComponentDefinition = null;
-		    if (childElements != null && childElements.Count == 1)
-		    {
-		        var objectElement = childElements[0] as XmlElement;
-		        var bdHolder = parserContext.ParserHelper.ParseObjectDefinitionElement(objectElement);
+            if (childElements != null && childElements.Count == 1)
+            {
+                var objectElement = childElements[0] as XmlElement;
+                var bdHolder = parserContext.ParserHelper.ParseObjectDefinitionElement(objectElement);
 
-		        // ObjectDefinitionParserDelegate delegate = parserContext.getDelegate();
-		        // ObjectDefinitionHolder odHolder = delegate.parseObjectDefinitionElement(objectElement);
-		        // odHolder = delegate.decorateObjectDefinitionIfRequired(objectElement, bdHolder);
-		        var inDef = bdHolder.ObjectDefinition as IConfigurableObjectDefinition;
-		        var objectName = ObjectDefinitionReaderUtils.GenerateObjectName(inDef, parserContext.Registry);
-		        parserContext.Registry.RegisterObjectDefinition(objectName, inDef);
-		        return inDef;
-		    }
+                // ObjectDefinitionParserDelegate delegate = parserContext.getDelegate();
+                // ObjectDefinitionHolder odHolder = delegate.parseObjectDefinitionElement(objectElement);
+                // odHolder = delegate.decorateObjectDefinitionIfRequired(objectElement, bdHolder);
+                var inDef = bdHolder.ObjectDefinition as IConfigurableObjectDefinition;
+                var objectName = ObjectDefinitionReaderUtils.GenerateObjectName(inDef, parserContext.Registry);
+                parserContext.Registry.RegisterObjectDefinition(objectName, inDef);
+                return inDef;
+            }
 
             return null;
+
             /* var aRef = element.GetAttribute(REF_ATTRIBUTE);
 		    AssertUtils.IsTrue(!(StringUtils.HasText(aRef) && innerComponentDefinition != null), "Ambiguous definition. Inner object " + (innerComponentDefinition == null ? innerComponentDefinition : innerComponentDefinition.ObjectDefinition.getObjectClassName()) + " declaration and \"ref\" " + aRef + " are not allowed together.");
 		    return innerComponentDefinition; */

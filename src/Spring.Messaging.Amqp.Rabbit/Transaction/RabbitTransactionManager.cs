@@ -1,4 +1,19 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitTransactionManager.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System;
 using System.Data;
 using Common.Logging;
@@ -6,6 +21,7 @@ using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Objects.Factory;
 using Spring.Transaction;
 using Spring.Transaction.Support;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Transaction
 {
@@ -50,7 +66,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// The logger.
         /// </summary>
         private readonly ILog logger = LogManager.GetLogger(typeof(RabbitTransactionManager));
-
         #endregion
 
         /// <summary>
@@ -74,17 +89,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitTransactionManager"/> class.
         /// </summary>
-        public RabbitTransactionManager()
-        {
-            this.TransactionSynchronization = TransactionSynchronizationState.Never;
-        }
+        public RabbitTransactionManager() { this.TransactionSynchronization = TransactionSynchronizationState.Never; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RabbitTransactionManager"/> class.
-        /// </summary>
-        /// <param name="connectionFactory">
-        /// The connection factory.
-        /// </param>
+        /// <summary>Initializes a new instance of the <see cref="RabbitTransactionManager"/> class.</summary>
+        /// <param name="connectionFactory">The connection factory.</param>
         public RabbitTransactionManager(IConnectionFactory connectionFactory) : this()
         {
             this.connectionFactory = connectionFactory;
@@ -94,11 +102,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <summary>
         /// Gets or sets ConnectionFactory.
         /// </summary>
-        public IConnectionFactory ConnectionFactory
-        {
-            get { return this.connectionFactory; }
-            set { this.connectionFactory = value; }
-        }
+        public IConnectionFactory ConnectionFactory { get { return this.connectionFactory; } set { this.connectionFactory = value; } }
 
         /// <summary>
         /// Actions to perform after properties are set. Make sure the ConnectionFactory has been set.
@@ -116,10 +120,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <summary>
         /// Gets ResourceFactory.
         /// </summary>
-        public object ResourceFactory
-        {
-            get { return this.ConnectionFactory; }
-        }
+        public object ResourceFactory { get { return this.ConnectionFactory; } }
 
         /// <summary>
         /// Get the transaction.
@@ -134,34 +135,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
             return txObject;
         }
 
-        /// <summary>
-        /// Determines if the supplied object is an existing transaction.
-        /// </summary>
-        /// <param name="transaction">
-        /// The transaction.
-        /// </param>
-        /// <returns>
-        /// True if the object is an existing transaction, else false.
-        /// </returns>
+        /// <summary>Determines if the supplied object is an existing transaction.</summary>
+        /// <param name="transaction">The transaction.</param>
+        /// <returns>True if the object is an existing transaction, else false.</returns>
         protected override bool IsExistingTransaction(object transaction)
         {
             var txObject = (RabbitTransactionObject)transaction;
             return txObject.ResourceHolder != null;
         }
 
-        /// <summary>
-        /// Do begin.
-        /// </summary>
-        /// <param name="transaction">
-        /// The transaction.
-        /// </param>
-        /// <param name="definition">
-        /// The definition.
-        /// </param>
-        /// <exception cref="InvalidIsolationLevelException">
-        /// </exception>
-        /// <exception cref="CannotCreateTransactionException">
-        /// </exception>
+        /// <summary>Do begin.</summary>
+        /// <param name="transaction">The transaction.</param>
+        /// <param name="definition">The definition.</param>
+        /// <exception cref="InvalidIsolationLevelException"></exception>
+        /// <exception cref="CannotCreateTransactionException"></exception>
         protected override void DoBegin(object transaction, ITransactionDefinition definition)
         {
             // TODO: Figure out the right isolation level.
@@ -183,7 +170,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
                 // resourceHolder.DeclareTransactional();
                 txObject.ResourceHolder = resourceHolder;
                 txObject.ResourceHolder.SynchronizedWithTransaction = true;
-                var timeout = DetermineTimeout(definition);
+                var timeout = this.DetermineTimeout(definition);
                 if (timeout != DefaultTransactionDefinition.TIMEOUT_DEFAULT)
                 {
                     txObject.ResourceHolder.TimeoutInSeconds = timeout;
@@ -202,15 +189,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
             }
         }
 
-        /// <summary>
-        /// Do suspend.
-        /// </summary>
-        /// <param name="transaction">
-        /// The transaction.
-        /// </param>
-        /// <returns>
-        /// The object.
-        /// </returns>
+        /// <summary>Do suspend.</summary>
+        /// <param name="transaction">The transaction.</param>
+        /// <returns>The object.</returns>
         protected override object DoSuspend(object transaction)
         {
             var txObject = (RabbitTransactionObject)transaction;
@@ -218,27 +199,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
             return TransactionSynchronizationManager.UnbindResource(this.ConnectionFactory);
         }
 
-        /// <summary>
-        /// Do resume.
-        /// </summary>
-        /// <param name="transaction">
-        /// The transaction.
-        /// </param>
-        /// <param name="suspendedResources">
-        /// The suspended resources.
-        /// </param>
+        /// <summary>Do resume.</summary>
+        /// <param name="transaction">The transaction.</param>
+        /// <param name="suspendedResources">The suspended resources.</param>
         protected override void DoResume(object transaction, object suspendedResources)
         {
             var conHolder = (RabbitResourceHolder)suspendedResources;
             TransactionSynchronizationManager.BindResource(this.ConnectionFactory, conHolder);
         }
 
-        /// <summary>
-        /// Do commit.
-        /// </summary>
-        /// <param name="status">
-        /// The status.
-        /// </param>
+        /// <summary>Do commit.</summary>
+        /// <param name="status">The status.</param>
         protected override void DoCommit(DefaultTransactionStatus status)
         {
             var txObject = (RabbitTransactionObject)status.Transaction;
@@ -246,12 +217,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
             resourceHolder.CommitAll();
         }
 
-        /// <summary>
-        /// Do rollback.
-        /// </summary>
-        /// <param name="status">
-        /// The status.
-        /// </param>
+        /// <summary>Do rollback.</summary>
+        /// <param name="status">The status.</param>
         protected override void DoRollback(DefaultTransactionStatus status)
         {
             var txObject = (RabbitTransactionObject)status.Transaction;
@@ -259,24 +226,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
             resourceHolder.RollbackAll();
         }
 
-        /// <summary>
-        /// Do set rollback only.
-        /// </summary>
-        /// <param name="status">
-        /// The status.
-        /// </param>
+        /// <summary>Do set rollback only.</summary>
+        /// <param name="status">The status.</param>
         protected void DoSetRollbackOnly(DefaultTransactionStatus status)
         {
             var txObject = (RabbitTransactionObject)status.Transaction;
             txObject.ResourceHolder.RollbackOnly = true;
         }
 
-        /// <summary>
-        /// Do cleanup after completion.
-        /// </summary>
-        /// <param name="transaction">
-        /// The transaction.
-        /// </param>
+        /// <summary>Do cleanup after completion.</summary>
+        /// <param name="transaction">The transaction.</param>
         protected void DoCleanupAfterCompletion(object transaction)
         {
             var txObject = (RabbitTransactionObject)transaction;
@@ -299,19 +258,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <summary>
         /// Gets or sets ResourceHolder.
         /// </summary>
-        public RabbitResourceHolder ResourceHolder
-        {
-            get { return this.resourceHolder; }
-            set { this.resourceHolder = value; }
-        }
+        public RabbitResourceHolder ResourceHolder { get { return this.resourceHolder; } set { this.resourceHolder = value; } }
 
         /// <summary>
         /// Gets a value indicating whether RollbackOnly.
         /// </summary>
-        public bool RollbackOnly
-        {
-            get { return this.resourceHolder.RollbackOnly; }
-        }
+        public bool RollbackOnly { get { return this.resourceHolder.RollbackOnly; } }
 
         /// <summary>
         /// Flush the object.

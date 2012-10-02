@@ -1,29 +1,25 @@
-#region License
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ConnectionFactoryUtils.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
-using System.IO;
 using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Transaction.Support;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
@@ -38,18 +34,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         private static readonly ILog logger = LogManager.GetLogger(typeof(ConnectionFactoryUtils));
 
-        /// <summary>
-        /// Release a connection.
-        /// </summary>
-        /// <param name="connection">
-        /// The connection.
-        /// </param>
+        /// <summary>Release a connection.</summary>
+        /// <param name="connection">The connection.</param>
         public static void ReleaseConnection(IConnection connection)
         {
             if (connection == null)
             {
                 return;
             }
+
             try
             {
                 connection.Close();
@@ -60,18 +53,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
-        /// <summary>
-        /// Determine whether the given RabbitMQ Channel is transactional, that is, bound to the current thread by Spring's transaction facilities.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="connectionFactory">
-        /// The connection factory.
-        /// </param>
-        /// <returns>
-        /// Whether the Channel is transactional
-        /// </returns>
+        /// <summary>Determine whether the given RabbitMQ Channel is transactional, that is, bound to the current thread by Spring's transaction facilities.</summary>
+        /// <param name="channel">The channel.</param>
+        /// <param name="connectionFactory">The connection factory.</param>
+        /// <returns>Whether the Channel is transactional</returns>
         public static bool IsChannelTransactional(IModel channel, IConnectionFactory connectionFactory)
         {
             if (channel == null || connectionFactory == null)
@@ -83,18 +68,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             return resourceHolder != null && resourceHolder.ContainsChannel(channel);
         }
 
-        /// <summary>
-        /// Obtain a RabbitMQ Channel that is synchronized with the current transaction, if any.
-        /// </summary>
-        /// <param name="connectionFactory">
-        /// The connection factory.
-        /// </param>
-        /// <param name="synchedLocalTransactionAllowed">
-        /// The synched local transaction allowed.
-        /// </param>
-        /// <returns>
-        /// The transactional Channel, or null if none found.
-        /// </returns>
+        /// <summary>Obtain a RabbitMQ Channel that is synchronized with the current transaction, if any.</summary>
+        /// <param name="connectionFactory">The connection factory.</param>
+        /// <param name="synchedLocalTransactionAllowed">The synched local transaction allowed.</param>
+        /// <returns>The transactional Channel, or null if none found.</returns>
         public static RabbitResourceHolder GetTransactionalResourceHolder(IConnectionFactory connectionFactory, bool synchedLocalTransactionAllowed)
         {
             var holder = DoGetTransactionalResourceHolder(connectionFactory, new ResourceFactory(connectionFactory, synchedLocalTransactionAllowed));
@@ -102,9 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             return holder;
         }
 
-        /// <summary>
-        /// Obtain a RabbitMQ Channel that is synchronized with the current transaction, if any.
-        /// </summary>
+        /// <summary>Obtain a RabbitMQ Channel that is synchronized with the current transaction, if any.</summary>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <param name="resourceFactory">The resource factory.</param>
         /// <returns>The transactional Channel, or null if none found.</returns>
@@ -139,6 +114,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                     connection = resourceFactory.CreateConnection();
                     resourceHolderToUse.AddConnection(connection);
                 }
+
                 channel = resourceFactory.CreateChannel(connection);
                 resourceHolderToUse.AddChannel(channel, connection);
 
@@ -148,7 +124,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 }
 
                 return resourceHolderToUse;
-
             }
             catch (Exception ex)
             {
@@ -158,9 +133,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
-        /// <summary>
-        /// Release the resources.
-        /// </summary>
+        /// <summary>Release the resources.</summary>
         /// <param name="resourceHolder">The resource holder.</param>
         public static void ReleaseResources(RabbitResourceHolder resourceHolder)
         {
@@ -173,9 +146,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             RabbitUtils.CloseConnection(resourceHolder.Connection);
         }
 
-        /// <summary>
-        /// Bind a resource to a transaction.
-        /// </summary>
+        /// <summary>Bind a resource to a transaction.</summary>
         /// <param name="resourceHolder">The resource holder.</param>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <param name="synched">The synched.</param>
@@ -194,22 +165,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
-
-        /// <summary>
-        /// Register a delivery tag.
-        /// </summary>
-        /// <param name="connectionFactory">
-        /// The connection factory.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="tag">
-        /// The tag.
-        /// </param>
+        /// <summary>Register a delivery tag.</summary>
+        /// <param name="connectionFactory">The connection factory.</param>
+        /// <param name="channel">The channel.</param>
+        /// <param name="tag">The tag.</param>
         public static void RegisterDeliveryTag(IConnectionFactory connectionFactory, IModel channel, long tag)
         {
-
             AssertUtils.ArgumentNotNull(connectionFactory, "ConnectionFactory must not be null");
 
             var resourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory);

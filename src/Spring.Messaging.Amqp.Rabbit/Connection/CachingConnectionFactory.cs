@@ -1,36 +1,32 @@
-#region License
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CachingConnectionFactory.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using AopAlliance.Intercept;
 using Common.Logging;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Impl;
 using Spring.Aop.Framework;
-using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
-    using System.Reflection;
-
     /**
      * A {@link IConnectionFactory} implementation that returns the same Connections from all {@link #createConnection()}
      * calls, and ignores calls to {@link com.rabbitmq.client.Connection#close()} and caches
@@ -75,7 +71,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <author>Dave Syer</author>
     /// <author>Joe Fitzgerald</author>
     public class CachingConnectionFactory : AbstractConnectionFactory
-    {   
+    {
         /// <summary>
         /// The channel cache size.  Default size is 1
         /// </summary>
@@ -111,13 +107,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// initializing the hostname to be the value returned from Dns.GetHostName() or "localhost"
         /// if Dns.GetHostName() throws an exception.
         /// </summary>
-        public CachingConnectionFactory() : this(string.Empty)
-        {
-        }
+        public CachingConnectionFactory() : this(string.Empty) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class given a host name and port
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="CachingConnectionFactory"/> class given a host name and port</summary>
         /// <param name="hostname">The hostname.</param>
         /// <param name="port">The port.</param>
         public CachingConnectionFactory(string hostname, int port) : base(new ConnectionFactory())
@@ -131,43 +123,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.Port = port;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class given a port
-        /// </summary>
-        /// <param name="port">
-        /// The port.
-        /// </param>
-        public CachingConnectionFactory(int port) : this(string.Empty, port)
-        {
-        }
+        /// <summary>Initializes a new instance of the <see cref="CachingConnectionFactory"/> class given a port</summary>
+        /// <param name="port">The port.</param>
+        public CachingConnectionFactory(int port) : this(string.Empty, port) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class given a host name.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="CachingConnectionFactory"/> class given a host name.</summary>
         /// <param name="hostname">The hostname.</param>
-        public CachingConnectionFactory(string hostname) : this(hostname, RabbitMQ.Client.Protocols.DefaultProtocol.DefaultPort)
-        {
-        }
+        public CachingConnectionFactory(string hostname) : this(hostname, Protocols.DefaultProtocol.DefaultPort) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CachingConnectionFactory"/> class.
-        /// </summary>
-        /// <param name="rabbitConnectionFactory">
-        /// The rabbit connection factory.
-        /// </param>
-        public CachingConnectionFactory(RabbitMQ.Client.ConnectionFactory rabbitConnectionFactory) : base(rabbitConnectionFactory)
-        {
-        }
+        /// <summary>Initializes a new instance of the <see cref="CachingConnectionFactory"/> class.</summary>
+        /// <param name="rabbitConnectionFactory">The rabbit connection factory.</param>
+        public CachingConnectionFactory(ConnectionFactory rabbitConnectionFactory) : base(rabbitConnectionFactory) { }
 
         /// <summary>
         /// Gets or sets ChannelCacheSize.
         /// </summary>
         public int ChannelCacheSize
         {
-            get
-            {
-                return this.channelCacheSize;
-            }
+            get { return this.channelCacheSize; }
 
             set
             {
@@ -180,11 +153,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// Gets or sets a value indicating whether this <see cref="CachingConnectionFactory"/> is active.
         /// </summary>
         /// <value><c>true</c> if active; otherwise, <c>false</c>.</value>
-        internal bool Active
-        {
-            get { return this.active; }
-            set { this.active = value; }
-        }
+        internal bool Active { get { return this.active; } set { this.active = value; } }
 
         /// <summary>
         /// Sets the connection listeners.
@@ -203,9 +172,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
-        /// <summary>
-        /// Add a connection listener.
-        /// </summary>
+        /// <summary>Add a connection listener.</summary>
         /// <param name="listener">The listener.</param>
         public new void AddConnectionListener(IConnectionListener listener)
         {
@@ -217,19 +184,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
-        /// <summary>
-        /// Get a channel, given a flag indicating whether it should be transactional or not.
-        /// </summary>
-        /// <param name="transactional">
-        /// The transactional.
-        /// </param>
-        /// <returns>
-        /// The channel.
-        /// </returns>
-        internal RabbitMQ.Client.IModel GetChannel(bool transactional)
+        /// <summary>Get a channel, given a flag indicating whether it should be transactional or not.</summary>
+        /// <param name="transactional">The transactional.</param>
+        /// <returns>The channel.</returns>
+        internal IModel GetChannel(bool transactional)
         {
             var channelList = transactional ? this.cachedChannelsTransactional : this.cachedChannelsNonTransactional;
-            RabbitMQ.Client.IModel channel = null;
+            IModel channel = null;
             lock (channelList)
             {
                 if (channelList.Count > 0)
@@ -251,7 +212,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 if (this.Logger.IsDebugEnabled)
                 {
                     this.Logger.Debug("Creating cached Rabbit Channel");
-                } 
+                }
 
                 channel = this.GetCachedChannelProxy(channelList, transactional);
             }
@@ -259,38 +220,30 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             return channel;
         }
 
-        /// <summary>
-        /// Wraps the given Model so that it delegates every method call to the target model but
+        /// <summary>Wraps the given Model so that it delegates every method call to the target model but
         /// adapts close calls. This is useful for allowing application code to
-        /// handle a special framework Model just like an ordinary Model.
-        /// </summary>
+        /// handle a special framework Model just like an ordinary Model.</summary>
         /// <param name="channelList">The channel list.</param>
         /// <param name="transactional">if set to <c>true</c> [transactional].</param>
         /// <returns>The wrapped Model</returns>
         protected virtual IChannelProxy GetCachedChannelProxy(LinkedList<IChannelProxy> channelList, bool transactional)
         {
             var targetChannel = this.CreateBareChannel(transactional);
-            
+
             var factory = new ProxyFactory(typeof(IChannelProxy), new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this));
             var channelProxy = (IChannelProxy)factory.GetProxy();
             return channelProxy;
         }
-        
-        /// <summary>
-        /// Create a bare channel.
-        /// </summary>
-        /// <param name="transactional">
-        /// The transactional.
-        /// </param>
-        /// <returns>
-        /// The bare channel.
-        /// </returns>
-        internal RabbitMQ.Client.IModel CreateBareChannel(bool transactional)
+
+        /// <summary>Create a bare channel.</summary>
+        /// <param name="transactional">The transactional.</param>
+        /// <returns>The bare channel.</returns>
+        internal IModel CreateBareChannel(bool transactional)
         {
             if (this.connection == null || !this.connection.IsOpen())
             {
                 this.connection = null;
-                
+
                 // Use CreateConnection here not DoCreateConnection so that the old one is properly disposed
                 this.CreateConnection();
             }
@@ -308,8 +261,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 if (this.connection == null)
                 {
-                    this.connection = new ChannelCachingConnectionProxy(base.CreateBareConnection(), this);
-                    
+                    this.connection = new ChannelCachingConnectionProxy(this.CreateBareConnection(), this);
+
                     // invoke the listener *after* this.connection is assigned
                     this.ConnectionListener.OnCreate(this.connection);
                 }
@@ -401,7 +354,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     {
         private readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
-        private volatile RabbitMQ.Client.IModel target;
+        private volatile IModel target;
 
         private readonly LinkedList<IChannelProxy> channelList;
 
@@ -411,14 +364,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         private readonly CachingConnectionFactory outer;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CachedChannelInvocationHandler"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="CachedChannelInvocationHandler"/> class.</summary>
         /// <param name="target">The target.</param>
         /// <param name="channelList">The channel list.</param>
         /// <param name="transactional">if set to <c>true</c> [transactional].</param>
         /// <param name="outer">The outer.</param>
-        public CachedChannelInvocationHandler(RabbitMQ.Client.IModel target, LinkedList<IChannelProxy> channelList, bool transactional, CachingConnectionFactory outer)
+        public CachedChannelInvocationHandler(IModel target, LinkedList<IChannelProxy> channelList, bool transactional, CachingConnectionFactory outer)
         {
             this.target = target;
             this.channelList = channelList;
@@ -426,19 +377,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.outer = outer;
         }
 
-        /// <summary>
-        /// Implement this method to perform extra treatments before and after
-        /// the call to the supplied <paramref name="invocation"/>.
-        /// </summary>
+        /// <summary>Implement this method to perform extra treatments before and after
+        /// the call to the supplied <paramref name="invocation"/>.</summary>
         /// <param name="invocation">The method invocation that is being intercepted.</param>
-        /// <returns>The result of the call to the
-        /// <see cref="M:AopAlliance.Intercept.IJoinpoint.Proceed"/> method of
+        /// <returns>The result of the call to the<see cref="M:AopAlliance.Intercept.IJoinpoint.Proceed"/> method of
         /// the supplied <paramref name="invocation"/>; this return value may
         /// well have been intercepted by the interceptor.</returns>
-        /// <exception cref="T:System.Exception">
-        /// If any of the interceptors in the chain or the target object itself
-        /// throws an exception.
-        /// </exception>
+        /// <exception cref="T:System.Exception">If any of the interceptors in the chain or the target object itself
+        /// throws an exception.</exception>
         public object Invoke(IMethodInvocation invocation)
         {
             this.Logger.Info(string.Format("Method Intercepted: {0}", invocation.Method.Name));
@@ -465,7 +411,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
             else if (methodName == "GetConnection")
             {
-                return ((RabbitMQ.Client.Impl.ModelBase)this.target).m_session.Connection;
+                return ((ModelBase)this.target).m_session.Connection;
             }
             else if (methodName == "Close")
             {
@@ -536,9 +482,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
-        /// <summary>
-        /// GUARDED by ChannelList
-        /// </summary>
+        /// <summary>GUARDED by ChannelList</summary>
         /// <param name="proxy">The channel to close.</param>
         private void LogicalClose(IChannelProxy proxy)
         {
@@ -558,11 +502,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             // TODO: Figure out why the proxied channels don't work with this.channelList.Contains()
             // if (!this.channelList.Contains(proxy))
             // {
-                if (this.Logger.IsTraceEnabled)
-                {
-                    this.Logger.Trace("Returning cached Channel: " + this.target);
-                }
-                this.channelList.AddLast(proxy);
+            if (this.Logger.IsTraceEnabled)
+            {
+                this.Logger.Trace("Returning cached Channel: " + this.target);
+            }
+
+            this.channelList.AddLast(proxy);
+
             // }
         }
 
@@ -589,6 +535,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                     {
                         this.target.Close();
                     }
+
                     this.target = null;
                 }
             }
@@ -611,9 +558,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         private volatile CachingConnectionFactory outer;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChannelCachingConnectionProxy"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ChannelCachingConnectionProxy"/> class.</summary>
         /// <param name="target">The target.</param>
         /// <param name="outer">The outer.</param>
         public ChannelCachingConnectionProxy(IConnection target, CachingConnectionFactory outer)
@@ -622,22 +567,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.outer = outer;
         }
 
-        /// <summary>
-        /// Create a bare channel, given a flag indicating whether it should be transactional or not.
-        /// </summary>
+        /// <summary>Create a bare channel, given a flag indicating whether it should be transactional or not.</summary>
         /// <param name="transactional">The transactional.</param>
         /// <returns>The channel.</returns>
-        internal RabbitMQ.Client.IModel CreateBareChannel(bool transactional)
-        {
-            return this.target.CreateChannel(transactional);
-        }
+        internal IModel CreateBareChannel(bool transactional) { return this.target.CreateChannel(transactional); }
 
-        /// <summary>
-        /// Create a channel, given a flag indicating whether it should be transactional or not.
-        /// </summary>
+        /// <summary>Create a channel, given a flag indicating whether it should be transactional or not.</summary>
         /// <param name="transactional">The transactional.</param>
         /// <returns>The channel.</returns>
-        public RabbitMQ.Client.IModel CreateChannel(bool transactional)
+        public IModel CreateChannel(bool transactional)
         {
             var channel = this.outer.GetChannel(transactional);
             return channel;
@@ -646,10 +584,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Close the connection.
         /// </summary>
-        public void Close()
-        {
-        }
+        public void Close() { }
 
+        /// <summary>The dispose.</summary>
         public void Dispose()
         {
             if (this.target != null)
@@ -668,35 +605,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <returns>
         /// True if open, else false.
         /// </returns>
-        public bool IsOpen()
-        {
-            return this.target != null && this.target.IsOpen();
-        }
+        public bool IsOpen() { return this.target != null && this.target.IsOpen(); }
 
         /// <summary>
         /// Get the targetconnection.
         /// </summary>
         /// <returns>The target connection.</returns>
-        public IConnection GetTargetConnection()
-        {
-            return this.target;
-        }
+        public IConnection GetTargetConnection() { return this.target; }
 
         /// <summary>
         /// Get the hash code.
         /// </summary>
         /// <returns>The hash code.</returns>
-        public override int GetHashCode()
-        {
-            return 31 + ((this.target == null) ? 0 : this.target.GetHashCode());
-        }
+        public override int GetHashCode() { return 31 + ((this.target == null) ? 0 : this.target.GetHashCode()); }
 
-        /// <summary>
-        /// Determine equality of this object with the supplied object.
-        /// </summary>
+        /// <summary>Determine equality of this object with the supplied object.</summary>
         /// <param name="obj">The obj.</param>
         /// <returns>True if the same, else false.</returns>
-            public override bool Equals(object obj)
+        public override bool Equals(object obj)
         {
             if (this == obj)
             {
@@ -729,14 +655,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             return true;
         }
 
-            /// <summary>
-            /// Convert to string.
-            /// </summary>
-            /// <returns>String representation of object.</returns>
-        public override string ToString()
-        {
-            return "Shared Rabbit Connection: " + this.target;
-        }
-
+        /// <summary>
+        /// Convert to string.
+        /// </summary>
+        /// <returns>String representation of object.</returns>
+        public override string ToString() { return "Shared Rabbit Connection: " + this.target; }
     }
 }

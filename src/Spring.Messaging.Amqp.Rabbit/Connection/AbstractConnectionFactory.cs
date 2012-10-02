@@ -1,29 +1,26 @@
-#region License
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AbstractConnectionFactory.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using System.Collections.Generic;
 using System.Net;
 using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
@@ -41,13 +38,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// The logger.
         /// </summary>
         protected readonly ILog Logger = LogManager.GetLogger(typeof(AbstractConnectionFactory));
-
         #endregion
 
         /// <summary>
         /// The connection factory.
         /// </summary>
-        private ConnectionFactory rabbitConnectionFactory;
+        private readonly ConnectionFactory rabbitConnectionFactory;
 
         /// <summary>
         /// The connection listener.
@@ -59,13 +55,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         private readonly CompositeChannelListener channelListener = new CompositeChannelListener();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AbstractConnectionFactory"/> class.
-        /// </summary>
-        /// <param name="rabbitConnectionFactory">
-        /// The rabbit connection factory.
-        /// </param>
-        public AbstractConnectionFactory(RabbitMQ.Client.ConnectionFactory rabbitConnectionFactory)
+        /// <summary>Initializes a new instance of the <see cref="AbstractConnectionFactory"/> class.</summary>
+        /// <param name="rabbitConnectionFactory">The rabbit connection factory.</param>
+        public AbstractConnectionFactory(ConnectionFactory rabbitConnectionFactory)
         {
             AssertUtils.ArgumentNotNull(rabbitConnectionFactory, "Target ConnectionFactory must not be null");
             this.rabbitConnectionFactory = rabbitConnectionFactory;
@@ -76,61 +68,37 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Sets UserName.
         /// </summary>
-        public string UserName
-        {
-            set { this.rabbitConnectionFactory.UserName = value; }
-        }
+        public string UserName { set { this.rabbitConnectionFactory.UserName = value; } }
 
         /// <summary>
         /// Sets Password.
         /// </summary>
-        public string Password
-        {
-            set { this.rabbitConnectionFactory.Password = value; }
-        }
+        public string Password { set { this.rabbitConnectionFactory.Password = value; } }
 
         /// <summary>
         /// Gets or sets Host.
         /// </summary>
-        public string Host
-        {
-            get { return this.rabbitConnectionFactory.HostName; }
-            set { this.rabbitConnectionFactory.HostName = value; }
-        }
+        public string Host { get { return this.rabbitConnectionFactory.HostName; } set { this.rabbitConnectionFactory.HostName = value; } }
 
         /// <summary>
         /// Gets or sets VirtualHost.
         /// </summary>
-        public string VirtualHost
-        {
-            get { return this.rabbitConnectionFactory.VirtualHost; }
-            set { this.rabbitConnectionFactory.VirtualHost = value; }
-        }
+        public string VirtualHost { get { return this.rabbitConnectionFactory.VirtualHost; } set { this.rabbitConnectionFactory.VirtualHost = value; } }
 
         /// <summary>
         /// Gets or sets Port.
         /// </summary>
-        public int Port
-        {
-            get { return this.rabbitConnectionFactory.Port; }
-            set { this.rabbitConnectionFactory.Port = value; }
-        }
+        public int Port { get { return this.rabbitConnectionFactory.Port; } set { this.rabbitConnectionFactory.Port = value; } }
 
         /// <summary>
         /// Gets the channel listener.
         /// </summary>
-        public virtual IChannelListener ChannelListener
-        {
-            get { return this.channelListener; }
-        }
+        public virtual IChannelListener ChannelListener { get { return this.channelListener; } }
 
         /// <summary>
         /// Gets the connection listener.
         /// </summary>
-        public virtual IConnectionListener ConnectionListener
-        {
-            get { return this.connectionListener; }
-        }
+        public virtual IConnectionListener ConnectionListener { get { return this.connectionListener; } }
 
         /// <summary>
         /// Sets the connection listeners.
@@ -138,10 +106,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <value>
         /// The connection listeners.
         /// </value>
-        public virtual IList<IConnectionListener> ConnectionListeners
-        {
-            set { this.connectionListener.Delegates = value; }
-        }
+        public virtual IList<IConnectionListener> ConnectionListeners { set { this.connectionListener.Delegates = value; } }
 
         /// <summary>
         /// Sets the channel listeners.
@@ -149,32 +114,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <value>
         /// The channel listeners.
         /// </value>
-        public virtual IList<IChannelListener> ChannelListeners
-        {
-            set { this.channelListener.Delegates = value; }
-        }   
+        public virtual IList<IChannelListener> ChannelListeners { set { this.channelListener.Delegates = value; } }
 
-        /// <summary>
-        /// Add a connection listener.
-        /// </summary>
-        /// <param name="connectionListener">
-        /// The listener.
-        /// </param>
-        public virtual void AddConnectionListener(IConnectionListener connectionListener)
-        {
-            this.connectionListener.AddDelegate(connectionListener);
-        }
+        /// <summary>Add a connection listener.</summary>
+        /// <param name="connectionListener">The listener.</param>
+        public virtual void AddConnectionListener(IConnectionListener connectionListener) { this.connectionListener.AddDelegate(connectionListener); }
 
-        /// <summary>
-        /// Add a connection listener.
-        /// </summary>
-        /// <param name="channelListener">
-        /// The listener.
-        /// </param>
-        public virtual void AddChannelListener(IChannelListener channelListener)
-        {
-            this.channelListener.AddDelegate(channelListener);
-        }
+        /// <summary>Add a connection listener.</summary>
+        /// <param name="channelListener">The listener.</param>
+        public virtual void AddChannelListener(IChannelListener channelListener) { this.channelListener.AddDelegate(channelListener); }
 
         /// <summary>
         /// Create a connection.
@@ -226,10 +174,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Close the underlying shared connection.
         /// </summary>
-        public virtual void Dispose()
-        {
-        }
-
+        public virtual void Dispose() { }
         #endregion
     }
-} 
+}

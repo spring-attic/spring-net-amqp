@@ -1,40 +1,34 @@
-﻿#region License
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="LinkedBlockingQueue.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright (C) 2002-2008 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using Spring.Collections.Generic;
 using Spring.Utility;
+#endregion
 
 namespace Spring.Threading.Collections.Generic
 {
-    /// <summary> 
+    /// <summary>
     /// An optionally-bounded <see cref="IBlockingQueue{T}"/> based on
-    /// linked nodes.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This queue orders elements FIFO (first-in-first-out).
+    /// linked nodes.</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <remarks><para>This queue orders elements FIFO (first-in-first-out).
     /// The <b>head</b> of the queue is that element that has been on the
     /// queue the longest time.
     /// The <b>tail</b> of the queue is that element that has been on the
@@ -42,36 +36,27 @@ namespace Spring.Threading.Collections.Generic
     /// are inserted at the tail of the queue, and the queue retrieval
     /// operations obtain elements at the head of the queue.
     /// Linked queues typically have higher throughput than array-based queues but
-    /// less predictable performance in most concurrent applications.
-    /// </para>
-    /// <para>
-    /// The optional capacity bound constructor argument serves as a
+    /// less predictable performance in most concurrent applications.</para>
+    /// <para>The optional capacity bound constructor argument serves as a
     /// way to prevent excessive queue expansion. The capacity, if unspecified,
     /// is equal to <see cref="System.Int32.MaxValue"/>.  Linked nodes are
     /// dynamically created upon each insertion unless this would bring the
-    /// queue above capacity.
-    /// </para>
+    /// queue above capacity.</para>
     /// </remarks>
-    /// <author>Doug Lea</author>
-    /// <author>Griffin Caprio (.NET)</author>
+    /// <author>Doug Lea</author><author>Griffin Caprio (.NET)</author>
     [Serializable]
-    public class LinkedBlockingQueue<T> : AbstractBlockingQueue<T>, ISerializable //BACKPORT_3_1
+    public class LinkedBlockingQueue<T> : AbstractBlockingQueue<T>, ISerializable
     {
-
+        // BACKPORT_3_1
         #region inner classes
-
         internal class Node
         {
             internal T Item;
 
             internal Node Next;
 
-            internal Node(T x)
-            {
-                Item = x;
-            }
+            internal Node(T x) { this.Item = x; }
         }
-
         #endregion
 
         #region private fields
@@ -80,151 +65,135 @@ namespace Spring.Threading.Collections.Generic
         private readonly int _capacity;
 
         /// <summary>Current number of elements </summary>
-        [NonSerialized]
-        private volatile int _activeCount;
+        [NonSerialized] private volatile int _activeCount;
 
-        [NonSerialized]
-        private volatile bool _isBroken;
+        [NonSerialized] private volatile bool _isBroken;
 
         /// <summary>Head of linked list </summary>
-        [NonSerialized]
-        private Node _head;
+        [NonSerialized] private Node _head;
 
         /// <summary>Tail of linked list </summary>
-        [NonSerialized]
-        private Node _last;
+        [NonSerialized] private Node _last;
 
         /// <summary>Lock held by take, poll, etc </summary>
-        [NonSerialized]
-        private readonly object _takeLock = new object();
+        [NonSerialized] private readonly object _takeLock = new object();
 
         /// <summary>Lock held by put, offer, etc </summary>
-        [NonSerialized]
-        private readonly object _putLock = new object();
+        [NonSerialized] private readonly object _putLock = new object();
         #endregion
 
         #region ctors
 
-        /// <summary> Creates a <see cref="LinkedBlockingQueue{T}"/> with a capacity of
-        /// <see cref="System.Int32.MaxValue"/>.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="LinkedBlockingQueue{T}"/> class.  Creates a <see cref="LinkedBlockingQueue{T}"/> with a capacity of<see cref="System.Int32.MaxValue"/>.</summary>
         public LinkedBlockingQueue()
-            : this(Int32.MaxValue)
-        {
-        }
+            : this(int.MaxValue) { }
 
-        /// <summary> Creates a <see cref="LinkedBlockingQueue{T}"/> with the given (fixed) capacity.</summary>
+        /// <summary>Initializes a new instance of the <see cref="LinkedBlockingQueue{T}"/> class. Creates a <see cref="LinkedBlockingQueue{T}"/> with the given (fixed) capacity.</summary>
         /// <param name="capacity">the capacity of this queue</param>
         /// <exception cref="System.ArgumentException">if the <paramref name="capacity"/> is not greater than zero.</exception>
         public LinkedBlockingQueue(int capacity)
         {
-            if (capacity <= 0) throw new ArgumentOutOfRangeException(
-                     "capacity", capacity, "Capacity must be positive integer.");
-            _capacity = capacity;
-            _last = _head = new Node(default(T));
+            if (capacity <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    "capacity", capacity, "Capacity must be positive integer.");
+            }
+
+            this._capacity = capacity;
+            this._last = this._head = new Node(default(T));
         }
 
-        /// <summary> Creates a <see cref="LinkedBlockingQueue{T}"/> with a capacity of
-        /// <see cref="System.Int32.MaxValue"/>, initially containing the elements o)f the
-        /// given collection, added in traversal order of the collection's iterator.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="LinkedBlockingQueue{T}"/> class. Creates a <see cref="LinkedBlockingQueue{T}"/> with a capacity of<see cref="System.Int32.MaxValue"/>, initially containing the elements o)f the
+        /// given collection, added in traversal order of the collection's iterator.</summary>
         /// <param name="collection">the collection of elements to initially contain</param>
         /// <exception cref="System.ArgumentNullException">if the collection or any of its elements are null.</exception>
         /// <exception cref="System.ArgumentException">if the collection size exceeds the capacity of this queue.</exception>
         public LinkedBlockingQueue(ICollection<T> collection)
-            : this(Int32.MaxValue)
+            : this(int.MaxValue)
         {
             if (collection == null)
             {
                 throw new ArgumentNullException("collection", "must not be null.");
             }
+
             int count = 0;
             foreach (var item in collection)
             {
-                Insert(item);
+                this.Insert(item);
                 count++; // we must count ourselves, as collection can change.
             }
-            _activeCount = count;
+
+            this._activeCount = count;
         }
 
-        /// <summary> Reconstitute this queue instance from a stream (that is,
-        /// deserialize it).
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="LinkedBlockingQueue{T}"/> class. Reconstitute this queue instance from a stream (that is,
+        /// deserialize it).</summary>
         /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo"/> to populate with data. </param>
         /// <param name="context">The destination (see <see cref="System.Runtime.Serialization.StreamingContext"/>) for this serialization. </param>
         protected LinkedBlockingQueue(SerializationInfo info, StreamingContext context)
         {
             SerializationUtilities.DefaultReadObject(info, context, this);
-            _last = _head = new Node(default(T));
+            this._last = this._head = new Node(default(T));
 
-            T[] items = (T[])info.GetValue("Data", typeof(T[]));
-            foreach (var item in items) Insert(item);
-            _activeCount = items.Length;
+            var items = (T[])info.GetValue("Data", typeof(T[]));
+            foreach (var item in items)
+            {
+                this.Insert(item);
+            }
+
+            this._activeCount = items.Length;
         }
 
         #endregion
 
         #region ISerializable Members
 
-        /// <summary>
-        ///Populates a <see cref="System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
-        /// </summary>
+        /// <summary>Populates a <see cref="System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.</summary>
         /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo"/> to populate with data. </param>
         /// <param name="context">The destination (see <see cref="System.Runtime.Serialization.StreamingContext"/>) for this serialization. </param>
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            lock (_putLock)
+            lock (this._putLock)
             {
-                lock (_takeLock)
+                lock (this._takeLock)
                 {
                     SerializationUtilities.DefaultWriteObject(info, context, this);
-                    info.AddValue("Data", ToArray());
+                    info.AddValue("Data", this.ToArray());
                 }
             }
         }
-
 
         #endregion
 
         #region base class overrides
 
-        /// <summary> 
-        /// Inserts the specified element into this queue, waiting if necessary
-        /// for space to become available.
-        /// </summary>
-        /// <param name="element">the element to add</param>
-        /// <exception cref="ThreadInterruptedException">
-        /// if interrupted while waiting.
-        /// </exception>
-        /// <exception cref="QueueBrokenException">
-        /// If the queue is already <see cref="IsBroken">closed</see>.
-        /// </exception>
-        public override void Put(T element)
-        {
-            if (!TryPut(element)) throw new QueueBrokenException();
-        }
-
         /// <summary>
         /// Inserts the specified element into this queue, waiting if necessary
-        /// for space to become available.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="Break"/> the queue will cause a waiting <see cref="TryPut"/>
+        /// for space to become available.</summary>
+        /// <param name="element">the element to add</param>
+        /// <exception cref="ThreadInterruptedException">if interrupted while waiting.</exception>
+        /// <exception cref="QueueBrokenException">If the queue is already <see cref="IsBroken">closed</see>.</exception>
+        public override void Put(T element)
+        {
+            if (!this.TryPut(element))
+            {
+                throw new QueueBrokenException();
+            }
+        }
+
+        /// <summary>Inserts the specified element into this queue, waiting if necessary
+        /// for space to become available.</summary>
+        /// <remarks><see cref="Break"/> the queue will cause a waiting <see cref="TryPut"/>
         /// to returned <c>false</c>. This is very useful to indicate that the
         /// consumer is stopped or going to stop so that the producer should not 
-        /// put more items into the queue.
-        /// </remarks>
+        /// put more items into the queue.</remarks>
         /// <param name="element">the element to add</param>
-        /// <returns>
-        /// <c>true</c> if succesfully and <c>false</c> if queue <see cref="IsBroken"/>.
-        /// </returns>
-        /// <exception cref="ThreadInterruptedException">
-        /// if interrupted while waiting.
-        /// </exception>
+        /// <returns><c>true</c> if succesfully and <c>false</c> if queue <see cref="IsBroken"/>.</returns>
+        /// <exception cref="ThreadInterruptedException">if interrupted while waiting.</exception>
         public virtual bool TryPut(T element)
         {
             int tempCount;
-            lock (_putLock)
+            lock (this._putLock)
             {
                 /*
                  * Note that count is used in wait guard even though it is
@@ -234,123 +203,150 @@ namespace Spring.Threading.Collections.Generic
                  * signaled if it ever changes from capacity. Similarly 
                  * for all other uses of count in other wait guards.
                  */
-                if (_isBroken) return false;
+                if (this._isBroken)
+                {
+                    return false;
+                }
+
                 try
                 {
-                    while (_activeCount == _capacity)
+                    while (this._activeCount == this._capacity)
                     {
-                        Monitor.Wait(_putLock);
-                        if (_isBroken) return false;
+                        Monitor.Wait(this._putLock);
+                        if (this._isBroken)
+                        {
+                            return false;
+                        }
                     }
                 }
                 catch (ThreadInterruptedException e)
                 {
-                    Monitor.Pulse(_putLock);
-                    throw SystemExtensions.PreserveStackTrace(e);
+                    Monitor.Pulse(this._putLock);
+                    throw e.PreserveStackTrace();
                 }
-                Insert(element);
+
+                this.Insert(element);
                 lock (this)
                 {
-                    tempCount = _activeCount++;
+                    tempCount = this._activeCount++;
                 }
-                if (tempCount + 1 < _capacity)
-                    Monitor.Pulse(_putLock);
+
+                if (tempCount + 1 < this._capacity)
+                {
+                    Monitor.Pulse(this._putLock);
+                }
             }
 
             if (tempCount == 0)
-                SignalNotEmpty();
+            {
+                this.SignalNotEmpty();
+            }
+
             return true;
         }
 
-        /// <summary> 
+        /// <summary>
         /// Inserts the specified element into this queue, waiting up to the
-        /// specified wait time if necessary for space to become available.
-        /// </summary>
+        /// specified wait time if necessary for space to become available.</summary>
         /// <param name="element">the element to add</param>
         /// <param name="duration">how long to wait before giving up</param>
-        /// <returns> <c>true</c> if successful, or <c>false</c> if
-        /// the specified waiting time elapses before space is available
-        /// </returns>
-        /// <exception cref="System.InvalidOperationException">
-        /// If the element cannot be added at this time due to capacity restrictions.
-        /// </exception>
-        /// <exception cref="ThreadInterruptedException">
-        /// if interrupted while waiting.
-        /// </exception>
+        /// <returns><c>true</c> if successful, or <c>false</c> if
+        /// the specified waiting time elapses before space is available</returns>
+        /// <exception cref="System.InvalidOperationException">If the element cannot be added at this time due to capacity restrictions.</exception>
+        /// <exception cref="ThreadInterruptedException">if interrupted while waiting.</exception>
         public override bool Offer(T element, TimeSpan duration)
         {
             DateTime deadline = WaitTime.Deadline(duration);
             int tempCount;
-            lock (_putLock)
+            lock (this._putLock)
             {
-                for (; ; )
+                for (;;)
                 {
-                    if (_isBroken) return false;
-                    if (_activeCount < _capacity)
+                    if (this._isBroken)
                     {
-                        Insert(element);
+                        return false;
+                    }
+
+                    if (this._activeCount < this._capacity)
+                    {
+                        this.Insert(element);
                         lock (this)
                         {
-                            tempCount = _activeCount++;
+                            tempCount = this._activeCount++;
                         }
-                        if (tempCount + 1 < _capacity)
-                            Monitor.Pulse(_putLock);
+
+                        if (tempCount + 1 < this._capacity)
+                        {
+                            Monitor.Pulse(this._putLock);
+                        }
+
                         break;
                     }
+
                     if (duration.Ticks <= 0)
+                    {
                         return false;
+                    }
+
                     try
                     {
-                        Monitor.Wait(_putLock, WaitTime.Cap(duration));
+                        Monitor.Wait(this._putLock, WaitTime.Cap(duration));
                         duration = deadline.Subtract(DateTime.UtcNow);
                     }
                     catch (ThreadInterruptedException e)
                     {
-                        Monitor.Pulse(_putLock);
-                        throw SystemExtensions.PreserveStackTrace(e);
+                        Monitor.Pulse(this._putLock);
+                        throw e.PreserveStackTrace();
                     }
                 }
             }
+
             if (tempCount == 0)
-                SignalNotEmpty();
+            {
+                this.SignalNotEmpty();
+            }
+
             return true;
         }
 
-        /// <summary> 
+        /// <summary>
         /// Inserts the specified element into this queue if it is possible to do
-        /// so immediately without violating capacity restrictions.
-        /// </summary>
-        /// <remarks>
-        /// When using a capacity-restricted queue, this method is generally
+        /// so immediately without violating capacity restrictions.</summary>
+        /// <remarks>When using a capacity-restricted queue, this method is generally
         /// preferable to <see cref="AbstractQueue{T}.Add(T)"/>,
-        /// which can fail to insert an element only by throwing an exception.
-        /// </remarks>
-        /// <param name="element">
-        /// The element to add.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if the element was added to this queue.
-        /// </returns>
+        /// which can fail to insert an element only by throwing an exception.</remarks>
+        /// <param name="element">The element to add.</param>
+        /// <returns><c>true</c> if the element was added to this queue.</returns>
         public override bool Offer(T element)
         {
-            if (_activeCount == _capacity || _isBroken)
-                return false;
-            int tempCount = -1;
-            lock (_putLock)
+            if (this._activeCount == this._capacity || this._isBroken)
             {
-                if (_activeCount < _capacity && !_isBroken)
+                return false;
+            }
+
+            int tempCount = -1;
+            lock (this._putLock)
+            {
+                if (this._activeCount < this._capacity && !this._isBroken)
                 {
-                    Insert(element);
+                    this.Insert(element);
                     lock (this)
                     {
-                        tempCount = _activeCount++;
+                        tempCount = this._activeCount++;
                     }
-                    if (tempCount + 1 < _capacity)
-                        Monitor.Pulse(_putLock);
+
+                    if (tempCount + 1 < this._capacity)
+                    {
+                        Monitor.Pulse(this._putLock);
+                    }
                 }
             }
+
             if (tempCount == 0)
-                SignalNotEmpty();
+            {
+                this.SignalNotEmpty();
+            }
+
             return tempCount >= 0;
         }
 
@@ -365,134 +361,135 @@ namespace Spring.Threading.Collections.Generic
         public override T Take()
         {
             T x;
-            if (!TryTake(out x)) throw new QueueBrokenException();
+            if (!this.TryTake(out x))
+            {
+                throw new QueueBrokenException();
+            }
+
             return x;
         }
 
-        /// <summary> 
+        /// <summary>
         /// Retrieves and removes the head of this queue, waiting if necessary
-        /// until an element becomes available.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="Break"/> the queue will cause a waiting <see cref="TryTake"/>
+        /// until an element becomes available.</summary>
+        /// <remarks><see cref="Break"/> the queue will cause a waiting <see cref="TryTake"/>
         /// to returned <c>false</c>. This is very useful to indicate that the
         /// producer is stopped so that the producer should stop waiting for
-        /// element from queu.
-        /// </remarks>
-        /// <param name="element">
-        /// The head of this queue if successful.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if succesfully and <c>false</c> if queue is empty and 
-        /// <see cref="IsBroken">closed</see>.
-        /// </returns>
+        /// element from queu.</remarks>
+        /// <param name="element">The head of this queue if successful.</param>
+        /// <returns><c>true</c> if succesfully and <c>false</c> if queue is empty and <see cref="IsBroken">closed</see>.</returns>
         public virtual bool TryTake(out T element)
         {
             T x;
             int tempCount;
-            lock (_takeLock)
+            lock (this._takeLock)
             {
                 try
                 {
-                    while (_activeCount == 0)
+                    while (this._activeCount == 0)
                     {
-                        if (_isBroken)
+                        if (this._isBroken)
                         {
                             element = default(T);
                             return false;
                         }
-                        Monitor.Wait(_takeLock);
+
+                        Monitor.Wait(this._takeLock);
                     }
                 }
                 catch (ThreadInterruptedException e)
                 {
-                    Monitor.Pulse(_takeLock);
-                    throw SystemExtensions.PreserveStackTrace(e);
+                    Monitor.Pulse(this._takeLock);
+                    throw e.PreserveStackTrace();
                 }
 
-                x = Extract();
+                x = this.Extract();
                 lock (this)
                 {
-                    tempCount = _activeCount--;
+                    tempCount = this._activeCount--;
                 }
+
                 if (tempCount > 1)
-                    Monitor.Pulse(_takeLock);
-            }
-            if (tempCount == _capacity)
-                SignalNotFull();
-
-            element = x;
-            return true;
-        }
-
-        /// <summary> 
-        /// Retrieves and removes the head of this queue, waiting up to the
-        /// specified wait time if necessary for an element to become available.
-        /// </summary>
-        /// <param name="element">
-        /// Set to the head of this queue. <c>default(T)</c> if queue is empty.
-        /// </param>
-        /// <param name="duration">How long to wait before giving up.</param>
-        /// <returns> 
-        /// <c>false</c> if the queue is still empty after waited for the time 
-        /// specified by the <paramref name="duration"/>. Otherwise <c>true</c>.
-        /// </returns>
-        public override bool Poll(TimeSpan duration, out T element)
-        {
-            DateTime deadline = WaitTime.Deadline(duration);
-            T x;
-            int c;
-            lock (_takeLock)
-            {
-                for (; ; )
                 {
-                    if (_activeCount > 0)
-                    {
-                        x = Extract();
-                        lock (this)
-                        {
-                            c = _activeCount--;
-                        }
-                        if (c > 1)
-                            Monitor.Pulse(_takeLock);
-                        break;
-                    }
-                    if (duration.Ticks <= 0 || _isBroken)
-                    {
-                        element = default(T);
-                        return false;
-                    }
-                    try
-                    {
-                        Monitor.Wait(_takeLock, WaitTime.Cap(duration));
-                        duration = deadline.Subtract(DateTime.UtcNow);
-                    }
-                    catch (ThreadInterruptedException e)
-                    {
-                        Monitor.Pulse(_takeLock);
-                        throw SystemExtensions.PreserveStackTrace(e);
-                    }
+                    Monitor.Pulse(this._takeLock);
                 }
             }
-            if (c == _capacity)
-                SignalNotFull();
+
+            if (tempCount == this._capacity)
+            {
+                this.SignalNotFull();
+            }
+
             element = x;
             return true;
         }
 
         /// <summary>
-        /// Retrieves and removes the head of this queue into out parameter
-        /// <paramref name="element"/>. 
-        /// </summary>
-        /// <param name="element">
-        /// Set to the head of this queue. <c>default(T)</c> if queue is empty.
-        /// </param>
-        /// <returns>
-        /// <c>false</c> if the queue is empty. Otherwise <c>true</c>.
-        /// </returns>
+        /// Retrieves and removes the head of this queue, waiting up to the
+        /// specified wait time if necessary for an element to become available.</summary>
+        /// <param name="duration">How long to wait before giving up.</param>
+        /// <param name="element">Set to the head of this queue. <c>default(T)</c> if queue is empty.</param>
+        /// <returns><c>false</c> if the queue is still empty after waited for the time 
+        /// specified by the <paramref name="duration"/>. Otherwise <c>true</c>.</returns>
+        public override bool Poll(TimeSpan duration, out T element)
+        {
+            DateTime deadline = WaitTime.Deadline(duration);
+            T x;
+            int c;
+            lock (this._takeLock)
+            {
+                for (;;)
+                {
+                    if (this._activeCount > 0)
+                    {
+                        x = this.Extract();
+                        lock (this)
+                        {
+                            c = this._activeCount--;
+                        }
+
+                        if (c > 1)
+                        {
+                            Monitor.Pulse(this._takeLock);
+                        }
+
+                        break;
+                    }
+
+                    if (duration.Ticks <= 0 || this._isBroken)
+                    {
+                        element = default(T);
+                        return false;
+                    }
+
+                    try
+                    {
+                        Monitor.Wait(this._takeLock, WaitTime.Cap(duration));
+                        duration = deadline.Subtract(DateTime.UtcNow);
+                    }
+                    catch (ThreadInterruptedException e)
+                    {
+                        Monitor.Pulse(this._takeLock);
+                        throw e.PreserveStackTrace();
+                    }
+                }
+            }
+
+            if (c == this._capacity)
+            {
+                this.SignalNotFull();
+            }
+
+            element = x;
+            return true;
+        }
+
+        /// <summary>Retrieves and removes the head of this queue into out parameter<paramref name="element"/>. </summary>
+        /// <param name="element">Set to the head of this queue. <c>default(T)</c> if queue is empty.</param>
+        /// <returns><c>false</c> if the queue is empty. Otherwise <c>true</c>.</returns>
         public override bool Poll(out T element)
         {
-            if (_activeCount == 0)
+            if (this._activeCount == 0)
             {
                 element = default(T);
                 return false;
@@ -500,73 +497,71 @@ namespace Spring.Threading.Collections.Generic
 
             T x = default(T);
             int c = -1;
-            lock (_takeLock)
+            lock (this._takeLock)
             {
-                if (_activeCount > 0)
+                if (this._activeCount > 0)
                 {
-                    x = Extract();
+                    x = this.Extract();
                     lock (this)
                     {
-                        c = _activeCount--;
+                        c = this._activeCount--;
                     }
+
                     if (c > 1)
-                        Monitor.Pulse(_takeLock);
+                    {
+                        Monitor.Pulse(this._takeLock);
+                    }
                 }
             }
-            if (c == _capacity)
+
+            if (c == this._capacity)
             {
-                SignalNotFull();
+                this.SignalNotFull();
             }
+
             element = x;
             return c >= 0;
         }
 
-        /// <summary>
-        /// Retrieves, but does not remove, the head of this queue into out
-        /// parameter <paramref name="element"/>.
-        /// </summary>
-        /// <param name="element">
-        /// The head of this queue. <c>default(T)</c> if queue is empty.
-        /// </param>
-        /// <returns>
-        /// <c>false</c> is the queue is empty. Otherwise <c>true</c>.
-        /// </returns>
+        /// <summary>Retrieves, but does not remove, the head of this queue into out
+        /// parameter <paramref name="element"/>.</summary>
+        /// <param name="element">The head of this queue. <c>default(T)</c> if queue is empty.</param>
+        /// <returns><c>false</c> is the queue is empty. Otherwise <c>true</c>.</returns>
         public override bool Peek(out T element)
         {
-            if (_activeCount == 0)
+            if (this._activeCount == 0)
             {
                 element = default(T);
                 return false;
             }
-            lock (_takeLock)
+
+            lock (this._takeLock)
             {
-                Node first = _head.Next;
+                Node first = this._head.Next;
                 bool exists = first != null;
                 element = exists ? first.Item : default(T);
                 return exists;
             }
         }
 
-        /// <summary> 
+        /// <summary>
         /// Removes a single instance of the specified element from this queue,
-        /// if it is present.  
-        /// </summary>
-        /// <remarks> 
-        ///	If this queue contains one or more such elements.
+        /// if it is present.  </summary>
+        /// <remarks>
+        /// 	If this queue contains one or more such elements.
         /// Returns <c>true</c> if this queue contained the specified element
-        /// (or equivalently, if this queue changed as a result of the call).
-        /// </remarks>
+        /// (or equivalently, if this queue changed as a result of the call).</remarks>
         /// <param name="objectToRemove">element to be removed from this queue, if present</param>
         /// <returns><c>true</c> if this queue changed as a result of the call</returns>
         public override bool Remove(T objectToRemove)
         {
             bool removed = false;
-            lock (_putLock)
+            lock (this._putLock)
             {
-                lock (_takeLock)
+                lock (this._takeLock)
                 {
-                    Node trail = _head;
-                    Node p = _head.Next;
+                    Node trail = this._head;
+                    Node p = this._head.Next;
                     while (p != null)
                     {
                         if (Equals(objectToRemove, p.Item))
@@ -574,23 +569,31 @@ namespace Spring.Threading.Collections.Generic
                             removed = true;
                             break;
                         }
+
                         trail = p;
                         p = p.Next;
                     }
+
                     if (removed)
                     {
                         p.Item = default(T);
                         trail.Next = p.Next;
-                        if (_last == p)
-                            _last = trail;
+                        if (this._last == p)
+                        {
+                            this._last = trail;
+                        }
+
                         lock (this)
                         {
-                            if (_activeCount-- == _capacity)
-                                Monitor.PulseAll(_putLock);
+                            if (this._activeCount-- == this._capacity)
+                            {
+                                Monitor.PulseAll(this._putLock);
+                            }
                         }
                     }
                 }
             }
+
             return removed;
         }
 
@@ -606,43 +609,43 @@ namespace Spring.Threading.Collections.Generic
         /// because it may be the case that another thread is about to
         /// insert or remove an element.
         /// </remarks>
-        public override int RemainingCapacity
-        {
-            get
-            {
-                return _capacity == int.MaxValue ? int.MaxValue : _capacity - _activeCount;
-            }
-        }
+        public override int RemainingCapacity { get { return this._capacity == int.MaxValue ? int.MaxValue : this._capacity - this._activeCount; } }
 
-        /// <summary>
-        /// Does the real work for the <see cref="AbstractQueue{T}.Drain(System.Action{T})"/>
-        /// and <see cref="AbstractQueue{T}.Drain(System.Action{T},Predicate{T})"/>.
-        /// </summary>
+        /// <summary>Does the real work for the <see cref="AbstractQueue{T}.Drain(System.Action{T})"/>
+        /// and <see cref="AbstractQueue{T}.Drain(System.Action{T},Predicate{T})"/>.</summary>
+        /// <param name="action">The action.</param>
+        /// <param name="criteria">The criteria.</param>
+        /// <returns>The System.Int32.</returns>
         protected internal override int DoDrain(Action<T> action, Predicate<T> criteria)
         {
             if (criteria != null)
             {
-                return DoDrain(action, int.MaxValue, criteria);
+                return this.DoDrain(action, int.MaxValue, criteria);
             }
-            Node first;
-            lock (_putLock)
-            {
-                lock (_takeLock)
-                {
-                    first = _head.Next;
-                    _head.Next = null;
 
-                    _last = _head;
+            Node first;
+            lock (this._putLock)
+            {
+                lock (this._takeLock)
+                {
+                    first = this._head.Next;
+                    this._head.Next = null;
+
+                    this._last = this._head;
                     int cold;
                     lock (this)
                     {
-                        cold = _activeCount;
-                        _activeCount = 0;
+                        cold = this._activeCount;
+                        this._activeCount = 0;
                     }
-                    if (cold == _capacity)
-                        Monitor.PulseAll(_putLock);
+
+                    if (cold == this._capacity)
+                    {
+                        Monitor.PulseAll(this._putLock);
+                    }
                 }
             }
+
             // Transfer the elements outside of locks
             int n = 0;
             for (Node p = first; p != null; p = p.Next)
@@ -651,26 +654,25 @@ namespace Spring.Threading.Collections.Generic
                 p.Item = default(T);
                 ++n;
             }
+
             return n;
         }
 
-        /// <summary> 
-        /// Does the real work for all drain methods. Caller must
-        /// guarantee the <paramref name="action"/> is not <c>null</c> and
-        /// <paramref name="maxElements"/> is greater then zero (0).
-        /// </summary>
-        /// <seealso cref="IQueue{T}.Drain(System.Action{T})"/>
-        /// <seealso cref="IQueue{T}.Drain(System.Action{T}, int)"/>
-        /// <seealso cref="IQueue{T}.Drain(System.Action{T}, Predicate{T})"/>
-        /// <seealso cref="IQueue{T}.Drain(System.Action{T}, int, Predicate{T})"/>
-        internal protected override int DoDrain(Action<T> action, int maxElements, Predicate<T> criteria)
+        /// <summary>Does the real work for all drain methods. Caller must
+        /// guarantee the <paramref name="action"/> is not <c>null</c> and<paramref name="maxElements"/> is greater then zero (0).</summary>
+        /// <param name="action">The action.</param>
+        /// <param name="maxElements">The max Elements.</param>
+        /// <param name="criteria">The criteria.</param>
+        /// <seealso cref="IQueue{T}.Drain(System.Action{T})"/><seealso cref="IQueue{T}.Drain(System.Action{T}, int)"/><seealso cref="IQueue{T}.Drain(System.Action{T}, Predicate{T})"/><seealso cref="IQueue{T}.Drain(System.Action{T}, int, Predicate{T})"/>
+        /// <returns>The System.Int32.</returns>
+        protected internal override int DoDrain(Action<T> action, int maxElements, Predicate<T> criteria)
         {
-            lock (_putLock)
+            lock (this._putLock)
             {
-                lock (_takeLock)
+                lock (this._takeLock)
                 {
                     int n = 0;
-                    Node p = _head;
+                    Node p = this._head;
                     Node c = p.Next;
                     while (c != null && n < maxElements)
                     {
@@ -685,21 +687,30 @@ namespace Spring.Threading.Collections.Generic
                         {
                             p = c;
                         }
+
                         c = c.Next;
                     }
+
                     if (n != 0)
                     {
                         if (c == null)
-                            _last = p;
+                        {
+                            this._last = p;
+                        }
+
                         int cold;
                         lock (this)
                         {
-                            cold = _activeCount;
-                            _activeCount -= n;
+                            cold = this._activeCount;
+                            this._activeCount -= n;
                         }
-                        if (cold == _capacity)
-                            Monitor.PulseAll(_putLock);
+
+                        if (cold == this._capacity)
+                        {
+                            Monitor.PulseAll(this._putLock);
+                        }
                     }
+
                     return n;
                 }
             }
@@ -708,40 +719,32 @@ namespace Spring.Threading.Collections.Generic
         /// <summary>
         /// Gets the capacity of this queue.
         /// </summary>
-        public override int Capacity
-        {
-            get { return _capacity; }
-        }
+        public override int Capacity { get { return this._capacity; } }
 
-        /// <summary>
-        /// Does the actual work of copying to array.
-        /// </summary>
-        /// <param name="array">
-        /// The one-dimensional <see cref="Array"/> that is the 
+        /// <summary>Does the actual work of copying to array.</summary>
+        /// <param name="array">The one-dimensional <see cref="Array"/> that is the 
         /// destination of the elements copied from <see cref="ICollection{T}"/>. 
-        /// The <see cref="Array"/> must have zero-based indexing.
-        /// </param>
-        /// <param name="arrayIndex">
-        /// The zero-based index in array at which copying begins.
-        /// </param>
-        /// <param name="ensureCapacity">
-        /// If is <c>true</c>, calls <see cref="AbstractCollection{T}.EnsureCapacity"/>
-        /// </param>
-        /// <returns>
-        /// A new array of same runtime type as <paramref name="array"/> if 
-        /// <paramref name="array"/> is too small to hold all elements and 
-        /// <paramref name="ensureCapacity"/> is <c>false</c>. Otherwise
-        /// the <paramref name="array"/> instance itself.
-        /// </returns>
+        /// The <see cref="Array"/> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+        /// <param name="ensureCapacity">If is <c>true</c>, calls <see cref="AbstractCollection{T}.EnsureCapacity"/></param>
+        /// <returns>A new array of same runtime type as <paramref name="array"/> if <paramref name="array"/> is too small to hold all elements and <paramref name="ensureCapacity"/> is <c>false</c>. Otherwise
+        /// the <paramref name="array"/> instance itself.</returns>
         protected override T[] DoCopyTo(T[] array, int arrayIndex, bool ensureCapacity)
         {
-            lock (_putLock)
+            lock (this._putLock)
             {
-                lock (_takeLock)
+                lock (this._takeLock)
                 {
-                    if (ensureCapacity) array = EnsureCapacity(array, _activeCount);
-                    for (Node p = _head.Next; p != null; p = p.Next)
+                    if (ensureCapacity)
+                    {
+                        array = EnsureCapacity(array, this._activeCount);
+                    }
+
+                    for (Node p = this._head.Next; p != null; p = p.Next)
+                    {
                         array[arrayIndex++] = p.Item;
+                    }
+
                     return array;
                 }
             }
@@ -750,28 +753,27 @@ namespace Spring.Threading.Collections.Generic
         /// <summary>
         /// Gets the count of the queue. 
         /// </summary>
-        public override int Count
-        {
-            get { return _activeCount; }
-        }
+        public override int Count { get { return this._activeCount; } }
 
-        /// <summary>
-        /// test whether the queue contains <paramref name="item"/> 
-        /// </summary>
+        /// <summary>test whether the queue contains <paramref name="item"/> </summary>
         /// <param name="item">the item whose containement should be checked</param>
         /// <returns><c>true</c> if item is in the queue, <c>false</c> otherwise</returns>
         public override bool Contains(T item)
         {
-            lock (_putLock)
+            lock (this._putLock)
             {
-                lock (_takeLock)
+                lock (this._takeLock)
                 {
-                    for (Node p = _head.Next; p != null; p = p.Next)
+                    for (Node p = this._head.Next; p != null; p = p.Next)
                     {
-                        if (Equals(item, p.Item)) return true;
+                        if (Equals(item, p.Item))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
+
             return false;
         }
 
@@ -797,10 +799,7 @@ namespace Spring.Threading.Collections.Generic
         /// <seealso cref="Break"/>
         /// <seealso cref="Stop"/>
         /// <seealso cref="Clear"/>
-        public virtual bool IsBroken
-        {
-            get { return _isBroken; }
-        }
+        public virtual bool IsBroken { get { return this._isBroken; } }
 
         /// <summary>
         /// Breaks current queue. 
@@ -828,14 +827,18 @@ namespace Spring.Threading.Collections.Generic
         /// <seealso cref="Clear"/>
         public virtual void Break()
         {
-            if (_isBroken) return;
-            lock (_putLock)
+            if (this._isBroken)
             {
-                lock (_takeLock)
+                return;
+            }
+
+            lock (this._putLock)
+            {
+                lock (this._takeLock)
                 {
-                    _isBroken = true;
-                    Monitor.PulseAll(_putLock);
-                    Monitor.PulseAll(_takeLock);
+                    this._isBroken = true;
+                    Monitor.PulseAll(this._putLock);
+                    Monitor.PulseAll(this._takeLock);
                 }
             }
         }
@@ -862,10 +865,7 @@ namespace Spring.Threading.Collections.Generic
         /// <seealso cref="Break"/>
         /// <seealso cref="IsBroken"/>
         /// <seealso cref="Clear"/>
-        public virtual void Stop()
-        {
-            EmptyQueue(true);
-        }
+        public virtual void Stop() { this.EmptyQueue(true); }
 
         /// <summary>
         /// Returns a string representation of this colleciton.
@@ -873,9 +873,9 @@ namespace Spring.Threading.Collections.Generic
         /// <returns>String representation of the elements of this collection.</returns>
         public override string ToString()
         {
-            lock (_putLock)
+            lock (this._putLock)
             {
-                lock (_takeLock)
+                lock (this._takeLock)
                 {
                     return base.ToString();
                 }
@@ -891,10 +891,7 @@ namespace Spring.Threading.Collections.Generic
         /// The queue will be empty after this call returns.
         /// </p>
         /// </remarks>
-        public override void Clear()
-        {
-            EmptyQueue(false);
-        }
+        public override void Clear() { this.EmptyQueue(false); }
 
         #region IEnumerable Members
 
@@ -913,11 +910,7 @@ namespace Spring.Threading.Collections.Generic
         /// <returns>
         /// An enumerator over the elements in this queue in proper sequence.
         /// </returns>
-        public override IEnumerator<T> GetEnumerator()
-        {
-            return new LinkedBlockingQueueEnumerator(this);
-        }
-
+        public override IEnumerator<T> GetEnumerator() { return new LinkedBlockingQueueEnumerator(this); }
 
         /// <summary>
         /// Internal enumerator class
@@ -930,76 +923,86 @@ namespace Spring.Threading.Collections.Generic
 
             internal LinkedBlockingQueueEnumerator(LinkedBlockingQueue<T> queue)
             {
-                _queue = queue;
-                lock (_queue._putLock)
+                this._queue = queue;
+                lock (this._queue._putLock)
                 {
-                    lock (_queue._takeLock)
+                    lock (this._queue._takeLock)
                     {
-                        _currentNode = _queue._head;
+                        this._currentNode = this._queue._head;
                     }
                 }
             }
 
-            protected override T FetchCurrent()
-            {
-                return _currentElement;
-            }
+            /// <summary>The fetch current.</summary>
+            /// <returns>The T.</returns>
+            protected override T FetchCurrent() { return this._currentElement; }
 
+            /// <summary>The go next.</summary>
+            /// <returns>The System.Boolean.</returns>
             protected override bool GoNext()
             {
-                lock (_queue._putLock)
+                lock (this._queue._putLock)
                 {
-                    lock (_queue._takeLock)
+                    lock (this._queue._takeLock)
                     {
-                        _currentNode = _currentNode.Next;
-                        if (_currentNode == null) return false;
-                        _currentElement = _currentNode.Item;
+                        this._currentNode = this._currentNode.Next;
+                        if (this._currentNode == null)
+                        {
+                            return false;
+                        }
+
+                        this._currentElement = this._currentNode.Item;
                         return true;
                     }
                 }
             }
 
+            /// <summary>The do reset.</summary>
             protected override void DoReset()
             {
-                lock (_queue._putLock)
+                lock (this._queue._putLock)
                 {
-                    lock (_queue._takeLock)
+                    lock (this._queue._takeLock)
                     {
-                        _currentNode = _queue._head;
+                        this._currentNode = this._queue._head;
                     }
                 }
             }
         }
-
         #endregion
 
         #region Private Methods
         private void EmptyQueue(bool @break)
         {
-            lock (_putLock)
+            lock (this._putLock)
             {
-                lock (_takeLock)
+                lock (this._takeLock)
                 {
-                    _head.Next = null;
+                    this._head.Next = null;
 
-                    _last = _head;
+                    this._last = this._head;
                     int c;
                     lock (this)
                     {
-                        c = _activeCount;
-                        _activeCount = 0;
+                        c = this._activeCount;
+                        this._activeCount = 0;
                     }
-                    bool pulsePut = (c == _capacity);
-                    if (_isBroken != @break)
+
+                    bool pulsePut = c == this._capacity;
+                    if (this._isBroken != @break)
                     {
-                        _isBroken = @break;
+                        this._isBroken = @break;
                         if (@break)
                         {
-                            Monitor.PulseAll(_takeLock);
+                            Monitor.PulseAll(this._takeLock);
                             pulsePut = true;
                         }
                     }
-                    if (pulsePut) Monitor.PulseAll(_putLock);
+
+                    if (pulsePut)
+                    {
+                        Monitor.PulseAll(this._putLock);
+                    }
                 }
             }
         }
@@ -1010,42 +1013,37 @@ namespace Spring.Threading.Collections.Generic
         /// </summary>
         private void SignalNotEmpty()
         {
-            lock (_takeLock)
+            lock (this._takeLock)
             {
-                Monitor.Pulse(_takeLock);
+                Monitor.Pulse(this._takeLock);
             }
         }
 
         /// <summary> Signals a waiting put. Called only from take/poll.</summary>
         private void SignalNotFull()
         {
-            lock (_putLock)
+            lock (this._putLock)
             {
-                Monitor.Pulse(_putLock);
+                Monitor.Pulse(this._putLock);
             }
         }
 
-        /// <summary> 
+        /// <summary>
         /// Creates a node and links it at end of queue.</summary>
         /// <param name="x">the item to insert</param>
-        private void Insert(T x)
-        {
-            _last = _last.Next = new Node(x);
-        }
+        private void Insert(T x) { this._last = this._last.Next = new Node(x); }
 
         /// <summary>Removes a node from head of queue,</summary>
         /// <returns>the node</returns>
         private T Extract()
         {
-            Node first = _head.Next;
-            _head = first;
+            Node first = this._head.Next;
+            this._head = first;
             T x = first.Item;
             first.Item = default(T);
             return x;
         }
 
-
         #endregion
-
     }
 }

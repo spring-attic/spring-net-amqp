@@ -1,41 +1,33 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitTemplate.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-#region License
-
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using System.Threading;
 using Common.Logging;
 using RabbitMQ.Client;
-using Spring.Collections.Generic;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Support.Converter;
 using Spring.Threading.Collections.Generic;
 using Spring.Util;
-using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
-    using Spring.Messaging.Amqp.Rabbit.Support;
-    using Spring.Objects.Factory;
-
     /// <summary>
     /// <para>
     /// Helper class that simplifies synchronous RabbitMQ access (sending and receiving messages).
@@ -125,12 +117,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </summary>
         private volatile IMessagePropertiesConverter messagePropertiesConverter = new DefaultMessagePropertiesConverter();
 
-
         /// <summary>
         /// The encoding.
         /// </summary>
         private string encoding = DEFAULT_ENCODING;
-
         #endregion
 
         #region Constructors
@@ -139,22 +129,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// Initializes a new instance of the <see cref="RabbitTemplate"/> class. 
         /// Convenient constructor for use with setter injection. Don't forget to set the connection factory.
         /// </summary>
-        public RabbitTemplate()
-        {
-            InitDefaultStrategies();
-        }
+        public RabbitTemplate() { this.InitDefaultStrategies(); }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RabbitTemplate"/> class.
-        /// Create a rabbit template with default strategies and settings.
-        /// </summary>
-        /// <param name="connectionFactory">
-        /// The connection factory to use.
-        /// </param>
+        /// <summary>Initializes a new instance of the <see cref="RabbitTemplate"/> class.
+        /// Create a rabbit template with default strategies and settings.</summary>
+        /// <param name="connectionFactory">The connection factory to use.</param>
         public RabbitTemplate(IConnectionFactory connectionFactory) : this()
         {
-            ConnectionFactory = connectionFactory;
-            AfterPropertiesSet();
+            this.ConnectionFactory = connectionFactory;
+            this.AfterPropertiesSet();
         }
 
         #endregion
@@ -162,10 +145,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// Set up the default strategies. Subclasses can override if necessary.
         /// </summary>
-        protected virtual void InitDefaultStrategies()
-        {
-            this.MessageConverter = new SimpleMessageConverter();
-        }
+        protected virtual void InitDefaultStrategies() { this.MessageConverter = new SimpleMessageConverter(); }
 
         #region Properties
 
@@ -174,10 +154,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// which is the default exchange in the broker (per the AMQP specification).
         /// </summary>
         /// <value>The exchange.</value>
-        public string Exchange
-        {
-            set { this.exchange = value; }
-        }
+        public string Exchange { set { this.exchange = value; } }
 
         /// <summary>
         /// Sets RoutingKey. The value of a default routing key to use for send operations when none is specified. Default is empty which is
@@ -185,28 +162,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// instance.
         /// </summary>
         /// <value>The routing key.</value>
-        public string RoutingKey
-        {
-            set { this.routingKey = value; }
-        }
+        public string RoutingKey { set { this.routingKey = value; } }
 
         /// <summary>
         /// Sets Queue. The name of the default queue to receive messages from when none is specified explicitly.
         /// </summary>
         /// <value>The queue.</value>
-        public string Queue
-        {
-            set { this.queue = value; }
-        }
+        public string Queue { set { this.queue = value; } }
 
         /// <summary>
         /// Sets Encoding. The encoding to use when inter-converting between byte arrays and Strings in message properties.
         /// </summary>
         /// <value>The encoding.</value>
-        public string Encoding
-        {
-            set { this.encoding = value; }
-        }
+        public string Encoding { set { this.encoding = value; } }
 
         /// <summary>
         /// Sets the reply timeout. Specify the timeout in milliseconds to be used when waiting for a reply Message when using one of the
@@ -215,28 +183,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// operation defined in the protocol.
         /// </summary>
         /// <value>The reply timeout.</value>
-        public long ReplyTimeout
-        {
-            set { this.replyTimeout = value; }
-        }
+        public long ReplyTimeout { set { this.replyTimeout = value; } }
 
-        /// <summary>
-        /// Gets or sets MessageConverter. Set the message converter for this template. Used to resolve Object parameters to convertAndSend methods and
-        /// Object results from receiveAndConvert methods.
-        /// <p>
-        /// The default converter is a SimpleMessageConverter, which is able to handle byte arrays, Strings, and Serializable
-        /// Objects depending on the message content type header.
-        /// 
-        /// @see #convertAndSend
-        /// @see #receiveAndConvert
-        /// @see org.springframework.amqp.support.converter.SimpleMessageConverter
-        /// </summary>
-        /// <value>The message converter.</value>
-        public IMessageConverter MessageConverter
-        {
-            get { return this.messageConverter; }
-            set { this.messageConverter = value; }
-        }
+        /// <summary>Gets or sets the message converter.</summary>
+        public IMessageConverter MessageConverter { get { return this.messageConverter; } set { this.messageConverter = value; } }
 
         /// <summary>
         /// Sets the message properties converter.
@@ -250,99 +200,60 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 this.messagePropertiesConverter = value;
             }
         }
-
         #endregion
 
         #region Implementation of IAmqpTemplate
 
-        /// <summary>
-        /// Send a message, given the message.
-        /// </summary>
+        /// <summary>Send a message, given the message.</summary>
         /// <param name="message">The message.</param>
-        public void Send(Message message)
-        {
-            Send(this.exchange, this.routingKey, message);
-        }
+        public void Send(Message message) { this.Send(this.exchange, this.routingKey, message); }
 
-        /// <summary>
-        /// Send a message, given a routing key and the message.
-        /// </summary>
+        /// <summary>Send a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
-        public void Send(string routingKey, Message message)
-        {
-            Send(this.exchange, routingKey, message);
-        }
+        public void Send(string routingKey, Message message) { this.Send(this.exchange, routingKey, message); }
 
-        /// <summary>
-        /// Send a message, given an exchange, a routing key, and the message.
-        /// </summary>
+        /// <summary>Send a message, given an exchange, a routing key, and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
         public void Send(string exchange, string routingKey, Message message)
         {
-            Execute<object>(channel =>
-            {
-                DoSend(channel, exchange, routingKey, message);
-                return null;
-            });
+            this.Execute<object>(
+                channel =>
+                {
+                    this.DoSend(channel, exchange, routingKey, message);
+                    return null;
+                });
         }
 
-        /// <summary>
-        /// Convert and send a message, given the message.
-        /// </summary>
+        /// <summary>Convert and send a message, given the message.</summary>
         /// <param name="message">The message.</param>
-        public void ConvertAndSend(object message)
-        {
-            this.ConvertAndSend(this.exchange, this.routingKey, message);
-        }
+        public void ConvertAndSend(object message) { this.ConvertAndSend(this.exchange, this.routingKey, message); }
 
-        /// <summary>
-        /// Convert and send a message, given a routing key and the message.
-        /// </summary>
+        /// <summary>Convert and send a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
-        public void ConvertAndSend(string routingKey, object message)
-        {
-            this.ConvertAndSend(this.exchange, routingKey, message);
-        }
+        public void ConvertAndSend(string routingKey, object message) { this.ConvertAndSend(this.exchange, routingKey, message); }
 
-        /// <summary>
-        /// Convert and send a message, given an exchange, a routing key, and the message.
-        /// </summary>
+        /// <summary>Convert and send a message, given an exchange, a routing key, and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
-        public void ConvertAndSend(string exchange, string routingKey, object message)
-        {
-            this.Send(exchange, routingKey, Execute<Message>(channel => this.GetRequiredMessageConverter().ToMessage(message, new MessageProperties())));
-        }
+        public void ConvertAndSend(string exchange, string routingKey, object message) { this.Send(exchange, routingKey, this.Execute(channel => this.GetRequiredMessageConverter().ToMessage(message, new MessageProperties()))); }
 
-        /// <summary>
-        /// Convert and send a message, given the message.
-        /// </summary>
+        /// <summary>Convert and send a message, given the message.</summary>
         /// <param name="message">The message.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
-        public void ConvertAndSend(object message, Func<Message, Message> messagePostProcessor)
-        {
-            this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessor);
-        }
+        public void ConvertAndSend(object message, Func<Message, Message> messagePostProcessor) { this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessor); }
 
-        /// <summary>
-        /// Convert and send a message, given a routing key and the message.
-        /// </summary>
+        /// <summary>Convert and send a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
-        public void ConvertAndSend(string routingKey, object message, Func<Message, Message> messagePostProcessor)
-        {
-            this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor);
-        }
+        public void ConvertAndSend(string routingKey, object message, Func<Message, Message> messagePostProcessor) { this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor); }
 
-        /// <summary>
-        /// Convert and send a message, given an exchange, a routing key, and the message.
-        /// </summary>
+        /// <summary>Convert and send a message, given an exchange, a routing key, and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
@@ -351,75 +262,65 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             var messageToSend = this.GetRequiredMessageConverter().ToMessage(message, new MessageProperties());
             messageToSend = messagePostProcessor.Invoke(messageToSend);
-            this.Send(exchange, routingKey, Execute<Message>(channel => messageToSend));
+            this.Send(exchange, routingKey, this.Execute(channel => messageToSend));
         }
 
         /// <summary>
         /// Receive a message.
         /// </summary>
         /// <returns>The message.</returns>
-        public Message Receive()
-        {
-            return this.Receive(this.GetRequiredQueue());
-        }
+        public Message Receive() { return this.Receive(this.GetRequiredQueue()); }
 
-        /// <summary>
-        /// Receive a message, given the name of a queue.
-        /// </summary>
+        /// <summary>Receive a message, given the name of a queue.</summary>
         /// <param name="queueName">The queue name.</param>
         /// <returns>The message.</returns>
         public Message Receive(string queueName)
         {
-            return Execute<Message>(
+            return this.Execute(
                 channel =>
+                {
+                    var response = channel.BasicGet(queueName, !this.ChannelTransacted);
+
+                    // Response can be null is the case that there is no message on the queue.
+                    if (response != null)
                     {
-                        var response = channel.BasicGet(queueName, !this.ChannelTransacted);
-
-                        // Response can be null is the case that there is no message on the queue.
-                        if (response != null)
+                        var deliveryTag = response.DeliveryTag;
+                        if (this.ChannelLocallyTransacted(channel))
                         {
-                            var deliveryTag = response.DeliveryTag;
-                            if (ChannelLocallyTransacted(channel))
-                            {
-                                channel.BasicAck(deliveryTag, false);
-                                channel.TxCommit();
-                            }
-                            else if (this.ChannelTransacted)
-                            {
-                                // Not locally transacted but it is transacted so it
-                                // could be synchronized with an external transaction
-                                ConnectionFactoryUtils.RegisterDeliveryTag(
-                                    ConnectionFactory, channel, (long)deliveryTag);
-                            }
-
-                            var messageProps =
-                                this.messagePropertiesConverter.ToMessageProperties(
-                                    response.BasicProperties, response, encoding);
-                            messageProps.MessageCount = (int)response.MessageCount;
-                            return new Message(response.Body, messageProps);
+                            channel.BasicAck(deliveryTag, false);
+                            channel.TxCommit();
+                        }
+                        else if (this.ChannelTransacted)
+                        {
+                            // Not locally transacted but it is transacted so it
+                            // could be synchronized with an external transaction
+                            ConnectionFactoryUtils.RegisterDeliveryTag(
+                                this.ConnectionFactory, channel, (long)deliveryTag);
                         }
 
-                        return null;
-                    });
+                        var messageProps =
+                            this.messagePropertiesConverter.ToMessageProperties(
+                                response.BasicProperties, response, this.encoding);
+                        messageProps.MessageCount = (int)response.MessageCount;
+                        return new Message(response.Body, messageProps);
+                    }
+
+                    return null;
+                });
         }
 
         /// <summary>
         /// Receive and convert a message.
         /// </summary>
         /// <returns>The object.</returns>
-        public object ReceiveAndConvert()
-        {
-            return ReceiveAndConvert(this.GetRequiredQueue());
-        }
+        public object ReceiveAndConvert() { return this.ReceiveAndConvert(this.GetRequiredQueue()); }
 
-        /// <summary>
-        /// Receive and covert a message, given the name of a queue.
-        /// </summary>
+        /// <summary>Receive and covert a message, given the name of a queue.</summary>
         /// <param name="queueName">The queue name.</param>
         /// <returns>The object.</returns>
         public object ReceiveAndConvert(string queueName)
         {
-            var response = Receive(queueName);
+            var response = this.Receive(queueName);
             if (response != null)
             {
                 return this.GetRequiredMessageConverter().FromMessage(response);
@@ -428,98 +329,56 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return null;
         }
 
-        /// <summary>
-        /// Send and receive a message, given the message.
-        /// </summary>
+        /// <summary>Send and receive a message, given the message.</summary>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
-        public Message SendAndReceive(Message message)
-        {
-            return this.DoSendAndReceive(this.exchange, this.routingKey, message);
-        }
+        public Message SendAndReceive(Message message) { return this.DoSendAndReceive(this.exchange, this.routingKey, message); }
 
-        /// <summary>
-        /// Send and receive a message, given a routing key and the message.
-        /// </summary>
+        /// <summary>Send and receive a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
-        public Message SendAndReceive(string routingKey, Message message)
-        {
-            return this.DoSendAndReceive(this.exchange, routingKey, message);
-        }
+        public Message SendAndReceive(string routingKey, Message message) { return this.DoSendAndReceive(this.exchange, routingKey, message); }
 
-        /// <summary>
-        /// Send and receive a message, given an exchange, a routing key, and the message.
-        /// </summary>
+        /// <summary>Send and receive a message, given an exchange, a routing key, and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
-        public Message SendAndReceive(string exchange, string routingKey, Message message)
-        {
-            return this.DoSendAndReceive(exchange, routingKey, message);
-        }
+        public Message SendAndReceive(string exchange, string routingKey, Message message) { return this.DoSendAndReceive(exchange, routingKey, message); }
 
-        /// <summary>
-        /// Convert, send, and receive a message, given the message.
-        /// </summary>
+        /// <summary>Convert, send, and receive a message, given the message.</summary>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
-        public object ConvertSendAndReceive(object message)
-        {
-            return this.ConvertSendAndReceive(this.exchange, this.routingKey, message, null);
-        }
+        public object ConvertSendAndReceive(object message) { return this.ConvertSendAndReceive(this.exchange, this.routingKey, message, null); }
 
-        /// <summary>
-        /// Convert, send, and receive a message, given a routing key and the message.
-        /// </summary>
+        /// <summary>Convert, send, and receive a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
-        public object ConvertSendAndReceive(string routingKey, object message)
-        {
-            return this.ConvertSendAndReceive(this.exchange, routingKey, message, null);
-        }
+        public object ConvertSendAndReceive(string routingKey, object message) { return this.ConvertSendAndReceive(this.exchange, routingKey, message, null); }
 
-        /// <summary>
-        /// Convert, send, and receive a message, given an exchange, a routing key and the message.
-        /// </summary>
+        /// <summary>Convert, send, and receive a message, given an exchange, a routing key and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
-        public object ConvertSendAndReceive(string exchange, string routingKey, object message)
-        {
-            return this.ConvertSendAndReceive(exchange, routingKey, message, null);
-        }
+        public object ConvertSendAndReceive(string exchange, string routingKey, object message) { return this.ConvertSendAndReceive(exchange, routingKey, message, null); }
 
-        /// <summary>
-        /// Convert, send, and receive a message, given the message.
-        /// </summary>
+        /// <summary>Convert, send, and receive a message, given the message.</summary>
         /// <param name="message">The message to send.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
         /// <returns>The message received.</returns>
-        public object ConvertSendAndReceive(object message, Func<Message, Message> messagePostProcessor)
-        {
-            return this.ConvertSendAndReceive(this.exchange, this.routingKey, message, messagePostProcessor);
-        }
+        public object ConvertSendAndReceive(object message, Func<Message, Message> messagePostProcessor) { return this.ConvertSendAndReceive(this.exchange, this.routingKey, message, messagePostProcessor); }
 
-        /// <summary>
-        /// Convert, send, and receive a message, given a routing key and the message.
-        /// </summary>
+        /// <summary>Convert, send, and receive a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
         /// <returns>The message received.</returns>
-        public object ConvertSendAndReceive(string routingKey, object message, Func<Message, Message> messagePostProcessor)
-        {
-            return this.ConvertSendAndReceive(this.exchange, routingKey, message, messagePostProcessor);
-        }
+        public object ConvertSendAndReceive(string routingKey, object message, Func<Message, Message> messagePostProcessor) { return this.ConvertSendAndReceive(this.exchange, routingKey, message, messagePostProcessor); }
 
-        /// <summary>
-        /// Convert, send, and receive a message, given an exchange, a routing key and the message.
-        /// </summary>
+        /// <summary>Convert, send, and receive a message, given an exchange, a routing key and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
@@ -543,48 +402,46 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return this.GetRequiredMessageConverter().FromMessage(replyMessage);
         }
 
-        /// <summary>
-        /// Do the send and receive operation, given an exchange, a routing key and the message.
-        /// </summary>
+        /// <summary>Do the send and receive operation, given an exchange, a routing key and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
         protected Message DoSendAndReceive(string exchange, string routingKey, Message message)
         {
-            var replyMessage = this.Execute<Message>(
+            var replyMessage = this.Execute(
                 delegate(IModel channel)
+                {
+                    var replyHandoff = new SynchronousQueue<Message>();
+
+                    AssertUtils.IsTrue(
+                        message.MessageProperties.ReplyTo == null, 
+                        "Send-and-receive methods can only be used if the Message does not already have a replyTo property.");
+                    var queueDeclaration = channel.QueueDeclare();
+                    var replyTo = queueDeclaration.QueueName;
+                    message.MessageProperties.ReplyTo = replyTo;
+
+                    var noAck = false;
+                    var consumerTag = Guid.NewGuid().ToString();
+                    var noLocal = true;
+                    var exclusive = true;
+                    var consumer = new AdminDefaultBasicConsumer(channel, replyHandoff, this.encoding, this.messagePropertiesConverter);
+                    channel.BasicConsume(replyTo, noAck, consumerTag, noLocal, exclusive, null, consumer);
+                    this.DoSend(channel, exchange, routingKey, message);
+                    Message reply;
+
+                    if (this.replyTimeout < 0)
                     {
-                        var replyHandoff = new SynchronousQueue<Message>();
+                        reply = replyHandoff.Take();
+                    }
+                    else
+                    {
+                        replyHandoff.Poll(new TimeSpan(0, 0, 0, 0, (int)this.replyTimeout), out reply);
+                    }
 
-                        AssertUtils.IsTrue(
-                            message.MessageProperties.ReplyTo == null,
-                            "Send-and-receive methods can only be used if the Message does not already have a replyTo property.");
-                        var queueDeclaration = channel.QueueDeclare();
-                        var replyTo = queueDeclaration.QueueName;
-                        message.MessageProperties.ReplyTo = replyTo;
-
-                        var noAck = false;
-                        var consumerTag = Guid.NewGuid().ToString();
-                        var noLocal = true;
-                        var exclusive = true;
-                        var consumer = new AdminDefaultBasicConsumer(channel, replyHandoff, this.encoding, this.messagePropertiesConverter);
-                        channel.BasicConsume(replyTo, noAck, consumerTag, noLocal, exclusive, null, consumer);
-                        this.DoSend(channel, exchange, routingKey, message);
-                        Message reply;
-
-                        if (this.replyTimeout < 0)
-                        {
-                            reply = replyHandoff.Take();
-                        }
-                        else
-                        {
-                            replyHandoff.Poll(new TimeSpan(0, 0, 0, 0, (int)this.replyTimeout), out reply);
-                        }
-
-                        channel.BasicCancel(consumerTag);
-                        return reply;
-                    });
+                    channel.BasicCancel(consumerTag);
+                    return reply;
+                });
 
             return replyMessage;
         }
@@ -593,16 +450,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         #region Implementation of IRabbitOperations
 
-        /// <summary>
-        /// Execute an action.
-        /// </summary>
+        /// <summary>Execute an action.</summary>
         /// <typeparam name="T">Type T</typeparam>
         /// <param name="action">The action.</param>
         /// <returns>An object of Type T</returns>
         public T Execute<T>(ChannelCallbackDelegate<T> action)
         {
             AssertUtils.ArgumentNotNull(action, "Callback object must not be null");
-            var resourceHolder = GetTransactionalResourceHolder();
+            var resourceHolder = this.GetTransactionalResourceHolder();
             var channel = resourceHolder.Channel;
 
             try
@@ -620,7 +475,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 {
                     resourceHolder.RollbackAll();
                 }
-                throw ConvertRabbitAccessException(ex);
+
+                throw this.ConvertRabbitAccessException(ex);
             }
             finally
             {
@@ -628,27 +484,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             }
         }
 
-        /// <summary>
-        /// Execute an action.
-        /// </summary>
+        /// <summary>Execute an action.</summary>
         /// <typeparam name="T">Type T</typeparam>
         /// <param name="action">The action.</param>
         /// <returns>An object of Type T</returns>
-        public T Execute<T>(IChannelCallback<T> action)
-        {
-            return Execute<T>(action.DoInRabbit);
-        }
-
+        public T Execute<T>(IChannelCallback<T> action) { return Execute(action.DoInRabbit); }
         #endregion
 
-        /// <summary>
-        /// Do the send operation.
-        /// </summary>
+        /// <summary>Do the send operation.</summary>
         /// <param name="channel">The channel.</param>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
-        protected void DoSend(RabbitMQ.Client.IModel channel, string exchange, string routingKey, Message message)
+        protected void DoSend(IModel channel, string exchange, string routingKey, Message message)
         {
             if (logger.IsDebugEnabled)
             {
@@ -677,15 +525,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             }
         }
 
-        /// <summary>
-        /// Flag indicating whether the channel is locally transacted.
-        /// </summary>
+        /// <summary>Flag indicating whether the channel is locally transacted.</summary>
         /// <param name="channel">The channel.</param>
         /// <returns>True if locally transacted, else false.</returns>
-        protected bool ChannelLocallyTransacted(RabbitMQ.Client.IModel channel)
-        {
-            return this.ChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
-        }
+        protected bool ChannelLocallyTransacted(IModel channel) { return this.ChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, this.ConnectionFactory); }
 
         /// <summary>
         /// Get the required message converter.
@@ -738,9 +581,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// </summary>
         private readonly IMessagePropertiesConverter messagePropertiesConverter;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AdminDefaultBasicConsumer"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="AdminDefaultBasicConsumer"/> class.</summary>
         /// <param name="channel">The channel.</param>
         /// <param name="replyHandoff">The reply handoff.</param>
         /// <param name="encoding">The encoding.</param>
@@ -752,9 +593,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             this.messagePropertiesConverter = messagePropertiesConverter;
         }
 
-        /// <summary>
-        /// Handle delivery.
-        /// </summary>
+        /// <summary>Handle delivery.</summary>
         /// <param name="consumerTag">The consumer tag.</param>
         /// <param name="envelope">The envelope.</param>
         /// <param name="properties">The properties.</param>
@@ -773,9 +612,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             }
         }
 
-        /// <summary>
-        /// Handle basic deliver.
-        /// </summary>
+        /// <summary>Handle basic deliver.</summary>
         /// <param name="consumerTag">The consumer tag.</param>
         /// <param name="deliveryTag">The delivery tag.</param>
         /// <param name="redelivered">The redelivered.</param>

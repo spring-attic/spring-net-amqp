@@ -1,28 +1,24 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitGatewaySupport.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-#region License
-
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using Common.Logging;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Objects.Factory;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Core.Support
 {
@@ -44,7 +40,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core.Support
         /// The logger.
         /// </summary>
         private readonly ILog logger = LogManager.GetLogger(typeof(RabbitGatewaySupport));
-
         #endregion
 
         /// <summary>
@@ -57,40 +52,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Core.Support
         /// Will automatically create a NmsTemplate for the given ConnectionFactory.
         /// </summary>
         /// <value>The connection factory.</value>
-        public IConnectionFactory ConnectionFactory
-        {
-            get
-            {
-                return this.rabbitTemplate != null ? this.rabbitTemplate.ConnectionFactory : null;
-            }
-
-            set
-            {
-                this.rabbitTemplate = this.CreateRabbitTemplate(value);
-            }
-        }
+        public IConnectionFactory ConnectionFactory { get { return this.rabbitTemplate != null ? this.rabbitTemplate.ConnectionFactory : null; } set { this.rabbitTemplate = this.CreateRabbitTemplate(value); } }
 
         /// <summary>
         /// Gets or sets the Rabbit template for the gateway.
         /// </summary>
         /// <value>The Tabbity template.</value>
-        public RabbitTemplate RabbitTemplate
-        {
-            get { return this.rabbitTemplate; }
-            set { this.rabbitTemplate = value; }
-        }
+        public RabbitTemplate RabbitTemplate { get { return this.rabbitTemplate; } set { this.rabbitTemplate = value; } }
 
-        /// <summary>
-        /// Creates a RabbitTemplate for the given ConnectionFactory.
-        /// </summary>
+        /// <summary>Creates a RabbitTemplate for the given ConnectionFactory.</summary>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <returns>The rabbit template.</returns>
         /// <remarks>Only invoked if populating the gateway with a ConnectionFactory reference.
         /// Can be overridden in subclasses to provide a different RabbitTemplate instance</remarks>
-        protected virtual RabbitTemplate CreateRabbitTemplate(IConnectionFactory connectionFactory)
-        {
-            return new RabbitTemplate(connectionFactory);
-        }
+        protected virtual RabbitTemplate CreateRabbitTemplate(IConnectionFactory connectionFactory) { return new RabbitTemplate(connectionFactory); }
 
         #region Implementation of IInitializingObject
 
@@ -120,8 +95,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core.Support
         /// Subclasses can override this for custom initialization behavior.
         /// Gets called after population of this instance's properties.
         /// </summary>
-        protected virtual void InitGateway()
-        {
-        }
+        protected virtual void InitGateway() { }
     }
 }

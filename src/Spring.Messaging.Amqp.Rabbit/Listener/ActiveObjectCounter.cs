@@ -1,24 +1,31 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ActiveObjectCounter.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-
 using Common.Logging;
-
-using Spring.Messaging.Amqp.Rabbit.Support;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
-    /// <summary>
-    /// An active object counter.
-    /// </summary>
-    /// <typeparam name="T">
-    /// Type T.
-    /// </typeparam>
-    /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <summary>An active object counter.</summary>
+    /// <typeparam name="T">Type T.</typeparam>
+    /// <author>Dave Syer</author><author>Joe Fitzgerald</author>
     public class ActiveObjectCounter<T>
     {
         /// <summary>
@@ -31,24 +38,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         private readonly ConcurrentDictionary<T, CountdownEvent> locks = new ConcurrentDictionary<T, CountdownEvent>();
 
-        /// <summary>
-        /// Add the object.
-        /// </summary>
-        /// <param name="obj">
-        /// The obj.
-        /// </param>
+        /// <summary>Add the object.</summary>
+        /// <param name="obj">The obj.</param>
         public void Add(T obj)
         {
             var latchLock = new CountdownEvent(1);
             this.locks.AddOrUpdate(obj, latchLock, (key, oldValue) => latchLock);
         }
 
-        /// <summary>
-        /// Release the object.
-        /// </summary>
-        /// <param name="obj">
-        /// The obj.
-        /// </param>
+        /// <summary>Release the object.</summary>
+        /// <param name="obj">The obj.</param>
         public void Release(T obj)
         {
             CountdownEvent remove = null;
@@ -59,6 +58,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             catch (Exception ex)
             {
                 Logger.Error("Could not remove from locks.", ex);
+
                 // throw;
             }
 
@@ -71,15 +71,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
-        /// <summary>
-        /// Await action.
-        /// </summary>
-        /// <param name="timeout">
-        /// The timeout.
-        /// </param>
-        /// <returns>
-        /// True if timed out, else false.
-        /// </returns>
+        /// <summary>Await action.</summary>
+        /// <param name="timeout">The timeout.</param>
+        /// <returns>True if timed out, else false.</returns>
         public bool Await(TimeSpan timeout)
         {
             var t0 = DateTime.Now;
@@ -104,7 +98,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     {
                         Logger.Error("Error occurred getting object.", ex);
                     }
-                    
+
                     if (latchLock == null)
                     {
                         continue;
@@ -136,17 +130,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <returns>
         /// The count.
         /// </returns>
-        public int GetCount()
-        {
-            return this.locks.Count;
-        }
+        public int GetCount() { return this.locks.Count; }
 
         /// <summary>
         /// Dispose the locks.
         /// </summary>
-        public void Dispose()
-        {
-            this.locks.Clear();
-        }
+        public void Dispose() { this.locks.Clear(); }
     }
 }

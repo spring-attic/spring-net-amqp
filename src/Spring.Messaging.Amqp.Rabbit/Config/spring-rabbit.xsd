@@ -1,11 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns="http://www.springframework.net/schema/rabbit" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:vs="http://schemas.microsoft.com/Visual-Studio-Intellisense"
-  xmlns:objects="http://www.springframework.net" targetNamespace="http://www.springframework.net/schema/rabbit"
-  elementFormDefault="qualified" attributeFormDefault="unqualified"
-  vs:friendlyname="Spring AMQP for .NET Configuration" vs:ishtmlschema="false" vs:iscasesensitive="true" vs:requireattributequotes="true" vs:defaultnamespacequalifier="" vs:defaultnsprefix="">
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-  <xsd:import namespace="http://www.springframework.net"/>
+<xsd:schema xmlns="http://www.springframework.net/schema/rabbit" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:vs="http://schemas.microsoft.com/Visual-Studio-Intellisense" xmlns:objects="http://www.springframework.net" targetNamespace="http://www.springframework.net/schema/rabbit" elementFormDefault="qualified" attributeFormDefault="unqualified" vs:friendlyname="Spring AMQP for .NET Configuration" vs:ishtmlschema="false" vs:iscasesensitive="true" vs:requireattributequotes="true" vs:defaultnamespacequalifier="" vs:defaultnsprefix="">
+
+  <xsd:import namespace="http://www.springframework.net" />
 
   <xsd:element name="queue">
     <xsd:annotation>
@@ -397,7 +394,7 @@
         <xsd:attribute name="ref" use="optional">
           <xsd:annotation>
             <xsd:documentation>
-            <!-- source="java:java.util.Map" -->
+              <!-- source="java:java.util.Map" -->
               <![CDATA[
             The object name of the Map to pass to the broker when this component is declared.
             ]]>
@@ -914,7 +911,6 @@
       </xsd:attribute>
     </xsd:complexType>
   </xsd:element>
-
 
 
 </xsd:schema>

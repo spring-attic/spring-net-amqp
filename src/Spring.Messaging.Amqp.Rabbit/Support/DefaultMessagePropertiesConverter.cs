@@ -1,9 +1,26 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DefaultMessagePropertiesConverter.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Support
 {
@@ -14,14 +31,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// <author>Joe Fitzgerald</author>
     public class DefaultMessagePropertiesConverter : IMessagePropertiesConverter
     {
-        /// <summary>
-        /// Converts from BasicProperties to MessageProperties.
-        /// </summary>
+        /// <summary>Converts from BasicProperties to MessageProperties.</summary>
         /// <param name="source">The source.</param>
         /// <param name="envelope">The envelope.</param>
         /// <param name="charset">The charset.</param>
         /// <returns>The message properties.</returns>
-        public Amqp.Core.MessageProperties ToMessageProperties(RabbitMQ.Client.IBasicProperties source, RabbitMQ.Client.BasicGetResult envelope, string charset)
+        public MessageProperties ToMessageProperties(IBasicProperties source, BasicGetResult envelope, string charset)
         {
             var target = new MessageProperties();
             var headers = source.Headers;
@@ -37,7 +52,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
                         value = this.convertLongString((LongString) value, charset);
                     }
                     */
-
                     target.Headers[(string)entry.Key] = value;
                 }
             }
@@ -83,14 +97,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             return target;
         }
 
-        /// <summary>
-        /// Converts from message properties to basic properties.
-        /// </summary>
+        /// <summary>Converts from message properties to basic properties.</summary>
         /// <param name="channel">The channel.</param>
         /// <param name="source">The source.</param>
         /// <param name="charset">The charset.</param>
         /// <returns>The basic properties.</returns>
-        public RabbitMQ.Client.IBasicProperties FromMessageProperties(RabbitMQ.Client.IModel channel, Amqp.Core.MessageProperties source, string charset)
+        public IBasicProperties FromMessageProperties(IModel channel, MessageProperties source, string charset)
         {
             var target = channel.CreateBasicProperties();
 
@@ -156,15 +168,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
 
             if (source.ReplyTo != null)
             {
-                target.ReplyTo = source.ReplyTo.ToString();
+                target.ReplyTo = source.ReplyTo;
             }
 
             return target;
         }
 
-        /// <summary>
-        /// Converts the headers if necessary.
-        /// </summary>
+        /// <summary>Converts the headers if necessary.</summary>
         /// <param name="headers">The headers.</param>
         /// <returns>The converted headers.</returns>
         private IDictionary ConvertHeadersIfNecessary(IDictionary<string, object> headers)
@@ -177,34 +187,31 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             var writableHeaders = new Dictionary<string, object>();
             foreach (var entry in headers)
             {
-                writableHeaders.Add((string)entry.Key, this.ConvertHeaderValueIfNecessary(entry.Value));
+                writableHeaders.Add(entry.Key, this.ConvertHeaderValueIfNecessary(entry.Value));
             }
 
             return writableHeaders;
         }
 
-        /// <summary>
-        /// Converts the header value if necessary.
-        /// </summary>
+        /// <summary>Converts the header value if necessary.</summary>
         /// <param name="value">The value.</param>
         /// <returns>The converted value.</returns>
         private object ConvertHeaderValueIfNecessary(object value)
         {
             var valid = (value is string)
-                         || (value is byte[])
-                         || (value is bool)
-
-                         // || (value is LongString)
-                         || (value is int)
-                         || (value is long)
-                         || (value is float)
-                         || (value is double)
-                         || (value is decimal) // BigDecimal doesn't exist...
-                         || (value is short)
-                         || (value is byte)
-                         || (value is DateTime)
-                         || (value is IList)
-                         || (value is IDictionary);
+                        || (value is byte[])
+                        || (value is bool)
+                        // || (value is LongString)
+                        || (value is int)
+                        || (value is long)
+                        || (value is float)
+                        || (value is double)
+                        || (value is decimal) // BigDecimal doesn't exist...
+                        || (value is short)
+                        || (value is byte)
+                        || (value is DateTime)
+                        || (value is IList)
+                        || (value is IDictionary);
 
             if (!valid && value != null)
             {

@@ -1,16 +1,28 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DirectExchangeParser.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
-
 using Spring.Messaging.Amqp.Core;
 using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Config
 {
@@ -19,25 +31,32 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// </summary>
     public class DirectExchangeParser : AbstractExchangeParser
     {
-        private static readonly String BINDING_KEY_ATTR = "key";
+        private static readonly string BINDING_KEY_ATTR = "key";
 
-	    protected override Type GetObjectType(XmlElement element) 
-        {
-		    return typeof(DirectExchange);
-	    }
-        
+        /// <summary>The get object type.</summary>
+        /// <param name="element">The element.</param>
+        /// <returns>The System.Type.</returns>
+        protected override Type GetObjectType(XmlElement element) { return typeof(DirectExchange); }
+
+        /// <summary>The parse binding.</summary>
+        /// <param name="exchangeName">The exchange name.</param>
+        /// <param name="binding">The binding.</param>
+        /// <param name="parserContext">The parser context.</param>
+        /// <returns>The Spring.Objects.Factory.Support.AbstractObjectDefinition.</returns>
         protected override AbstractObjectDefinition ParseBinding(string exchangeName, XmlElement binding, ParserContext parserContext)
         {
             var builder = ObjectDefinitionBuilder.GenericObjectDefinition(typeof(BindingFactoryObject));
-		    builder.AddPropertyReference("DestinationQueue", binding.GetAttribute(BINDING_QUEUE_ATTR));
-		    builder.AddPropertyValue("Exchange", new TypedStringValue(exchangeName));
-		    String bindingKey = binding.GetAttribute(BINDING_KEY_ATTR);
-		    if (!StringUtils.HasText(bindingKey)) {
-			    bindingKey = "";
-		    }
-		    builder.AddPropertyValue("RoutingKey", new TypedStringValue(bindingKey));
-		    builder.AddPropertyValue("Arguments", new Hashtable());
-		    return builder.ObjectDefinition;
+            builder.AddPropertyReference("DestinationQueue", binding.GetAttribute(BINDING_QUEUE_ATTR));
+            builder.AddPropertyValue("Exchange", new TypedStringValue(exchangeName));
+            string bindingKey = binding.GetAttribute(BINDING_KEY_ATTR);
+            if (!StringUtils.HasText(bindingKey))
+            {
+                bindingKey = string.Empty;
+            }
+
+            builder.AddPropertyValue("RoutingKey", new TypedStringValue(bindingKey));
+            builder.AddPropertyValue("Arguments", new Hashtable());
+            return builder.ObjectDefinition;
         }
     }
 }

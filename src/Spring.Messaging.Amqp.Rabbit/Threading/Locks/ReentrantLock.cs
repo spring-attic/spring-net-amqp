@@ -1,29 +1,26 @@
-﻿#region License
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ReentrantLock.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright (C) 2002-2010 the original author or authors.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
 using Spring.Threading.Helpers;
+#endregion
 
 namespace Spring.Threading.Locks
 {
@@ -115,79 +112,88 @@ namespace Spring.Threading.Locks
         [Serializable]
         private abstract class Sync
         {
-            [NonSerialized]
-            protected Thread _owner;
-            [NonSerialized]
-            protected int _holds;
+            [NonSerialized] protected Thread _owner;
+            [NonSerialized] protected int _holds;
 
-            internal Thread Owner
-            {
-                get { lock (this) return _owner; }
-            }
+            internal Thread Owner { get { lock (this) return this._owner; } }
 
-            public int HoldCount
-            {
-                get { lock (this) return IsHeldByCurrentThread ? _holds : 0; }
-            }
+            /// <summary>Gets the hold count.</summary>
+            public int HoldCount { get { lock (this) return this.IsHeldByCurrentThread ? this._holds : 0; } }
 
-            public bool IsHeldByCurrentThread
-            {
-                get { lock (this) return Thread.CurrentThread == _owner; }
-            }
+            /// <summary>Gets a value indicating whether is held by current thread.</summary>
+            public bool IsHeldByCurrentThread { get { lock (this) return Thread.CurrentThread == this._owner; } }
 
-            public bool IsLocked
-            {
-                get { lock (this) return _owner != null; }
-            }
+            /// <summary>Gets a value indicating whether is locked.</summary>
+            public bool IsLocked { get { lock (this) return this._owner != null; } }
 
+            /// <summary>The try lock.</summary>
+            /// <returns>The System.Boolean.</returns>
             public bool TryLock()
             {
                 Thread caller = Thread.CurrentThread;
-                lock (this) return GetHold(caller);
+                lock (this) return this.GetHold(caller);
             }
 
-            public virtual bool HasQueuedThreads
-            {
-                get { throw new NotSupportedException("Use FAIR version"); }
-            }
+            /// <summary>Gets a value indicating whether has queued threads.</summary>
+            /// <exception cref="NotSupportedException"></exception>
+            public virtual bool HasQueuedThreads { get { throw new NotSupportedException("Use FAIR version"); } }
 
-            public virtual int QueueLength
-            {
-                get { throw new NotSupportedException("Use FAIR version"); }
-            }
+            /// <summary>Gets the queue length.</summary>
+            /// <exception cref="NotSupportedException"></exception>
+            public virtual int QueueLength { get { throw new NotSupportedException("Use FAIR version"); } }
 
-            public virtual ICollection<Thread> QueuedThreads
-            {
-                get { throw new NotSupportedException("Use FAIR version"); }
-            }
+            /// <summary>Gets the queued threads.</summary>
+            /// <exception cref="NotSupportedException"></exception>
+            public virtual ICollection<Thread> QueuedThreads { get { throw new NotSupportedException("Use FAIR version"); } }
 
-            public virtual bool IsQueued(Thread thread)
-            {
-                throw new NotSupportedException("Use FAIR version");
-            }
+            /// <summary>The is queued.</summary>
+            /// <param name="thread">The thread.</param>
+            /// <returns>The System.Boolean.</returns>
+            /// <exception cref="NotSupportedException"></exception>
+            public virtual bool IsQueued(Thread thread) { throw new NotSupportedException("Use FAIR version"); }
 
+            /// <summary>The lock.</summary>
             public abstract void Lock();
+
+            /// <summary>Gets a value indicating whether is fair.</summary>
             public abstract bool IsFair { get; }
+
+            /// <summary>The lock interruptibly.</summary>
             public abstract void LockInterruptibly();
+
+            /// <summary>The try lock.</summary>
+            /// <param name="timespan">The timespan.</param>
+            /// <returns>The System.Boolean.</returns>
             public abstract bool TryLock(TimeSpan timespan);
+
+            /// <summary>The unlock.</summary>
             public abstract void Unlock();
 
+            /// <summary>The get hold.</summary>
+            /// <param name="caller">The caller.</param>
+            /// <returns>The System.Boolean.</returns>
+            /// <exception cref="SystemException"></exception>
             protected bool GetHold(Thread caller)
             {
-                if (_owner == null)
+                if (this._owner == null)
                 {
-                    _owner = caller;
-                    _holds = 1;
+                    this._owner = caller;
+                    this._holds = 1;
                     return true;
                 }
-                if (caller == _owner)
+
+                if (caller == this._owner)
                 {
-                    int holds = _holds;
+                    int holds = this._holds;
                     if (++holds < 0)
+                    {
                         throw new SystemException("Maximum lock count exceeded");
-                    _holds = holds;
+                    }
+
+                    this._holds = holds;
                     return true;
                 }
+
                 return false;
             }
         }
@@ -195,10 +201,8 @@ namespace Spring.Threading.Locks
         [Serializable]
         private sealed class NonfairSync : Sync
         {
-            public override bool IsFair
-            {
-                get { return false; }
-            }
+            /// <summary>Gets a value indicating whether is fair.</summary>
+            public override bool IsFair { get { return false; } }
 
             /// <summary>
             /// Performs lock.  Try immediate barge, backing up to normal acquire on failure.
@@ -208,7 +212,11 @@ namespace Spring.Threading.Locks
                 Thread caller = Thread.CurrentThread;
                 lock (this)
                 {
-                    if (GetHold(caller)) return;
+                    if (this.GetHold(caller))
+                    {
+                        return;
+                    }
+
                     bool wasInterrupted = false;
                     try
                     {
@@ -221,96 +229,131 @@ namespace Spring.Threading.Locks
                             catch (ThreadInterruptedException)
                             {
                                 wasInterrupted = true;
+
                                 // no need to notify; if we were signalled, we
                                 // will act as signalled, ignoring the
                                 // interruption
                             }
-                            if (_owner == null)
+
+                            if (this._owner == null)
                             {
-                                _owner = caller;
-                                _holds = 1;
+                                this._owner = caller;
+                                this._holds = 1;
                                 return;
                             }
                         }
                     }
                     finally
                     {
-                        if (wasInterrupted) Thread.CurrentThread.Interrupt();
+                        if (wasInterrupted)
+                        {
+                            Thread.CurrentThread.Interrupt();
+                        }
                     }
                 }
             }
 
-
+            /// <summary>The lock interruptibly.</summary>
+            /// <exception cref="ThreadInterruptedException"></exception>
             public override void LockInterruptibly()
             {
                 Thread caller = Thread.CurrentThread;
                 lock (this)
                 {
-                    if (GetHold(caller)) return;
+                    if (this.GetHold(caller))
+                    {
+                        return;
+                    }
+
                     try
                     {
                         do
                         {
                             Monitor.Wait(this);
-                        } while (_owner != null);
-                        _owner = caller;
-                        _holds = 1;
+                        }
+ while (this._owner != null);
+                        this._owner = caller;
+                        this._holds = 1;
                         return;
                     }
                     catch (ThreadInterruptedException e)
                     {
-                        if (_owner == null) Monitor.Pulse(this);
-                        throw SystemExtensions.PreserveStackTrace(e);
+                        if (this._owner == null)
+                        {
+                            Monitor.Pulse(this);
+                        }
+
+                        throw e.PreserveStackTrace();
                     }
                 }
             }
 
+            /// <summary>The try lock.</summary>
+            /// <param name="durationToWait">The duration to wait.</param>
+            /// <returns>The System.Boolean.</returns>
+            /// <exception cref="ThreadInterruptedException"></exception>
             public override bool TryLock(TimeSpan durationToWait)
             {
                 Thread caller = Thread.CurrentThread;
 
                 lock (this)
                 {
-                    if (GetHold(caller)) return true;
+                    if (this.GetHold(caller))
+                    {
+                        return true;
+                    }
+
                     if (durationToWait.Ticks <= 0)
+                    {
                         return false;
+                    }
+
                     DateTime deadline = DateTime.UtcNow.Add(durationToWait);
                     try
                     {
-                        for (; ; )
+                        for (;;)
                         {
                             Monitor.Wait(this, durationToWait);
-                            if (_owner == null)
+                            if (this._owner == null)
                             {
-                                _owner = caller;
-                                _holds = 1;
+                                this._owner = caller;
+                                this._holds = 1;
                                 return true;
                             }
+
                             durationToWait = deadline.Subtract(DateTime.UtcNow);
                             if (durationToWait.Ticks <= 0)
+                            {
                                 return false;
+                            }
                         }
                     }
                     catch (ThreadInterruptedException e)
                     {
-                        if (_owner == null) Monitor.Pulse(this);
-                        throw SystemExtensions.PreserveStackTrace(e);
+                        if (this._owner == null)
+                        {
+                            Monitor.Pulse(this);
+                        }
+
+                        throw e.PreserveStackTrace();
                     }
                 }
             }
 
+            /// <summary>The unlock.</summary>
+            /// <exception cref="SynchronizationLockException"></exception>
             public override void Unlock()
             {
                 lock (this)
                 {
-                    if (Thread.CurrentThread != _owner)
+                    if (Thread.CurrentThread != this._owner)
                     {
                         throw new SynchronizationLockException("Not owner");
                     }
 
-                    if (--_holds == 0)
+                    if (--this._holds == 0)
                     {
-                        _owner = null;
+                        this._owner = null;
                         Monitor.Pulse(this);
                     }
                 }
@@ -320,65 +363,87 @@ namespace Spring.Threading.Locks
         [Serializable]
         private sealed class FairSync : Sync, IQueuedSync, IDeserializationCallback
         {
-            [NonSerialized]
-            private IWaitQueue _wq = new FIFOWaitQueue();
+            [NonSerialized] private IWaitQueue _wq = new FIFOWaitQueue();
 
-            public override bool IsFair
-            {
-                get { return true; }
-            }
+            /// <summary>Gets a value indicating whether is fair.</summary>
+            public override bool IsFair { get { return true; } }
 
+            /// <summary>The recheck.</summary>
+            /// <param name="node">The node.</param>
+            /// <returns>The System.Boolean.</returns>
             public bool Recheck(WaitNode node)
             {
                 Thread caller = Thread.CurrentThread;
                 lock (this)
                 {
-                    if (GetHold(caller)) return true;
-                    _wq.Enqueue(node);
+                    if (this.GetHold(caller))
+                    {
+                        return true;
+                    }
+
+                    this._wq.Enqueue(node);
                     return false;
                 }
             }
 
+            /// <summary>The take over.</summary>
+            /// <param name="node">The node.</param>
             public void TakeOver(WaitNode node)
             {
                 lock (this)
                 {
-                    Debug.Assert(_holds == 1 && _owner == Thread.CurrentThread);
-                    _owner = node.Owner;
+                    Debug.Assert(this._holds == 1 && this._owner == Thread.CurrentThread);
+                    this._owner = node.Owner;
                 }
             }
 
+            /// <summary>The lock.</summary>
             public override void Lock()
             {
                 Thread caller = Thread.CurrentThread;
                 lock (this)
                 {
-                    if (GetHold(caller)) return;
+                    if (this.GetHold(caller))
+                    {
+                        return;
+                    }
                 }
-                WaitNode n = new WaitNode();
+
+                var n = new WaitNode();
                 n.DoWaitUninterruptibly(this);
             }
 
-
+            /// <summary>The lock interruptibly.</summary>
             public override void LockInterruptibly()
             {
                 Thread caller = Thread.CurrentThread;
                 lock (this)
                 {
-                    if (GetHold(caller)) return;
+                    if (this.GetHold(caller))
+                    {
+                        return;
+                    }
                 }
-                WaitNode n = new WaitNode();
+
+                var n = new WaitNode();
                 n.DoWait(this);
             }
 
+            /// <summary>The try lock.</summary>
+            /// <param name="timespan">The timespan.</param>
+            /// <returns>The System.Boolean.</returns>
             public override bool TryLock(TimeSpan timespan)
             {
                 Thread caller = Thread.CurrentThread;
                 lock (this)
                 {
-                    if (GetHold(caller)) return true;
+                    if (this.GetHold(caller))
+                    {
+                        return true;
+                    }
                 }
-                WaitNode n = new WaitNode();
+
+                var n = new WaitNode();
                 return n.DoTimedWait(this, timespan);
             }
 
@@ -386,90 +451,107 @@ namespace Spring.Threading.Locks
             {
                 lock (this)
                 {
-                    if (caller != _owner)
+                    if (caller != this._owner)
                     {
                         throw new SynchronizationLockException("Not owner");
                     }
-                    if (_holds >= 2) // current thread will keep the lock
+
+                    if (this._holds >= 2)
                     {
-                        --_holds;
+                        // current thread will keep the lock
+                        --this._holds;
                         return null;
                     }
-                    WaitNode w = _wq.Dequeue();
-                    if (w == null) // if none, clear for new arrivals
+
+                    WaitNode w = this._wq.Dequeue();
+                    if (w == null)
                     {
-                        _owner = null;
-                        _holds = 0;
+                        // if none, clear for new arrivals
+                        this._owner = null;
+                        this._holds = 0;
                     }
+
                     return w;
                 }
             }
 
+            /// <summary>The unlock.</summary>
             public override void Unlock()
             {
                 Thread caller = Thread.CurrentThread;
-                for (; ; )
+                for (;;)
                 {
-                    WaitNode w = GetSignallee(caller);
-                    if (w == null) return; // no one to signal
-                    if (w.Signal(this)) return; // notify if still waiting, else skip
+                    WaitNode w = this.GetSignallee(caller);
+                    if (w == null)
+                    {
+                        return; // no one to signal
+                    }
+
+                    if (w.Signal(this))
+                    {
+                        return; // notify if still waiting, else skip
+                    }
                 }
             }
 
+            /// <summary>Gets a value indicating whether has queued threads.</summary>
             public override bool HasQueuedThreads
             {
                 get
                 {
                     lock (this)
                     {
-                        return _wq.HasNodes;
+                        return this._wq.HasNodes;
                     }
                 }
             }
 
+            /// <summary>Gets the queue length.</summary>
             public override int QueueLength
             {
                 get
                 {
                     lock (this)
                     {
-                        return _wq.Length;
+                        return this._wq.Length;
                     }
                 }
             }
 
+            /// <summary>Gets the queued threads.</summary>
             public override ICollection<Thread> QueuedThreads
             {
                 get
                 {
                     lock (this)
                     {
-                        return _wq.WaitingThreads;
+                        return this._wq.WaitingThreads;
                     }
                 }
             }
 
+            /// <summary>The is queued.</summary>
+            /// <param name="thread">The thread.</param>
+            /// <returns>The System.Boolean.</returns>
             public override bool IsQueued(Thread thread)
             {
                 lock (this)
                 {
-                    return _wq.IsWaiting(thread);
+                    return this._wq.IsWaiting(thread);
                 }
             }
 
             #region IDeserializationCallback Members
-
             void IDeserializationCallback.OnDeserialization(object sender)
             {
                 lock (this)
                 {
-                    _wq = new FIFOWaitQueue();
+                    this._wq = new FIFOWaitQueue();
                 }
             }
 
             #endregion
         }
-
         #endregion
 
         private readonly Sync sync;
@@ -507,11 +589,7 @@ namespace Spring.Threading.Locks
         /// The number of holds on this lock by the current thread,
         /// or zero if this lock is not held by the current thread.
         /// </returns>
-        public virtual int HoldCount
-        {
-            get { return sync.HoldCount; }
-
-        }
+        public virtual int HoldCount { get { return this.sync.HoldCount; } }
 
         /// <summary> 
         /// Queries if this lock is held by the current thread.
@@ -557,11 +635,7 @@ namespace Spring.Threading.Locks
         /// <returns> <c>true</c> if current thread holds this lock and
         /// <c>false</c> otherwise.
         /// </returns>
-        public virtual bool IsHeldByCurrentThread
-        {
-            get { return sync.IsHeldByCurrentThread; }
-
-        }
+        public virtual bool IsHeldByCurrentThread { get { return this.sync.IsHeldByCurrentThread; } }
 
         /// <summary> 
         /// Queries if this lock is held by any thread. This method is
@@ -571,20 +645,12 @@ namespace Spring.Threading.Locks
         /// <returns> <c>true</c> if any thread holds this lock and
         /// <c>false</c> otherwise.
         /// </returns>
-        public virtual bool IsLocked
-        {
-            get { return sync.IsLocked; }
-
-        }
+        public virtual bool IsLocked { get { return this.sync.IsLocked; } }
 
         /// <summary> Returns <c>true</c> if this lock has fairness set true.</summary>
         /// <returns> <c>true</c> if this lock has fairness set true.
         /// </returns>
-        public virtual bool IsFair
-        {
-            get { return sync.IsFair; }
-
-        }
+        public virtual bool IsFair { get { return this.sync.IsFair; } }
 
         /// <summary> 
         /// Returns the thread that currently owns this lock, or
@@ -596,11 +662,7 @@ namespace Spring.Threading.Locks
         /// </summary>
         /// <returns> the owner, or <c>null</c> if not owned.
         /// </returns>
-        protected internal virtual Thread Owner
-        {
-            get { return sync.Owner; }
-
-        }
+        protected internal virtual Thread Owner { get { return this.sync.Owner; } }
 
         /// <summary> 
         /// Returns an estimate of the number of threads waiting to
@@ -612,31 +674,18 @@ namespace Spring.Threading.Locks
         /// </summary>
         /// <returns> the estimated number of threads waiting for this lock
         /// </returns>
-        public virtual int QueueLength
-        {
-            get { return sync.QueueLength; }
+        public virtual int QueueLength { get { return this.sync.QueueLength; } }
 
-        }
-
-
-        /// <summary> Creates an instance of <see cref="Spring.Threading.Locks.ReentrantLock"/>.
-        /// This is equivalent to using <tt>ReentrantLock(false)</tt>.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ReentrantLock"/> class.  Creates an instance of <see cref="Spring.Threading.Locks.ReentrantLock"/>.
+        /// This is equivalent to using <tt>ReentrantLock(false)</tt>.</summary>
         public ReentrantLock()
-            : this(false)
-        {
-        }
+            : this(false) { }
 
-        /// <summary> 
-        ///	Creates an instance of <see cref="Spring.Threading.Locks.ReentrantLock"/> with the
-        /// given fairness policy.
-        /// </summary>
-        /// <param name="fair"><c>true</c> if this lock will be fair, else <c>false</c>
-        /// </param>
-        public ReentrantLock(bool fair)
-        {
-            sync = fair ? (Sync)new FairSync() : new NonfairSync();
-        }
+        /// <summary>Initializes a new instance of the <see cref="ReentrantLock"/> class. 
+        /// 	Creates an instance of <see cref="Spring.Threading.Locks.ReentrantLock"/> with the
+        /// given fairness policy.</summary>
+        /// <param name="fair"><c>true</c> if this lock will be fair, else <c>false</c></param>
+        public ReentrantLock(bool fair) { this.sync = fair ? (Sync)new FairSync() : new NonfairSync(); }
 
         /// <summary>
         /// Acquires the lock and returns an <see cref="IDisposable"/> that
@@ -692,7 +741,7 @@ namespace Spring.Threading.Locks
         /// <seealso cref="LockInterruptibly"/>
         public virtual IDisposable Lock()
         {
-            sync.Lock();
+            this.sync.Lock();
             return this;
         }
 
@@ -821,7 +870,7 @@ namespace Spring.Threading.Locks
         /// <seealso cref="Lock"/>
         public virtual IDisposable LockInterruptibly()
         {
-            sync.LockInterruptibly();
+            this.sync.LockInterruptibly();
             return this;
         }
 
@@ -856,15 +905,11 @@ namespace Spring.Threading.Locks
         /// current thread, or the lock was already held by the current thread,
         /// <c>false</c> otherwise.
         /// </returns>
-        public virtual bool TryLock()
-        {
-            return sync.TryLock();
-        }
+        public virtual bool TryLock() { return this.sync.TryLock(); }
 
-        /// <summary> 
+        /// <summary>
         /// Acquires the lock if it is not held by another thread within the given
         /// waiting time and <see cref="System.Threading.Thread.Interrupt()"/> hasn't been called on the current thread
-        /// 
         /// <p/>
         /// Acquires the lock if it is not held by another thread and returns
         /// immediately with the value <c>true</c>, setting the lock hold count
@@ -873,65 +918,47 @@ namespace Spring.Threading.Locks
         /// are waiting for the lock. This is in contrast to the <see cref="Spring.Threading.Locks.ReentrantLock.TryLock()"/> 
         /// method. If you want a timed <see cref="Spring.Threading.Locks.ReentrantLock.TryLock()"/> that does permit barging on
         /// a fair lock then combine the timed and un-timed forms together:
-        /// 
-        /// <code>
-        /// if (lock.TryLock() || lock.TryLock(timeSpan) ) { ... }
-        /// </code>
-        /// 
+        /// <code>if (lock.TryLock() || lock.TryLock(timeSpan) ) { ... }</code>
         /// <p/>
         /// If the current thread
         /// already holds this lock then the hold count is incremented by one and
         /// the method returns <c>true</c>.
-        /// 
         /// <p/>
         /// If the lock is held by another thread then the
         /// current thread becomes disabled for thread scheduling
         /// purposes and lies dormant until one of three things happens:
-        /// 
-        /// <list type="bullet">
-        /// <item>The lock is acquired by the current thread</item>	
+        /// <list type="bullet"><item>The lock is acquired by the current thread</item>
         /// <item>Some other thread calls <see cref="System.Threading.Thread.Interrupt()"/> the current thread</item>
         /// <item>The specified waiting time elapses</item>
         /// </list>
-        /// 
         /// <p/>
         /// If the lock is acquired then the value <c>true</c> is returned and
         /// the lock hold count is set to one.
-        /// 
         /// <p/>If the current thread:
         /// <list type="bullet">
-        /// <item>has its interrupted status set on entry to this method</item>	
-        /// <item>has <see cref="System.Threading.Thread.Interrupt()"/> called on it while acquiring the lock</item>	
+        /// <item>has its interrupted status set on entry to this method</item>
+        /// <item>has <see cref="System.Threading.Thread.Interrupt()"/> called on it while acquiring the lock</item>
         /// </list>
         /// 
         /// then <see cref="System.Threading.ThreadInterruptedException"/> is thrown and the current thread's
         /// interrupted status is cleared.
-        /// 
         /// <p/>
         /// If the specified waiting time elapses then the value <c>false</c>
         /// is returned.  If the time is less than or equal to zero, the method will not wait at all.
-        /// 
         /// <p/>
         /// In this implementation, as this method is an explicit interruption
         /// point, preference is given to responding to the interrupt over normal or reentrant
         /// acquisition of the lock, and over reporting the elapse of the waiting
         /// time.
-        /// 
         /// </summary>
         /// <param name="timeSpan">the <see cref="System.TimeSpan"/> to wait for the lock</param>
-        /// <returns> <c>true</c> if the lock was free and was acquired by the
-        /// current thread, or the lock was already held by the current thread; and
-        /// <c>false</c> if the waiting time elapsed before the lock could be
-        /// acquired.
-        /// </returns>
-        /// <throws>  InterruptedException if the current thread is interrupted </throws>
-        /// <throws>  NullPointerException if unit is null </throws>
+        /// <returns><c>true</c> if the lock was free and was acquired by the
+        /// current thread, or the lock was already held by the current thread; and<c>false</c> if the waiting time elapsed before the lock could be
+        /// acquired.</returns>
+        /// <throws>  InterruptedException if the current thread is interrupted </throws><throws>  NullPointerException if unit is null </throws>
         /// <exception cref="System.NullReferenceException">If <paramref name="timeSpan"/> is null</exception>
         /// <exception cref="System.Threading.ThreadInterruptedException">If the current thread is interrupted</exception>
-        public virtual bool TryLock(TimeSpan timeSpan)
-        {
-            return sync.TryLock(timeSpan);
-        }
+        public virtual bool TryLock(TimeSpan timeSpan) { return this.sync.TryLock(timeSpan); }
 
         /// <summary> 
         /// Attempts to release this lock.
@@ -942,10 +969,7 @@ namespace Spring.Threading.Locks
         /// current thread is not the holder of this lock then <see cref="System.InvalidOperationException"/> is thrown.
         /// </summary>
         /// <exception cref="System.Threading.SynchronizationLockException">if the current thread does not hold this lock.</exception>
-        public virtual void Unlock()
-        {
-            sync.Unlock();
-        }
+        public virtual void Unlock() { this.sync.Unlock(); }
 
         /// <summary> 
         /// Returns a <see cref="Spring.Threading.Locks.ICondition"/> instance for use with this
@@ -979,10 +1003,7 @@ namespace Spring.Threading.Locks
         /// </summary>
         /// <returns> the ICondition object
         /// </returns>
-        public virtual ICondition NewCondition()
-        {
-            return IsFair ? new FIFOConditionVariable(this) : new ConditionVariable(this);
-        }
+        public virtual ICondition NewCondition() { return this.IsFair ? new FIFOConditionVariable(this) : new ConditionVariable(this); }
 
         /// <summary> 
         /// Queries whether any threads are waiting to acquire this lock. Note that
@@ -994,29 +1015,18 @@ namespace Spring.Threading.Locks
         /// <returns> <c>true</c>if there may be other threads waiting to acquire
         /// the lock, <c>false</c> otherwise.
         /// </returns>
-        public bool HasQueuedThreads
-        {
-            get { return sync.HasQueuedThreads; }
-        }
+        public bool HasQueuedThreads { get { return this.sync.HasQueuedThreads; } }
 
-
-        /// <summary> 
+        /// <summary>
         /// Queries whether the <paramref name="thread"/> is waiting to acquire this
-        /// lock. Note that because cancellations may occur at any time, a
-        /// <c>true</c> return does not guarantee that this thread
+        /// lock. Note that because cancellations may occur at any time, a<c>true</c> return does not guarantee that this thread
         /// will ever acquire this lock.  This method is designed primarily for use
-        /// in monitoring of the system state.
-        /// </summary>
-        /// <param name="thread">the <see cref="System.Threading.Thread"/> instance.
-        /// </param>
-        /// <returns> <c>true</c> if the given thread is queued waiting for this lock, <c>false</c> otherwise.
-        /// </returns>
+        /// in monitoring of the system state.</summary>
+        /// <param name="thread">the <see cref="System.Threading.Thread"/> instance.</param>
+        /// <returns><c>true</c> if the given thread is queued waiting for this lock, <c>false</c> otherwise.</returns>
         /// <throws>  NullPointerException if thread is null </throws>
         /// <exception cref="System.NullReferenceException">if <paramref name="thread"/> is null.</exception>
-        public bool IsQueuedThread(Thread thread)
-        {
-            return sync.IsQueued(thread);
-        }
+        public bool IsQueuedThread(Thread thread) { return this.sync.IsQueued(thread); }
 
         /// <summary> 
         ///	Returns a collection containing threads that may be waiting to
@@ -1029,46 +1039,34 @@ namespace Spring.Threading.Locks
         /// </summary>
         /// <returns> collection of threads
         /// </returns>
-        public virtual ICollection<Thread> QueuedThreads
-        {
-            get { return sync.QueuedThreads; }
-        }
+        public virtual ICollection<Thread> QueuedThreads { get { return this.sync.QueuedThreads; } }
 
-        /// <summary> 
+        /// <summary>
         /// Queries whether any threads are waiting on the <paramref name="condition"/>
         /// associated with this lock. Note that because timeouts and
         /// interrupts may occur at any time, a <c>true</c> return does
         /// not guarantee that a future <tt>signal</tt> will awaken any
         /// threads.  This method is designed primarily for use in
-        /// monitoring of the system state.
-        /// </summary>
+        /// monitoring of the system state.</summary>
         /// <param name="condition">the condition</param>
-        /// <returns> <c>true</c> if there are any waiting threads.</returns>
+        /// <returns><c>true</c> if there are any waiting threads.</returns>
         /// <exception cref="System.NullReferenceException">if the <paramref name="condition"/> is null</exception>
         /// <exception cref="System.ArgumentException">if the <paramref name="condition"/> is not associated with this lock</exception>
-        public virtual bool HasWaiters(ICondition condition)
-        {
-            return AsConditionVariable(condition).HasWaiters;
-        }
+        public virtual bool HasWaiters(ICondition condition) { return this.AsConditionVariable(condition).HasWaiters; }
 
-        /// <summary> 
-        /// Returns an estimate of the number of threads waiting on the
-        /// <paramref name="condition"/> associated with this lock. Note that because
+        /// <summary>
+        /// Returns an estimate of the number of threads waiting on the<paramref name="condition"/> associated with this lock. Note that because
         /// timeouts and interrupts may occur at any time, the estimate
         /// serves only as an upper bound on the actual number of waiters.
         /// This method is designed for use in monitoring of the system
-        /// state, not for synchronization control.
-        /// </summary>
+        /// state, not for synchronization control.</summary>
         /// <param name="condition">the condition</param>
-        /// <returns> the estimated number of waiting threads.</returns>
+        /// <returns>the estimated number of waiting threads.</returns>
         /// <exception cref="System.NullReferenceException">if the <paramref name="condition"/> is null</exception>
         /// <exception cref="System.ArgumentException">if the <paramref name="condition"/> is not associated with this lock</exception>
-        public virtual int GetWaitQueueLength(ICondition condition)
-        {
-            return AsConditionVariable(condition).WaitQueueLength;
-        }
+        public virtual int GetWaitQueueLength(ICondition condition) { return this.AsConditionVariable(condition).WaitQueueLength; }
 
-        /// <summary> 
+        /// <summary>
         /// Returns a collection containing those threads that may be
         /// waiting on the <paramref name="condition"/> associated with this lock.
         /// Because the actual set of threads may change dynamically while
@@ -1076,16 +1074,12 @@ namespace Spring.Threading.Locks
         /// best-effort estimate. The elements of the returned collection
         /// are in no particular order.  This method is designed to
         /// facilitate construction of subclasses that provide more
-        /// extensive condition monitoring facilities.
-        /// </summary>
+        /// extensive condition monitoring facilities.</summary>
         /// <param name="condition">the condition</param>
-        /// <returns> the collection of threads waiting on <paramref name="condition"/></returns>
+        /// <returns>the collection of threads waiting on <paramref name="condition"/></returns>
         /// <exception cref="System.NullReferenceException">if the <paramref name="condition"/> is null</exception>
         /// <exception cref="System.ArgumentException">if the <paramref name="condition"/> is not associated with this lock</exception>
-        protected virtual ICollection<Thread> GetWaitingThreads(ICondition condition)
-        {
-            return AsConditionVariable(condition).WaitingThreads;
-        }
+        protected virtual ICollection<Thread> GetWaitingThreads(ICondition condition) { return this.AsConditionVariable(condition).WaitingThreads; }
 
         /// <summary> 
         /// Returns a string identifying this lock, as well as its lock
@@ -1096,29 +1090,33 @@ namespace Spring.Threading.Locks
         /// <returns> a string identifying this lock, as well as its lock state.</returns>
         public override string ToString()
         {
-            Thread o = Owner;
+            Thread o = this.Owner;
             return base.ToString() + ((o == null) ? "[Unlocked]" : "[Locked by thread " + o.Name + "]");
         }
 
         private ConditionVariable AsConditionVariable(ICondition condition)
         {
             if (condition == null)
+            {
                 throw new ArgumentNullException("condition");
-            ConditionVariable condVar = condition as ConditionVariable;
+            }
+
+            var condVar = condition as ConditionVariable;
             if (condVar == null)
+            {
                 throw new ArgumentException("not owner");
+            }
+
             if (condVar.Lock != this)
+            {
                 throw new ArgumentException("not owner");
+            }
+
             return condVar;
         }
 
         #region IDisposable Members
-
-        void IDisposable.Dispose()
-        {
-            sync.Unlock();
-        }
-
+        void IDisposable.Dispose() { this.sync.Unlock(); }
         #endregion
     }
 }

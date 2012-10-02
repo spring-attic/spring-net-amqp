@@ -1,26 +1,22 @@
-﻿#region License
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ICondition.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright (C) 2002-2010 the original author or authors.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using System.Threading;
-using Spring.Threading.Collections.Generic;
+#endregion
 
 namespace Spring.Threading.Locks
 {
@@ -170,8 +166,9 @@ namespace Spring.Threading.Locks
     /// </remarks>
     /// <author>Doug Lea</author>
     /// <author>Griffin Caprio (.NET)</author>
-    public interface ICondition // BACKPORT_3_1
+    public interface ICondition
     {
+        // BACKPORT_3_1
         /// <summary> 
         /// Causes the current thread to wait until it is signalled or
         /// <see cref="Thread.Interrupt()"/> is called.
@@ -275,34 +272,25 @@ namespace Spring.Threading.Locks
         /// </remarks>
         void AwaitUninterruptibly();
 
-        /// <summary>
-        /// Causes the current thread to wait until it is signalled or interrupted,
-        /// or the specified waiting time elapses.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// The lock associated with this condition is atomically
+        /// <summary>Causes the current thread to wait until it is signalled or interrupted,
+        /// or the specified waiting time elapses.</summary>
+        /// <remarks><para>The lock associated with this condition is atomically
         /// released and the current thread becomes disabled for thread scheduling
         /// purposes and lies dormant until <i>one</i> of five things happens:
         /// <list type="bullet">
-        /// <item>Some other thread invokes the <see cref="Signal"/> method for this
-        /// <c>Condition</c> and the current thread happens to be chosen as the
+        /// <item>Some other thread invokes the <see cref="Signal"/> method for this<c>Condition</c> and the current thread happens to be chosen as the
         /// thread to be awakened; or</item>
-        /// <item>Some other thread invokes the <see cref="SignalAll"/> method for this
-        /// <c>Condition</c>; or</item>
+        /// <item>Some other thread invokes the <see cref="SignalAll"/> method for this<c>Condition</c>; or</item>
         /// <item>Some other thread <see cref="Thread.Interrupt">interrupts</see> the
         /// current thread, and interruption of thread suspension is supported; or</item>
         /// <item>The specified waiting time elapses; or</item>
-        /// <item>A &quot;<i>spurious wakeup</i>&quot; occurs.</item>
+        /// <item>A "<i>spurious wakeup</i>" occurs.</item>
         /// </list>
         /// </para>
-        /// <para>
-        /// In all cases, before this method can return the current thread must
+        /// <para>In all cases, before this method can return the current thread must
         /// re-acquire the lock associated with this condition. When the
-        /// thread returns it is <i>guaranteed</i> to hold this lock.
-        /// </para>
-        /// <para>
-        /// If the current thread:
+        /// thread returns it is <i>guaranteed</i> to hold this lock.</para>
+        /// <para>If the current thread:
         /// <list type="bullet">
         /// <item>has its interrupted status set on entry to this method; or</item>
         /// <item>is <see cref="Thread.Interrupt">interrupts</see> while waiting
@@ -311,66 +299,45 @@ namespace Spring.Threading.Locks
         /// then <see cref="ThreadInterruptedException"/> is thrown and the current
         /// thread's interrupted status is cleared. It is not specified, in the first
         /// case, whether or not the test for interruption occurs before the lock
-        /// is released.
-        /// </para>
-        /// <para>
-        /// <b>Implementation Considerations</b>
-        /// </para>
-        /// <para>
-        /// The current thread is assumed to hold the lock associated with this
-        /// <c>Condition</c> when this method is called.
+        /// is released.</para>
+        /// <para><b>Implementation Considerations</b></para>
+        /// <para>The current thread is assumed to hold the lock associated with this<c>Condition</c> when this method is called.
         /// It is up to the implementation to determine if this is
         /// the case and if not, how to respond. Typically, an exception will be
         /// thrown (such as <see cref="SynchronizationLockException"/>) and the
-        /// implementation must document that fact.
-        /// </para>
-        /// <para>
-        /// An implementation can favor responding to an interrupt over normal
+        /// implementation must document that fact.</para>
+        /// <para>An implementation can favor responding to an interrupt over normal
         /// method return in response to a signal, or over indicating the elapse
         /// of the specified waiting time. In either case the implementation
         /// must ensure that the signal is redirected to another waiting thread, if
-        /// there is one.
-        /// </para>
+        /// there is one.</para>
         /// </remarks>
         /// <param name="timeSpan">The maximum time to wait.</param>
-        /// <returns>
-        /// <c>false</c> if the waiting time detectably elapsed
-        /// before return from the method, else <c>true</c>.
-        /// </returns>
-        /// <exception cref="ThreadInterruptedException">
-        /// If the current thread is interrupted ( and interruption of thread
-        /// suspension is supported.
-        /// </exception>
+        /// <returns><c>false</c> if the waiting time detectably elapsed
+        /// before return from the method, else <c>true</c>.</returns>
+        /// <exception cref="ThreadInterruptedException">If the current thread is interrupted ( and interruption of thread
+        /// suspension is supported.</exception>
         bool Await(TimeSpan timeSpan);
 
-        /// <summary>
-        /// Causes the current thread to wait until it is signalled or interrupted,
-        /// or the specified deadline elapses.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// The lock associated with this condition is atomically
+        /// <summary>Causes the current thread to wait until it is signalled or interrupted,
+        /// or the specified deadline elapses.</summary>
+        /// <remarks><para>The lock associated with this condition is atomically
         /// released and the current thread becomes disabled for thread scheduling
         /// purposes and lies dormant until <b>one</b> of five things happens:
         /// <list type="bullet">
-        /// <item>Some other thread invokes the <see cref="Signal()"/> method for this
-        /// <see cref="ICondition"/> and the current thread happens to be chosen as the
+        /// <item>Some other thread invokes the <see cref="Signal()"/> method for this<see cref="ICondition"/> and the current thread happens to be chosen as the
         /// thread to be awakened.</item>
-        /// <item>Some other thread invokes the <see cref="SignalAll()"/>} method for this
-        /// <see cref="ICondition"/>.</item>
+        /// <item>Some other thread invokes the <see cref="SignalAll()"/>} method for this<see cref="ICondition"/>.</item>
         /// <item>Some other thread <see cref="Thread.Interrupt()"/> is called the current
         /// thread, and interruption of thread suspension is supported.</item>
-        /// <item>The specified deadline elapses.</item>	
+        /// <item>The specified deadline elapses.</item>
         /// <item>A '<b>spurious wakeup</b>' occurs.</item>
         /// </list>
         /// </para>
-        /// <para>
-        /// In all cases, before this method can return the current thread must
+        /// <para>In all cases, before this method can return the current thread must
         /// re-acquire the lock associated with this condition. When the
-        /// thread returns it is <b>guaranteed</b> to hold this lock.
-        /// </para>
-        /// <para>
-        /// If the current thread:
+        /// thread returns it is <b>guaranteed</b> to hold this lock.</para>
+        /// <para>If the current thread:
         /// <list type="bullet">
         /// <item>has its interrupted status set on entry to this method</item>
         /// <item><see cref="Thread.Interrupt()"/> is called while waiting
@@ -379,15 +346,13 @@ namespace Spring.Threading.Locks
         /// then <see cref="ThreadInterruptedException"/> is thrown and the current thread's
         /// interrupted status is cleared. It is not specified, in the first
         /// case, whether or not the test for interruption occurs before the lock
-        /// is released.
-        /// </para>
-        /// <example>
-        /// The return value indicates whether the deadline has elapsed,
+        /// is released.</para>
+        /// <example>The return value indicates whether the deadline has elapsed,
         /// which can be used as follows:
         /// <code>
-        ///		bool AMethod(DateTime deadline) {
-        ///			bool stillWaiting = true;
-        ///			while (!conditionBeingWaitedFor) {
+        /// 		bool AMethod(DateTime deadline) {
+        /// 			bool stillWaiting = true;
+        /// 			while (!conditionBeingWaitedFor) {
         /// 				if (stillWaiting)
         /// 						stillWaiting = theCondition.AwaitUntil(deadline);
         /// 				else
@@ -395,36 +360,24 @@ namespace Spring.Threading.Locks
         /// 				}
         /// 		// ...
         /// 		}
-        /// 	}
-        /// </code>
+        /// 	}</code>
         /// </example>
-        /// <para>
-        /// <b>Implementation Considerations</b>
-        /// </para>
-        /// <para>
-        /// The current thread is assumed to hold the lock associated with this
-        /// <see cref="ICondition"/> when this method is called.
+        /// <para><b>Implementation Considerations</b></para>
+        /// <para>The current thread is assumed to hold the lock associated with this<see cref="ICondition"/> when this method is called.
         /// It is up to the implementation to determine if this is
         /// the case and if not, how to respond. Typically, an exception will be
         /// thrown (such as <see cref="SynchronizationLockException"/>) and the
-        /// implementation must document that fact.
-        /// </para>
-        /// <para>
-        /// An implementation can favor responding to an interrupt over normal
+        /// implementation must document that fact.</para>
+        /// <para>An implementation can favor responding to an interrupt over normal
         /// method return in response to a signal, or over indicating the passing
         /// of the specified deadline. In either case the implementation
         /// must ensure that the signal is redirected to another waiting thread, if
-        /// there is one.
-        /// </para>
+        /// there is one.</para>
         /// </remarks>
         /// <param name="deadline">The absolute UTC time to wait.</param>
-        /// <returns> 
-        /// <c>false</c> if the deadline has elapsed upon return, else <c>true</c>.
-        /// </returns>
-        /// <exception cref="ThreadInterruptedException">
-        /// If the current thread is interrupted ( and interruption of thread
-        /// suspension is supported.
-        /// </exception>
+        /// <returns><c>false</c> if the deadline has elapsed upon return, else <c>true</c>.</returns>
+        /// <exception cref="ThreadInterruptedException">If the current thread is interrupted ( and interruption of thread
+        /// suspension is supported.</exception>
         bool AwaitUntil(DateTime deadline);
 
         /// <summary> 

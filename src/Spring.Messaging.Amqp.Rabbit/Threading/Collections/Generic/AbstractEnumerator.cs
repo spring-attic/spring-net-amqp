@@ -1,42 +1,34 @@
-﻿#region License
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AbstractEnumerator.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright (C) 2002-2008 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
-#region Imports
-
+#region Using Directives
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 #endregion
 
 namespace Spring.Collections.Generic
 {
-    /// <summary>
-    /// Serve as base class to be inherited by the classes that needs to
+    /// <summary>Serve as base class to be inherited by the classes that needs to
     /// implement both the <see cref="System.Collections.IEnumerator"/> and 
-    /// the <see cref="IEnumerator{T}"/> interfaces.
-    /// </summary>
+    /// the <see cref="IEnumerator{T}"/> interfaces.</summary>
     /// <typeparam name="T">Type of the elements to be iterated.</typeparam>
     /// <author>Kenneth Xu</author>
-    public abstract class AbstractEnumerator<T> : IEnumerator<T>, IEnumerable<T> //NET_ONLY
+    public abstract class AbstractEnumerator<T> : IEnumerator<T>, IEnumerable<T>
     {
+        // NET_ONLY
         /// <summary>
         /// Indicates if the enumerator has not startet, is in progress, 
         /// or has already finished.
@@ -54,16 +46,9 @@ namespace Spring.Collections.Generic
         /// that can be used to iterate through the collection.
         ///</returns>
         ///<filterpriority>1</filterpriority>
-        public IEnumerator<T> GetEnumerator()
-        {
-            return this;
-        }
+        public IEnumerator<T> GetEnumerator() { return this; }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this;
-        }
-
+        IEnumerator IEnumerable.GetEnumerator() { return this; }
         #endregion
 
         #region Protected Methods
@@ -82,13 +67,11 @@ namespace Spring.Collections.Generic
         /// </exception>
         protected abstract bool GoNext();
 
-
         /// <summary>
         /// Fetch the current element of the enumerator.
         /// </summary>
         /// <returns>The current element</returns>
         protected abstract T FetchCurrent();
-
         #endregion
 
         #region IEnumerator<T> Members
@@ -103,28 +86,24 @@ namespace Spring.Collections.Generic
         /// enumerator.
         /// </returns>
         ///
-        public T Current
-        {
-            get
-            {
-                return (_state == EnumeratorState.InProgress) ? FetchCurrent() : default(T);
-            }
-        }
+        public T Current { get { return (this._state == EnumeratorState.InProgress) ? this.FetchCurrent() : default(T); } }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, 
         /// or resetting unmanaged resources. This implementation does nothing.
         /// </summary>
         /// <filterpriority>2</filterpriority>
-        public virtual void Dispose()
-        {
-        }
+        public virtual void Dispose() { }
 
         object IEnumerator.Current
         {
             get
             {
-                if (_state == EnumeratorState.InProgress) return FetchCurrent();
+                if (this._state == EnumeratorState.InProgress)
+                {
+                    return this.FetchCurrent();
+                }
+
                 throw new InvalidOperationException(
                     "Enumeration has either not started or has already finished.");
             }
@@ -145,8 +124,8 @@ namespace Spring.Collections.Generic
         /// <filterpriority>2</filterpriority>
         public bool MoveNext()
         {
-            bool hasNext = GoNext();
-            _state = hasNext ? EnumeratorState.InProgress : EnumeratorState.AfterFinish;
+            bool hasNext = this.GoNext();
+            this._state = hasNext ? EnumeratorState.InProgress : EnumeratorState.AfterFinish;
             return hasNext;
         }
 
@@ -168,19 +147,15 @@ namespace Spring.Collections.Generic
         /// <filterpriority>2</filterpriority>
         public void Reset()
         {
-            DoReset();
-            _state = EnumeratorState.BeforeStart;
+            this.DoReset();
+            this._state = EnumeratorState.BeforeStart;
         }
 
         /// <summary>
         /// For derived class to implement the <see cref="Reset"/> function. 
         /// This implmenetation always throw <see cref="NotSupportedException"/>.
         /// </summary>
-        protected virtual void DoReset()
-        {
-            throw new NotSupportedException();
-        }
-
+        protected virtual void DoReset() { throw new NotSupportedException(); }
         #endregion
 
         #region Nested type: EnumeratorState
@@ -194,19 +169,18 @@ namespace Spring.Collections.Generic
             /// <summary>
             /// Enuemrator has not started.
             /// </summary>
-            BeforeStart,
+            BeforeStart, 
 
             /// <summary>
             /// Enuemrator is in progress.
             /// </summary>
-            InProgress,
+            InProgress, 
 
             /// <summary>
             /// Enuemrator has already finished.
             /// </summary>
-            AfterFinish,
+            AfterFinish, 
         }
-
         #endregion
     }
 }

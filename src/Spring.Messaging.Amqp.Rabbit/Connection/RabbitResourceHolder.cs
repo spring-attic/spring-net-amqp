@@ -1,24 +1,19 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitResourceHolder.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-#region License
-
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,6 +21,7 @@ using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Transaction.Support;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
@@ -74,43 +70,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitResourceHolder"/> class.
         /// </summary>
-        public RabbitResourceHolder()
-        {
-        }
+        public RabbitResourceHolder() { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RabbitResourceHolder"/> class.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        public RabbitResourceHolder(IModel channel) : this()
-        {
-            this.AddChannel(channel);
-        }
+        /// <summary>Initializes a new instance of the <see cref="RabbitResourceHolder"/> class.</summary>
+        /// <param name="channel">The channel.</param>
+        public RabbitResourceHolder(IModel channel) : this() { this.AddChannel(channel); }
 
         /// <summary>
         /// Gets a value indicating whether Frozen.
         /// </summary>
-        public bool Frozen
-        {
-            get { return this.frozen; }
-        }
+        public bool Frozen { get { return this.frozen; } }
 
         /// <summary>
         /// Gets a value indicating whether IsChannelTransactional.
         /// </summary>
-        public bool IsChannelTransactional
-        {
-            get { return this._channelTransactional; }
-        }
+        public bool IsChannelTransactional { get { return this._channelTransactional; } }
 
-        /// <summary>
-        /// Add a connection.
-        /// </summary>
-        /// <param name="connection">
-        /// The connection.
-        /// </param>
+        /// <summary>Add a connection.</summary>
+        /// <param name="connection">The connection.</param>
         public void AddConnection(IConnection connection)
         {
             AssertUtils.IsTrue(!this.frozen, "Cannot add Connection because RabbitResourceHolder is frozen");
@@ -121,26 +98,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
-        /// <summary>
-        /// Add a channel.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        public void AddChannel(IModel channel)
-        {
-            AddChannel(channel, null);
-        }
+        /// <summary>Add a channel.</summary>
+        /// <param name="channel">The channel.</param>
+        public void AddChannel(IModel channel) { this.AddChannel(channel, null); }
 
-        /// <summary>
-        /// Add a channel.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="connection">
-        /// The connection.
-        /// </param>
+        /// <summary>Add a channel.</summary>
+        /// <param name="channel">The channel.</param>
+        /// <param name="connection">The connection.</param>
         public void AddChannel(IModel channel, IConnection connection)
         {
             AssertUtils.IsTrue(!this.frozen, "Cannot add Channel because RabbitResourceHolder is frozen");
@@ -152,7 +116,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 {
                     List<IModel> channels;
                     this.channelsPerConnection.TryGetValue(connection, out channels);
-                    
+
                     // TODO: double check, what about TryGet..
                     if (channels == null)
                     {
@@ -165,23 +129,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
-        /// <summary>
-        /// Determine if the channel is in the channels.
-        /// </summary>
+        /// <summary>Determine if the channel is in the channels.</summary>
         /// <param name="channel">The channel.</param>
         /// <returns>True if the channel is in channels; otherwise false.</returns>
-        public bool ContainsChannel(IModel channel)
-        {
-            return this.channels.Contains(channel);
-        }
+        public bool ContainsChannel(IModel channel) { return this.channels.Contains(channel); }
 
         /// <summary>
         /// Gets Connection.
         /// </summary>
-        public IConnection Connection
-        {
-            get { return this.connections.Count != 0 ? this.connections[0] : null; }
-        }
+        public IConnection Connection { get { return this.connections.Count != 0 ? this.connections[0] : null; } }
 
         /// <summary>
         /// Gets a connection.
@@ -201,10 +157,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Gets Channel.
         /// </summary>
-        public IModel Channel
-        {
-            get { return this.channels.Count != 0 ? this.channels[0] : null; }
-        }
+        public IModel Channel { get { return this.channels.Count != 0 ? this.channels[0] : null; } }
 
         /// <summary>
         /// Commit all delivery tags.
@@ -244,7 +197,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 try
                 {
                     channel.Close();
-                } 
+                }
                 catch (Exception ex)
                 {
                     logger.Debug("Could not close synchronized Rabbit Channel after transaction", ex);
@@ -261,15 +214,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.channelsPerConnection.Clear();
         }
 
-        /// <summary>
-        /// Add a delivery tag to the channel.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="deliveryTag">
-        /// The delivery tag.
-        /// </param>
+        /// <summary>Add a delivery tag to the channel.</summary>
+        /// <param name="channel">The channel.</param>
+        /// <param name="deliveryTag">The delivery tag.</param>
         public void AddDeliveryTag(IModel channel, long deliveryTag)
         {
             if (this.deliveryTags.ContainsKey(channel))
@@ -280,7 +227,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
             else
             {
-                this.deliveryTags.Add(channel, new List<long>() { deliveryTag });
+                this.deliveryTags.Add(channel, new List<long> { deliveryTag });
             }
         }
 

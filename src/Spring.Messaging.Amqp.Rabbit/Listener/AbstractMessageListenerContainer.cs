@@ -1,45 +1,33 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AbstractMessageListenerContainer.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-#region License
-
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
-using Common.Logging;
 using RabbitMQ.Client;
-using Spring.Core;
+using Spring.Context;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
-using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Objects.Factory;
-using Spring.Threading;
 using Spring.Util;
-using IConnection = RabbitMQ.Client.IConnection;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
-    using Spring.Context;
-
     /// <summary>
     ///  An abstract message listener container.
     /// </summary>
@@ -64,12 +52,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Flag for active.
         /// </summary>
-        private volatile bool active = false;
+        private volatile bool active;
 
         /// <summary>
         /// Flag for running.
         /// </summary>
-        private volatile bool isRunning = false;
+        private volatile bool isRunning;
 
         /// <summary>
         /// Flag for lifecycle monitor.
@@ -132,28 +120,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// @see AcknowledgeMode
         /// </para>
         /// </summary>
-        public AcknowledgeModeUtils.AcknowledgeMode AcknowledgeMode
-        {
-            get { return this.acknowledgeMode; }
-            set { this.acknowledgeMode = value; }
-        }
+        public AcknowledgeModeUtils.AcknowledgeMode AcknowledgeMode { get { return this.acknowledgeMode; } set { this.acknowledgeMode = value; } }
 
         /// <summary>
         /// Gets or sets the name of the queues to receive messages from.
         /// </summary>
         /// <value>The name of the queues. Can not be null.</value>
-        public string[] QueueNames
-        {
-            get
-            {
-                return this.queueNames;
-            }
-
-            set
-            {
-                this.queueNames = value;
-            }
-        }
+        public string[] QueueNames { get { return this.queueNames; } set { this.queueNames = value; } }
 
         /// <summary>
         /// Sets the queues.
@@ -175,8 +148,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
-
-
         /// <summary>
         /// Gets the required queue names.
         /// </summary>
@@ -188,7 +159,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             return this.queueNames;
         }
 
-
         /// <summary>
         /// Gets or sets a value indicating whether ExposeListenerChannel.
         /// Exposes the listener channel to a registered
@@ -198,11 +168,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         /// <value><c>true</c> if expose listener channel; otherwise, <c>false</c>.</value>
         /// <see cref="Spring.Messaging.Amqp.Rabbit.Core.IChannelAwareMessageListener"/>
-        public bool ExposeListenerChannel
-        {
-            get { return this.exposeListenerChannel; }
-            set { this.exposeListenerChannel = value; }
-        }
+        public bool ExposeListenerChannel { get { return this.exposeListenerChannel; } set { this.exposeListenerChannel = value; } }
 
         /// <summary>
         /// Gets or sets the message listener to register with the container.  This
@@ -213,10 +179,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <exception cref="ArgumentException">If the supplied listener</exception> is not a <see cref="IMessageListener"/> or <see cref="IChannelAwareMessageListener"/> <see cref="IMessageListener"/>
         public object MessageListener
         {
-            get
-            {
-                return this.messageListener;
-            }
+            get { return this.messageListener; }
 
             set
             {
@@ -225,12 +188,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
-        /// <summary>
-        /// Checks the message listener, throwing an exception
+        /// <summary>Checks the message listener, throwing an exception
         /// if it does not correspond to a supported listener type.
         /// By default, only a <see cref="IMessageListener"/> object or a
-        /// Spring <see cref="IChannelAwareMessageListener"/> object will be accepted.
-        /// </summary>
+        /// Spring <see cref="IChannelAwareMessageListener"/> object will be accepted.</summary>
         /// <param name="messageListener">The message listener.</param>
         protected virtual void CheckMessageListener(object messageListener)
         {
@@ -241,48 +202,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
-
         /// <summary>
         /// Sets an ErrorHandler to be invoked in case of any uncaught exceptions thrown
         /// while processing a Message. By default there will be no ErrorHandler
         /// so that error-level logging is the only result.
         /// </summary>
         /// <value>The error handler.</value>
-        public IErrorHandler ErrorHandler
-        {
-            set
-            {
-                this.errorHandler = value;
-            }
-        }
+        public IErrorHandler ErrorHandler { set { this.errorHandler = value; } }
 
         /// <summary>
         /// Gets or sets a value indicating whether AutoStartup.
         /// </summary>
-        public bool AutoStartup
-        {
-            get { return this.autoStartup; }
-            set { this.autoStartup = value; }
-        }
+        public bool AutoStartup { get { return this.autoStartup; } set { this.autoStartup = value; } }
 
         /// <summary>
         /// Gets or sets Phase.
         /// </summary>
-        public int Phase
-        {
-            get { return this.phase; }
-            set { this.phase = value; }
-        }
+        public int Phase { get { return this.phase; } set { this.phase = value; } }
 
         /// <summary>
         /// Gets or sets ObjectName.
         /// </summary>
-        public string ObjectName
-        {
-            get { return this.objectName; }
-            set { this.objectName = value; }
-        }
-
+        public string ObjectName { get { return this.objectName; } set { this.objectName = value; } }
         #endregion
 
         /// <summary>
@@ -292,10 +233,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             base.AfterPropertiesSet();
             AssertUtils.State(
-                this.exposeListenerChannel || !this.AcknowledgeMode.IsManual(),
+                this.exposeListenerChannel || !this.AcknowledgeMode.IsManual(), 
                 "You cannot acknowledge messages manually if the channel is not exposed to the listener " + "(please check your configuration and set exposeListenerChannel=true or acknowledgeMode!=Manual)");
             AssertUtils.State(
-                !(this.AcknowledgeMode.IsAutoAck() && this.ChannelTransacted),
+                !(this.AcknowledgeMode.IsAutoAck() && this.ChannelTransacted), 
                 "The acknowledgeMode is None (autoack in Rabbit terms) which is not consistent with having a " + "transactional channel. Either use a different AcknowledgeMode or make sure channelTransacted=false");
             this.ValidateConfiguration();
             this.Initialize();
@@ -304,17 +245,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Validate the configuration of this container. The default implementation is empty. To be overridden in subclasses.
         /// </summary>
-        protected virtual void ValidateConfiguration()
-        {
-        }
+        protected virtual void ValidateConfiguration() { }
 
         /// <summary>
         /// Calls {@link #shutdown()} when the ObjectFactory destroys the container instance.
         /// </summary>
-        public void Dispose()
-        {
-            this.Shutdown();
-        }
+        public void Dispose() { this.Shutdown(); }
 
         #region Lifecycle Methods For Starting and Stopping the Container
 
@@ -334,7 +270,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             catch (Exception ex)
             {
-                throw ConvertRabbitAccessException(ex);
+                throw this.ConvertRabbitAccessException(ex);
             }
         }
 
@@ -357,7 +293,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             catch (Exception ex)
             {
-                throw ConvertRabbitAccessException(ex);
+                throw this.ConvertRabbitAccessException(ex);
             }
             finally
             {
@@ -394,6 +330,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         #region ILifecycle Implementation
+
         /// <summary>
         /// Start this container.
         /// </summary>
@@ -422,7 +359,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             catch (Exception ex)
             {
-                throw ConvertRabbitAccessException(ex);
+                throw this.ConvertRabbitAccessException(ex);
             }
         }
 
@@ -449,11 +386,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             try
             {
-                DoStop();
+                this.DoStop();
             }
             catch (Exception ex)
             {
-                throw ConvertRabbitAccessException(ex);
+                throw this.ConvertRabbitAccessException(ex);
             }
             finally
             {
@@ -465,12 +402,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
-        /// <summary>
-        /// Stop this container.
-        /// </summary>
-        /// <param name="callback">
-        /// The callback.
-        /// </param>
+        /// <summary>Stop this container.</summary>
+        /// <param name="callback">The callback.</param>
         public void Stop(Action callback)
         {
             this.Stop();
@@ -480,9 +413,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// This method is invoked when the container is stopping. The default implementation does nothing, but subclasses may override.
         /// </summary>
-        protected virtual void DoStop()
-        {
-        }
+        protected virtual void DoStop() { }
 
         /// <summary>
         /// Determine whether this container is currently running, that is, whether it has been started and not stopped yet.
@@ -500,12 +431,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
         #endregion
 
-        /// <summary>
-        /// Invoke the registered ErrorHandler, if any. Log at error level otherwise.
-        /// </summary>
-        /// <param name="ex">
-        /// The ex.
-        /// </param>
+        /// <summary>Invoke the registered ErrorHandler, if any. Log at error level otherwise.</summary>
+        /// <param name="ex">The ex.</param>
         protected void InvokeErrorHandler(Exception ex)
         {
             if (this.errorHandler != null)
@@ -521,20 +448,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 this.logger.Info("Execution of Rabbit message listener failed, and no ErrorHandler has been set: " + ex.Source + ": " + ex.Message);
             }
         }
+
         #endregion
 
         #region Template methods for listener execution
 
-        /// <summary>
-        /// Executes the specified listener,
-        /// committing or rolling back the transaction afterwards (if necessary).
-        /// </summary>
+        /// <summary>Executes the specified listener,
+        /// committing or rolling back the transaction afterwards (if necessary).</summary>
         /// <param name="channel">The channel.</param>
         /// <param name="message">The received message.</param>
-        /// <see cref="InvokeListener"/>
-        /// <see cref="CommitIfNecessary"/>
-        /// <see cref="RollbackOnExceptionIfNecessary"/>
-        /// <see cref="HandleListenerException"/>
+        /// <see cref="InvokeListener"/><see cref="CommitIfNecessary"/><see cref="RollbackOnExceptionIfNecessary"/><see cref="HandleListenerException"/>
         protected virtual void ExecuteListener(IModel channel, Message message)
         {
             if (!this.IsRunning)
@@ -556,12 +479,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 this.HandleListenerException(ex);
                 throw ex;
             }
-
         }
 
-        /// <summary>
-        /// Invokes the specified listener
-        /// </summary>
+        /// <summary>Invokes the specified listener</summary>
         /// <param name="channel">The channel to operate on.</param>
         /// <param name="message">The received message.</param>
         /// <see cref="MessageListener"/>
@@ -586,16 +506,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
-        /// <summary>
-        /// Invoke the specified listener as Spring SessionAwareMessageListener,
+        /// <summary>Invoke the specified listener as Spring SessionAwareMessageListener,
         /// exposing a new Rabbit Channel (potentially with its own transaction)
-        /// to the listener if demanded.
-        /// </summary>
+        /// to the listener if demanded.</summary>
         /// <param name="listener">The Spring ISessionAwareMessageListener to invoke.</param>
         /// <param name="channel">The channel to operate on.</param>
         /// <param name="message">The received message.</param>
-        /// <see cref="IChannelAwareMessageListener"/>
-        /// <see cref="ExposeListenerChannel"/>
+        /// <see cref="IChannelAwareMessageListener"/><see cref="ExposeListenerChannel"/>
         protected virtual void DoInvokeListener(IChannelAwareMessageListener listener, IModel channel, Message message)
         {
             RabbitResourceHolder resourceHolder = null;
@@ -605,8 +522,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 var channelToUse = channel;
                 if (!this.ExposeListenerChannel)
                 {
-                    //We need to expose a separate Channel.
-                    resourceHolder = GetTransactionalResourceHolder();
+                    // We need to expose a separate Channel.
+                    resourceHolder = this.GetTransactionalResourceHolder();
                     channelToUse = resourceHolder.Channel;
                 }
 
@@ -617,7 +534,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception e)
                 {
-                    ThrowOrWarnBasedOnRootCauseOfException(e);
+                    this.ThrowOrWarnBasedOnRootCauseOfException(e);
                 }
             }
             finally
@@ -628,13 +545,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         private void ThrowOrWarnBasedOnRootCauseOfException(Exception exception)
         {
-            if (!IsFromHandleMethodResolutionFailure(exception))
+            if (!this.IsFromHandleMethodResolutionFailure(exception))
             {
                 throw this.WrapToListenerExecutionFailedExceptionIfNeeded(exception);
             }
 
-            //TODO: probably need to shunt the message off to a Dead-Letter Queue b/c at this point its 100% underliverable
-            logger.Warn(string.Format("{0} is unable to resolve proper method to handle the message!", this.GetType()), exception);
+            // TODO: probably need to shunt the message off to a Dead-Letter Queue b/c at this point its 100% underliverable
+            this.logger.Warn(string.Format("{0} is unable to resolve proper method to handle the message!", this.GetType()), exception);
         }
 
         private bool IsFromHandleMethodResolutionFailure(Exception exception)
@@ -643,17 +560,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             if (exception.InnerException != null)
             {
-                flag = IsFromHandleMethodResolutionFailure(exception.InnerException);
+                flag = this.IsFromHandleMethodResolutionFailure(exception.InnerException);
             }
 
             return flag;
         }
 
-        /// <summary>
-        /// Invoke the specified listener a Spring Rabbit MessageListener.
-        /// </summary>
+        /// <summary>Invoke the specified listener a Spring Rabbit MessageListener.</summary>
         /// <remarks>Default implementation performs a plain invocation of the
-        /// <code>OnMessage</code> methods</remarks>
+        /// <code>OnMessage</code>
+        /// methods</remarks>
         /// <param name="listener">The listener to invoke.</param>
         /// <param name="message">The received message.</param>
         protected virtual void DoInvokeListener(IMessageListener listener, Message message)
@@ -664,38 +580,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             catch (Exception e)
             {
-                ThrowOrWarnBasedOnRootCauseOfException(e);
+                this.ThrowOrWarnBasedOnRootCauseOfException(e);
             }
         }
 
-        /// <summary>
-        /// Determines whether the given Channel is locally transacted, that is, whether
+        /// <summary>Determines whether the given Channel is locally transacted, that is, whether
         /// its transaction is managed by this listener container's Channel handling
-        /// and not by an external transaction coordinator.
-        /// </summary>
-        /// <remarks>
-        /// This method is about finding out whether the Channel's transaction
-        /// is local or externally coordinated.
-        /// </remarks>
+        /// and not by an external transaction coordinator.</summary>
+        /// <remarks>This method is about finding out whether the Channel's transaction
+        /// is local or externally coordinated.</remarks>
         /// <param name="channel">The channel to check.</param>
-        /// <returns>
-        /// <c>true</c> if the is channel locally transacted; otherwise, <c>false</c>.
-        /// </returns>
+        /// <returns><c>true</c> if the is channel locally transacted; otherwise, <c>false</c>.</returns>
         /// <see cref="RabbitAccessor.ChannelTransacted"/>
-        protected virtual bool IsChannelLocallyTransacted(IModel channel)
-        {
-            return this.ChannelTransacted;
-        }
+        protected virtual bool IsChannelLocallyTransacted(IModel channel) { return this.ChannelTransacted; }
 
-        /// <summary>
-        /// Handle the given exception that arose during listener execution.
-        /// </summary>
-        /// <remarks>
-        /// The default implementation logs the exception at error level,
+        /// <summary>Handle the given exception that arose during listener execution.</summary>
+        /// <remarks>The default implementation logs the exception at error level,
         /// not propagating it to the Rabbit provider - assuming that all handling of
         /// acknowledgement and/or transactions is done by this listener container.
-        /// This can be overridden in subclasses.
-        /// </remarks>
+        /// This can be overridden in subclasses.</remarks>
         /// <param name="ex">The exception to handle</param>
         protected virtual void HandleListenerException(Exception ex)
         {
@@ -713,15 +616,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
-        /// <summary>
-        /// Wrap listener execution failed exception if needed.
-        /// </summary>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        /// <returns>
-        /// The exception.
-        /// </returns>
+        /// <summary>Wrap listener execution failed exception if needed.</summary>
+        /// <param name="e">The e.</param>
+        /// <returns>The exception.</returns>
         protected Exception WrapToListenerExecutionFailedExceptionIfNeeded(Exception e)
         {
             if (!(e is ListenerExecutionFailedException))
@@ -743,13 +640,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// </summary>
     public class SharedConnectionNotInitializedException : SystemException
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SharedConnectionNotInitializedException"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="SharedConnectionNotInitializedException"/> class.</summary>
         /// <param name="message">The message.</param>
         public SharedConnectionNotInitializedException(string message)
-            : base(message)
-        {
-        }
+            : base(message) { }
     }
 }

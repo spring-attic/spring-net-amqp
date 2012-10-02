@@ -1,13 +1,28 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ObjectDefinitionParserHelper.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
 using Spring.Collections;
 using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Config
 {
@@ -23,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// </summary>
     internal class ObjectDefinitionParserHelper
     {
-        private ParserContext parserContext;
+        private readonly ParserContext parserContext;
 
         public static string OBJECTS_NAMESPACE_URI = "http://www.springframework.net";
 
@@ -167,44 +182,39 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
         public static string DEFAULT_DESTROY_METHOD_ATTRIBUTE = "default-destroy-method";
 
+        private readonly DocumentDefaultsDefinition defaults = new DocumentDefaultsDefinition();
 
-        private DocumentDefaultsDefinition defaults = new DocumentDefaultsDefinition();
+        /// <summary>Initializes a new instance of the <see cref="ObjectDefinitionParserHelper"/> class.</summary>
+        /// <param name="parserContext">The parser context.</param>
+        public ObjectDefinitionParserHelper(ParserContext parserContext) { this.parserContext = parserContext; }
 
-        public ObjectDefinitionParserHelper(ParserContext parserContext)
-        {
-            this.parserContext = parserContext;
-        }
-
-        ///<summary>
-        /// Parse the merge attribute of a collection element, if any.
-        ///</summary>
-        ///<param name="collectionElement">element to parse</param>
-        ///<returns>true if merge is enabled, else false</returns>
+        /// <summary>Parse the merge attribute of a collection element, if any.</summary>
+        /// <param name="collectionElement">element to parse</param>
+        /// <returns>true if merge is enabled, else false</returns>
         private bool ParseMergeAttribute(XmlElement collectionElement)
         {
-            String value = collectionElement.GetAttribute(MERGE_ATTRIBUTE);
+            string value = collectionElement.GetAttribute(MERGE_ATTRIBUTE);
             if (DEFAULT_VALUE.Equals(value))
             {
                 value = this.defaults.Merge;
             }
+
             return TRUE_VALUE.Equals(value);
         }
 
-        private string GetLocalName(XmlNode node)
-        {
-            return node.LocalName;
-        }
+        private string GetLocalName(XmlNode node) { return node.LocalName; }
 
-        private bool NodeNameEquals(XmlNode node, string desiredName)
-        {
-            return desiredName.Equals(node.Name) || desiredName.Equals(GetLocalName(node));
-        }
+        private bool NodeNameEquals(XmlNode node, string desiredName) { return desiredName.Equals(node.Name) || desiredName.Equals(this.GetLocalName(node)); }
 
-        protected void Error(string message, XmlNode source)
-        {
-            parserContext.ReaderContext.ReportException(source, source.Name, message);
-        }
+        /// <summary>The error.</summary>
+        /// <param name="message">The message.</param>
+        /// <param name="source">The source.</param>
+        protected void Error(string message, XmlNode source) { this.parserContext.ReaderContext.ReportException(source, source.Name, message); }
 
+        /// <summary>The has attribute.</summary>
+        /// <param name="node">The node.</param>
+        /// <param name="match">The match.</param>
+        /// <returns>The System.Boolean.</returns>
         protected bool HasAttribute(XmlNode node, string match)
         {
             if (null == node.Attributes)
@@ -214,43 +224,61 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
             return node.Attributes[match] != null;
 
-            //foreach (XmlAttribute candidate in attributes)
-            //{
-            //    if (candidate.Name == match)
-            //    {
-            //        return true;
-            //    }
-            //}
+            // foreach (XmlAttribute candidate in attributes)
+            // {
+            // if (candidate.Name == match)
+            // {
+            // return true;
+            // }
+            // }
 
-            //return false;
-
+            // return false;
         }
 
-        protected TypedStringValue buildTypedStringValue(String value, String targetTypeName)
+        /// <summary>The build typed string value.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="targetTypeName">The target type name.</param>
+        /// <returns>The Spring.Objects.Factory.Config.TypedStringValue.</returns>
+        protected TypedStringValue buildTypedStringValue(string value, string targetTypeName)
         {
             TypedStringValue typedValue;
             if (!StringUtils.HasText(targetTypeName))
             {
                 typedValue = new TypedStringValue(value);
             }
-
             else
             {
                 var targetType = Type.GetType(targetTypeName);
 
-                if (targetType != null) typedValue = new TypedStringValue(value, targetType);
-                else typedValue = new TypedStringValue(value, targetTypeName);
+                if (targetType != null)
+                {
+                    typedValue = new TypedStringValue(value, targetType);
+                }
+                else
+                {
+                    typedValue = new TypedStringValue(value, targetTypeName);
+                }
             }
+
             return typedValue;
         }
 
-        protected object buildTypedStringValueForMap(String value, String defaultTypeName)
+        /// <summary>The build typed string value for map.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="defaultTypeName">The default type name.</param>
+        /// <returns>The System.Object.</returns>
+        protected object buildTypedStringValueForMap(string value, string defaultTypeName)
         {
-            TypedStringValue typedValue = buildTypedStringValue(value, defaultTypeName);
+            TypedStringValue typedValue = this.buildTypedStringValue(value, defaultTypeName);
             return typedValue;
         }
 
-        protected object parseKeyElement(XmlElement keyEle, IObjectDefinition bd, String defaultKeyTypeName)
+        /// <summary>The parse key element.</summary>
+        /// <param name="keyEle">The key ele.</param>
+        /// <param name="bd">The bd.</param>
+        /// <param name="defaultKeyTypeName">The default key type name.</param>
+        /// <returns>The System.Object.</returns>
+        protected object parseKeyElement(XmlElement keyEle, IObjectDefinition bd, string defaultKeyTypeName)
         {
             XmlNodeList nl = keyEle.ChildNodes;
             XmlElement subElement = null;
@@ -262,7 +290,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                     // Child element is what we're looking for.
                     if (subElement != null)
                     {
-                        Error("<key> element must not contain more than one value sub-element", keyEle);
+                        this.Error("<key> element must not contain more than one value sub-element", keyEle);
                     }
                     else
                     {
@@ -270,136 +298,130 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                     }
                 }
             }
-            return parsePropertySubElement(subElement, bd, defaultKeyTypeName);
+
+            return this.parsePropertySubElement(subElement, bd, defaultKeyTypeName);
         }
 
-        private String getNamespaceURI(XmlNode node)
-        {
-            return node.NamespaceURI;
-        }
+        private string getNamespaceURI(XmlNode node) { return node.NamespaceURI; }
 
-        private bool isDefaultNamespace(String namespaceUri)
-        {
-            return (!StringUtils.HasLength(namespaceUri) || OBJECTS_NAMESPACE_URI.Equals(namespaceUri));
-        }
+        private bool isDefaultNamespace(string namespaceUri) { return !StringUtils.HasLength(namespaceUri) || OBJECTS_NAMESPACE_URI.Equals(namespaceUri); }
 
-        private bool isDefaultNamespace(XmlNode node)
-        {
-            return isDefaultNamespace(getNamespaceURI(node));
-        }
+        private bool isDefaultNamespace(XmlNode node) { return this.isDefaultNamespace(this.getNamespaceURI(node)); }
 
         private ObjectDefinitionHolder parseNestedCustomElement(XmlElement ele, IObjectDefinition containingBd)
         {
-            IObjectDefinition innerDefinition = parserContext.ParserHelper.ParseCustomElement(ele, containingBd);
+            IObjectDefinition innerDefinition = this.parserContext.ParserHelper.ParseCustomElement(ele, containingBd);
             if (innerDefinition == null)
             {
-                Error("Incorrect usage of element '" + ele.Name + "' in a nested manner. " +
-                        "This tag cannot be used nested inside <property>.", ele);
+                this.Error(
+                    "Incorrect usage of element '" + ele.Name + "' in a nested manner. " +
+                    "This tag cannot be used nested inside <property>.", 
+                    ele);
                 return null;
             }
-            String id = ele.Name + ObjectDefinitionReaderUtils.GENERATED_OBJECT_NAME_SEPARATOR +
-                    ObjectUtils.GetIdentityHexString(innerDefinition);
+
+            string id = ele.Name + ObjectDefinitionReaderUtils.GENERATED_OBJECT_NAME_SEPARATOR +
+                        ObjectUtils.GetIdentityHexString(innerDefinition);
 
             return new ObjectDefinitionHolder(innerDefinition, id);
         }
 
-        //private ObjectDefinitionHolder decorateObjectDefinitionIfRequired(XmlElement ele, ObjectDefinitionHolder definitionHolder)
-        //{
-        //    return decorateObjectDefinitionIfRequired(ele, definitionHolder, null);
-        //}
+        // private ObjectDefinitionHolder decorateObjectDefinitionIfRequired(XmlElement ele, ObjectDefinitionHolder definitionHolder)
+        // {
+        // return decorateObjectDefinitionIfRequired(ele, definitionHolder, null);
+        // }
 
-        //private ObjectDefinitionHolder decorateObjectDefinitionIfRequired(
-        //        XmlElement ele, ObjectDefinitionHolder definitionHolder, IObjectDefinition containingBd)
-        //{
+        // private ObjectDefinitionHolder decorateObjectDefinitionIfRequired(
+        // XmlElement ele, ObjectDefinitionHolder definitionHolder, IObjectDefinition containingBd)
+        // {
 
-        //    ObjectDefinitionHolder finalDefinition = definitionHolder;
+        // ObjectDefinitionHolder finalDefinition = definitionHolder;
 
-        //    // Decorate based on custom attributes first.
-        //    XmlAttributeCollection attributes = ele.Attributes;
-        //    for (int i = 0; i < attributes.Count; i++)
-        //    {
-        //        XmlNode node = attributes.Item(i);
-        //        finalDefinition = decorateIfRequired(node, finalDefinition, containingBd);
-        //    }
+        // // Decorate based on custom attributes first.
+        // XmlAttributeCollection attributes = ele.Attributes;
+        // for (int i = 0; i < attributes.Count; i++)
+        // {
+        // XmlNode node = attributes.Item(i);
+        // finalDefinition = decorateIfRequired(node, finalDefinition, containingBd);
+        // }
 
-        //    // Decorate based on custom nested elements.
-        //    XmlNodeList children = ele.ChildNodes;
-        //    for (int i = 0; i < children.Count; i++)
-        //    {
-        //        XmlNode node = children.Item(i);
-        //        if (node != null && node.NodeType == XmlNodeType.Element)
-        //        {
-        //            finalDefinition = decorateIfRequired(node, finalDefinition, containingBd);
-        //        }
-        //    }
-        //    return finalDefinition;
-        //}
+        // // Decorate based on custom nested elements.
+        // XmlNodeList children = ele.ChildNodes;
+        // for (int i = 0; i < children.Count; i++)
+        // {
+        // XmlNode node = children.Item(i);
+        // if (node != null && node.NodeType == XmlNodeType.Element)
+        // {
+        // finalDefinition = decorateIfRequired(node, finalDefinition, containingBd);
+        // }
+        // }
+        // return finalDefinition;
+        // }
 
-        //private ObjectDefinitionHolder decorateIfRequired(
-        //        XmlNode node, ObjectDefinitionHolder originalDef, IObjectDefinition containingBd)
-        //{
+        // private ObjectDefinitionHolder decorateIfRequired(
+        // XmlNode node, ObjectDefinitionHolder originalDef, IObjectDefinition containingBd)
+        // {
 
-        //    String namespaceUri = getNamespaceURI(node);
-        //    if (!isDefaultNamespace(namespaceUri))
-        //    {
-        //        INamespaceParser handler = NamespaceParserRegistry.GetParser(namespaceUri);
+        // String namespaceUri = getNamespaceURI(node);
+        // if (!isDefaultNamespace(namespaceUri))
+        // {
+        // INamespaceParser handler = NamespaceParserRegistry.GetParser(namespaceUri);
 
-        //        if (handler != null)
-        //        {
-        //            return handler.Decorate(node, originalDef, new ParserContext(parserContext.ReaderContext, this, containingBd));
-        //        }
-        //        else if (namespaceUri != null && namespaceUri.StartsWith("http://www.springframework.net/"))
-        //        {
-        //            Error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", node);
-        //        }
-        //        //else
-        //        //{
-        //        //    // A custom namespace, not to be handled by Spring - maybe "xml:...".
-        //        //    if (logger.isDebugEnabled())
-        //        //    {
-        //        //        logger.debug("No Spring NamespaceHandler found for XML schema namespace [" + namespaceUri + "]");
-        //        //    }
-        //        //}
-        //    }
-        //    return originalDef;
-        //}
-
-        private Object parseValueElement(XmlElement ele, String defaultTypeName)
+        // if (handler != null)
+        // {
+        // return handler.Decorate(node, originalDef, new ParserContext(parserContext.ReaderContext, this, containingBd));
+        // }
+        // else if (namespaceUri != null && namespaceUri.StartsWith("http://www.springframework.net/"))
+        // {
+        // Error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", node);
+        // }
+        // //else
+        // //{
+        // //    // A custom namespace, not to be handled by Spring - maybe "xml:...".
+        // //    if (logger.isDebugEnabled())
+        // //    {
+        // //        logger.debug("No Spring NamespaceHandler found for XML schema namespace [" + namespaceUri + "]");
+        // //    }
+        // //}
+        // }
+        // return originalDef;
+        // }
+        private object parseValueElement(XmlElement ele, string defaultTypeName)
         {
             // It's a literal value.
-            String value = ele.Value;
-            String specifiedTypeName = ele.Attributes[TYPE_ATTRIBUTE].Value;
-            String typeName = specifiedTypeName;
+            string value = ele.Value;
+            string specifiedTypeName = ele.Attributes[TYPE_ATTRIBUTE].Value;
+            string typeName = specifiedTypeName;
             if (!StringUtils.HasText(typeName))
             {
                 typeName = defaultTypeName;
             }
 
-            TypedStringValue typedValue = buildTypedStringValue(value, typeName);
+            TypedStringValue typedValue = this.buildTypedStringValue(value, typeName);
             typedValue.TargetTypeName = specifiedTypeName;
             return typedValue;
         }
 
-
-        private Object parsePropertySubElement(XmlElement ele, IObjectDefinition bd, String defaultValueType)
+        private object parsePropertySubElement(XmlElement ele, IObjectDefinition bd, string defaultValueType)
         {
             if (!isDefaultNamespace(ele))
             {
-                return parseNestedCustomElement(ele, bd);
+                return this.parseNestedCustomElement(ele, bd);
             }
-            else if (NodeNameEquals(ele, OBJECT_ELEMENT))
+            else if (this.NodeNameEquals(ele, OBJECT_ELEMENT))
             {
-                ObjectDefinitionHolder nestedBd = parserContext.ParserHelper.ParseObjectDefinitionElement(ele, bd);
-                //if (nestedBd != null)
-                //{
-                //    nestedBd = decorateObjectDefinitionIfRequired(ele, nestedBd, bd);
-                //}
+                ObjectDefinitionHolder nestedBd = this.parserContext.ParserHelper.ParseObjectDefinitionElement(ele, bd);
+
+                // if (nestedBd != null)
+                // {
+                // nestedBd = decorateObjectDefinitionIfRequired(ele, nestedBd, bd);
+                // }
                 return nestedBd;
             }
-            else if (NodeNameEquals(ele, REF_ELEMENT))
+            else if (this.NodeNameEquals(ele, REF_ELEMENT))
             {
                 // A generic reference to any name of any object.
-                String refName = ele.GetAttribute(OBJECT_REF_ATTRIBUTE);
+                string refName = ele.GetAttribute(OBJECT_REF_ATTRIBUTE);
                 bool toParent = false;
                 if (!StringUtils.HasLength(refName))
                 {
@@ -412,92 +434,99 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                         toParent = true;
                         if (!StringUtils.HasLength(refName))
                         {
-                            Error("'object', 'local' or 'parent' is required for <ref> element", ele);
+                            this.Error("'object', 'local' or 'parent' is required for <ref> element", ele);
                             return null;
                         }
                     }
                 }
+
                 if (!StringUtils.HasText(refName))
                 {
-                    Error("<ref> element contains empty target attribute", ele);
+                    this.Error("<ref> element contains empty target attribute", ele);
                     return null;
                 }
-                RuntimeObjectReference reference = new RuntimeObjectReference(refName, toParent);
+
+                var reference = new RuntimeObjectReference(refName, toParent);
                 return reference;
             }
-            //else if (NodeNameEquals(ele, IDREF_ELEMENT)) {
-            //    return parseIdRefElement(ele);
-            //}
-            else if (NodeNameEquals(ele, VALUE_ELEMENT))
+                
+                // else if (NodeNameEquals(ele, IDREF_ELEMENT)) {
+                // return parseIdRefElement(ele);
+                // }
+            else if (this.NodeNameEquals(ele, VALUE_ELEMENT))
             {
-                return parseValueElement(ele, defaultValueType);
+                return this.parseValueElement(ele, defaultValueType);
             }
-            else if (NodeNameEquals(ele, NULL_ELEMENT))
+            else if (this.NodeNameEquals(ele, NULL_ELEMENT))
             {
                 // It's a distinguished null value. Let's wrap it in a TypedStringValue
                 // object in order to preserve the source location.
-                TypedStringValue nullHolder = new TypedStringValue(null);
+                var nullHolder = new TypedStringValue(null);
                 return nullHolder;
             }
-            else if (NodeNameEquals(ele, ARRAY_ELEMENT))
+            else if (this.NodeNameEquals(ele, ARRAY_ELEMENT))
             {
-                return parseArrayElement(ele, bd);
+                return this.parseArrayElement(ele, bd);
             }
-            else if (NodeNameEquals(ele, LIST_ELEMENT))
+            else if (this.NodeNameEquals(ele, LIST_ELEMENT))
             {
-                return parseListElement(ele, bd);
+                return this.parseListElement(ele, bd);
             }
-            else if (NodeNameEquals(ele, SET_ELEMENT))
+            else if (this.NodeNameEquals(ele, SET_ELEMENT))
             {
-                return parseSetElement(ele, bd);
+                return this.parseSetElement(ele, bd);
             }
-            else if (NodeNameEquals(ele, MAP_ELEMENT))
+            else if (this.NodeNameEquals(ele, MAP_ELEMENT))
             {
-                return ParseMapElement(ele, bd);
+                return this.ParseMapElement(ele, bd);
             }
-            //else if (NodeNameEquals(ele, PROPS_ELEMENT))
-            //{
-            //    return parsePropsElement(ele);
-            //}
+                
+                // else if (NodeNameEquals(ele, PROPS_ELEMENT))
+                // {
+                // return parsePropsElement(ele);
+                // }
             else
             {
-                Error("Unknown property sub-element: [" + ele.Name + "]", ele);
+                this.Error("Unknown property sub-element: [" + ele.Name + "]", ele);
                 return null;
             }
         }
 
-
-
         private IList parseListElement(XmlElement collectionEle, IObjectDefinition bd)
         {
-            String defaultElementType = collectionEle.Attributes[VALUE_TYPE_ATTRIBUTE].Value;
+            string defaultElementType = collectionEle.Attributes[VALUE_TYPE_ATTRIBUTE].Value;
             XmlNodeList nl = collectionEle.ChildNodes;
-            ManagedList target = new ManagedList(nl.Count);
+            var target = new ManagedList(nl.Count);
             target.ElementTypeName = defaultElementType;
-            target.MergeEnabled = ParseMergeAttribute(collectionEle);
-            parseCollectionElements(nl, target, bd, defaultElementType);
+            target.MergeEnabled = this.ParseMergeAttribute(collectionEle);
+            this.parseCollectionElements(nl, target, bd, defaultElementType);
             return target;
         }
 
-        private Spring.Collections.Set parseSetElement(XmlElement collectionEle, IObjectDefinition bd)
+        private Set parseSetElement(XmlElement collectionEle, IObjectDefinition bd)
         {
-            String defaultElementType = collectionEle.Attributes[VALUE_TYPE_ATTRIBUTE].Value;
+            string defaultElementType = collectionEle.Attributes[VALUE_TYPE_ATTRIBUTE].Value;
             XmlNodeList nl = collectionEle.ChildNodes;
-            ManagedSet target = new ManagedSet(nl.Count);
+            var target = new ManagedSet(nl.Count);
             target.ElementTypeName = defaultElementType;
-            target.MergeEnabled = ParseMergeAttribute(collectionEle);
-            parseCollectionElements(nl, target, bd, defaultElementType);
+            target.MergeEnabled = this.ParseMergeAttribute(collectionEle);
+            this.parseCollectionElements(nl, target, bd, defaultElementType);
             return target;
         }
 
+        /// <summary>The parse collection elements.</summary>
+        /// <param name="elementNodes">The element nodes.</param>
+        /// <param name="target">The target.</param>
+        /// <param name="bd">The bd.</param>
+        /// <param name="defaultElementType">The default element type.</param>
         protected void parseCollectionElements(XmlNodeList elementNodes, ICollection target, IObjectDefinition bd, string defaultElementType)
         {
             for (int i = 0; i < elementNodes.Count; i++)
             {
                 XmlNode node = elementNodes.Item(i);
-                if (node is XmlElement && !NodeNameEquals(node, DESCRIPTION_ELEMENT))
+                if (node is XmlElement && !this.NodeNameEquals(node, DESCRIPTION_ELEMENT))
                 {
-                    object subElement = parsePropertySubElement((XmlElement)node, bd, defaultElementType);
+                    object subElement = this.parsePropertySubElement((XmlElement)node, bd, defaultElementType);
 
                     if (target as DictionarySet != null)
                     {
@@ -511,27 +540,31 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             }
         }
 
-        private Object parseArrayElement(XmlElement arrayEle, IObjectDefinition bd)
+        private object parseArrayElement(XmlElement arrayEle, IObjectDefinition bd)
         {
-            String elementType = arrayEle.Attributes[VALUE_TYPE_ATTRIBUTE].Value;
+            string elementType = arrayEle.Attributes[VALUE_TYPE_ATTRIBUTE].Value;
             XmlNodeList nl = arrayEle.ChildNodes;
-            ManagedList target = new ManagedList(nl.Count);
+            var target = new ManagedList(nl.Count);
             target.ElementTypeName = elementType;
-            target.MergeEnabled = ParseMergeAttribute(arrayEle);
-            parseCollectionElements(nl, target, bd, elementType);
+            target.MergeEnabled = this.ParseMergeAttribute(arrayEle);
+            this.parseCollectionElements(nl, target, bd, elementType);
             return target;
         }
 
+        /// <summary>The parse map element.</summary>
+        /// <param name="mapEle">The map ele.</param>
+        /// <param name="bd">The bd.</param>
+        /// <returns>The System.Collections.IDictionary.</returns>
         public IDictionary ParseMapElement(XmlElement mapEle, IObjectDefinition bd)
         {
-            String defaultKeyType = mapEle.GetAttribute(KEY_TYPE_ATTRIBUTE);
-            String defaultValueType = mapEle.GetAttribute(VALUE_TYPE_ATTRIBUTE);
+            string defaultKeyType = mapEle.GetAttribute(KEY_TYPE_ATTRIBUTE);
+            string defaultValueType = mapEle.GetAttribute(VALUE_TYPE_ATTRIBUTE);
 
             XmlNodeList entryEles = mapEle.GetElementsByTagName(ENTRY_ELEMENT, OBJECTS_NAMESPACE_URI);
-            ManagedDictionary map = new ManagedDictionary(entryEles.Count);
+            var map = new ManagedDictionary(entryEles.Count);
             map.KeyTypeName = defaultKeyType;
             map.ValueTypeName = defaultValueType;
-            map.MergeEnabled = ParseMergeAttribute(mapEle);
+            map.MergeEnabled = this.ParseMergeAttribute(mapEle);
 
             foreach (XmlNode entryEle in entryEles)
             {
@@ -545,12 +578,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                     XmlNode node = entrySubNodes.Item(j);
                     if (node is XmlElement)
                     {
-                        XmlElement candidateEle = (XmlElement)node;
-                        if (NodeNameEquals(candidateEle, KEY_ELEMENT))
+                        var candidateEle = (XmlElement)node;
+                        if (this.NodeNameEquals(candidateEle, KEY_ELEMENT))
                         {
                             if (keyEle != null)
                             {
-                                Error("<entry> element is only allowed to contain one <key> sub-element", entryEle);
+                                this.Error("<entry> element is only allowed to contain one <key> sub-element", entryEle);
                             }
                             else
                             {
@@ -562,7 +595,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                             // Child element is what we're looking for.
                             if (valueEle != null)
                             {
-                                Error("<entry> element must not contain more than one value sub-element", entryEle);
+                                this.Error("<entry> element must not contain more than one value sub-element", entryEle);
                             }
                             else
                             {
@@ -573,69 +606,77 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 }
 
                 // Extract key from attribute or sub-element.
-                Object key = null;
-                bool hasKeyAttribute = HasAttribute(entryEle, KEY_ATTRIBUTE);
-                bool hasKeyRefAttribute = HasAttribute(entryEle, KEY_REF_ATTRIBUTE);
+                object key = null;
+                bool hasKeyAttribute = this.HasAttribute(entryEle, KEY_ATTRIBUTE);
+                bool hasKeyRefAttribute = this.HasAttribute(entryEle, KEY_REF_ATTRIBUTE);
                 if ((hasKeyAttribute && hasKeyRefAttribute) ||
-                        ((hasKeyAttribute || hasKeyRefAttribute)) && keyEle != null)
+                    (hasKeyAttribute || hasKeyRefAttribute) && keyEle != null)
                 {
-                    Error("<entry> element is only allowed to contain either " +
-                            "a 'key' attribute OR a 'key-ref' attribute OR a <key> sub-element", entryEle);
+                    this.Error(
+                        "<entry> element is only allowed to contain either " +
+                        "a 'key' attribute OR a 'key-ref' attribute OR a <key> sub-element", 
+                        entryEle);
                 }
+
                 if (hasKeyAttribute)
                 {
-                    key = buildTypedStringValueForMap(entryEle.Attributes[KEY_ATTRIBUTE].Value, defaultKeyType);
+                    key = this.buildTypedStringValueForMap(entryEle.Attributes[KEY_ATTRIBUTE].Value, defaultKeyType);
                 }
                 else if (hasKeyRefAttribute)
                 {
-                    String refName = entryEle.Attributes[KEY_REF_ATTRIBUTE].Value;
+                    string refName = entryEle.Attributes[KEY_REF_ATTRIBUTE].Value;
                     if (!StringUtils.HasText(refName))
                     {
-                        Error("<entry> element contains empty 'key-ref' attribute", entryEle);
+                        this.Error("<entry> element contains empty 'key-ref' attribute", entryEle);
                     }
-                    RuntimeObjectReference reference = new RuntimeObjectReference(refName);
+
+                    var reference = new RuntimeObjectReference(refName);
                     key = reference;
                 }
                 else if (keyEle != null)
                 {
-                    key = parseKeyElement(keyEle, bd, defaultKeyType);
+                    key = this.parseKeyElement(keyEle, bd, defaultKeyType);
                 }
                 else
                 {
-                    Error("<entry> element must specify a key", entryEle);
+                    this.Error("<entry> element must specify a key", entryEle);
                 }
 
                 // Extract value from attribute or sub-element.
-                Object value = null;
-                bool hasValueAttribute = HasAttribute(entryEle, VALUE_ATTRIBUTE);
-                bool hasValueRefAttribute = HasAttribute(entryEle, VALUE_REF_ATTRIBUTE);
+                object value = null;
+                bool hasValueAttribute = this.HasAttribute(entryEle, VALUE_ATTRIBUTE);
+                bool hasValueRefAttribute = this.HasAttribute(entryEle, VALUE_REF_ATTRIBUTE);
                 if ((hasValueAttribute && hasValueRefAttribute) ||
-                        ((hasValueAttribute || hasValueRefAttribute)) && valueEle != null)
+                    (hasValueAttribute || hasValueRefAttribute) && valueEle != null)
                 {
-                    Error("<entry> element is only allowed to contain either " +
-                            "'value' attribute OR 'value-ref' attribute OR <value> sub-element", entryEle);
+                    this.Error(
+                        "<entry> element is only allowed to contain either " +
+                        "'value' attribute OR 'value-ref' attribute OR <value> sub-element", 
+                        entryEle);
                 }
+
                 if (hasValueAttribute)
                 {
-                    value = buildTypedStringValueForMap(entryEle.Attributes[VALUE_ATTRIBUTE].Value, defaultValueType);
+                    value = this.buildTypedStringValueForMap(entryEle.Attributes[VALUE_ATTRIBUTE].Value, defaultValueType);
                 }
                 else if (hasValueRefAttribute)
                 {
-                    String refName = entryEle.Attributes[VALUE_REF_ATTRIBUTE].Value;
+                    string refName = entryEle.Attributes[VALUE_REF_ATTRIBUTE].Value;
                     if (!StringUtils.HasText(refName))
                     {
-                        Error("<entry> element contains empty 'value-ref' attribute", entryEle);
+                        this.Error("<entry> element contains empty 'value-ref' attribute", entryEle);
                     }
-                    RuntimeObjectReference reference = new RuntimeObjectReference(refName);
+
+                    var reference = new RuntimeObjectReference(refName);
                     value = reference;
                 }
                 else if (valueEle != null)
                 {
-                    value = parsePropertySubElement(valueEle, bd, defaultValueType);
+                    value = this.parsePropertySubElement(valueEle, bd, defaultValueType);
                 }
                 else
                 {
-                    Error("<entry> element must specify a value", entryEle);
+                    this.Error("<entry> element must specify a value", entryEle);
                 }
 
                 // Add final key and value to the Map.
@@ -645,6 +686,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             return map;
         }
 
+        /// <summary>The convert to managed dictionary.</summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns>The Spring.Objects.Factory.Config.ManagedDictionary.</returns>
         public ManagedDictionary ConvertToManagedDictionary<TKey, TValue>(IDictionary dictionary)
         {
             var result = new ManagedDictionary();

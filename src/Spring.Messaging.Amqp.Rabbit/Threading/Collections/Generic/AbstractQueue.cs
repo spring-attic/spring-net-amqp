@@ -1,52 +1,39 @@
-﻿#region License
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AbstractQueue.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright (C) 2002-2008 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
-#region Imports
-
+#region Using Directives
 using System;
 using System.Collections.Generic;
-
 #endregion
 
 namespace Spring.Collections.Generic
 {
-    /// <summary> 
+    /// <summary>
     /// This class provides skeletal implementations for some of <see cref="IQueue{T}"/>
-    /// operations.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The methods <see cref="Add"/>, <see cref="Remove"/>, and
-    /// <see cref="Element()"/> are based on the <see cref="Offer"/>,
-    /// <see cref="Poll"/>, and <see cref="Peek"/> methods respectively but 
-    /// throw exceptions instead of indicating failure via
-    /// <see langword="false"/> returns.
-    /// </para>
+    /// operations.</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <remarks><para>The methods <see cref="Add"/>, <see cref="Remove"/>, and<see cref="Element()"/> are based on the <see cref="Offer"/>,<see cref="Poll"/>, and <see cref="Peek"/> methods respectively but 
+    /// throw exceptions instead of indicating failure via<see langword="false"/> returns.</para>
     /// </remarks>
-    /// <author>Doug Lea</author>
-    /// <author>Griffin Caprio (.NET)</author>
-    /// <author>Kenneth Xu</author>
+    /// <author>Doug Lea</author><author>Griffin Caprio (.NET)</author><author>Kenneth Xu</author>
     [Serializable]
-    public abstract class AbstractQueue<T> : AbstractCollection<T>, IQueue<T> //JDK_1_6
+    public abstract class AbstractQueue<T> : AbstractCollection<T>, 
+                                             IQueue<T> // JDK_1_6
 #if !PHASED
-        , IQueue
+                                             , 
+                                             IQueue
 #endif
     {
         /// <summary>
@@ -56,28 +43,17 @@ namespace Spring.Collections.Generic
 
         #region IQueue<T> Members
 
-        /// <summary>
-        /// Inserts the specified element into this queue if it is possible to 
-        /// do so immediately without violating capacity restrictions. 
-        /// </summary>
-        /// <remarks>
-        /// When using a capacity-restricted queue, this method is generally 
+        /// <summary>Inserts the specified element into this queue if it is possible to 
+        /// do so immediately without violating capacity restrictions. </summary>
+        /// <remarks>When using a capacity-restricted queue, this method is generally 
         /// preferable to <see cref="Add"/>, which can fail to 
-        /// insert an element only by throwing an exception. 
-        /// </remarks>
+        /// insert an element only by throwing an exception. </remarks>
         /// <param name="element">The element to add.</param>
-        /// <returns>
-        /// <c>true</c> if the element was added to this queue. Otherwise 
-        /// <c>false</c>.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="element"/> is <c>null</c> and the queue 
-        /// implementation doesn't allow <c>null</c>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If some property of the supplied <paramref name="element"/> 
-        /// prevents it from being added to this queue. 
-        /// </exception>
+        /// <returns><c>true</c> if the element was added to this queue. Otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="element"/> is <c>null</c> and the queue 
+        /// implementation doesn't allow <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">If some property of the supplied <paramref name="element"/> 
+        /// prevents it from being added to this queue. </exception>
         public abstract bool Offer(T element);
 
         /// <summary>
@@ -100,7 +76,7 @@ namespace Spring.Collections.Generic
         public virtual T Element()
         {
             T element;
-            if (Peek(out element))
+            if (this.Peek(out element))
             {
                 return element;
             }
@@ -110,16 +86,10 @@ namespace Spring.Collections.Generic
             }
         }
 
-        /// <summary>
-        /// Retrieves, but does not remove, the head of this queue into out
-        /// parameter <paramref name="element"/>.
-        /// </summary>
-        /// <param name="element">
-        /// The head of this queue. <c>default(T)</c> if queue is empty.
-        /// </param>
-        /// <returns>
-        /// <c>false</c> is the queue is empty. Otherwise <c>true</c>.
-        /// </returns>
+        /// <summary>Retrieves, but does not remove, the head of this queue into out
+        /// parameter <paramref name="element"/>.</summary>
+        /// <param name="element">The head of this queue. <c>default(T)</c> if queue is empty.</param>
+        /// <returns><c>false</c> is the queue is empty. Otherwise <c>true</c>.</returns>
         public abstract bool Peek(out T element);
 
         /// <summary>
@@ -132,7 +102,7 @@ namespace Spring.Collections.Generic
         public virtual T Remove()
         {
             T element;
-            if (Poll(out element))
+            if (this.Poll(out element))
             {
                 return element;
             }
@@ -142,36 +112,24 @@ namespace Spring.Collections.Generic
             }
         }
 
-        /// <summary>
-        /// Retrieves and removes the head of this queue into out parameter
-        /// <paramref name="element"/>. 
-        /// </summary>
-        /// <param name="element">
-        /// Set to the head of this queue. <c>default(T)</c> if queue is empty.
-        /// </param>
-        /// <returns>
-        /// <c>false</c> if the queue is empty. Otherwise <c>true</c>.
-        /// </returns>
+        /// <summary>Retrieves and removes the head of this queue into out parameter<paramref name="element"/>. </summary>
+        /// <param name="element">Set to the head of this queue. <c>default(T)</c> if queue is empty.</param>
+        /// <returns><c>false</c> if the queue is empty. Otherwise <c>true</c>.</returns>
         public abstract bool Poll(out T element);
-
         #endregion
 
         #region ICollection<T> Members
 
-        /// <summary>
-        /// Inserts the specified <paramref name="element"/> into this queue 
+        /// <summary>Inserts the specified <paramref name="element"/> into this queue 
         /// if it is possible to do so immediately without violating capacity 
         /// restrictions. Throws an <see cref="InvalidOperationException"/> 
-        /// if no space is currently available.
-        /// </summary>
+        /// if no space is currently available.</summary>
         /// <param name="element">The element to add.</param>
-        /// <exception cref="InvalidOperationException">
-        /// If the <paramref name="element"/> cannot be added at this time due 
-        /// to capacity restrictions. 
-        /// </exception>
+        /// <exception cref="InvalidOperationException">If the <paramref name="element"/> cannot be added at this time due 
+        /// to capacity restrictions. </exception>
         public override void Add(T element)
         {
-            if (!Offer(element))
+            if (!this.Offer(element))
             {
                 throw new InvalidOperationException("Queue full.");
             }
@@ -187,70 +145,55 @@ namespace Spring.Collections.Generic
         public override void Clear()
         {
             T element;
-            while (Poll(out element)) { }
+            while (this.Poll(out element))
+            {
+            }
         }
 
         #endregion
 
         #region IQueue Members
-
 #if !PHASED
-        /// <summary>
-        /// Add differ from <see cref="IQueue.Offer"/> by throwing exception
-        /// When queue is full.
-        /// </summary>
+
+        /// <summary>Add differ from <see cref="IQueue.Offer"/> by throwing exception
+        /// When queue is full.</summary>
         /// <param name="objectToAdd"></param>
-        /// <returns>
-        /// TODO: The should be changed to void! in java Queue inherits 
+        /// <returns>TODO: The should be changed to void! in java Queue inherits 
         /// from Collection, which has abstract method <c>boolean Add(object)</c>, 
-        /// in .Net, there is no such limitation!
-        /// </returns>
+        /// in .Net, there is no such limitation!</returns>
         bool IQueue.Add(object objectToAdd)
         {
-            Add((T)objectToAdd);
+            this.Add((T)objectToAdd);
             return true;
         }
 
-        object IQueue.Element()
-        {
-            return Element();
-        }
+        object IQueue.Element() { return this.Element(); }
 
-        bool IQueue.Offer(object objectToAdd)
-        {
-            return Offer((T)objectToAdd);
-        }
+        bool IQueue.Offer(object objectToAdd) { return this.Offer((T)objectToAdd); }
 
         object IQueue.Peek()
         {
             T element;
-            return Peek(out element) ? (object)element : null;
+            return this.Peek(out element) ? (object)element : null;
         }
 
         object IQueue.Poll()
         {
             T element;
-            return Poll(out element) ? (object)element : null;
+            return this.Poll(out element) ? (object)element : null;
         }
 
-        /// <summary>
-        /// Remove differ from <see cref="IQueue.Poll"/> by throwing exception
-        /// When queue is empty.
-        /// </summary>
-        /// <returns></returns>
-        object IQueue.Remove()
-        {
-            return Remove();
-        }
+        /// <summary>Remove differ from <see cref="IQueue.Poll"/> by throwing exception
+        /// When queue is empty.</summary>
+        /// <returns>The System.Object.</returns>
+        object IQueue.Remove() { return this.Remove(); }
 #endif
+
         /// <summary>
         /// Returns <see langword="true"/> if there are no elements in the 
         /// <see cref="IQueue{T}"/>, <see langword="false"/> otherwise.
         /// </summary>
-        public virtual bool IsEmpty
-        {
-            get { return Count == 0; }
-        }
+        public virtual bool IsEmpty { get { return this.Count == 0; } }
 
         /// <summary>
         /// Returns the current capacity of this queue.
@@ -268,160 +211,116 @@ namespace Spring.Collections.Generic
         /// be read only.
         /// </returns>
         /// 
-        public override bool IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
+        public override bool IsReadOnly { get { return false; } }
         #endregion
 
-        /// <summary> 
-        /// Removes all available elements from this queue and invoke the given
-        /// <paramref name="action"/> on each element in order.
-        /// </summary>
-        /// <remarks>
-        /// This operation may be more efficient than repeatedly polling this 
-        /// queue.  A failure encountered while attempting to invoke the 
-        /// <paramref name="action"/> on the elements may result in elements 
+        /// <summary>
+        /// Removes all available elements from this queue and invoke the given<paramref name="action"/> on each element in order.</summary>
+        /// <remarks>This operation may be more efficient than repeatedly polling this 
+        /// queue.  A failure encountered while attempting to invoke the <paramref name="action"/> on the elements may result in elements 
         /// being neither, either or both in the queue or processed when the 
         /// associated exception is thrown.
         /// <example> Drain to a non-generic list.
         /// <code language="c#">
         /// IList c = ...;
-        /// int count = Drain(delegate(T e) {c.Add(e);});
-        /// </code>
+        /// int count = Drain(delegate(T e) {c.Add(e);});</code>
         /// </example>
         /// </remarks>
         /// <param name="action">The action to performe on each element.</param>
         /// <returns>The number of elements processed.</returns>
-        /// <exception cref="System.InvalidOperationException">
-        /// If the queue cannot be drained at this time.
-        /// </exception>
-        /// <exception cref="System.ArgumentNullException">
-        /// If the specified action is <see langword="null"/>.
-        /// </exception>
+        /// <exception cref="System.InvalidOperationException">If the queue cannot be drained at this time.</exception>
+        /// <exception cref="System.ArgumentNullException">If the specified action is <see langword="null"/>.</exception>
         /// <seealso cref="IQueue{T}.Drain(Action{T}, int)"/>
-        public virtual int Drain(Action<T> action)
-        {
-            return Drain(action, null);
-        }
+        public virtual int Drain(Action<T> action) { return this.Drain(action, null); }
 
-        /// <summary> 
+        /// <summary>
         /// Removes all elements that pass the given <paramref name="criteria"/> 
         /// from this queue and invoke the given <paramref name="action"/> on 
-        /// each element in order.
-        /// </summary>
-        /// <remarks>
-        /// This operation may be more efficient than repeatedly polling this 
-        /// queue.  A failure encountered while attempting to invoke the 
-        /// <paramref name="action"/> on the elements may result in elements 
+        /// each element in order.</summary>
+        /// <remarks>This operation may be more efficient than repeatedly polling this 
+        /// queue.  A failure encountered while attempting to invoke the <paramref name="action"/> on the elements may result in elements 
         /// being neither, either or both in the queue or processed when the 
         /// associated exception is thrown.
         /// <example> Drain to a non-generic list.
         /// <code language="c#">
         /// IList c = ...;
-        /// int count = Drain(delegate(T e) {c.Add(e);});
-        /// </code>
+        /// int count = Drain(delegate(T e) {c.Add(e);});</code>
         /// </example>
         /// </remarks>
         /// <param name="action">The action to performe on each element.</param>
-        /// <param name="criteria">
-        /// The criteria to select the elements. <c>null</c> selects any element.
-        /// </param>
+        /// <param name="criteria">The criteria to select the elements. <c>null</c> selects any element.</param>
         /// <returns>The number of elements processed.</returns>
-        /// <exception cref="System.InvalidOperationException">
-        /// If the queue cannot be drained at this time.
-        /// </exception>
-        /// <exception cref="System.ArgumentNullException">
-        /// If the specified action is <see langword="null"/>.
-        /// </exception>
+        /// <exception cref="System.InvalidOperationException">If the queue cannot be drained at this time.</exception>
+        /// <exception cref="System.ArgumentNullException">If the specified action is <see langword="null"/>.</exception>
         /// <seealso cref="IQueue{T}.Drain(Action{T}, int)"/>
         public virtual int Drain(Action<T> action, Predicate<T> criteria)
         {
-            if (action == null) throw new ArgumentNullException("action");
-            return DoDrain(action, criteria);
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+
+            return this.DoDrain(action, criteria);
         }
 
-        /// <summary> 
+        /// <summary>
         /// Removes at most the given number of available elements from this 
         /// queue and invoke the given <paramref name="action"/> on each 
-        /// element in order.
-        /// </summary>
-        /// <remarks>
-        /// This operation may be more efficient than repeatedly polling this 
-        /// queue.  A failure encountered while attempting to invoke the 
-        /// <paramref name="action"/> on the elements may result in elements 
+        /// element in order.</summary>
+        /// <remarks>This operation may be more efficient than repeatedly polling this 
+        /// queue.  A failure encountered while attempting to invoke the <paramref name="action"/> on the elements may result in elements 
         /// being neither, either or both in the queue or processed when the 
-        /// associated exception is thrown.
-        /// </remarks>
+        /// associated exception is thrown.</remarks>
         /// <param name="action">The action to performe on each element.</param>
         /// <param name="maxElements">the maximum number of elements to transfer</param>
         /// <returns>The number of elements processed.</returns>
-        /// <exception cref="System.InvalidOperationException">
-        /// If the queue cannot be drained at this time.
-        /// </exception>
-        /// <exception cref="System.ArgumentNullException">
-        /// If the specified action is <see langword="null"/>.
-        /// </exception>
+        /// <exception cref="System.InvalidOperationException">If the queue cannot be drained at this time.</exception>
+        /// <exception cref="System.ArgumentNullException">If the specified action is <see langword="null"/>.</exception>
         /// <seealso cref="IQueue{T}.Drain(System.Action{T})"/>
-        public virtual int Drain(Action<T> action, int maxElements)
-        {
-            return Drain(action, maxElements, null);
-        }
+        public virtual int Drain(Action<T> action, int maxElements) { return this.Drain(action, maxElements, null); }
 
-        /// <summary> 
-        /// Removes at most the given number of elements that pass the given 
-        /// <paramref name="criteria"/>from this queue and invoke the given 
-        /// <paramref name="action"/> on each element in order.
-        /// </summary>
-        /// <remarks>
-        /// This operation may be more efficient than repeatedly polling this 
-        /// queue.  A failure encountered while attempting to invoke the 
-        /// <paramref name="action"/> on the elements may result in elements 
+        /// <summary>
+        /// Removes at most the given number of elements that pass the given <paramref name="criteria"/>from this queue and invoke the given <paramref name="action"/> on each element in order.</summary>
+        /// <remarks>This operation may be more efficient than repeatedly polling this 
+        /// queue.  A failure encountered while attempting to invoke the <paramref name="action"/> on the elements may result in elements 
         /// being neither, either or both in the queue or processed when the 
-        /// associated exception is thrown.
-        /// </remarks>
+        /// associated exception is thrown.</remarks>
         /// <param name="action">The action to performe on each element.</param>
         /// <param name="maxElements">the maximum number of elements to transfer</param>
-        /// <param name="criteria">
-        /// The criteria to select the elements. <c>null</c> selects any element.
-        /// </param>
+        /// <param name="criteria">The criteria to select the elements. <c>null</c> selects any element.</param>
         /// <returns>The number of elements processed.</returns>
-        /// <exception cref="System.InvalidOperationException">
-        /// If the queue cannot be drained at this time.
-        /// </exception>
-        /// <exception cref="System.ArgumentNullException">
-        /// If the specified action is <see langword="null"/>.
-        /// </exception>
+        /// <exception cref="System.InvalidOperationException">If the queue cannot be drained at this time.</exception>
+        /// <exception cref="System.ArgumentNullException">If the specified action is <see langword="null"/>.</exception>
         /// <seealso cref="IQueue{T}.Drain(System.Action{T})"/>
         public virtual int Drain(Action<T> action, int maxElements, Predicate<T> criteria)
         {
-            if (action == null) throw new ArgumentNullException("action");
-            if (maxElements <= 0) return 0;
-            return DoDrain(action, maxElements, criteria);
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+
+            if (maxElements <= 0)
+            {
+                return 0;
+            }
+
+            return this.DoDrain(action, maxElements, criteria);
         }
 
-        /// <summary> 
-        /// Does the real work for all drain methods. Caller must
-        /// guarantee the <paramref name="action"/> is not <c>null</c> and
-        /// <paramref name="maxElements"/> is greater then zero (0).
-        /// </summary>
-        /// <seealso cref="IQueue{T}.Drain(System.Action{T})"/>
-        /// <seealso cref="IQueue{T}.Drain(System.Action{T}, int)"/>
-        /// <seealso cref="IQueue{T}.Drain(System.Action{T}, Predicate{T})"/>
-        /// <seealso cref="IQueue{T}.Drain(System.Action{T}, int, Predicate{T})"/>
-        internal protected abstract int DoDrain(Action<T> action, int maxElements, Predicate<T> criteria);
+        /// <summary>Does the real work for all drain methods. Caller must
+        /// guarantee the <paramref name="action"/> is not <c>null</c> and<paramref name="maxElements"/> is greater then zero (0).</summary>
+        /// <param name="action">The action.</param>
+        /// <param name="maxElements">The max Elements.</param>
+        /// <param name="criteria">The criteria.</param>
+        /// <seealso cref="IQueue{T}.Drain(System.Action{T})"/><seealso cref="IQueue{T}.Drain(System.Action{T}, int)"/><seealso cref="IQueue{T}.Drain(System.Action{T}, Predicate{T})"/><seealso cref="IQueue{T}.Drain(System.Action{T}, int, Predicate{T})"/>
+        /// <returns>The System.Int32.</returns>
+        protected internal abstract int DoDrain(Action<T> action, int maxElements, Predicate<T> criteria);
 
-        /// <summary>
-        /// Does the real work for the <see cref="AbstractQueue{T}.Drain(System.Action{T})"/>
-        /// and <see cref="AbstractQueue{T}.Drain(System.Action{T},Predicate{T})"/>.
-        /// </summary>
-        internal protected virtual int DoDrain(Action<T> action, Predicate<T> criteria)
-        {
-            return DoDrain(action, int.MaxValue, criteria);
-        }
+        /// <summary>Does the real work for the <see cref="AbstractQueue{T}.Drain(System.Action{T})"/>
+        /// and <see cref="AbstractQueue{T}.Drain(System.Action{T},Predicate{T})"/>.</summary>
+        /// <param name="action">The action.</param>
+        /// <param name="criteria">The criteria.</param>
+        /// <returns>The System.Int32.</returns>
+        protected internal virtual int DoDrain(Action<T> action, Predicate<T> criteria) { return this.DoDrain(action, int.MaxValue, criteria); }
     }
 }

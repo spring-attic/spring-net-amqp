@@ -1,20 +1,33 @@
-﻿
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AbstractExchangeParser.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
+#region Using Directives
+using System;
+using System.Xml;
 using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Config
 {
     /// <summary>
     /// An abstract exchange parser
     /// </summary>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald</author>
     public abstract class AbstractExchangeParser : AbstractSingleObjectDefinitionParser
     {
         private static readonly string ARGUMENTS_ELEMENT = "exchange-arguments";
@@ -31,51 +44,98 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
         protected static readonly string BINDING_QUEUE_ATTR = "queue";
 
-        protected override bool ShouldGenerateIdAsFallback
-        {
-            get
-            {
-                return true;
-            }
-        }
+        protected static readonly string BINDING_EXCHANGE_ATTR = "exchange";
 
+        /// <summary>Gets a value indicating whether should generate id as fallback.</summary>
+        protected override bool ShouldGenerateIdAsFallback { get { return true; } }
+
+        /// <summary>The do parse.</summary>
+        /// <param name="element">The element.</param>
+        /// <param name="parserContext">The parser context.</param>
+        /// <param name="builder">The builder.</param>
         protected override void DoParse(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder)
         {
             var exchangeName = element.GetAttribute("name");
             builder.AddConstructorArg(new TypedStringValue(exchangeName));
-            var bindingsElements = element.GetElementsByTagName(BINDINGS_ELE, element.NamespaceURI);
-
-            var bindingsElement = (bindingsElements.Count == 1) ? bindingsElements[0] as XmlElement : null;
-            if (bindingsElement != null)
-            {
-                var bindings = bindingsElement.GetElementsByTagName(BINDING_ELE);
-                foreach (var binding in bindingsElement)
-                {
-                    var objectDefinition = ParseBinding(exchangeName, binding as XmlElement, parserContext);
-                    RegisterObjectDefinition(new ObjectDefinitionHolder(objectDefinition, parserContext.ReaderContext.GenerateObjectName(objectDefinition)), parserContext.Registry);
-                }
-            }
+            this.ParseBindings(element, parserContext, builder, exchangeName);
 
             NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, DURABLE_ATTRIBUTE, true);
             NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, AUTO_DELETE_ATTRIBUTE, false);
 
-            var argumentsElements = element.GetElementsByTagName(ARGUMENTS_ELEMENT, element.NamespaceURI);
+            var argumentsElements = element.GetElementsByTagName(ARGUMENTS_ELEMENT);
             var argumentsElement = argumentsElements.Count == 1 ? argumentsElements[0] as XmlElement : null;
-            
+
             if (argumentsElement != null)
             {
-                //var parser = new ArgumentEntryElementParser();
-                //var map = parser.ParseArgumentsElement(argumentsElement, parserContext);
-                
                 var parser = new ObjectDefinitionParserHelper(parserContext);
                 var map = parser.ParseMapElement(argumentsElement, builder.RawObjectDefinition);
-                
 
                 builder.AddPropertyValue(ARGUMENTS_PROPERTY, parser.ConvertToManagedDictionary<string, object>(map));
                 builder.AddConstructorArg(map);
             }
         }
 
-        protected abstract AbstractObjectDefinition ParseBinding(String exchangeName, XmlElement binding, ParserContext parserContext);
+        /// <summary>The parse bindings.</summary>
+        /// <param name="element">The element.</param>
+        /// <param name="parserContext">The parser context.</param>
+        /// <param name="builder">The builder.</param>
+        /// <param name="exchangeName">The exchange name.</param>
+        protected void ParseBindings(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder, string exchangeName)
+        {
+            var bindings = element.GetElementsByTagName(BINDINGS_ELE);
+            var bindingElement = bindings.Count == 1 ? bindings[0] as XmlElement : null;
+
+            this.DoParseBindings(parserContext, exchangeName, bindingElement, this);
+        }
+
+        /// <summary>The do parse bindings.</summary>
+        /// <param name="parserContext">The parser context.</param>
+        /// <param name="exchangeName">The exchange name.</param>
+        /// <param name="bindings">The bindings.</param>
+        /// <param name="parser">The parser.</param>
+        protected void DoParseBindings(ParserContext parserContext, string exchangeName, XmlElement bindings, AbstractExchangeParser parser)
+        {
+            if (bindings != null)
+            {
+                foreach (var binding in bindings.GetElementsByTagName(BINDING_ELE))
+                {
+                    var objectDefinition = this.ParseBinding(exchangeName, binding as XmlElement, parserContext);
+                    this.RegisterObjectDefinition(new ObjectDefinitionHolder(objectDefinition, parserContext.ReaderContext.GenerateObjectName(objectDefinition)), parserContext.Registry);
+                }
+            }
+        }
+
+        /// <summary>The parse binding.</summary>
+        /// <param name="exchangeName">The exchange name.</param>
+        /// <param name="binding">The binding.</param>
+        /// <param name="parserContext">The parser context.</param>
+        /// <returns>The Spring.Objects.Factory.Support.AbstractObjectDefinition.</returns>
+        protected abstract AbstractObjectDefinition ParseBinding(string exchangeName, XmlElement binding, ParserContext parserContext);
+
+        /// <summary>The parse destination.</summary>
+        /// <param name="binding">The binding.</param>
+        /// <param name="parserContext">The parser context.</param>
+        /// <param name="builder">The builder.</param>
+        protected void ParseDestination(XmlElement binding, ParserContext parserContext, ObjectDefinitionBuilder builder)
+        {
+            var queueAttribute = binding.GetAttribute(BINDING_QUEUE_ATTR);
+            var exchangeAttribute = binding.GetAttribute(BINDING_EXCHANGE_ATTR);
+            var hasQueueAttribute = string.IsNullOrWhiteSpace(queueAttribute);
+            var hasExchangeAttribute = string.IsNullOrWhiteSpace(exchangeAttribute);
+            if (!(hasQueueAttribute ^ hasExchangeAttribute))
+            {
+                parserContext.ReaderContext.ReportException(binding, BINDING_ELE, "Binding must have exactly one of 'queue' or 'exchange'");
+            }
+
+            if (hasQueueAttribute)
+            {
+                builder.AddPropertyReference("destinationQueue", queueAttribute);
+            }
+
+            if (hasExchangeAttribute)
+            {
+                builder.AddPropertyReference("destinationExchange", exchangeAttribute);
+            }
+        }
     }
 }

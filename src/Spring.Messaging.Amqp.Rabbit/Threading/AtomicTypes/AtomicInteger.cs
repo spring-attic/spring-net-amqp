@@ -1,27 +1,25 @@
-﻿#region License
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AtomicInteger.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright 2002-2008 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using System.Threading;
+#endregion
 
 #pragma warning disable 420
+
 namespace Spring.Threading.AtomicTypes
 {
     /// <summary> 
@@ -37,27 +35,19 @@ namespace Spring.Threading.AtomicTypes
     /// <author>Andreas Doehring (.NET)</author>
     /// <author>Kenneth Xu (Interlocked)</author>
     [Serializable]
-    public class AtomicInteger : IAtomic<int> //JDK_1_6
+    public class AtomicInteger : IAtomic<int>
     {
+        // JDK_1_6
         private volatile int _integerValue;
 
-        /// <summary> 
-        /// Creates a new <see cref="AtomicInteger"/> with a value of <paramref name="initialValue"/>.
-        /// </summary>
-        /// <param name="initialValue">
-        /// The initial value
-        /// </param>
-        public AtomicInteger(int initialValue)
-        {
-            _integerValue = initialValue;
-        }
+        /// <summary>Initializes a new instance of the <see cref="AtomicInteger"/> class. 
+        /// Creates a new <see cref="AtomicInteger"/> with a value of <paramref name="initialValue"/>.</summary>
+        /// <param name="initialValue">The initial value</param>
+        public AtomicInteger(int initialValue) { this._integerValue = initialValue; }
 
-        /// <summary> 
-        /// Creates a new <see cref="AtomicInteger"/> with initial value 0.
-        /// </summary>
-        public AtomicInteger()
-        {
-        }
+        /// <summary>Initializes a new instance of the <see cref="AtomicInteger"/> class.  
+        /// Creates a new <see cref="AtomicInteger"/> with initial value 0.</summary>
+        public AtomicInteger() { }
 
         /// <summary> 
         /// Gets and sets the current value.
@@ -65,11 +55,7 @@ namespace Spring.Threading.AtomicTypes
         /// <returns>
         /// The current value
         /// </returns>
-        public int Value
-        {
-            get { return _integerValue; }
-            set { _integerValue = value; }
-        }
+        public int Value { get { return this._integerValue; } set { this._integerValue = value; } }
 
         /// <summary> 
         /// Atomically increments by one the current value.
@@ -77,10 +63,7 @@ namespace Spring.Threading.AtomicTypes
         /// <returns> 
         /// The previous value
         /// </returns>
-        public int ReturnValueAndIncrement()
-        {
-            return Interlocked.Increment(ref _integerValue) - 1;
-        }
+        public int ReturnValueAndIncrement() { return Interlocked.Increment(ref this._integerValue) - 1; }
 
         /// <summary> 
         /// Atomically decrements by one the current value.
@@ -88,101 +71,59 @@ namespace Spring.Threading.AtomicTypes
         /// <returns> 
         /// The previous value
         /// </returns>
-        public int ReturnValueAndDecrement()
-        {
-            return Interlocked.Decrement(ref _integerValue) + 1;
-        }
+        public int ReturnValueAndDecrement() { return Interlocked.Decrement(ref this._integerValue) + 1; }
 
-        /// <summary> 
-        /// Eventually sets to the given value.
-        /// </summary>
-        /// <param name="newValue">
-        /// The new value
-        /// </param>
-        public void LazySet(int newValue)
-        {
-            _integerValue = newValue;
-        }
+        /// <summary>
+        /// Eventually sets to the given value.</summary>
+        /// <param name="newValue">The new value</param>
+        public void LazySet(int newValue) { this._integerValue = newValue; }
 
-        /// <summary> 
-        /// Atomically sets value to <paramref name="newValue"/> and returns the old value.
-        /// </summary>
-        /// <param name="newValue">
-        /// The new value
-        /// </param>
-        /// <returns> 
-        /// The previous value
-        /// </returns>
-        public int Exchange(int newValue)
-        {
-            return Interlocked.Exchange(ref _integerValue, newValue);
-        }
+        /// <summary>
+        /// Atomically sets value to <paramref name="newValue"/> and returns the old value.</summary>
+        /// <param name="newValue">The new value</param>
+        /// <returns>
+        /// The previous value</returns>
+        public int Exchange(int newValue) { return Interlocked.Exchange(ref this._integerValue, newValue); }
 
-        /// <summary> 
+        /// <summary>
         /// Atomically sets the value to <paramref name="newValue"/>
-        /// if the current value == <paramref name="expectedValue"/>
-        /// </summary>
-        /// <param name="expectedValue">
-        /// The expected value
-        /// </param>
-        /// <param name="newValue">
-        /// The new value
-        /// </param>
-        /// <returns> <c>true</c> if successful. <c>false</c> return indicates that
-        /// the actual value was not equal to the expected value.
-        /// </returns>
+        /// if the current value == <paramref name="expectedValue"/></summary>
+        /// <param name="expectedValue">The expected value</param>
+        /// <param name="newValue">The new value</param>
+        /// <returns><c>true</c> if successful. <c>false</c> return indicates that
+        /// the actual value was not equal to the expected value.</returns>
         public bool CompareAndSet(int expectedValue, int newValue)
         {
             return expectedValue == Interlocked.CompareExchange(
-                ref _integerValue, newValue, expectedValue);
+                ref this._integerValue, newValue, expectedValue);
         }
 
-        /// <summary> 
+        /// <summary>
         /// Atomically sets the value to <paramref name="newValue"/>
-        /// if the current value == <paramref name="expectedValue"/>
-        /// </summary>
-        /// <param name="expectedValue">
-        /// The expected value
-        /// </param>
-        /// <param name="newValue">
-        /// The new value
-        /// </param>
-        /// <returns> <c>true</c> if successful. <c>false</c> return indicates that
-        /// the actual value was not equal to the expected value.
-        /// </returns>
+        /// if the current value == <paramref name="expectedValue"/></summary>
+        /// <param name="expectedValue">The expected value</param>
+        /// <param name="newValue">The new value</param>
+        /// <returns><c>true</c> if successful. <c>false</c> return indicates that
+        /// the actual value was not equal to the expected value.</returns>
         public virtual bool WeakCompareAndSet(int expectedValue, int newValue)
         {
             return expectedValue == Interlocked.CompareExchange(
-                ref _integerValue, newValue, expectedValue);
+                ref this._integerValue, newValue, expectedValue);
         }
 
-        /// <summary> 
-        /// Atomically adds <paramref name="deltaValue"/> to the current value.
-        /// </summary>
-        /// <param name="deltaValue">
-        /// The value to add
-        /// </param>
-        /// <returns> 
-        /// The previous value
-        /// </returns>
-        public int AddDeltaAndReturnPreviousValue(int deltaValue)
-        {
-            return Interlocked.Add(ref _integerValue, deltaValue) - deltaValue;
-        }
+        /// <summary>
+        /// Atomically adds <paramref name="deltaValue"/> to the current value.</summary>
+        /// <param name="deltaValue">The value to add</param>
+        /// <returns>
+        /// The previous value</returns>
+        public int AddDeltaAndReturnPreviousValue(int deltaValue) { return Interlocked.Add(ref this._integerValue, deltaValue) - deltaValue; }
 
-        /// <summary> 
-        /// Atomically adds <paramref name="deltaValue"/> to the current value.
-        /// </summary>
-        /// <param name="deltaValue">
-        /// The value to add
-        /// </param>
-        /// <returns> 
-        /// The updated value
-        /// </returns>
-        public int AddDeltaAndReturnNewValue(int deltaValue)
-        {
-            return Interlocked.Add(ref _integerValue, deltaValue);
-        }
+        /// <summary>
+        /// Atomically adds <paramref name="deltaValue"/> to the current value.</summary>
+        /// <param name="deltaValue">The value to add</param>
+        /// <returns>
+        /// The updated value</returns>
+        public int AddDeltaAndReturnNewValue(int deltaValue) { return Interlocked.Add(ref this._integerValue, deltaValue); }
 
         /// <summary> 
         /// Atomically increments the current value by one.
@@ -190,10 +131,7 @@ namespace Spring.Threading.AtomicTypes
         /// <returns> 
         /// The updated value
         /// </returns>
-        public int IncrementValueAndReturn()
-        {
-            return Interlocked.Increment(ref _integerValue);
-        }
+        public int IncrementValueAndReturn() { return Interlocked.Increment(ref this._integerValue); }
 
         /// <summary> 
         /// Atomically decrements by one the current value.
@@ -201,10 +139,7 @@ namespace Spring.Threading.AtomicTypes
         /// <returns> 
         /// The updated value
         /// </returns>
-        public int DecrementValueAndReturn()
-        {
-            return Interlocked.Decrement(ref _integerValue);
-        }
+        public int DecrementValueAndReturn() { return Interlocked.Decrement(ref this._integerValue); }
 
         /// <summary> 
         /// Returns the String representation of the current value.
@@ -212,10 +147,7 @@ namespace Spring.Threading.AtomicTypes
         /// <returns> 
         /// The String representation of the current value.
         /// </returns>
-        public override String ToString()
-        {
-            return _integerValue.ToString();
-        }
+        public override string ToString() { return this._integerValue.ToString(); }
 
         /// <summary>
         /// Implicit converts <see cref="AtomicInteger"/> to int.
@@ -226,11 +158,8 @@ namespace Spring.Threading.AtomicTypes
         /// <returns>
         /// The converted int value of <paramref name="atomicInteger"/>.
         /// </returns>
-        public static implicit operator int(AtomicInteger atomicInteger)
-        {
-            return atomicInteger.Value;
-        }
-
+        public static implicit operator int(AtomicInteger atomicInteger) { return atomicInteger.Value; }
     }
 }
+
 #pragma warning restore 420
