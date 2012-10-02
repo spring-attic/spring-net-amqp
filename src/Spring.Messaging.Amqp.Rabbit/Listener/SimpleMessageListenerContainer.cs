@@ -325,7 +325,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             AssertUtils.State(
                 !(this.AcknowledgeMode.IsAutoAck() && this.transactionManager != null),
-                "The acknowledgeMode is NONE (autoack in Rabbit terms) which is not consistent with having an " + "external transaction manager. Either use a different AcknowledgeMode or make sure the transactionManager is null.");
+                "The acknowledgeMode is None (autoack in Rabbit terms) which is not consistent with having an " + "external transaction manager. Either use a different AcknowledgeMode or make sure the transactionManager is null.");
 
             if (typeof(CachingConnectionFactory).IsInstanceOfType(this.ConnectionFactory))
             {

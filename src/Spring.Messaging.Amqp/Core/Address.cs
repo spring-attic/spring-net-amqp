@@ -1,11 +1,26 @@
-using System;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Address.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System.Text;
 using System.Text.RegularExpressions;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Core
 {
-
     /// <summary>
     /// Represents an address for publication of an AMQP message. The AMQP 0-8 and
     /// 0-9 specifications have an unstructured string that is used as a "reply to"
@@ -13,50 +28,49 @@ namespace Spring.Messaging.Amqp.Core
     /// to follow these conventions.
     /// </summary>
     /// <author>Mark Pollack</author>
+    /// <author>Mark Fisher</author>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald</author>
     public class Address
     {
-        //	private static final Pattern pattern = Pattern.compile("^([^:]+)://([^/]*)/?(.*)$");
         public static readonly Regex pattern = new Regex("^([^:]+)://([^/]*)/?(.*)$");
 
-        private string exchangeType;
+        private readonly string exchangeType;
 
-        private string exchangeName;
+        private readonly string exchangeName;
 
-        private string routingKey;
+        private readonly string routingKey;
 
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Address"/> class from an unstructured string
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="Address"/> class from an unstructured string</summary>
         /// <param name="address">The unstructured address.</param>
         public Address(string address)
         {
             if (address == null)
             {
-                this.exchangeType = ExchangeTypes.Direct;                                
-                this.exchangeName = "";
-                this.routingKey = "";
-            } else
+                this.exchangeType = ExchangeTypes.Direct;
+                this.exchangeName = string.Empty;
+                this.routingKey = string.Empty;
+            }
+            else
             {
                 Match match = pattern.Match(address);
                 if (match.Success)
                 {
-                    exchangeType = match.Groups[1].Value;
-                    exchangeName = match.Groups[2].Value;
-                    routingKey = match.Groups[3].Value;
-                } else
+                    this.exchangeType = match.Groups[1].Value;
+                    this.exchangeName = match.Groups[2].Value;
+                    this.routingKey = match.Groups[3].Value;
+                }
+                else
                 {
-                    exchangeType = ExchangeTypes.Direct;
-                    exchangeName = "";
-                    routingKey = address;
+                    this.exchangeType = ExchangeTypes.Direct;
+                    this.exchangeName = string.Empty;
+                    this.routingKey = address;
                 }
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Address"/> class given the exchange type,
-        ///  exchange name and routing key. This will set the exchange type, name and the routing key explicitly.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="Address"/> class given the exchange type,
+        ///  exchange name and routing key. This will set the exchange type, name and the routing key explicitly.</summary>
         /// <param name="exchangeType">Type of the exchange.</param>
         /// <param name="exchangeName">Name of the exchange.</param>
         /// <param name="routingKey">The routing key.</param>
@@ -67,29 +81,20 @@ namespace Spring.Messaging.Amqp.Core
             this.routingKey = routingKey;
         }
 
-        public string ExchangeType
-        {
-            get { return exchangeType; }
-        }
+        /// <summary>Gets the exchange type.</summary>
+        public string ExchangeType { get { return this.exchangeType; } }
 
-        public string ExchangeName
-        {
-            get { return exchangeName; }
-        }
+        /// <summary>Gets the exchange name.</summary>
+        public string ExchangeName { get { return this.exchangeName; } }
 
-        public string RoutingKey
-        {
-            get { return routingKey; }
-        }
+        /// <summary>Gets the routing key.</summary>
+        public string RoutingKey { get { return this.routingKey; } }
 
+        /// <summary>The to string.</summary>
+        /// <returns>The System.String.</returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(exchangeType.ToString().ToLower() + "://" + this.exchangeName + "/");
-            if (StringUtils.HasText(routingKey))
-            {
-                sb.Append(routingKey);
-            }
-            return sb.ToString();
+            return string.Format("{0}://{1}/{2}", this.exchangeType.ToLower(), this.exchangeName, string.IsNullOrWhiteSpace(this.routingKey) ? string.Empty : this.routingKey);
         }
     }
 }

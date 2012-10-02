@@ -99,7 +99,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The acknowledge mode.
         /// </summary>
-        private volatile AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+        private volatile AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
 
         /// <summary>
         /// Flag for initialized.
@@ -116,19 +116,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// message).
         /// </para>
         /// <para>
-        /// Set to {@link AcknowledgeMode#MANUAL} if the listener will send the acknowledgements itself using
+        /// Set to {@link AcknowledgeMode#Manual} if the listener will send the acknowledgements itself using
         /// {@link Channel#basicAck(long, boolean)}. Manual acks are consistent with either a transactional or
         /// non-transactional channel, but if you are doing no other work on the channel at the same other than receiving a
         /// single message then the transaction is probably unnecessary.
         /// </para>
         /// <para>
-        /// Set to {@link AcknowledgeMode#NONE} to tell the broker not to expect any acknowledgements, and it will assume all
+        /// Set to {@link AcknowledgeMode#None} to tell the broker not to expect any acknowledgements, and it will assume all
         /// messages are acknowledged as soon as they are sent (this is "autoack" in native Rabbit broker terms). If
-        /// {@link AcknowledgeMode#NONE} then the channel cannot be transactional (so the container will fail on start up if
+        /// {@link AcknowledgeMode#None} then the channel cannot be transactional (so the container will fail on start up if
         /// that flag is accidentally set).
         /// </para>
         /// <para> 
-        /// @param acknowledgeMode the acknowledge mode to set. Defaults to {@link AcknowledgeMode#AUTO}
+        /// @param acknowledgeMode the acknowledge mode to set. Defaults to {@link AcknowledgeMode#Auto}
         /// @see AcknowledgeMode
         /// </para>
         /// </summary>
@@ -293,10 +293,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             base.AfterPropertiesSet();
             AssertUtils.State(
                 this.exposeListenerChannel || !this.AcknowledgeMode.IsManual(),
-                "You cannot acknowledge messages manually if the channel is not exposed to the listener " + "(please check your configuration and set exposeListenerChannel=true or acknowledgeMode!=MANUAL)");
+                "You cannot acknowledge messages manually if the channel is not exposed to the listener " + "(please check your configuration and set exposeListenerChannel=true or acknowledgeMode!=Manual)");
             AssertUtils.State(
                 !(this.AcknowledgeMode.IsAutoAck() && this.ChannelTransacted),
-                "The acknowledgeMode is NONE (autoack in Rabbit terms) which is not consistent with having a " + "transactional channel. Either use a different AcknowledgeMode or make sure channelTransacted=false");
+                "The acknowledgeMode is None (autoack in Rabbit terms) which is not consistent with having a " + "transactional channel. Either use a different AcknowledgeMode or make sure channelTransacted=false");
             this.ValidateConfiguration();
             this.Initialize();
         }

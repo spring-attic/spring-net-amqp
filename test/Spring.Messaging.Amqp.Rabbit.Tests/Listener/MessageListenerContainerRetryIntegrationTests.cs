@@ -225,7 +225,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var container = new SimpleMessageListenerContainer(template.ConnectionFactory);
             var listener = new RetryPocoListener(failFrequency);
             container.MessageListener = new MessageListenerAdapter(listener);
-            container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
             container.ChannelTransacted = true;
             container.TxSize = txSize;
             container.ConcurrentConsumers = concurrentConsumers;

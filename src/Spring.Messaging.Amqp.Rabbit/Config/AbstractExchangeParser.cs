@@ -12,7 +12,6 @@ using Spring.Objects.Factory.Xml;
 
 namespace Spring.Messaging.Amqp.Rabbit.Config
 {
-
     /// <summary>
     /// An abstract exchange parser
     /// </summary>

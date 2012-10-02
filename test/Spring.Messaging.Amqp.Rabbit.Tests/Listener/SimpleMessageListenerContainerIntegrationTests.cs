@@ -23,18 +23,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// Simple message listener container integration tests.
     /// </summary>
-    [TestFixture(1, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
-    [TestFixture(1, 1, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
-    [TestFixture(4, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
-    [TestFixture(4, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
-    [TestFixture(4, 1, AcknowledgeModeUtils.AcknowledgeMode.AUTO, false, 1, false)]
-    [TestFixture(2, 2, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
-    [TestFixture(2, 2, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
-    [TestFixture(20, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
-    [TestFixture(20, 4, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
-    [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, false)]
-    [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.NONE, false, 1, false)]
-    [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 10, false)]
+    [TestFixture(1, 1, AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 1, false)]
+    [TestFixture(1, 1, AcknowledgeModeUtils.AcknowledgeMode.None, false, 1, false)]
+    [TestFixture(4, 1, AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 1, false)]
+    [TestFixture(4, 1, AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 1, false)]
+    [TestFixture(4, 1, AcknowledgeModeUtils.AcknowledgeMode.Auto, false, 1, false)]
+    [TestFixture(2, 2, AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 1, false)]
+    [TestFixture(2, 2, AcknowledgeModeUtils.AcknowledgeMode.None, false, 1, false)]
+    [TestFixture(20, 4, AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 1, false)]
+    [TestFixture(20, 4, AcknowledgeModeUtils.AcknowledgeMode.None, false, 1, false)]
+    [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 1, false)]
+    [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.None, false, 1, false)]
+    [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 10, false)]
     [Category(TestCategory.Integration)]
     public class SimpleMessageListenerContainerIntegrationTests : AbstractRabbitIntegrationTest
     {

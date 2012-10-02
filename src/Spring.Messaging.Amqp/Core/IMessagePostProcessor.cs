@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AmqpConnectException.cs" company="The original author or authors.">
+// <copyright file="IMessagePostProcessor.cs" company="The original author or authors.">
 //   Copyright 2002-2012 the original author or authors.
 //   
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -13,22 +13,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-#region Using Directives
-using System;
-#endregion
-
-namespace Spring.Messaging.Amqp
+namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
-    /// SystemException wrapper for an {@link ConnectException} which can be commonly thrown from AMQP operations if the remote process dies or there is a network issue.
+    /// To be used with the send method of Amqp template classes (such as RabbitTemplate)
+    /// that convert an object to a message.
+    /// It allows for further modification of the message after it has been processed
+    /// by the converter. This is useful for setting of Header and Properties.
     /// </summary>
-    /// <author>Dave Syder</author>
+    /// <author>Mark Pollack</author>
     /// <author>Joe Fitzgerald</author>
-    public class AmqpConnectException : AmqpException
+    public interface IMessagePostProcessor
     {
-        /// <summary>Initializes a new instance of the <see cref="AmqpConnectException"/> class.</summary>
+        /// <summary>The post process message.</summary>
         /// <param name="message">The message.</param>
-        /// <param name="cause">The cause.</param>
-        public AmqpConnectException(string message, Exception cause) : base(message, cause) { }
+        /// <returns>The Spring.Messaging.Amqp.Core.Message.</returns>
+        Message PostProcessMessage(Message message);
     }
 }

@@ -1,27 +1,23 @@
-#region License
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Message.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
-using System.Runtime.InteropServices;
 using System.Text;
-using Spring.Messaging.Amqp.Support.Converter;
+using Common.Logging;
+#endregion
 
 namespace Spring.Messaging.Amqp.Core
 {
@@ -33,23 +29,23 @@ namespace Spring.Messaging.Amqp.Core
     /// instance so that the rest of the AMQP API can in turn be simpler.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class Message 
+    /// <author>Mark Fisher</author>
+    /// <author>Oleg Zhurakousky</author>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald</author>
+    public class Message
     {
-        private readonly string ENCODING = "utf-8";
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
+        private const string ENCODING = "utf-8";
 
         private readonly MessageProperties messageProperties;
 
         private readonly byte[] body;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Message"/> class. 
-        /// </summary>
-        /// <param name="body">
-        /// The body.
-        /// </param>
-        /// <param name="messageProperties">
-        /// The message Properties.
-        /// </param>
+        /// <summary>Initializes a new instance of the <see cref="Message"/> class. </summary>
+        /// <param name="body">The body.</param>
+        /// <param name="messageProperties">The message Properties.</param>
         public Message(byte[] body, MessageProperties messageProperties)
         {
             this.body = body;
@@ -61,19 +57,12 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>
         /// Gets Body.
         /// </summary>
-        public byte[] Body
-        {
-            get { return this.body; }
-        }
+        public byte[] Body { get { return this.body; } }
 
         /// <summary>
         /// Gets MessageProperties.
         /// </summary>
-        public MessageProperties MessageProperties
-        {
-            get { return this.messageProperties; }           
-        }
-
+        public MessageProperties MessageProperties { get { return this.messageProperties; } }
         #endregion
 
         /// <summary>
@@ -84,24 +73,23 @@ namespace Spring.Messaging.Amqp.Core
         /// </returns>
         public new string ToString()
         {
-            var buffer = new StringBuilder();
-            buffer.Append("(");
-            buffer.Append("Body:'" + this.GetBodyContentAsString() + "'");
-
-            if (this.messageProperties != null)
+            if (this.messageProperties == null)
             {
-                buffer.Append("; ID:" + this.messageProperties.MessageId);
-                buffer.Append("; Content:" + this.messageProperties.ContentType);
-                buffer.Append("; Headers:" + this.messageProperties.Headers);
-                buffer.Append("; Exchange:" + this.messageProperties.ReceivedExchange);
-                buffer.Append("; RoutingKey:" + this.messageProperties.ReceivedRoutingKey);
-                buffer.Append("; Reply:" + this.messageProperties.ReplyTo);
-                buffer.Append("; DeliveryMode:" + this.messageProperties.DeliveryMode);
-                buffer.Append("; DeliveryTag:" + this.messageProperties.DeliveryTag);
+                return string.Format("(Body:{0})", this.GetBodyContentAsString());
             }
-            buffer.Append(")");
-
-            return buffer.ToString();
+            else
+            {
+                return string.Format("(Body: {0}; ID: {1}; Content:{2}; Headers:{3}; Exchange:{4}; RoutingKey:{5}; Reply:{6}; DeliveryMode:{7}; DeliveryTag:{8})",
+                    this.GetBodyContentAsString(),
+                    this.messageProperties.MessageId,
+                    this.messageProperties.ContentType,
+                    this.messageProperties.Headers,
+                    this.messageProperties.ReceivedExchange,
+                    this.messageProperties.ReceivedRoutingKey,
+                    this.messageProperties.ReplyTo,
+                    this.messageProperties.DeliveryMode,
+                    this.messageProperties.DeliveryTag);
+            }
         }
 
         /// <summary>
@@ -127,20 +115,21 @@ namespace Spring.Messaging.Amqp.Core
 
                 if (MessageProperties.CONTENT_TYPE_TEXT_PLAIN.Equals(contentType))
                 {
-                    return SerializationUtils.DeserializeString(this.body, this.ENCODING);
+                    return SerializationUtils.DeserializeString(this.body, ENCODING);
                 }
 
                 if (MessageProperties.CONTENT_TYPE_JSON.Equals(contentType))
                 {
-                    return SerializationUtils.DeserializeJsonAsString(this.body, this.ENCODING);
+                    return SerializationUtils.DeserializeJsonAsString(this.body, ENCODING);
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 // ignore
+                Logger.Debug(m => m("Error occurred getting body content as string."), ex);
             }
 
-            return this.body.ToString() + "(byte[" + this.body.Length + "])"; // Comes out as '[B@....b' (so harmless)
+            return this.body + "(byte[" + this.body.Length + "])"; // Comes out as '[B@....b' (so harmless)
         }
     }
 }

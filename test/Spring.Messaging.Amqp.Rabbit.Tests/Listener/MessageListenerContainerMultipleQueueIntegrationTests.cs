@@ -166,7 +166,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var latch = new CountdownEvent(messageCount * 2);
             var listener = new MultiplePocoListener(latch);
             container.MessageListener = new MessageListenerAdapter(listener);
-            container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
             container.ChannelTransacted = true;
             container.ConcurrentConsumers = concurrentConsumers;
             configurer.Configure(container);

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="HeadersExchange.cs" company="The original author or authors.">
+// <copyright file="FederatedExchange.cs" company="The original author or authors.">
 //   Copyright 2002-2012 the original author or authors.
 //   
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -21,33 +21,42 @@ using System.Collections.Generic;
 namespace Spring.Messaging.Amqp.Core
 {
     /// <summary>
-    /// A headers exchange.
+    /// <see cref="IAmqpAdmin"/>
     /// </summary>
-    /// <author>Mark Fisher</author>
-    /// <author>Dave Syer</author>
+    /// <author>Gary Russell</author>
     /// <author>Joe Fitzgerald</author>
-    public class HeadersExchange : AbstractExchange
+    public class FederatedExchange : AbstractExchange
     {
-        /// <summary>Initializes a new instance of the <see cref="HeadersExchange"/> class.</summary>
-        /// <param name="name">The name.</param>
-        public HeadersExchange(string name) : base(name) { }
+        public static readonly FederatedExchange DEFAULT = new FederatedExchange(string.Empty);
 
-        /// <summary>Initializes a new instance of the <see cref="HeadersExchange"/> class.</summary>
+        private static readonly string BACKING_TYPE_ARG = "type";
+
+        private static readonly string UPSTREAM_SET_ARG = "upstream-set";
+
+        /// <summary>Initializes a new instance of the <see cref="FederatedExchange"/> class.</summary>
+        /// <param name="name">The name.</param>
+        public FederatedExchange(string name) : base(name) { }
+
+        /// <summary>Initializes a new instance of the <see cref="FederatedExchange"/> class.</summary>
         /// <param name="name">The name.</param>
         /// <param name="durable">The durable.</param>
         /// <param name="autoDelete">The auto delete.</param>
-        public HeadersExchange(string name, bool durable, bool autoDelete) : base(name, durable, autoDelete) { }
+        public FederatedExchange(string name, bool durable, bool autoDelete) : base(name, durable, autoDelete) { }
 
-        /// <summary>Initializes a new instance of the <see cref="HeadersExchange"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="FederatedExchange"/> class.</summary>
         /// <param name="name">The name.</param>
         /// <param name="durable">The durable.</param>
         /// <param name="autoDelete">The auto delete.</param>
         /// <param name="arguments">The arguments.</param>
-        public HeadersExchange(string name, bool durable, bool autoDelete, IDictionary arguments) : base(name, durable, autoDelete, arguments) { }
+        public FederatedExchange(string name, bool durable, bool autoDelete, IDictionary arguments) : base(name, durable, autoDelete, arguments) { }
 
-        /// <summary>
-        /// Gets Type.
-        /// </summary>
-        public override string Type { get { return ExchangeTypes.Headers; } }
+        /// <summary>Sets the backing type.</summary>
+        public string BackingType { set { this.AddArgument(BACKING_TYPE_ARG, value); } }
+
+        /// <summary>Sets the upstream set.</summary>
+        public string UpstreamSet { set { this.AddArgument(UPSTREAM_SET_ARG, value); } }
+
+        /// <summary>Gets the exchange type.</summary>
+        public override string Type { get { return ExchangeTypes.Federated; } }
     }
 }

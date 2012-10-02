@@ -1,35 +1,27 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="JsonMessageConverter.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-#region License
-
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
-
 using Common.Logging;
-
 using Newtonsoft.Json;
-
 using Spring.Messaging.Amqp.Core;
+#endregion
 
 namespace Spring.Messaging.Amqp.Support.Converter
 {
@@ -64,55 +56,35 @@ namespace Spring.Messaging.Amqp.Support.Converter
         /// </summary>
         private ITypeMapper typeMapper = new DefaultTypeMapper();
 
-        public JsonMessageConverter()
-        {
-            this.InitializeJsonSerializer();
-        }
+        /// <summary>Initializes a new instance of the <see cref="JsonMessageConverter"/> class.</summary>
+        public JsonMessageConverter() { this.InitializeJsonSerializer(); }
 
         /// <summary>
         /// Sets the default charset.
         /// </summary>
         /// <value>The default charset.</value>
-        public string DefaultCharset
-        {
-            set { this.defaultCharset = value; }
-        }
+        public string DefaultCharset { set { this.defaultCharset = value; } }
 
         /// <summary>
         /// Sets TypeMapper.
         /// </summary>
-        public ITypeMapper TypeMapper
-        {
-            set { this.typeMapper = value; }
-        }
+        public ITypeMapper TypeMapper { set { this.typeMapper = value; } }
 
         /// <summary>
         /// Sets the json serializer.
         /// </summary>
         /// <value>The json serializer.</value>
-        public JsonSerializer JsonSerializer
-        {
-            set { this.jsonSerializer = value; }
-        }
+        public JsonSerializer JsonSerializer { set { this.jsonSerializer = value; } }
 
-        protected void InitializeJsonSerializer()
-        {
-            jsonSerializer.MissingMemberHandling = MissingMemberHandling.Ignore;
-        }
+        /// <summary>The initialize json serializer.</summary>
+        protected void InitializeJsonSerializer() { this.jsonSerializer.MissingMemberHandling = MissingMemberHandling.Ignore; }
 
         #region Implementation of IMessageConverter
 
-        /// <summary>
-        /// Convert from a Message to an object.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <returns>
-        /// The object.
-        /// </returns>
-        /// <exception cref="MessageConversionException">
-        /// </exception>
+        /// <summary>Convert from a Message to an object.</summary>
+        /// <param name="message">The message.</param>
+        /// <returns>The object.</returns>
+        /// <exception cref="MessageConversionException"></exception>
         public override object FromMessage(Message message)
         {
             object content = null;
@@ -140,9 +112,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
             return content ?? (content = message.Body);
         }
 
-        /// <summary>
-        /// Converts the bytes to object.
-        /// </summary>
+        /// <summary>Converts the bytes to object.</summary>
         /// <param name="body">The body.</param>
         /// <param name="encoding">The encoding.</param>
         /// <param name="targetType">Type of the target.</param>
@@ -157,27 +127,18 @@ namespace Spring.Messaging.Amqp.Support.Converter
                 {
                     using (var jsonTextReader = new JsonTextReader(reader))
                     {
-                        var result = jsonSerializer.Deserialize(jsonTextReader, targetType);
+                        var result = this.jsonSerializer.Deserialize(jsonTextReader, targetType);
                         return result;
                     }
                 }
             }
-	    }
+        }
 
-        /// <summary>
-        /// Overridden implementation of CreateMessage, to cater for Json serialization.
-        /// </summary>
-        /// <param name="obj">
-        /// The obj.
-        /// </param>
-        /// <param name="messageProperties">
-        /// The message properties.
-        /// </param>
-        /// <returns>
-        /// The Message.
-        /// </returns>
-        /// <exception cref="MessageConversionException">
-        /// </exception>
+        /// <summary>Overridden implementation of CreateMessage, to cater for Json serialization.</summary>
+        /// <param name="obj">The obj.</param>
+        /// <param name="messageProperties">The message properties.</param>
+        /// <returns>The Message.</returns>
+        /// <exception cref="MessageConversionException"></exception>
         protected override Message CreateMessage(object obj, MessageProperties messageProperties)
         {
             byte[] bytes = null;
@@ -189,7 +150,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
 
                 using (JsonWriter jsonWriter = new JsonTextWriter(sw))
                 {
-                    jsonSerializer.Serialize(jsonWriter, obj);
+                    this.jsonSerializer.Serialize(jsonWriter, obj);
                     jsonString = sw.ToString();
                     var encoding = Encoding.GetEncoding(this.defaultCharset);
                     bytes = encoding.GetBytes(jsonString);
@@ -200,7 +161,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
                 throw new MessageConversionException("Failed to convert Message content", e);
             }
 
-            messageProperties.ContentType = ContentType.CONTENT_TYPE_JSON;
+            messageProperties.ContentType = MessageProperties.CONTENT_TYPE_JSON;
             messageProperties.ContentEncoding = this.defaultCharset;
             if (bytes != null)
             {

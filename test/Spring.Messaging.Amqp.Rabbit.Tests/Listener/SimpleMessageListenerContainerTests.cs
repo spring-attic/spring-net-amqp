@@ -38,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.MessageListener = new MessageListenerAdapter(this);
             container.QueueNames = new string[] { "foo" };
             container.ChannelTransacted = false;
-            container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.NONE;
+            container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.None;
             container.TransactionManager = new TestTransactionManager();
 
             try
@@ -62,7 +62,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.MessageListener = new MessageListenerAdapter(this);
             container.QueueNames = new string[] { "foo" };
             container.ChannelTransacted = true;
-            container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.NONE;
+            container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.None;
 
             try
             {

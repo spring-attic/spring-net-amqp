@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AmqpConnectException.cs" company="The original author or authors.">
+// <copyright file="AmqpRejectAndDontRequeueException.cs" company="The original author or authors.">
 //   Copyright 2002-2012 the original author or authors.
 //   
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -20,15 +20,23 @@ using System;
 namespace Spring.Messaging.Amqp
 {
     /// <summary>
-    /// SystemException wrapper for an {@link ConnectException} which can be commonly thrown from AMQP operations if the remote process dies or there is a network issue.
+    /// Exception for listener implementations used to indicate the basic.reject will be sent with requeue=false in order to enable features such as DLQ.
     /// </summary>
-    /// <author>Dave Syder</author>
+    /// <author>Gary Russell</author>
     /// <author>Joe Fitzgerald</author>
-    public class AmqpConnectException : AmqpException
+    public class AmqpRejectAndDontRequeueException : AmqpException
     {
-        /// <summary>Initializes a new instance of the <see cref="AmqpConnectException"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="AmqpRejectAndDontRequeueException"/> class.</summary>
         /// <param name="message">The message.</param>
         /// <param name="cause">The cause.</param>
-        public AmqpConnectException(string message, Exception cause) : base(message, cause) { }
+        public AmqpRejectAndDontRequeueException(string message, Exception cause) : base(message, cause) { }
+
+        /// <summary>Initializes a new instance of the <see cref="AmqpRejectAndDontRequeueException"/> class.</summary>
+        /// <param name="message">The message.</param>
+        public AmqpRejectAndDontRequeueException(string message) : base(message) { }
+
+        /// <summary>Initializes a new instance of the <see cref="AmqpRejectAndDontRequeueException"/> class.</summary>
+        /// <param name="cause">The cause.</param>
+        public AmqpRejectAndDontRequeueException(Exception cause) : base(cause) { }
     }
 }

@@ -57,7 +57,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The acknowledge mode.
         /// </summary>
-        private AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+        private AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
 
         /// <summary>
         /// The container.

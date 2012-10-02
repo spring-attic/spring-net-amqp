@@ -54,7 +54,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             messageCount = 1;
             concurrentConsumers = 1;
-            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
             transactional = false;
             txSize = 1;
             externalTransaction = false;
@@ -86,7 +86,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             messageCount = 1;
             concurrentConsumers = 1;
-            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
             transactional = false;
             txSize = 1;
             externalTransaction = false;

@@ -260,21 +260,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
         private AcknowledgeModeUtils.AcknowledgeMode ParseAcknowledgeMode(XmlElement ele, ParserContext parserContext)
         {
-            AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
             String acknowledge = ele.GetAttribute(ACKNOWLEDGE_ATTRIBUTE);
             if (StringUtils.HasText(acknowledge))
             {
                 if (ACKNOWLEDGE_AUTO.Equals(acknowledge))
                 {
-                    acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+                    acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
                 }
                 else if (ACKNOWLEDGE_MANUAL.Equals(acknowledge))
                 {
-                    acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.MANUAL;
+                    acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Manual;
                 }
                 else if (ACKNOWLEDGE_NONE.Equals(acknowledge))
                 {
-                    acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.NONE;
+                    acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.None;
                 }
                 else
                 {
@@ -286,7 +286,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             }
             else
             {
-                return AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+                return AcknowledgeModeUtils.AcknowledgeMode.Auto;
             }
         }
     }

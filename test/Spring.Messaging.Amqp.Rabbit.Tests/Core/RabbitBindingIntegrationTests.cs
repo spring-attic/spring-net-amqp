@@ -356,7 +356,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <remarks></remarks>
         private BlockingQueueConsumer CreateConsumer(RabbitAccessor accessor)
         {
-            var consumer = new BlockingQueueConsumer(accessor.ConnectionFactory, new DefaultMessagePropertiesConverter(), new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeModeUtils.AcknowledgeMode.AUTO, true, 1, queue.Name);
+            var consumer = new BlockingQueueConsumer(accessor.ConnectionFactory, new DefaultMessagePropertiesConverter(), new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 1, queue.Name);
             consumer.Start();
             return consumer;
         }

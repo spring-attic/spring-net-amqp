@@ -363,7 +363,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <remarks></remarks>
         public static AcknowledgeModeUtils.AcknowledgeMode AcknowledgeMode(this TransactionMode mode)
         {
-            return mode == TransactionMode.OFF ? AcknowledgeModeUtils.AcknowledgeMode.NONE : AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            return mode == TransactionMode.OFF ? AcknowledgeModeUtils.AcknowledgeMode.None : AcknowledgeModeUtils.AcknowledgeMode.Auto;
         }
 
         /// <summary>

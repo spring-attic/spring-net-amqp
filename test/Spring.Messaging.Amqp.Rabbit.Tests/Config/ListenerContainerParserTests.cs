@@ -45,7 +45,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         public void testParseWithQueueNames()
         {
 		    var container = objectFactory.GetObject<SimpleMessageListenerContainer>("container1");
-		    Assert.AreEqual(AcknowledgeModeUtils.AcknowledgeMode.MANUAL, container.AcknowledgeMode);
+		    Assert.AreEqual(AcknowledgeModeUtils.AcknowledgeMode.Manual, container.AcknowledgeMode);
 		    Assert.AreEqual(objectFactory.GetObject<IConnectionFactory>(), container.ConnectionFactory);
 		    Assert.AreEqual(typeof(MessageListenerAdapter), container.MessageListener.GetType());
 		    var listenerAccessor = container.MessageListener;

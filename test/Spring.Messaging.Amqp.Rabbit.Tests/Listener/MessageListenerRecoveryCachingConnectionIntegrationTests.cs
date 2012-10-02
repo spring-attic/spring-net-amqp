@@ -38,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         private bool transactional = false;
 
-        private AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+        private AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
 
         private SimpleMessageListenerContainer container;
 
@@ -115,7 +115,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var template = new RabbitTemplate(connectionFactory);
             new RabbitAdmin(connectionFactory).DeclareQueue(sendQueue);
 
-            this.acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            this.acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
             this.transactional = true;
 
             var latch = new CountdownEvent(1);
@@ -141,7 +141,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var template = new RabbitTemplate(connectionFactory);
             new RabbitAdmin(connectionFactory).DeclareQueue(sendQueue);
 
-            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
             transactional = true;
 
             var latch = new CountdownEvent(1);
@@ -169,7 +169,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             var template = new RabbitTemplate(CreateConnectionFactory());
 
-            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.MANUAL;
+            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Manual;
 
             var latch = new CountdownEvent(messageCount);
             container = CreateContainer(queue.Name, new ManualAckListener(latch), CreateConnectionFactory());
@@ -272,7 +272,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var connectionFactory = CreateConnectionFactory();
             var template = new RabbitTemplate(connectionFactory);
 
-            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.MANUAL;
+            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Manual;
 
             var latch = new CountdownEvent(messageCount);
             container = CreateContainer(queue.Name, new ManualAckListener(latch), connectionFactory);

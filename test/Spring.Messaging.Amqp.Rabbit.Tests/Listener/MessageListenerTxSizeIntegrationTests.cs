@@ -135,7 +135,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.PrefetchCount = this.txSize;
             container.ConcurrentConsumers = this.concurrentConsumers;
             container.ChannelTransacted = this.transactional;
-            container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.AUTO;
+            container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
             container.AfterPropertiesSet();
             container.Start();
             return container;

@@ -398,7 +398,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                     Logger.Debug("declaring Exchange '" + exchange.Name + "'");
                 }
                 
-                channel.ExchangeDeclare(exchange.Name, exchange.ExchangeType, exchange.Durable, exchange.AutoDelete, exchange.Arguments);
+                channel.ExchangeDeclare(exchange.Name, exchange.Type, exchange.Durable, exchange.AutoDelete, exchange.Arguments);
             }
         }
 

@@ -102,7 +102,7 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// Gets the type of the exchange.
         /// </summary>
         /// <remarks></remarks>
-        public override string ExchangeType
+        public override string Type
         {
             get { return "x-custom"; }
         }
