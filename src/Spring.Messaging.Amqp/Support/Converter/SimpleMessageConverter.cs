@@ -25,6 +25,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// or byte arrays. The ToMessage method simply checks the type of the provided instance while 
     /// the FromMessage method relies upon the content-type of the provided Message.
     /// </summary>
+    /// <author>Mark Fisher</author>
     /// <author>Joe Fitzgerald</author>
     public class SimpleMessageConverter : AbstractMessageConverter
     {

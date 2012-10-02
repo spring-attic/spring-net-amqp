@@ -22,6 +22,8 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// <summary>
     /// Interface for message conversion.
     /// </summary>
+    /// <author>Mark Fisher</author>
+    /// <author>Mark Pollack</author>
     /// <author>Joe Fitzgerald</author>
     public interface IMessageConverter
     {

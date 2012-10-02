@@ -23,6 +23,8 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// A message conversion exception.
     /// </summary>
     /// <author>Mark Pollack</author>
+    /// <author>Mark Fisher</author>
+    /// <author>Joe Fitzgerald</author>
     public class MessageConversionException : Exception
     {
         #region Constructor (s) / Destructor
@@ -36,8 +38,8 @@ namespace Spring.Messaging.Amqp.Support.Converter
         /// Creates a new instance of the IMessageConverterException class with the specified message
         /// and root cause.</summary>
         /// <param name="message">A message about the exception.</param>
-        /// <param name="rootCause">The root exception that is being wrapped.</param>
-        public MessageConversionException(string message, Exception rootCause) : base(message, rootCause) { }
+        /// <param name="cause">The root exception that is being wrapped.</param>
+        public MessageConversionException(string message, Exception cause) : base(message, cause) { }
         #endregion
     }
 }

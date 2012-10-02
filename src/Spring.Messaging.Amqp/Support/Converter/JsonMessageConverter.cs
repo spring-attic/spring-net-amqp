@@ -29,6 +29,8 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// A Json Message Converter.
     /// </summary>
     /// <author>Mark Pollack</author>
+    /// <author>Joe Fitzgerald</author>
+    /// <author>Dave Syer</author>
     public class JsonMessageConverter : AbstractMessageConverter
     {
         /// <summary>

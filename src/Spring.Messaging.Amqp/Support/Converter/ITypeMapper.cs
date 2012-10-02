@@ -24,6 +24,8 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// Provides a layer of indirection when adding the 'type' of the object as a message property.
     /// </summary>
     /// <author>Mark Pollack</author>
+    /// <author>James Carr</author>
+    /// <author>Joe Fitzgerald</author>
     public interface ITypeMapper
     {
         /// <summary>Convert from Type to string</summary>

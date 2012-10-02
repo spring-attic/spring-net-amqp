@@ -29,6 +29,8 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// <summary>
     /// A type mapper implementaiton.
     /// </summary>
+    /// <author>Mark Pollack</author>
+    /// <author>Joe Fitzgerald</author>
     public class DefaultTypeMapper : ITypeMapper, IInitializingObject
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();

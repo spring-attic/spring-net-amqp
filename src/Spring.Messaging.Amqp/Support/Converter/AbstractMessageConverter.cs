@@ -23,6 +23,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// <summary>
     /// Convenient base class for IMessageConverter implementations.
     /// </summary>
+    /// <author>Dave Syer</author>
     /// <author>Joe Fitzgerald</author>
     public abstract class AbstractMessageConverter : IMessageConverter
     {
