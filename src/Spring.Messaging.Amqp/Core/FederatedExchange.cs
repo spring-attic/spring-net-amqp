@@ -48,7 +48,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="durable">The durable.</param>
         /// <param name="autoDelete">The auto delete.</param>
         /// <param name="arguments">The arguments.</param>
-        public FederatedExchange(string name, bool durable, bool autoDelete, IDictionary<string, object> arguments) : base(name, durable, autoDelete, arguments) { }
+        public FederatedExchange(string name, bool durable, bool autoDelete, IDictionary arguments) : base(name, durable, autoDelete, arguments) { }
 
         /// <summary>Sets the backing type.</summary>
         public string BackingType { set { this.AddArgument(BACKING_TYPE_ARG, value); } }

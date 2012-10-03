@@ -37,9 +37,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         public static readonly int DEFAULT_PORT = Protocols.DefaultProtocol.DefaultPort;
 
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetLogger(typeof(RabbitUtils));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitUtils));
 
         /// <summary>Closes the given Rabbit Connection and ignore any thrown exception.</summary>
         /// <remarks>This is useful for typical 'finally' blocks in manual Rabbit
@@ -55,11 +55,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 }
                 catch (AlreadyClosedException acex)
                 {
-                    logger.Debug("Connection is already closed.", acex);
+                    Logger.Debug("Connection is already closed.", acex);
                 }
                 catch (Exception ex)
                 {
-                    logger.Debug("Ignoring Connection exception - assuming already closed: ", ex);
+                    Logger.Debug("Ignoring Connection exception - assuming already closed: ", ex);
                 }
             }
         }
@@ -76,11 +76,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 }
                 catch (IOException ioex)
                 {
-                    logger.Debug("Could not close RabbitMQ Channel", ioex);
+                    Logger.Debug("Could not close RabbitMQ Channel", ioex);
                 }
                 catch (Exception ex)
                 {
-                    logger.Debug("Unexpected exception on closing RabbitMQ Channel", ex);
+                    Logger.Debug("Unexpected exception on closing RabbitMQ Channel", ex);
                 }
             }
         }
@@ -100,9 +100,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 throw new AmqpException("An error occurred committing the transaction.", oiex);
             }
-            catch (IOException ioex)
+            catch (Exception ex)
             {
-                throw new AmqpIOException("An error occurred committing the transaction.", ioex);
+                throw new AmqpException("An error occurred committing the transaction.", ex);
             }
         }
 
@@ -121,9 +121,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 throw new AmqpException("An error occurred rolling back the transaction.", oiex);
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
-                throw new AmqpIOException("An error occurred rolling back the transaction.", ex);
+                throw new AmqpException("An error occurred rolling back the transaction.", ex);
             }
         }
 
@@ -140,12 +140,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             if (ex is IOException)
             {
-                return new AmqpIOException(string.Empty, (IOException)ex);
+                return new AmqpIOException((IOException)ex);
             }
 
             if (ex is OperationInterruptedException)
             {
-                return new AmqpIOException(ex.Message, new IOException(ex.Message, ex));
+                return new AmqpIOException(new AmqpException(ex.Message, ex));
             }
 
             /*
@@ -166,7 +166,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             */
 
             // fallback
-            return new UncategorizedAmqpException(string.Empty, ex);
+            return new UncategorizedAmqpException(ex);
         }
 
         /// <summary>Close the message consumer.</summary>

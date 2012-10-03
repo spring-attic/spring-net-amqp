@@ -489,7 +489,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     return (bool)new TransactionTemplate(this.transactionManager).Execute(
                         delegate
                         {
-                            ConnectionFactoryUtils.BindResourceToTransaction(new RabbitResourceHolder(consumer.Channel), this.ConnectionFactory, true);
+                            ConnectionFactoryUtils.BindResourceToTransaction(new RabbitResourceHolder(consumer.Channel, false), this.ConnectionFactory, true);
                             try
                             {
                                 return this.DoReceiveAndExecute(consumer);

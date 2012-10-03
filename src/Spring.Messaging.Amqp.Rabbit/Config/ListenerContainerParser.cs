@@ -114,7 +114,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 }
             }
 
-            var containerDef = RabbitNamespaceUtils.ParseContainer(listenerEle, containerEle, parserContext);
+            var containerDef = RabbitNamespaceUtils.ParseContainer(containerEle, parserContext);
 
             if (listenerEle.HasAttribute(RESPONSE_EXCHANGE_ATTRIBUTE))
             {

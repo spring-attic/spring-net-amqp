@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System;
+using System.Threading;
 using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Transaction.Support;
@@ -27,31 +28,40 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// Utility methods for connection factory.
     /// </summary>
     /// <author>Mark Pollack</author>
+    /// <author>Mark Fisher</author>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald</author>
     public class ConnectionFactoryUtils
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetLogger(typeof(ConnectionFactoryUtils));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectionFactoryUtils));
 
-        /// <summary>Release a connection.</summary>
-        /// <param name="connection">The connection.</param>
-        public static void ReleaseConnection(IConnection connection)
+        private static readonly ThreadLocal<IModel> consumerChannel = new ThreadLocal<IModel>();
+
+        /// <summary>If a listener container is configured to use a RabbitTransactionManager, the
+        /// consumer's channel is registered here so that it is used as the bound resource
+        /// when the transaction actually starts. It is normally not necessary to use
+        /// an external transaction manager because local transactions work the same in that
+        /// the channel is bound to the thread. This is for the case when a user happens
+        /// to wire in a RabbitTransactionManager.</summary>
+        /// <param name="channel">The channel.</param>
+        public static void RegisterConsumerChannel(IModel channel)
         {
-            if (connection == null)
-            {
-                return;
-            }
+            Logger.Debug(m => m("Registering consumer channel {0}", channel));
 
-            try
-            {
-                connection.Close();
-            }
-            catch (Exception ex)
-            {
-                logger.Debug("Could not close RabbitMQ Connection", ex);
-            }
+            consumerChannel.Value = channel;
         }
+        
+        /// <summary>See RegisterConsumerChannel. This method is called to unregister the channel when the consumer exits.</summary>
+        public static void UnRegisterConsumerChannel()
+        {
+            Logger.Debug(m => m("Unregistering consumer channel {0}", consumerChannel.Value));
+
+            consumerChannel.Value = null;
+        }
+
 
         /// <summary>Determine whether the given RabbitMQ Channel is transactional, that is, bound to the current thread by Spring's transaction facilities.</summary>
         /// <param name="channel">The channel.</param>
@@ -67,7 +77,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             var resourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory);
             return resourceHolder != null && resourceHolder.ContainsChannel(channel);
         }
-
+        
         /// <summary>Obtain a RabbitMQ Channel that is synchronized with the current transaction, if any.</summary>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <param name="synchedLocalTransactionAllowed">The synched local transaction allowed.</param>
@@ -108,14 +118,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             IModel channel = null;
             try
             {
-                bool isExistingCon = connection != null;
+                var isExistingCon = connection != null;
                 if (!isExistingCon)
                 {
                     connection = resourceFactory.CreateConnection();
                     resourceHolderToUse.AddConnection(connection);
                 }
 
-                channel = resourceFactory.CreateChannel(connection);
+                channel = consumerChannel.Value;
+
+                if (channel == null)
+                {
+                    channel = resourceFactory.CreateChannel(connection);
+                }
+
                 resourceHolderToUse.AddChannel(channel, connection);
 
                 if (resourceHolderToUse != resourceHolder)
@@ -129,7 +145,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 RabbitUtils.CloseChannel(channel);
                 RabbitUtils.CloseConnection(connection);
-                throw;
+                throw new AmqpException(ex);
             }
         }
 

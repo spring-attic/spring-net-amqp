@@ -19,14 +19,9 @@ using Spring.Transaction.Support;
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
-    /**
- * Callback for resource cleanup at the end of a non-native RabbitMQ transaction (e.g. when participating in a
- * JtaTransactionManager transaction).
- * @see org.springframework.transaction.jta.JtaTransactionManager
- */
-
     /// <summary>
-    /// Rabbit resource synchronization implementation.
+    /// Callback for resource cleanup at the end of a non-native RabbitMQ transaction (e.g. when participating in a
+    /// JtaTransactionManager transaction).
     /// </summary>
     internal class RabbitResourceSynchronization : TransactionSynchronizationAdapter
     {
@@ -68,6 +63,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             if (status != (int)TransactionSynchronizationStatus.Committed)
             {
                 this.resourceHolder.RollbackAll();
+            }
+
+            if (resourceHolder.ReleaseAfterCompletion)
+            {
+                resourceHolder.SynchronizedWithTransaction = false;
             }
 
             this.AfterCompletion((TransactionSynchronizationStatus)status);

@@ -23,6 +23,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <summary>
     /// A composite channel listener.
     /// </summary>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald</author>
     public class CompositeChannelListener : IChannelListener
     {
         /// <summary>

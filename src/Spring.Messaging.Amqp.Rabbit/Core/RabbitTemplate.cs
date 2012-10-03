@@ -247,11 +247,22 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="messagePostProcessor">The message post processor.</param>
         public void ConvertAndSend(object message, Func<Message, Message> messagePostProcessor) { this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessor); }
 
+        /// <summary>Convert and send a message, given the message.</summary>
+        /// <param name="message">The message.</param>
+        /// <param name="messagePostProcessor">The message post processor.</param>
+        public void ConvertAndSend(object message, IMessagePostProcessor messagePostProcessor) { this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessor); }
+
         /// <summary>Convert and send a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
         public void ConvertAndSend(string routingKey, object message, Func<Message, Message> messagePostProcessor) { this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor); }
+        
+        /// <summary>Convert and send a message, given a routing key and the message.</summary>
+        /// <param name="routingKey">The routing key.</param>
+        /// <param name="message">The message.</param>
+        /// <param name="messagePostProcessor">The message post processor.</param>
+        public void ConvertAndSend(string routingKey, object message, IMessagePostProcessor messagePostProcessor) { this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor); }
 
         /// <summary>Convert and send a message, given an exchange, a routing key, and the message.</summary>
         /// <param name="exchange">The exchange.</param>
@@ -262,6 +273,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         {
             var messageToSend = this.GetRequiredMessageConverter().ToMessage(message, new MessageProperties());
             messageToSend = messagePostProcessor.Invoke(messageToSend);
+            this.Send(exchange, routingKey, this.Execute(channel => messageToSend));
+        }
+
+        /// <summary>Convert and send a message, given an exchange, a routing key, and the message.</summary>
+        /// <param name="exchange">The exchange.</param>
+        /// <param name="routingKey">The routing key.</param>
+        /// <param name="message">The message.</param>
+        /// <param name="messagePostProcessor">The message post processor.</param>
+        public void ConvertAndSend(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor)
+        {
+            var messageToSend = this.GetRequiredMessageConverter().ToMessage(message, new MessageProperties());
+            messageToSend = messagePostProcessor.PostProcessMessage(messageToSend);
             this.Send(exchange, routingKey, this.Execute(channel => messageToSend));
         }
 
@@ -350,20 +373,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>Convert, send, and receive a message, given the message.</summary>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
-        public object ConvertSendAndReceive(object message) { return this.ConvertSendAndReceive(this.exchange, this.routingKey, message, null); }
+        public object ConvertSendAndReceive(object message) { return this.ConvertSendAndReceive(this.exchange, this.routingKey, message, default(IMessagePostProcessor)); }
 
         /// <summary>Convert, send, and receive a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
-        public object ConvertSendAndReceive(string routingKey, object message) { return this.ConvertSendAndReceive(this.exchange, routingKey, message, null); }
+        public object ConvertSendAndReceive(string routingKey, object message) { return this.ConvertSendAndReceive(this.exchange, routingKey, message, default(IMessagePostProcessor)); }
 
         /// <summary>Convert, send, and receive a message, given an exchange, a routing key and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
-        public object ConvertSendAndReceive(string exchange, string routingKey, object message) { return this.ConvertSendAndReceive(exchange, routingKey, message, null); }
+        public object ConvertSendAndReceive(string exchange, string routingKey, object message) { return this.ConvertSendAndReceive(exchange, routingKey, message, default(IMessagePostProcessor)); }
 
         /// <summary>Convert, send, and receive a message, given the message.</summary>
         /// <param name="message">The message to send.</param>
@@ -371,12 +394,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <returns>The message received.</returns>
         public object ConvertSendAndReceive(object message, Func<Message, Message> messagePostProcessor) { return this.ConvertSendAndReceive(this.exchange, this.routingKey, message, messagePostProcessor); }
 
+        /// <summary>Convert, send, and receive a message, given the message.</summary>
+        /// <param name="message">The message to send.</param>
+        /// <param name="messagePostProcessor">The message post processor.</param>
+        /// <returns>The message received.</returns>
+        public object ConvertSendAndReceive(object message, IMessagePostProcessor messagePostProcessor) { return this.ConvertSendAndReceive(this.exchange, this.routingKey, message, messagePostProcessor); }
+
         /// <summary>Convert, send, and receive a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
         /// <returns>The message received.</returns>
         public object ConvertSendAndReceive(string routingKey, object message, Func<Message, Message> messagePostProcessor) { return this.ConvertSendAndReceive(this.exchange, routingKey, message, messagePostProcessor); }
+
+        /// <summary>Convert, send, and receive a message, given a routing key and the message.</summary>
+        /// <param name="routingKey">The routing key.</param>
+        /// <param name="message">The message to send.</param>
+        /// <param name="messagePostProcessor">The message post processor.</param>
+        /// <returns>The message received.</returns>
+        public object ConvertSendAndReceive(string routingKey, object message, IMessagePostProcessor messagePostProcessor) { return this.ConvertSendAndReceive(this.exchange, routingKey, message, messagePostProcessor); }
 
         /// <summary>Convert, send, and receive a message, given an exchange, a routing key and the message.</summary>
         /// <param name="exchange">The exchange.</param>
@@ -391,6 +427,30 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             if (messagePostProcessor != null)
             {
                 requestMessage = messagePostProcessor.Invoke(requestMessage);
+            }
+
+            var replyMessage = this.DoSendAndReceive(exchange, routingKey, requestMessage);
+            if (replyMessage == null)
+            {
+                return null;
+            }
+
+            return this.GetRequiredMessageConverter().FromMessage(replyMessage);
+        }
+
+        /// <summary>Convert, send, and receive a message, given an exchange, a routing key and the message.</summary>
+        /// <param name="exchange">The exchange.</param>
+        /// <param name="routingKey">The routing key.</param>
+        /// <param name="message">The message to send.</param>
+        /// <param name="messagePostProcessor">The message post processor.</param>
+        /// <returns>The message received.</returns>
+        public object ConvertSendAndReceive(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor)
+        {
+            var messageProperties = new MessageProperties();
+            var requestMessage = this.GetRequiredMessageConverter().ToMessage(message, messageProperties);
+            if (messagePostProcessor != null)
+            {
+                requestMessage = messagePostProcessor.PostProcessMessage(requestMessage);
             }
 
             var replyMessage = this.DoSendAndReceive(exchange, routingKey, requestMessage);

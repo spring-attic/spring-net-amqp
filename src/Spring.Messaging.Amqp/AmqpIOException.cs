@@ -14,6 +14,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
+using System;
 using System.IO;
 #endregion
 
@@ -29,6 +30,6 @@ namespace Spring.Messaging.Amqp
         /// <summary>Initializes a new instance of the <see cref="AmqpIOException"/> class.</summary>
         /// <param name="message">The message.</param>
         /// <param name="cause">The cause.</param>
-        public AmqpIOException(string message, IOException cause) : base(message, cause) { }
+        public AmqpIOException(Exception cause) : base(cause) { }
     }
 }

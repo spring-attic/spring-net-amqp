@@ -144,9 +144,13 @@
     <Compile Include="Retry\IMessageKeyGenerator.cs" />
     <Compile Include="Retry\IMessageRecoverer.cs" />
     <Compile Include="Retry\INewMessageIdentifier.cs" />
+    <Compile Include="Support\CorrelationData.cs" />
     <Compile Include="Support\DateExtensions.cs" />
     <Compile Include="Support\DefaultMessagePropertiesConverter.cs" />
+    <Compile Include="Support\IListener.cs" />
     <Compile Include="Support\IMessagePropertiesConverter.cs" />
+    <Compile Include="Support\IPublisherCallbackChannel.cs" />
+    <Compile Include="Support\PendingConfirm.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicBoolean.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicInteger.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicReference.cs" />

@@ -395,7 +395,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
                 var targetEx = ex.InnerException;
                 if (targetEx != null && targetEx is IOException)
                 {
-                    throw new AmqpIOException("Error invoking listener method.", (IOException)targetEx);
+                    throw new AmqpIOException((IOException)targetEx);
                 }
                 else
                 {

@@ -15,7 +15,6 @@
 
 #region Using Directives
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Common.Logging;
 using RabbitMQ.Client;
@@ -33,9 +32,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     public class RabbitResourceHolder : ResourceHolderSupport
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetLogger(typeof(ResourceHolderSupport));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ResourceHolderSupport));
 
         /// <summary>
         /// The frozen flag.
@@ -45,12 +44,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// The connections.
         /// </summary>
-        private readonly IList<IConnection> connections = new List<IConnection>();
+        private readonly LinkedList<IConnection> connections = new LinkedList<IConnection>();
 
         /// <summary>
         /// The channels.
         /// </summary>
-        private readonly IList<IModel> channels = new List<IModel>();
+        private readonly LinkedList<IModel> channels = new LinkedList<IModel>();
 
         /// <summary>
         /// The channels per connection.
@@ -65,7 +64,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// The transactional flag.
         /// </summary>
-        private bool _channelTransactional;
+        private bool transactional;
+
+        /// <summary>
+        /// Release after completion.
+        /// </summary>
+        private bool releaseAfterCompletion = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitResourceHolder"/> class.
@@ -74,17 +78,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         /// <summary>Initializes a new instance of the <see cref="RabbitResourceHolder"/> class.</summary>
         /// <param name="channel">The channel.</param>
-        public RabbitResourceHolder(IModel channel) : this() { this.AddChannel(channel); }
+        /// <param name="releaseAfterCompletion">The release After Completion.</param>
+        public RabbitResourceHolder(IModel channel, bool releaseAfterCompletion) : this()
+        {
+            this.AddChannel(channel);
+            this.releaseAfterCompletion = releaseAfterCompletion;
+        }
 
         /// <summary>
         /// Gets a value indicating whether Frozen.
         /// </summary>
         public bool Frozen { get { return this.frozen; } }
 
+        public bool ReleaseAfterCompletion
+        {
+            get { return this.releaseAfterCompletion; }
+        }
+
         /// <summary>
         /// Gets a value indicating whether IsChannelTransactional.
         /// </summary>
-        public bool IsChannelTransactional { get { return this._channelTransactional; } }
+        public bool IsChannelTransactional { get { return this.transactional; } }
 
         /// <summary>Add a connection.</summary>
         /// <param name="connection">The connection.</param>
@@ -94,7 +108,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             AssertUtils.ArgumentNotNull(connection, "Connection must not be null");
             if (!this.connections.Contains(connection))
             {
-                this.connections.Add(connection);
+                this.connections.AddLast(connection);
             }
         }
 
@@ -111,20 +125,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             AssertUtils.ArgumentNotNull(channel, "Channel must not be null");
             if (!this.channels.Contains(channel))
             {
-                this.channels.Add(channel);
+                this.channels.AddLast(channel);
                 if (connection != null)
                 {
-                    List<IModel> channels;
-                    this.channelsPerConnection.TryGetValue(connection, out channels);
+                    List<IModel> tempChannels;
+                    this.channelsPerConnection.TryGetValue(connection, out tempChannels);
 
-                    // TODO: double check, what about TryGet..
-                    if (channels == null)
+                    if (tempChannels == null)
                     {
-                        channels = new List<IModel>();
-                        this.channelsPerConnection.Add(connection, channels);
+                        tempChannels = new List<IModel>();
+                        this.channelsPerConnection.Add(connection, tempChannels);
                     }
 
-                    channels.Add(channel);
+                    channels.AddLast(channel);
                 }
             }
         }
@@ -137,7 +150,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Gets Connection.
         /// </summary>
-        public IConnection Connection { get { return this.connections.Count != 0 ? this.connections[0] : null; } }
+        public IConnection Connection { get { return (this.connections != null && this.connections.Count > 0) ? this.connections.First.Value : null; } }
 
         /// <summary>
         /// Gets a connection.
@@ -151,13 +164,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         public IConnection GetConnection<T>() where T : IConnection
         {
             Type type = typeof(T);
-            return (IConnection)CollectionUtils.FindValueOfType((ICollection)this.connections, type);
+            return (IConnection)CollectionUtils.FindValueOfType(this.connections, type);
         }
+
+        public IConnection GetConnection<T>(Type connectionType) where T : IConnection 
+        {
+			return (T)CollectionUtils.FindValueOfType(this.connections, connectionType);
+		}
 
         /// <summary>
         /// Gets Channel.
         /// </summary>
-        public IModel Channel { get { return this.channels.Count != 0 ? this.channels[0] : null; } }
+        public IModel Channel { get { return (this.channels != null && this.channels.Count > 0) ? this.channels.First.Value : null; } }
 
         /// <summary>
         /// Commit all delivery tags.
@@ -183,7 +201,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
             catch (Exception e)
             {
-                throw new AmqpException("failed to commit RabbitMQ transaction", e);
+                throw new AmqpException("Failed to commit RabbitMQ transaction", e);
             }
         }
 
@@ -200,7 +218,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 }
                 catch (Exception ex)
                 {
-                    logger.Debug("Could not close synchronized Rabbit Channel after transaction", ex);
+                    Logger.Debug("Could not close synchronized Rabbit Channel after transaction", ex);
                 }
             }
 
@@ -240,11 +258,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         {
             foreach (var channel in this.channels)
             {
-                if (logger.IsDebugEnabled)
-                {
-                    logger.Debug(string.Format("Rollingback messages to channel: {0}", channel));
-                }
-
+                Logger.Debug(m=> m("Rollingback messages to channel: {0}", channel));
+                
                 RabbitUtils.RollbackIfNecessary(channel);
                 if (this.deliveryTags.ContainsKey(channel))
                 {

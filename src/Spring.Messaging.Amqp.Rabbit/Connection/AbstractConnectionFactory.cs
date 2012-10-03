@@ -55,6 +55,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         private readonly CompositeChannelListener channelListener = new CompositeChannelListener();
 
+        // private volatile IExecutorService executorService;
+
+        private volatile AmqpTcpEndpoint[] addresses;
+
         /// <summary>Initializes a new instance of the <see cref="AbstractConnectionFactory"/> class.</summary>
         /// <param name="rabbitConnectionFactory">The rabbit connection factory.</param>
         public AbstractConnectionFactory(ConnectionFactory rabbitConnectionFactory)
@@ -89,6 +93,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// Gets or sets Port.
         /// </summary>
         public int Port { get { return this.rabbitConnectionFactory.Port; } set { this.rabbitConnectionFactory.Port = value; } }
+
+        public string Addresses
+        {
+            set
+            {
+                var addressArray = AmqpTcpEndpoint.ParseMultiple(RabbitMQ.Client.Protocols.DefaultProtocol, value);
+                if (addressArray != null && addressArray.Length > 0)
+                {
+                    this.addresses = addressArray;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the channel listener.
@@ -138,7 +154,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         {
             try
             {
-                return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection());
+                if (this.addresses != null)
+                {
+                    // TODO: Waiting on RabbitMQ.Client to catch up to the Java equivalent here.
+                    // return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection(this.addresses));
+                    return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection());
+                }
+                else
+                {
+                    return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection());    
+                }
             }
             catch (Exception ex)
             {

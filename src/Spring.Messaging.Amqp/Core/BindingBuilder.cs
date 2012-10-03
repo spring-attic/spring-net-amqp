@@ -44,7 +44,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>The create map for keys.</summary>
         /// <param name="keys">The keys.</param>
         /// <returns>The map.</returns>
-        private static IDictionary<string, object> CreateMapForKeys(params string[] keys)
+        private static IDictionary CreateMapForKeys(params string[] keys)
         {
             var map = new Dictionary<string, object>();
             foreach (var key in keys)
@@ -207,7 +207,7 @@ namespace Spring.Messaging.Amqp.Core
             /// <summary>The and.</summary>
             /// <param name="map">The map.</param>
             /// <returns>The binding.</returns>
-            public Binding And(IDictionary<string, object> map) { return new Binding(this.configurer.destination.Name, this.configurer.destination.Type, this.configurer.exchange, this.routingKey, map); }
+            public Binding And(IDictionary map) { return new Binding(this.configurer.destination.Name, this.configurer.destination.Type, this.configurer.exchange, this.routingKey, map); }
 
             /// <summary>
             /// The noargs.
@@ -282,7 +282,7 @@ namespace Spring.Messaging.Amqp.Core
             /// <summary>The where any.</summary>
             /// <param name="headerValues">The header values.</param>
             /// <returns>The headers exchange map binding creator.</returns>
-            public HeadersExchangeMapBindingCreator WhereAny(IDictionary<string, object> headerValues) { return new HeadersExchangeMapBindingCreator(this.destination, this.exchange, headerValues, false); }
+            public HeadersExchangeMapBindingCreator WhereAny(IDictionary headerValues) { return new HeadersExchangeMapBindingCreator(this.destination, this.exchange, headerValues, false); }
 
             /// <summary>The where all.</summary>
             /// <param name="headerKeys">The header keys.</param>
@@ -292,7 +292,7 @@ namespace Spring.Messaging.Amqp.Core
             /// <summary>The where all.</summary>
             /// <param name="headerValues">The header values.</param>
             /// <returns>The headers exchange map binding creator.</returns>
-            public HeadersExchangeMapBindingCreator WhereAll(IDictionary<string, object> headerValues) { return new HeadersExchangeMapBindingCreator(this.destination, this.exchange, headerValues, true); }
+            public HeadersExchangeMapBindingCreator WhereAll(IDictionary headerValues) { return new HeadersExchangeMapBindingCreator(this.destination, this.exchange, headerValues, true); }
 
             #region Nested type: HeadersExchangeKeysBindingCreator
 
@@ -314,7 +314,7 @@ namespace Spring.Messaging.Amqp.Core
                 /// <summary>
                 ///   The header map.
                 /// </summary>
-                private readonly IDictionary<string, object> headerMap;
+                private readonly IDictionary headerMap;
 
                 /// <summary>Initializes a new instance of the <see cref="HeadersExchangeKeysBindingCreator"/> class.</summary>
                 /// <param name="destination">The destination.</param>
@@ -360,14 +360,14 @@ namespace Spring.Messaging.Amqp.Core
                 /// <summary>
                 ///   The header map.
                 /// </summary>
-                private readonly IDictionary<string, object> headerMap;
+                private readonly IDictionary headerMap;
 
                 /// <summary>Initializes a new instance of the <see cref="HeadersExchangeMapBindingCreator"/> class.</summary>
                 /// <param name="destination">The Destination.</param>
                 /// <param name="exchange">The Exchange.</param>
                 /// <param name="headerMap">The header map.</param>
                 /// <param name="matchAll">The match all.</param>
-                internal HeadersExchangeMapBindingCreator(DestinationConfigurer destination, HeadersExchange exchange, IDictionary<string, object> headerMap, bool matchAll)
+                internal HeadersExchangeMapBindingCreator(DestinationConfigurer destination, HeadersExchange exchange, IDictionary headerMap, bool matchAll)
                 {
                     // Assert.notEmpty(headerMap, "header map must not be empty");
                     this.headerMap = new Dictionary<string, object>() { { "x-match", matchAll ? "all" : "any" } };
@@ -430,7 +430,7 @@ namespace Spring.Messaging.Amqp.Core
                 /// <returns>The binding.</returns>
                 public Binding Matches(object value)
                 {
-                    IDictionary<string, object> map = new Dictionary<string, object>() { { this.key, value } };
+                    IDictionary map = new Dictionary<string, object>() { { this.key, value } };
                     return new Binding(this.destination.Name, this.destination.Type, this.exchange.Name, string.Empty, map);
                 }
             }

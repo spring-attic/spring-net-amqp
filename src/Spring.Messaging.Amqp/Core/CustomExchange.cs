@@ -52,7 +52,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="durable">The durable.</param>
         /// <param name="autoDelete">The auto delete.</param>
         /// <param name="arguments">The arguments.</param>
-        public CustomExchange(string name, string type, bool durable, bool autoDelete, IDictionary<string, object> arguments) : base(name, durable, autoDelete, arguments) { this.type = type; }
+        public CustomExchange(string name, string type, bool durable, bool autoDelete, IDictionary arguments) : base(name, durable, autoDelete, arguments) { this.type = type; }
 
         #region Overrides of AbstractExchange
 
