@@ -24,8 +24,7 @@ using Spring.Utility;
 
 namespace Spring.Threading.Collections.Generic
 {
-    /// <summary>
-    /// An optionally-bounded <see cref="IBlockingQueue{T}"/> based on
+    /// <summary>An optionally-bounded <see cref="IBlockingQueue{T}"/> based on
     /// linked nodes.</summary>
     /// <typeparam name="T"></typeparam>
     /// <remarks><para>This queue orders elements FIFO (first-in-first-out).
@@ -167,8 +166,7 @@ namespace Spring.Threading.Collections.Generic
 
         #region base class overrides
 
-        /// <summary>
-        /// Inserts the specified element into this queue, waiting if necessary
+        /// <summary>Inserts the specified element into this queue, waiting if necessary
         /// for space to become available.</summary>
         /// <param name="element">the element to add</param>
         /// <exception cref="ThreadInterruptedException">if interrupted while waiting.</exception>
@@ -245,8 +243,7 @@ namespace Spring.Threading.Collections.Generic
             return true;
         }
 
-        /// <summary>
-        /// Inserts the specified element into this queue, waiting up to the
+        /// <summary>Inserts the specified element into this queue, waiting up to the
         /// specified wait time if necessary for space to become available.</summary>
         /// <param name="element">the element to add</param>
         /// <param name="duration">how long to wait before giving up</param>
@@ -309,8 +306,7 @@ namespace Spring.Threading.Collections.Generic
             return true;
         }
 
-        /// <summary>
-        /// Inserts the specified element into this queue if it is possible to do
+        /// <summary>Inserts the specified element into this queue if it is possible to do
         /// so immediately without violating capacity restrictions.</summary>
         /// <remarks>When using a capacity-restricted queue, this method is generally
         /// preferable to <see cref="AbstractQueue{T}.Add(T)"/>,
@@ -369,8 +365,7 @@ namespace Spring.Threading.Collections.Generic
             return x;
         }
 
-        /// <summary>
-        /// Retrieves and removes the head of this queue, waiting if necessary
+        /// <summary>Retrieves and removes the head of this queue, waiting if necessary
         /// until an element becomes available.</summary>
         /// <remarks><see cref="Break"/> the queue will cause a waiting <see cref="TryTake"/>
         /// to returned <c>false</c>. This is very useful to indicate that the
@@ -424,8 +419,7 @@ namespace Spring.Threading.Collections.Generic
             return true;
         }
 
-        /// <summary>
-        /// Retrieves and removes the head of this queue, waiting up to the
+        /// <summary>Retrieves and removes the head of this queue, waiting up to the
         /// specified wait time if necessary for an element to become available.</summary>
         /// <param name="duration">How long to wait before giving up.</param>
         /// <param name="element">Set to the head of this queue. <c>default(T)</c> if queue is empty.</param>
@@ -544,11 +538,9 @@ namespace Spring.Threading.Collections.Generic
             }
         }
 
-        /// <summary>
-        /// Removes a single instance of the specified element from this queue,
+        /// <summary>Removes a single instance of the specified element from this queue,
         /// if it is present.  </summary>
-        /// <remarks>
-        /// 	If this queue contains one or more such elements.
+        /// <remarks>	If this queue contains one or more such elements.
         /// Returns <c>true</c> if this queue contained the specified element
         /// (or equivalently, if this queue changed as a result of the call).</remarks>
         /// <param name="objectToRemove">element to be removed from this queue, if present</param>
@@ -1028,8 +1020,7 @@ namespace Spring.Threading.Collections.Generic
             }
         }
 
-        /// <summary>
-        /// Creates a node and links it at end of queue.</summary>
+        /// <summary>Creates a node and links it at end of queue.</summary>
         /// <param name="x">the item to insert</param>
         private void Insert(T x) { this._last = this._last.Next = new Node(x); }
 

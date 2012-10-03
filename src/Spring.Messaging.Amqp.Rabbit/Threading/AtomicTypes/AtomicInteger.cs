@@ -27,7 +27,7 @@ namespace Spring.Threading.AtomicTypes
     /// An <see cref="AtomicInteger"/> is used in applications such as atomically
     /// incremented counters, and cannot be used as a replacement for an
     /// <see cref="int"/>. 
-    /// <p/>
+    /// 
     /// Based on the on the back port of JCP JSR-166.
     /// </summary>
     /// <author>Doug Lea</author>
@@ -73,20 +73,16 @@ namespace Spring.Threading.AtomicTypes
         /// </returns>
         public int ReturnValueAndDecrement() { return Interlocked.Decrement(ref this._integerValue) + 1; }
 
-        /// <summary>
-        /// Eventually sets to the given value.</summary>
+        /// <summary>Eventually sets to the given value.</summary>
         /// <param name="newValue">The new value</param>
         public void LazySet(int newValue) { this._integerValue = newValue; }
 
-        /// <summary>
-        /// Atomically sets value to <paramref name="newValue"/> and returns the old value.</summary>
+        /// <summary>Atomically sets value to <paramref name="newValue"/> and returns the old value.</summary>
         /// <param name="newValue">The new value</param>
-        /// <returns>
-        /// The previous value</returns>
+        /// <returns>The previous value</returns>
         public int Exchange(int newValue) { return Interlocked.Exchange(ref this._integerValue, newValue); }
 
-        /// <summary>
-        /// Atomically sets the value to <paramref name="newValue"/>
+        /// <summary>Atomically sets the value to <paramref name="newValue"/>
         /// if the current value == <paramref name="expectedValue"/></summary>
         /// <param name="expectedValue">The expected value</param>
         /// <param name="newValue">The new value</param>
@@ -98,8 +94,7 @@ namespace Spring.Threading.AtomicTypes
                 ref this._integerValue, newValue, expectedValue);
         }
 
-        /// <summary>
-        /// Atomically sets the value to <paramref name="newValue"/>
+        /// <summary>Atomically sets the value to <paramref name="newValue"/>
         /// if the current value == <paramref name="expectedValue"/></summary>
         /// <param name="expectedValue">The expected value</param>
         /// <param name="newValue">The new value</param>
@@ -111,18 +106,14 @@ namespace Spring.Threading.AtomicTypes
                 ref this._integerValue, newValue, expectedValue);
         }
 
-        /// <summary>
-        /// Atomically adds <paramref name="deltaValue"/> to the current value.</summary>
+        /// <summary>Atomically adds <paramref name="deltaValue"/> to the current value.</summary>
         /// <param name="deltaValue">The value to add</param>
-        /// <returns>
-        /// The previous value</returns>
+        /// <returns>The previous value</returns>
         public int AddDeltaAndReturnPreviousValue(int deltaValue) { return Interlocked.Add(ref this._integerValue, deltaValue) - deltaValue; }
 
-        /// <summary>
-        /// Atomically adds <paramref name="deltaValue"/> to the current value.</summary>
+        /// <summary>Atomically adds <paramref name="deltaValue"/> to the current value.</summary>
         /// <param name="deltaValue">The value to add</param>
-        /// <returns>
-        /// The updated value</returns>
+        /// <returns>The updated value</returns>
         public int AddDeltaAndReturnNewValue(int deltaValue) { return Interlocked.Add(ref this._integerValue, deltaValue); }
 
         /// <summary> 

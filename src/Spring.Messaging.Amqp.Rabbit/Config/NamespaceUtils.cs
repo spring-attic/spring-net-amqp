@@ -14,7 +14,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System.Threading;
 using System.Xml;
 using Spring.Core;
 using Spring.Objects.Factory.Config;
@@ -28,6 +27,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// <summary>
     /// Namespace Utilities
     /// </summary>
+    /// <author>Joe Fitzgerald</author>
     public class NamespaceUtils
     {
         private static readonly string BASE_PACKAGE = "Spring.Messaging.Amqp.Rabbit.Config";
@@ -44,7 +44,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         public static bool SetValueIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName, string propertyName)
         {
             var attributeValue = element.GetAttribute(attributeName);
-            if (StringUtils.HasText(attributeValue))
+            if (!string.IsNullOrWhiteSpace(attributeValue))
             {
                 builder.AddPropertyValue(propertyName, new TypedStringValue(attributeValue));
                 return true;
@@ -58,7 +58,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <param name="element">The element.</param>
         /// <param name="attributeName">Name of the attribute.</param>
         /// <returns>True if successful, else false.</returns>
-        public static bool SetValueIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName) { return SetValueIfAttributeDefined(builder, element, attributeName, Conventions.AttributeNameToPropertyName(Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(attributeName))); }
+        public static bool SetValueIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName) { return SetValueIfAttributeDefined(builder, element, attributeName, Conventions.AttributeNameToPropertyName(attributeName)); }
 
         /// <summary>Determines whether [is attribute defined] [the specified element].</summary>
         /// <param name="element">The element.</param>
@@ -67,7 +67,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         public static bool IsAttributeDefined(XmlElement element, string attributeName)
         {
             var value = element.GetAttribute(attributeName);
-            return StringUtils.HasText(value);
+            return !string.IsNullOrWhiteSpace(value);
         }
 
         /// <summary>Adds the constructor arg value if attribute defined.</summary>
@@ -78,7 +78,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         public static bool AddConstructorArgValueIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName)
         {
             var value = element.GetAttribute(attributeName);
-            if (StringUtils.HasText(value))
+            if (!string.IsNullOrWhiteSpace(value))
             {
                 builder.AddConstructorArg(new TypedStringValue(value));
                 return true;
@@ -95,7 +95,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         public static void AddConstructorArgBooleanValueIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName, bool defaultValue)
         {
             var value = element.GetAttribute(attributeName);
-            if (StringUtils.HasText(value))
+            if (!string.IsNullOrWhiteSpace(value))
             {
                 builder.AddConstructorArg(new TypedStringValue(value));
             }
@@ -113,7 +113,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         public static bool AddConstructorArgRefIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName)
         {
             var value = element.GetAttribute(attributeName);
-            if (StringUtils.HasText(value))
+            if (!string.IsNullOrWhiteSpace(value))
             {
                 builder.AddConstructorArgReference(value);
                 return true;
@@ -130,7 +130,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         public static bool AddConstructorArgParentRefIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName)
         {
             var value = element.GetAttribute(attributeName);
-            if (StringUtils.HasText(value))
+            if (!string.IsNullOrWhiteSpace(value))
             {
                 var child = ObjectDefinitionBuilder.GenericObjectDefinition();
                 child.RawObjectDefinition.ParentName = value;
@@ -150,7 +150,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         public static bool SetReferenceIfAttributeDefined(ObjectDefinitionBuilder builder, XmlElement element, string attributeName, string propertyName)
         {
             var attributeValue = element.GetAttribute(attributeName);
-            if (StringUtils.HasText(attributeValue))
+            if (!string.IsNullOrWhiteSpace(attributeValue))
             {
                 builder.AddPropertyReference(propertyName, attributeValue);
                 return true;
@@ -173,7 +173,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         {
             var elementId = "'" + element.LocalName + "'";
             var id = element.GetAttribute("id");
-            if (StringUtils.HasText(id))
+            if (!string.IsNullOrWhiteSpace(id))
             {
                 elementId += " with id='" + id + "'";
             }
@@ -189,27 +189,31 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         {
             // parses out inner object definition for concrete implementation if defined
             var childElements = element.GetElementsByTagName("object");
+            IObjectDefinition innerComponentDefinition = null;
+            IConfigurableObjectDefinition inDef = null;
 
-            // IObjectDefinition innerComponentDefinition = null;
             if (childElements != null && childElements.Count == 1)
             {
                 var objectElement = childElements[0] as XmlElement;
-                var bdHolder = parserContext.ParserHelper.ParseObjectDefinitionElement(objectElement);
 
-                // ObjectDefinitionParserDelegate delegate = parserContext.getDelegate();
-                // ObjectDefinitionHolder odHolder = delegate.parseObjectDefinitionElement(objectElement);
-                // odHolder = delegate.decorateObjectDefinitionIfRequired(objectElement, bdHolder);
-                var inDef = bdHolder.ObjectDefinition as IConfigurableObjectDefinition;
+                // var odDelegate = parserContext.GetDelegate();
+                var odHolder = parserContext.ParserHelper.ParseObjectDefinitionElement(objectElement);
+
+                // odHolder = odDelegate.DecorateObjectDefinitionIfRequired(objectElement, odHolder);
+                inDef = odHolder.ObjectDefinition as IConfigurableObjectDefinition;
                 var objectName = ObjectDefinitionReaderUtils.GenerateObjectName(inDef, parserContext.Registry);
+
+                // innerComponentDefinition = new ObjectComponentDefinition(inDef, objectName);
                 parserContext.Registry.RegisterObjectDefinition(objectName, inDef);
-                return inDef;
             }
 
-            return null;
+            var aRef = element.GetAttribute(REF_ATTRIBUTE);
+            AssertUtils.IsTrue(
+                !(!string.IsNullOrWhiteSpace(aRef) && inDef != null), 
+                "Ambiguous definition. Inner object " + (inDef == null ? string.Empty : inDef.ObjectTypeName) + " declaration and \"ref\" " + aRef + " are not allowed together."
+                );
 
-            /* var aRef = element.GetAttribute(REF_ATTRIBUTE);
-		    AssertUtils.IsTrue(!(StringUtils.HasText(aRef) && innerComponentDefinition != null), "Ambiguous definition. Inner object " + (innerComponentDefinition == null ? innerComponentDefinition : innerComponentDefinition.ObjectDefinition.getObjectClassName()) + " declaration and \"ref\" " + aRef + " are not allowed together.");
-		    return innerComponentDefinition; */
+            return inDef;
         }
     }
 }

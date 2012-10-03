@@ -14,7 +14,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System;
 using System.Xml;
 using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
@@ -68,9 +67,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             if (argumentsElement != null)
             {
                 var parser = new ObjectDefinitionParserHelper(parserContext);
-                var map = parser.ParseMapElement(argumentsElement, builder.RawObjectDefinition);
+                var map = parser.ParseMapElementToTypedDictionary(argumentsElement, builder.RawObjectDefinition);
 
-                builder.AddPropertyValue(ARGUMENTS_PROPERTY, parser.ConvertToManagedDictionary<string, object>(map));
                 builder.AddConstructorArg(map);
             }
         }
@@ -80,7 +78,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <param name="parserContext">The parser context.</param>
         /// <param name="builder">The builder.</param>
         /// <param name="exchangeName">The exchange name.</param>
-        protected void ParseBindings(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder, string exchangeName)
+        protected virtual void ParseBindings(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder, string exchangeName)
         {
             var bindings = element.GetElementsByTagName(BINDINGS_ELE);
             var bindingElement = bindings.Count == 1 ? bindings[0] as XmlElement : null;
@@ -124,7 +122,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             var hasExchangeAttribute = string.IsNullOrWhiteSpace(exchangeAttribute);
             if (!(hasQueueAttribute ^ hasExchangeAttribute))
             {
-                parserContext.ReaderContext.ReportException(binding, BINDING_ELE, "Binding must have exactly one of 'queue' or 'exchange'");
+                parserContext.ReaderContext.ReportFatalException(binding, "Binding must have exactly one of 'queue' or 'exchange'");
             }
 
             if (hasQueueAttribute)

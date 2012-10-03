@@ -22,8 +22,7 @@ using Spring.Collections.Generic;
 
 namespace Spring.Threading.Collections.Generic
 {
-    /// <summary>
-    /// A <see cref="IQueue{T}"/> that additionally supports operations
+    /// <summary>A <see cref="IQueue{T}"/> that additionally supports operations
     /// that wait for the queue to become non-empty when retrieving an
     /// element, and wait for space to become available in the queue when
     /// storing an element.</summary>
@@ -106,8 +105,7 @@ namespace Spring.Threading.Collections.Generic
     public interface IBlockingQueue<T> : IQueue<T>
     {
         // JDK_1_6
-        /// <summary>
-        /// Inserts the specified element into this queue, waiting if necessary
+        /// <summary>Inserts the specified element into this queue, waiting if necessary
         /// for space to become available.</summary>
         /// <param name="element">the element to add</param>
         /// <exception cref="ThreadInterruptedException">if interrupted while waiting.</exception>
@@ -115,8 +113,7 @@ namespace Spring.Threading.Collections.Generic
         /// it from being added to this queue.</exception>
         void Put(T element);
 
-        /// <summary>
-        /// Inserts the specified element into this queue, waiting up to the
+        /// <summary>Inserts the specified element into this queue, waiting up to the
         /// specified wait time if necessary for space to become available.</summary>
         /// <param name="element">The element to add.</param>
         /// <param name="duration">How long to wait before giving up.</param>
@@ -135,8 +132,7 @@ namespace Spring.Threading.Collections.Generic
         /// <returns> the head of this queue</returns>
         T Take();
 
-        /// <summary>
-        /// Retrieves and removes the head of this queue, waiting up to the
+        /// <summary>Retrieves and removes the head of this queue, waiting up to the
         /// specified wait time if necessary for an element to become available.</summary>
         /// <param name="duration">How long to wait before giving up.</param>
         /// <param name="element">Set to the head of this queue. <c>default(T)</c> if queue is empty.</param>
@@ -144,8 +140,7 @@ namespace Spring.Threading.Collections.Generic
         /// specified by the <paramref name="duration"/>. Otherwise <c>true</c>.</returns>
         bool Poll(TimeSpan duration, out T element);
 
-        /// <summary>
-        /// Removes all available elements from this queue and adds them to the 
+        /// <summary>Removes all available elements from this queue and adds them to the 
         /// given collection.  </summary>
         /// <remarks>This operation may be more efficient than repeatedly polling this 
         /// queue.  A failure encountered while attempting to add elements to 
@@ -164,8 +159,7 @@ namespace Spring.Threading.Collections.Generic
         /// <seealso cref="IQueue{T}.Drain(System.Action{T})"/><seealso cref="DrainTo(ICollection{T},int)"/><seealso cref="IQueue{T}.Drain(System.Action{T},int)"/>
         int DrainTo(ICollection<T> collection);
 
-        /// <summary>
-        /// Removes all available elements that meet the criteria defined by <paramref name="predicate"/> from this queue and adds them to the 
+        /// <summary>Removes all available elements that meet the criteria defined by <paramref name="predicate"/> from this queue and adds them to the 
         /// given collection.  </summary>
         /// <remarks>This operation may be more efficient than repeatedly polling this 
         /// queue.  A failure encountered while attempting to add elements to 
@@ -185,11 +179,9 @@ namespace Spring.Threading.Collections.Generic
         /// <seealso cref="IQueue{T}.Drain(System.Action{T})"/><seealso cref="DrainTo(ICollection{T},int)"/><seealso cref="IQueue{T}.Drain(System.Action{T},int)"/>
         int DrainTo(ICollection<T> collection, Predicate<T> predicate);
 
-        /// <summary>
-        /// Removes at most the given number of available elements from
+        /// <summary>Removes at most the given number of available elements from
         /// this queue and adds them to the given collection.  </summary>
-        /// <remarks>
-        /// This operation may be more
+        /// <remarks>This operation may be more
         /// efficient than repeatedly polling this queue.  A failure
         /// encountered while attempting to add elements to
         /// collection <paramref name="collection"/> may result in elements being in neither,
@@ -208,12 +200,10 @@ namespace Spring.Threading.Collections.Generic
         /// <seealso cref="DrainTo(ICollection{T})"/><seealso cref="IQueue{T}.Drain(System.Action{T})"/><seealso cref="IQueue{T}.Drain(System.Action{T},int)"/>
         int DrainTo(ICollection<T> collection, int maxElements);
 
-        /// <summary>
-        /// Removes at most the given number of available elements that meet 
+        /// <summary>Removes at most the given number of available elements that meet 
         /// the criteria defined by <paramref name="predicate"/> from this 
         /// queue and adds them to the given collection.  </summary>
-        /// <remarks>
-        /// This operation may be more
+        /// <remarks>This operation may be more
         /// efficient than repeatedly polling this queue.  A failure
         /// encountered while attempting to add elements to
         /// collection <paramref name="collection"/> may result in elements being in neither,

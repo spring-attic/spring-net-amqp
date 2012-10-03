@@ -25,7 +25,7 @@ namespace Spring.Threading.AtomicTypes
     /// <summary>
     /// A <see cref="bool"/> value that may be updated atomically. An <see cref="AtomicBoolean"/> 
     /// is used for instances of atomically updated flags, and cannot be used as a replacement for a <see cref="bool"/> value.
-    /// <p/>
+    /// 
     /// Based on the on the back port of JCP JSR-166.
     /// </summary>
     /// <author>Doug Lea</author>
@@ -56,8 +56,7 @@ namespace Spring.Threading.AtomicTypes
         /// </summary>
         public bool Value { get { return this._booleanValue != 0; } set { this._booleanValue = value ? 1 : 0; } }
 
-        /// <summary>
-        /// Atomically sets the value to <paramref name="newValue"/>
+        /// <summary>Atomically sets the value to <paramref name="newValue"/>
         /// if the current value == <paramref name="expectedValue"/></summary>
         /// <param name="expectedValue">The expected value</param>
         /// <param name="newValue">The new value to use of the current value equals the expected value.</param>
@@ -69,8 +68,7 @@ namespace Spring.Threading.AtomicTypes
             return Interlocked.CompareExchange(ref this._booleanValue, u, e) == e;
         }
 
-        /// <summary>
-        /// Atomically sets the value to <paramref name="newValue"/>
+        /// <summary>Atomically sets the value to <paramref name="newValue"/>
         /// if the current value == <paramref name="expectedValue"/>
         /// May fail spuriously.</summary>
         /// <param name="expectedValue">The expected value</param>
@@ -78,16 +76,13 @@ namespace Spring.Threading.AtomicTypes
         /// <returns><c>true</c> if the current value equaled the expected value, <c>false</c> otherwise.</returns>
         public virtual bool WeakCompareAndSet(bool expectedValue, bool newValue) { return this.CompareAndSet(expectedValue, newValue); }
 
-        /// <summary>
-        /// Eventually sets to the given value.</summary>
+        /// <summary>Eventually sets to the given value.</summary>
         /// <param name="newValue">the new value</param>
         public void LazySet(bool newValue) { this._booleanValue = newValue ? 1 : 0; }
 
-        /// <summary>
-        /// Atomically sets the current value to <parmref name="newValue"/> and returns the previous value.</summary>
+        /// <summary>Atomically sets the current value to <parmref name="newValue"/> and returns the previous value.</summary>
         /// <param name="newValue">The new value for the instance.</param>
-        /// <returns>
-        /// the previous value of the instance.</returns>
+        /// <returns>the previous value of the instance.</returns>
         public bool Exchange(bool newValue)
         {
             int u = newValue ? 1 : 0;

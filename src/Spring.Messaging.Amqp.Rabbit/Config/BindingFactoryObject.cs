@@ -15,10 +15,9 @@
 
 #region Using Directives
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using Spring.Messaging.Amqp.Core;
 using Spring.Objects.Factory;
-using Queue = Spring.Messaging.Amqp.Core.Queue;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Config
@@ -28,7 +27,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// </summary>
     public class BindingFactoryObject : IFactoryObject
     {
-        private IDictionary arguments;
+        private IDictionary<string, object> arguments;
         private string routingKey = string.Empty;
         private string exchange;
         private Queue destinationQueue;
@@ -38,7 +37,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// Sets the arguments.
         /// </summary>
         /// <value>The arguments.</value>
-        public IDictionary Arguments { set { this.arguments = value; } }
+        /// <author>Dave Syer</author>
+        /// <author>Joe Fitzgerald</author>
+        public IDictionary<string, object> Arguments { set { this.arguments = value; } }
 
         /// <summary>
         /// Sets the routing key.

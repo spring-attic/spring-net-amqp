@@ -17,9 +17,9 @@
 using System;
 using System.Xml;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
-using Spring.Util;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Config
@@ -45,6 +45,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
         private static readonly string CHANNEL_TRANSACTED_ATTRIBUTE = "channel-transacted";
 
+        private static readonly string REPLY_QUEUE_ATTRIBUTE = "reply-queue";
+
+        private static readonly string LISTENER_ELEMENT = "reply-listener";
+
+        private static readonly string MANDATORY_ATTRIBUTE = "mandatory";
+
+        private static readonly string IMMEDIATE_ATTRIBUTE = "immediate";
+
+        private static readonly string RETURN_CALLBACK_ATTRIBUTE = "return-callback";
+
+        private static readonly string CONFIRM_CALLBACK_ATTRIBUTE = "confirm-callback";
+
         /// <summary>The get object type.</summary>
         /// <param name="element">The element.</param>
         /// <returns>The System.Type.</returns>
@@ -54,7 +66,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         protected override bool ShouldGenerateId { get { return false; } }
 
         /// <summary>Gets a value indicating whether should generate id as fallback.</summary>
-        protected override bool ShouldGenerateIdAsFallback { get { return true; } }
+        protected override bool ShouldGenerateIdAsFallback { get { return false; } }
 
         /// <summary>The do parse.</summary>
         /// <param name="element">The element.</param>
@@ -64,12 +76,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         {
             var connectionFactoryRef = element.GetAttribute(CONNECTION_FACTORY_ATTRIBUTE);
 
-            if (!StringUtils.HasText(connectionFactoryRef))
+            if (string.IsNullOrWhiteSpace(connectionFactoryRef))
             {
                 parserContext.ReaderContext.ReportFatalException(element, "A '" + CONNECTION_FACTORY_ATTRIBUTE + "' attribute must be set.");
             }
 
-            if (StringUtils.HasText(connectionFactoryRef))
+            if (!string.IsNullOrWhiteSpace(connectionFactoryRef))
             {
                 // Use constructor with connectionFactory parameter
                 builder.AddConstructorArgReference(connectionFactoryRef);
@@ -82,6 +94,51 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, REPLY_TIMEOUT_ATTRIBUTE);
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, ENCODING_ATTRIBUTE);
             NamespaceUtils.SetReferenceIfAttributeDefined(builder, element, MESSAGE_CONVERTER_ATTRIBUTE);
+            NamespaceUtils.SetReferenceIfAttributeDefined(builder, element, REPLY_QUEUE_ATTRIBUTE);
+            NamespaceUtils.SetValueIfAttributeDefined(builder, element, MANDATORY_ATTRIBUTE);
+            NamespaceUtils.SetValueIfAttributeDefined(builder, element, IMMEDIATE_ATTRIBUTE);
+            NamespaceUtils.SetReferenceIfAttributeDefined(builder, element, RETURN_CALLBACK_ATTRIBUTE);
+            NamespaceUtils.SetReferenceIfAttributeDefined(builder, element, CONFIRM_CALLBACK_ATTRIBUTE);
+
+            IObjectDefinition replyContainer = null;
+            XmlElement childElement = null;
+            var childElements = element.GetElementsByTagName(LISTENER_ELEMENT);
+            if (childElements.Count > 0)
+            {
+                childElement = childElements[0] as XmlElement;
+            }
+
+            if (childElement != null)
+            {
+                replyContainer = this.ParseListener(childElement, element, parserContext);
+                if (replyContainer != null)
+                {
+                    replyContainer.PropertyValues.Add("MessageListener", new RuntimeObjectReference(element.GetAttribute(ID_ATTRIBUTE)));
+                    var replyContainerName = element.GetAttribute(ID_ATTRIBUTE) + ".ReplyListener";
+                    parserContext.Registry.RegisterObjectDefinition(replyContainerName, replyContainer);
+                }
+            }
+
+            if (replyContainer == null && element.HasAttribute(REPLY_QUEUE_ATTRIBUTE))
+            {
+                parserContext.ReaderContext.ReportFatalException(element, "For template '" + element.GetAttribute(ID_ATTRIBUTE) + "', when specifying a reply-queue, a <reply-listener/> element is required");
+            }
+            else if (replyContainer != null && !element.HasAttribute(REPLY_QUEUE_ATTRIBUTE))
+            {
+                parserContext.ReaderContext.ReportFatalException(element, "For template '" + element.GetAttribute(ID_ATTRIBUTE) + "', a <reply-listener/> element is not allowed if no 'reply-queue' is supplied");
+            }
+        }
+
+        private IObjectDefinition ParseListener(XmlElement childElement, XmlElement element, ParserContext parserContext)
+        {
+            var replyContainer = RabbitNamespaceUtils.ParseContainer(childElement, parserContext);
+            if (replyContainer != null)
+            {
+                replyContainer.PropertyValues.Add("ConnectionFactory", new RuntimeObjectReference(element.GetAttribute(CONNECTION_FACTORY_ATTRIBUTE)));
+                replyContainer.PropertyValues.Add("Queues", new RuntimeObjectReference(element.GetAttribute(REPLY_QUEUE_ATTRIBUTE)));
+            }
+
+            return replyContainer;
         }
     }
 }

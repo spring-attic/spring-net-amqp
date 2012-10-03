@@ -119,8 +119,7 @@ namespace Spring.Collections.Generic
         /// </exception>
         T Remove();
 
-        /// <summary>
-        /// Removes all available elements from this queue and invoke the given<paramref name="action"/> on each element in order.</summary>
+        /// <summary>Removes all available elements from this queue and invoke the given<paramref name="action"/> on each element in order.</summary>
         /// <remarks>This operation may be more efficient than repeatedly polling this 
         /// queue.  A failure encountered while attempting to invoke the <paramref name="action"/> on the elements may result in elements 
         /// being neither, either or both in the queue or processed when the 
@@ -138,8 +137,7 @@ namespace Spring.Collections.Generic
         /// <seealso cref="IBlockingQueue{T}.DrainTo(System.Collections.Generic.ICollection{T})"/><seealso cref="IBlockingQueue{T}.DrainTo(System.Collections.Generic.ICollection{T},int)"/><seealso cref="Drain(System.Action{T},int)"/>
         int Drain(Action<T> action);
 
-        /// <summary>
-        /// Removes all available elements that meet the criteria defined by <paramref name="criteria"/> from this queue and invoke the given<paramref name="action"/> on each element in order.</summary>
+        /// <summary>Removes all available elements that meet the criteria defined by <paramref name="criteria"/> from this queue and invoke the given<paramref name="action"/> on each element in order.</summary>
         /// <remarks>This operation may be more efficient than repeatedly polling this 
         /// queue.  A failure encountered while attempting to invoke the <paramref name="action"/> on the elements may result in elements 
         /// being neither, either or both in the queue or processed when the 
@@ -158,8 +156,7 @@ namespace Spring.Collections.Generic
         /// <seealso cref="Drain(System.Action{T},int)"/>
         int Drain(Action<T> action, Predicate<T> criteria);
 
-        /// <summary>
-        /// Removes at most the given number of available elements from this 
+        /// <summary>Removes at most the given number of available elements from this 
         /// queue and invoke the given <paramref name="action"/> on each 
         /// element in order.</summary>
         /// <remarks>This operation may be more efficient than repeatedly polling this 
@@ -174,8 +171,7 @@ namespace Spring.Collections.Generic
         /// <seealso cref="Drain(System.Action{T})"/>
         int Drain(Action<T> action, int maxElements);
 
-        /// <summary>
-        /// Removes at most the given number of available elements that meet 
+        /// <summary>Removes at most the given number of available elements that meet 
         /// the criteria defined by <paramref name="criteria"/> from this 
         /// queue and invoke the given <paramref name="action"/> on each 
         /// element in order.</summary>

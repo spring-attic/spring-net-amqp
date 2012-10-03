@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System.Collections;
+using System.Collections.Generic;
 #endregion
 
 namespace Spring.Messaging.Amqp.Core
@@ -47,7 +48,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>
         /// The arguments.
         /// </summary>
-        private readonly IDictionary arguments;
+        private readonly IDictionary<string, object> arguments;
 
         /// <summary>
         /// The destination type.
@@ -60,7 +61,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="arguments">The arguments.</param>
-        public Binding(string destination, DestinationType destinationType, string exchange, string routingKey, IDictionary arguments)
+        public Binding(string destination, DestinationType destinationType, string exchange, string routingKey, IDictionary<string, object> arguments)
         {
             this.destination = destination;
             this.destinationType = destinationType;
@@ -103,7 +104,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>
         /// Gets Arguments.
         /// </summary>
-        public IDictionary Arguments { get { return this.arguments; } }
+        public IDictionary<string, object> Arguments { get { return this.arguments; } }
 
         /// <summary>
         /// Gets DestinationType.

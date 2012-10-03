@@ -53,7 +53,7 @@ namespace Spring.Messaging.Amqp.Core
             }
             else
             {
-                Match match = pattern.Match(address);
+                var match = pattern.Match(address);
                 if (match.Success)
                 {
                     this.exchangeType = match.Groups[1].Value;

@@ -584,8 +584,7 @@ namespace Spring.Threading.Collections.Generic
             }
         }
 
-        /// <summary>
-        /// Inserts the specified element into this queue, waiting if necessary
+        /// <summary>Inserts the specified element into this queue, waiting if necessary
         /// another thread to receive it.</summary>
         /// <param name="element">the element to add</param>
         /// <exception cref="ThreadInterruptedException">if interrupted while waiting.</exception>
@@ -629,8 +628,7 @@ namespace Spring.Threading.Collections.Generic
             }
         }
 
-        /// <summary>
-        /// Inserts the specified element into this queue, waiting up to the
+        /// <summary>Inserts the specified element into this queue, waiting up to the
         /// specified wait time if necessary for another thread to receive it.</summary>
         /// <param name="element">The element to add.</param>
         /// <param name="duration">How long to wait before giving up.</param>
@@ -733,8 +731,7 @@ namespace Spring.Threading.Collections.Generic
             }
         }
 
-        /// <summary>
-        /// Retrieves and removes the head of this queue, waiting up to the
+        /// <summary>Retrieves and removes the head of this queue, waiting up to the
         /// specified wait time if necessary for another thread to insert it.</summary>
         /// <param name="duration">How long to wait before giving up.</param>
         /// <param name="element">Set to the head of this queue. <c>default(T)</c> if queue is empty.</param>

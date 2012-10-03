@@ -52,10 +52,14 @@ namespace Spring.Threading.Helpers
 
         /// <summary>The enqueue.</summary>
         /// <param name="w">The w.</param>
-        void Enqueue(WaitNode w); // assumed not to block
+        void Enqueue(WaitNode w);
+
+        // assumed not to block
         /// <summary>The dequeue.</summary>
         /// <returns>The Spring.Threading.Helpers.WaitNode.</returns>
-        WaitNode Dequeue(); // should return null if empty
+        WaitNode Dequeue();
+
+        // should return null if empty
         // In backport 3.1 but not used.
         // void PutBack(WaitNode w);
     }

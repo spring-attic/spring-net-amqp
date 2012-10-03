@@ -96,13 +96,15 @@
     <Compile Include="Config\ConnectionFactoryParser.cs" />
     <Compile Include="Config\DirectExchangeParser.cs" />
     <Compile Include="Config\FanoutExchangeParser.cs" />
+    <Compile Include="Config\FederatedExchangeParser.cs" />
     <Compile Include="Config\HeadersExchangeParser.cs" />
     <Compile Include="Config\ListenerContainerParser.cs" />
-    <Compile Include="Config\ArgumentEntryElementParser.cs" />
     <Compile Include="Config\ObjectDefinitionParserHelper.cs" />
     <Compile Include="Config\NamespaceUtils.cs" />
+    <Compile Include="Config\QueueArgumentsParser.cs" />
     <Compile Include="Config\QueueParser.cs" />
     <Compile Include="Config\RabbitNamespaceHandler.cs" />
+    <Compile Include="Config\RabbitNamespaceUtils.cs" />
     <Compile Include="Config\TemplateParser.cs" />
     <Compile Include="Config\TopicExchangeParser.cs" />
     <Compile Include="Connection\AbstractConnectionFactory.cs" />
@@ -183,7 +185,12 @@
     <None Include="..\..\Spring.Net.snk">
       <Link>Spring.Net.snk</Link>
     </None>
-    <EmbeddedResource Include="Config\spring-rabbit.xsd" />
+    <EmbeddedResource Include="Config\spring-rabbit-1.0.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Config\spring-rabbit-1.1.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

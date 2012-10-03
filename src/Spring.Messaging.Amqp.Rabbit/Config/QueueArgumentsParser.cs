@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FanoutExchangeParser.cs" company="The original author or authors.">
+// <copyright file="QueueArgumentsParser.cs" company="The original author or authors.">
 //   Copyright 2002-2012 the original author or authors.
 //   
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -14,10 +14,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System;
-using System.Collections.Generic;
 using System.Xml;
-using Spring.Messaging.Amqp.Core;
 using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
@@ -26,29 +23,27 @@ using Spring.Objects.Factory.Xml;
 namespace Spring.Messaging.Amqp.Rabbit.Config
 {
     /// <summary>
-    /// A fanout exchange parser.
+    /// Queue Arguments Parser
     /// </summary>
-    /// <author>Dave Syer</author>
+    /// <author>Gary Russell</author>
     /// <author>Joe Fitzgerald</author>
-    public class FanoutExchangeParser : AbstractExchangeParser
+    internal class QueueArgumentsParser : AbstractSingleObjectDefinitionParser
     {
-        /// <summary>The get object type.</summary>
+        /// <summary>The do parse.</summary>
         /// <param name="element">The element.</param>
-        /// <returns>The System.Type.</returns>
-        protected override Type GetObjectType(XmlElement element) { return typeof(FanoutExchange); }
-
-        /// <summary>The parse binding.</summary>
-        /// <param name="exchangeName">The exchange name.</param>
-        /// <param name="binding">The binding.</param>
         /// <param name="parserContext">The parser context.</param>
-        /// <returns>The Spring.Objects.Factory.Support.AbstractObjectDefinition.</returns>
-        protected override AbstractObjectDefinition ParseBinding(string exchangeName, XmlElement binding, ParserContext parserContext)
+        /// <param name="builder">The builder.</param>
+        protected override void DoParse(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder)
         {
-            var builder = ObjectDefinitionBuilder.GenericObjectDefinition(typeof(BindingFactoryObject));
-            this.ParseDestination(binding, parserContext, builder);
-            builder.AddPropertyValue("Exchange", new TypedStringValue(exchangeName));
-            builder.AddPropertyValue("Arguments", new Dictionary<string, object>());
-            return builder.ObjectDefinition;
+            var parser = new ObjectDefinitionParserHelper(parserContext);
+            var map = parser.ParseMapElementToTypedDictionary(element, builder.RawObjectDefinition);
+
+            builder.AddConstructorArg(map);
         }
+
+        /// <summary>The get object type name.</summary>
+        /// <param name="element">The element.</param>
+        /// <returns>The System.String.</returns>
+        protected override string GetObjectTypeName(XmlElement element) { return typeof(DictionaryFactoryObject).FullName; }
     }
 }

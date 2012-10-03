@@ -22,13 +22,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// <summary>
     /// Namespace handler for Rabbit.
     /// </summary>
-    [
-        NamespaceParser(
-            Namespace = "http://www.springframework.net/schema/rabbit", 
-            SchemaLocationAssemblyHint = typeof(RabbitNamespaceHandler), 
-            SchemaLocation = "/Spring.Messaging.Amqp.Rabbit.Config/spring-rabbit.xsd"
-            )
-    ]
+    /// <author>Mark Pollack</author>
+    /// <author>Mark Fisher</author>
+    /// <author>Gary Russell</author>
+    /// <author>Joe Fitzgerald</author>
+    [NamespaceParser(Namespace = "http://www.springframework.net/schema/rabbit", SchemaLocationAssemblyHint = typeof(RabbitNamespaceHandler), SchemaLocation = "/Spring.Messaging.Amqp.Rabbit.Config/spring-rabbit-1.1.xsd")]
     public class RabbitNamespaceHandler : NamespaceParserSupport
     {
         /// <summary>The init.</summary>
@@ -39,10 +37,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             this.RegisterObjectDefinitionParser("topic-exchange", new TopicExchangeParser());
             this.RegisterObjectDefinitionParser("fanout-exchange", new FanoutExchangeParser());
             this.RegisterObjectDefinitionParser("headers-exchange", new HeadersExchangeParser());
+            this.RegisterObjectDefinitionParser("federated-exchange", new FederatedExchangeParser());
             this.RegisterObjectDefinitionParser("listener-container", new ListenerContainerParser());
             this.RegisterObjectDefinitionParser("admin", new AdminParser());
             this.RegisterObjectDefinitionParser("connection-factory", new ConnectionFactoryParser());
             this.RegisterObjectDefinitionParser("template", new TemplateParser());
+            this.RegisterObjectDefinitionParser("queue-arguments", new QueueArgumentsParser());
         }
     }
 }

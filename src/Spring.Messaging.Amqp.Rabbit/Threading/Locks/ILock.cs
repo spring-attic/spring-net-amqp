@@ -286,8 +286,7 @@ namespace Spring.Threading.Locks
         /// </returns>
         bool TryLock();
 
-        /// <summary>
-        /// Acquires the lock if it is free within the specified<paramref name="timeSpan"/> time and the current thread has not
+        /// <summary>Acquires the lock if it is free within the specified<paramref name="timeSpan"/> time and the current thread has not
         /// been interrupted by calling <see cref="Thread.Interrupt()"/>.</summary>
         /// <remark>
         /// <para>

@@ -59,20 +59,20 @@ namespace Spring.Messaging.Amqp.Support.Converter
         /// Sets the id type mapping.
         /// </summary>
         /// <value>The id type mapping.</value>
-        public IDictionary IdTypeMapping
+        public IDictionary<string, object> IdTypeMapping
         {
             set
             {
                 var suppliedValue = value;
                 var finalValue = new Dictionary<string, Type>();
-                foreach (DictionaryEntry entry in suppliedValue)
+                foreach (var entry in suppliedValue)
                 {
-                    if (!string.IsNullOrWhiteSpace(entry.Key.ToString()) && entry.Value != null && !string.IsNullOrWhiteSpace(entry.Value.ToString()))
+                    if (!string.IsNullOrWhiteSpace(entry.Key) && entry.Value != null && !string.IsNullOrWhiteSpace(entry.Value.ToString()))
                     {
                         var entryType = TypeResolutionUtils.ResolveType(entry.Value.ToString());
                         if (entryType != null && !string.IsNullOrWhiteSpace(entryType.FullName))
                         {
-                            finalValue.Add(entry.Key.ToString(), entryType);
+                            finalValue.Add(entry.Key, entryType);
                         }
                     }
                 }

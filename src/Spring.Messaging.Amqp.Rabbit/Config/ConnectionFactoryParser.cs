@@ -26,6 +26,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// <summary>
     /// A connection factory parser.
     /// </summary>
+    /// <author>Dave Syer</author>
+    /// <author>Gary Russell</author>
+    /// <author>Joe Fitzgerald</author>
     public class ConnectionFactoryParser : AbstractSingleObjectDefinitionParser
     {
         private static readonly string CONNECTION_FACTORY_ATTRIBUTE = "connection-factory";
@@ -36,11 +39,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
         private static readonly string PORT_ATTRIBUTE = "port";
 
+        private static readonly string ADDRESSES = "addresses";
+
         private static readonly string VIRTUAL_HOST_ATTRIBUTE = "virtual-host";
 
         private static readonly string USER_ATTRIBUTE = "username";
 
         private static readonly string PASSWORD_ATTRIBUTE = "password";
+
+        private static readonly string EXECUTOR_ATTRIBUTE = "executor";
+
+        private static readonly string PUBLISHER_CONFIRMS = "publisher-confirms";
+
+        private static readonly string PUBLISHER_RETURNS = "publisher-returns";
 
         /// <summary>The get object type.</summary>
         /// <param name="element">The element.</param>
@@ -59,6 +70,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <param name="builder">The builder.</param>
         protected override void DoParse(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder)
         {
+            if (element.HasAttribute(HOST_ATTRIBUTE) || element.HasAttribute(PORT_ATTRIBUTE))
+            {
+                parserContext.ReaderContext.ReportFatalException(element, "If the 'addresses' attribute is provided, a connection factory can not have 'host' or 'port' attributes.");
+            }
+
             NamespaceUtils.AddConstructorArgParentRefIfAttributeDefined(builder, element, CONNECTION_FACTORY_ATTRIBUTE);
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, CHANNEL_CACHE_SIZE_ATTRIBUTE);
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, HOST_ATTRIBUTE);
@@ -66,6 +82,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, USER_ATTRIBUTE);
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, PASSWORD_ATTRIBUTE);
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, VIRTUAL_HOST_ATTRIBUTE);
+            NamespaceUtils.SetReferenceIfAttributeDefined(builder, element, EXECUTOR_ATTRIBUTE);
+            NamespaceUtils.SetValueIfAttributeDefined(builder, element, ADDRESSES);
+            NamespaceUtils.SetValueIfAttributeDefined(builder, element, PUBLISHER_CONFIRMS);
+            NamespaceUtils.SetValueIfAttributeDefined(builder, element, PUBLISHER_RETURNS);
         }
     }
 }

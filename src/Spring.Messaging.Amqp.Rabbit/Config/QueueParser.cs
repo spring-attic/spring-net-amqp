@@ -26,11 +26,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// <summary>
     /// A queue parser.
     /// </summary>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald</author>
     public class QueueParser : AbstractSingleObjectDefinitionParser
     {
-        private static readonly string ARGUMENTS_ELEMENT = "queue-arguments";
-
-        private static readonly string ARGUMENTS_PROPERTY = "Arguments";
+        private static readonly string ARGUMENTS = "queue-arguments"; // element OR attribute
 
         private static readonly string DURABLE_ATTRIBUTE = "durable";
 
@@ -67,7 +67,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 parserContext.ReaderContext.ReportFatalException(element, "Queue must have either id or name (or both)");
             }
 
-            var success = NamespaceUtils.AddConstructorArgValueIfAttributeDefined(builder, element, "name");
+            NamespaceUtils.AddConstructorArgValueIfAttributeDefined(builder, element, "name");
 
             if (!NamespaceUtils.IsAttributeDefined(element, "name"))
             {
@@ -86,23 +86,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, AUTO_DELETE_ATTRIBUTE, false);
             }
 
-            var argumentsElement = element.GetElementsByTagName(ARGUMENTS_ELEMENT, element.NamespaceURI);
+            var queueArguments = element.GetAttribute(ARGUMENTS);
+            var argumentsElement = element.GetElementsByTagName(ARGUMENTS);
 
             if (argumentsElement.Count == 1)
             {
                 var parser = new ObjectDefinitionParserHelper(parserContext);
-                var map = parser.ParseMapElement(argumentsElement[0] as XmlElement, builder.RawObjectDefinition);
+                if (!string.IsNullOrWhiteSpace(queueArguments))
+                {
+                    parserContext.ReaderContext.ReportFatalException(element, "Queue may have either a queue-attributes attribute or element, but not both");
+                }
 
-                var convertedMap = parser.ConvertToManagedDictionary<string, object>(map);
+                var map = parser.ParseMapElementToTypedDictionary(argumentsElement[0] as XmlElement, builder.RawObjectDefinition);
 
-                builder.AddConstructorArg(convertedMap);
+                builder.AddConstructorArg(map);
+            }
+
+            if (!string.IsNullOrWhiteSpace(queueArguments))
+            {
+                builder.AddConstructorArgReference(queueArguments);
             }
         }
 
-        private bool AttributeHasIllegalOverride(XmlElement element, string name, string allowed)
-        {
-            var result = element.GetAttributeNode(name) != null && element.GetAttributeNode(name).Specified && !allowed.Equals(element.GetAttribute(name));
-            return result;
-        }
+        private bool AttributeHasIllegalOverride(XmlElement element, string name, string allowed) { return element.GetAttributeNode(name) != null && element.GetAttributeNode(name).Specified && !allowed.Equals(element.GetAttribute(name)); }
     }
 }

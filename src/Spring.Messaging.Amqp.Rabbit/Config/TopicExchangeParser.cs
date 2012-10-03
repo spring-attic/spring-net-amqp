@@ -15,7 +15,7 @@
 
 #region Using Directives
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using Spring.Messaging.Amqp.Core;
 using Spring.Objects.Factory.Config;
@@ -28,6 +28,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// <summary>
     /// A topic exchange parser.
     /// </summary>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald</author>
     public class TopicExchangeParser : AbstractExchangeParser
     {
         private static readonly string BINDING_PATTERN_ATTR = "pattern";
@@ -45,12 +47,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         protected override AbstractObjectDefinition ParseBinding(string exchangeName, XmlElement binding, ParserContext parserContext)
         {
             var builder = ObjectDefinitionBuilder.GenericObjectDefinition(typeof(BindingFactoryObject));
-            builder.AddPropertyReference("DestinationQueue", binding.GetAttribute(BINDING_QUEUE_ATTR));
+            this.ParseDestination(binding, parserContext, builder);
             builder.AddPropertyValue("Exchange", new TypedStringValue(exchangeName));
-
             builder.AddPropertyValue("RoutingKey", new TypedStringValue(binding.GetAttribute(BINDING_PATTERN_ATTR)));
-            builder.AddPropertyValue("Arguments", new Hashtable());
-
+            builder.AddPropertyValue("Arguments", new Dictionary<string, object>());
             return builder.ObjectDefinition;
         }
     }

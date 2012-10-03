@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System.Xml;
+using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
 #endregion
@@ -24,6 +25,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// <summary>
     /// A admin parser.
     /// </summary>
+    /// <author>tomas.lukosius@opencredo.com</author>
     /// <author>Joe Fitzgerald</author>
     public class AdminParser : AbstractSingleObjectDefinitionParser
     {
@@ -34,7 +36,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <summary>The get object type name.</summary>
         /// <param name="element">The element.</param>
         /// <returns>The System.String.</returns>
-        protected override string GetObjectTypeName(XmlElement element) { return "Spring.Messaging.Amqp.Rabbit.Core.RabbitAdmin"; }
+        protected override string GetObjectTypeName(XmlElement element) { return typeof(RabbitAdmin).FullName; }
 
         /// <summary>Gets a value indicating whether should generate id.</summary>
         protected override bool ShouldGenerateId { get { return false; } }

@@ -16,6 +16,7 @@
 #region Using Directives
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using Spring.Collections;
 using Spring.Objects.Factory.Config;
@@ -450,6 +451,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 return reference;
             }
                 
+                
+                
                 // else if (NodeNameEquals(ele, IDREF_ELEMENT)) {
                 // return parseIdRefElement(ele);
                 // }
@@ -480,6 +483,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             {
                 return this.ParseMapElement(ele, bd);
             }
+                
+                
                 
                 // else if (NodeNameEquals(ele, PROPS_ELEMENT))
                 // {
@@ -550,6 +555,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             this.parseCollectionElements(nl, target, bd, elementType);
             return target;
         }
+
+        /// <summary>The parse map element to typed dictionary.</summary>
+        /// <param name="mapEle">The map ele.</param>
+        /// <param name="od">The od.</param>
+        /// <returns>The System.Collections.Generic.IDictionary`2[TKey -&gt; System.String, TValue -&gt; System.Object].</returns>
+        public IDictionary<string, object> ParseMapElementToTypedDictionary(XmlElement mapEle, IObjectDefinition od) { return this.ConvertToTypedDictionary<string, object>(this.ParseMapElement(mapEle, od)); }
 
         /// <summary>The parse map element.</summary>
         /// <param name="mapEle">The map ele.</param>
@@ -700,6 +711,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             foreach (DictionaryEntry entry in dictionary)
             {
                 result.Add(entry.Key, entry.Value);
+            }
+
+            return result;
+        }
+
+        /// <summary>The convert to typed dictionary.</summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns>The System.Collections.Generic.Dictionary`2[TKey -&gt; TKey, TValue -&gt; TValue].</returns>
+        public Dictionary<TKey, TValue> ConvertToTypedDictionary<TKey, TValue>(IDictionary dictionary)
+        {
+            var result = new Dictionary<TKey, TValue>();
+
+            foreach (DictionaryEntry entry in dictionary)
+            {
+                result.Add((TKey)entry.Key, (TValue)entry.Value);
             }
 
             return result;

@@ -447,8 +447,7 @@ namespace Spring.Collections.Generic
         /// <filterpriority>2</filterpriority>
         protected virtual bool IsSynchronized { get { return false; } }
 
-        /// <summary>
-        /// Adds all of the elements in the supplied <paramref name="collection"/>
+        /// <summary>Adds all of the elements in the supplied <paramref name="collection"/>
         /// to this collection.</summary>
         /// <remarks><para>Attempts to <see cref="AddRange"/> of a collection to 
         /// itself result in <see cref="ArgumentException"/>. Further, the 
