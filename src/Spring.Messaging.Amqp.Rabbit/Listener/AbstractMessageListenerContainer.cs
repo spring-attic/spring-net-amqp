@@ -23,6 +23,7 @@ using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Objects.Factory;
+using Spring.Transaction.Support;
 using Spring.Util;
 #endregion
 
@@ -279,7 +280,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         public void Shutdown()
         {
-            this.logger.Debug("Shutting down Rabbit listener container");
+            this.logger.Debug(m => m("Shutting down Rabbit listener container"));
             lock (this.lifecycleMonitor)
             {
                 this.active = false;
@@ -350,11 +351,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             try
             {
-                if (this.logger.IsDebugEnabled)
-                {
-                    this.logger.Debug("Starting Rabbit listener container.");
-                }
-
+                this.logger.Debug(m => m("Starting Rabbit listener container."));
+                
                 this.DoStart();
             }
             catch (Exception ex)
@@ -439,13 +437,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 this.errorHandler.HandleError(ex);
             }
-            else if (this.logger.IsDebugEnabled)
+            else
             {
-                this.logger.Debug("Execution of Rabbit message listener failed, and no ErrorHandler has been set.", ex);
-            }
-            else if (this.logger.IsInfoEnabled)
-            {
-                this.logger.Info("Execution of Rabbit message listener failed, and no ErrorHandler has been set: " + ex.Source + ": " + ex.Message);
+                this.logger.Warn(m => m("Execution of Rabbit message listener failed, and no ErrorHandler has been set."), ex);
             }
         }
 
@@ -462,11 +456,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             if (!this.IsRunning)
             {
-                if (this.logger.IsWarnEnabled)
-                {
-                    this.logger.Warn("Rejecting received message because of the listener container " + "having been stopped in the meantime: " + message);
-                }
-
+                this.logger.Warn(m => m("Rejecting received message because the listener container has been stopped: {0}", message));
+                
                 throw new MessageRejectedWhileStoppingException();
             }
 
@@ -494,7 +485,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             else if (listener is IMessageListener)
             {
-                this.DoInvokeListener((IMessageListener)listener, message);
+                var bindChannel = this.ExposeListenerChannel && this.IsChannelLocallyTransacted(channel);
+				if (bindChannel) 
+                {
+					TransactionSynchronizationManager.BindResource(this.ConnectionFactory, new RabbitResourceHolder(channel, false));
+				}
+                try
+                {
+                    this.DoInvokeListener((IMessageListener)listener, message);
+                }
+                finally
+                {
+                    if (bindChannel)
+                    {
+                        // unbind if we bound
+						TransactionSynchronizationManager.UnbindResource(this.ConnectionFactory);
+                    }
+                }
+               
             }
             else if (listener != null)
             {
@@ -517,14 +525,34 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             RabbitResourceHolder resourceHolder = null;
 
+            var channelToUse = channel;
+            var boundHere = false;
+
             try
             {
-                var channelToUse = channel;
                 if (!this.ExposeListenerChannel)
                 {
                     // We need to expose a separate Channel.
                     resourceHolder = this.GetTransactionalResourceHolder();
                     channelToUse = resourceHolder.Channel;
+
+                    if (this.IsChannelLocallyTransacted(channelToUse) &&
+                        !TransactionSynchronizationManager.ActualTransactionActive)
+                    {
+                        TransactionSynchronizationManager.BindResource(
+                            this.ConnectionFactory,
+                            resourceHolder);
+                        boundHere = true;
+                    }
+                }
+                else
+                {
+                    // if locally transacted, bind the current channel to make it available to RabbitTemplate
+                    if (this.IsChannelLocallyTransacted(channel))
+                    {
+                        TransactionSynchronizationManager.BindResource(this.ConnectionFactory, new RabbitResourceHolder(channelToUse, false));
+                        boundHere = true;
+                    }
                 }
 
                 // Actually invoke the message listener
@@ -534,36 +562,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception e)
                 {
-                    this.ThrowOrWarnBasedOnRootCauseOfException(e);
+                    throw this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
                 }
             }
             finally
             {
                 ConnectionFactoryUtils.ReleaseResources(resourceHolder);
+                if (boundHere)
+                {
+                    // unbind if we bound
+                    TransactionSynchronizationManager.UnbindResource(this.ConnectionFactory);
+                    if (!ExposeListenerChannel && IsChannelLocallyTransacted(channelToUse))
+                    {
+                        /*
+                         *  commit the temporary channel we exposed; the consumer's channel
+                         *  will be committed later. Note that when exposing a different channel
+                         *  when there's no transaction manager, the exposed channel is committed
+                         *  on each message, and not based on txSize.
+                         */
+                        RabbitUtils.CommitIfNecessary(channelToUse);
+                    }
+                }
             }
-        }
-
-        private void ThrowOrWarnBasedOnRootCauseOfException(Exception exception)
-        {
-            if (!this.IsFromHandleMethodResolutionFailure(exception))
-            {
-                throw this.WrapToListenerExecutionFailedExceptionIfNeeded(exception);
-            }
-
-            // TODO: probably need to shunt the message off to a Dead-Letter Queue b/c at this point its 100% underliverable
-            this.logger.Warn(string.Format("{0} is unable to resolve proper method to handle the message!", this.GetType()), exception);
-        }
-
-        private bool IsFromHandleMethodResolutionFailure(Exception exception)
-        {
-            bool flag = exception is ArgumentException;
-
-            if (exception.InnerException != null)
-            {
-                flag = this.IsFromHandleMethodResolutionFailure(exception.InnerException);
-            }
-
-            return flag;
         }
 
         /// <summary>Invoke the specified listener a Spring Rabbit MessageListener.</summary>
@@ -580,7 +600,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             catch (Exception e)
             {
-                this.ThrowOrWarnBasedOnRootCauseOfException(e);
+                this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
             }
         }
 
@@ -612,7 +632,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 // Rare case: listener thread failed after container shutdown.
                 // Log at debug level, to avoid spamming the shutdown log.
-                this.logger.Debug("Listener exception after container shutdown", ex);
+                this.logger.Debug(m => m("Listener exception after container shutdown"), ex);
             }
         }
 
@@ -642,7 +662,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     {
         /// <summary>Initializes a new instance of the <see cref="SharedConnectionNotInitializedException"/> class.</summary>
         /// <param name="message">The message.</param>
-        public SharedConnectionNotInitializedException(string message)
-            : base(message) { }
+        public SharedConnectionNotInitializedException(string message) : base(message) { }
     }
 }

@@ -65,6 +65,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
     /// </remarks>
     /// <author>Mark Pollack</author>
     /// <author>Mark Pollack (.NET)</author>
+    /// <author>Juergen Hoeller</author>
+    /// <author>Mark Fisher</author>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald</author>
     public class MessageListenerAdapter : IMessageListener, IChannelAwareMessageListener
     {
         /// <summary>
@@ -87,7 +91,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerAdapter));
+        private readonly ILog logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The handler object.
@@ -178,7 +182,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// on a custom subclass of this adapter, defining listener methods.
         /// </remarks>
         /// <value>The handler object.</value>
-        public object HandlerObject { get { return this.handlerObject; } set { this.handlerObject = value; } }
+        public object HandlerObject
+        {
+            get { return this.handlerObject; }
+            set
+            {
+                AssertUtils.ArgumentNotNull(value, "HandlerObject must not be null");
+                this.handlerObject = value;
+            }
+        }
 
         /// <summary>
         /// Sets Encoding.
@@ -265,22 +277,22 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         {
             if (this.handlerObject != this)
             {
-                if (typeof(IChannelAwareMessageListener).IsInstanceOfType(this.handlerObject))
+                if (this.handlerObject is IChannelAwareMessageListener)
                 {
                     if (channel != null)
                     {
                         ((IChannelAwareMessageListener)this.handlerObject).OnMessage(message, channel);
                         return;
                     }
-                    else if (!typeof(IMessageListener).IsInstanceOfType(this.handlerObject))
+                    else if (!(this.handlerObject is IMessageListener))
                     {
-                        throw new InvalidOperationException(
+                        throw new AmqpIllegalStateException(
                             "MessageListenerAdapter cannot handle a " +
                             "IChannelAwareMessageListener delegate if it hasn't been invoked with a Channel itself");
                     }
                 }
 
-                if (typeof(IMessageListener).IsInstanceOfType(this.handlerObject))
+                if (this.handlerObject is IMessageListener)
                 {
                     ((IMessageListener)this.handlerObject).OnMessage(message);
                     return;
@@ -288,7 +300,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             }
 
             // Regular case: find a handler method reflectively.
-            object convertedMessage = this.ExtractMessage(message);
+            var convertedMessage = this.ExtractMessage(message);
 
             var methodName = this.GetListenerMethodName(message, convertedMessage);
             if (methodName == null)
@@ -308,7 +320,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             }
             else
             {
-                this.logger.Trace("No result object given - no result to handle");
+                this.logger.Trace(m => m("No result object given - no result to handle"));
             }
         }
 
@@ -324,7 +336,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         /// exceptions get handled by the caller instead.</para>
         /// </summary>
         /// <param name="ex">The exception to handle.</param>
-        protected virtual void HandleListenerException(Exception ex) { this.logger.Error("Listener execution failed", ex); }
+        protected virtual void HandleListenerException(Exception ex) { this.logger.Error(m => m("Listener execution failed"), ex); }
 
         /// <summary>Extract the message body from the given message.</summary>
         /// <param name="message">The message.</param>
@@ -393,7 +405,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             catch (TargetInvocationException ex)
             {
                 var targetEx = ex.InnerException;
-                if (targetEx != null && targetEx is IOException)
+                if (targetEx is IOException)
                 {
                     throw new AmqpIOException((IOException)targetEx);
                 }
@@ -441,11 +453,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         {
             if (channel != null)
             {
-                if (this.logger.IsDebugEnabled)
-                {
-                    this.logger.Debug("Listener method returned result [" + result + "] - generating response message for it");
-                }
-
+                this.logger.Debug(m => m("Listener method returned result [{0}] - generating response message for it", result));
+                
                 var response = this.BuildMessage(channel, result);
                 this.PostProcessResponse(request, response);
                 var replyTo = this.GetReplyToAddress(request);
@@ -453,10 +462,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             }
             else
             {
-                if (this.logger.IsDebugEnabled)
-                {
-                    this.logger.Debug("Listener method returned result [" + result + "]: not generating response message for it because of no Rabbit Channel given");
-                }
+                this.logger.Warn(m => m("Listener method returned result [{0}]: not generating response message for it because of no Rabbit Channel given", result));
             }
         }
 
@@ -482,13 +488,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
                 return converter.ToMessage(result, new MessageProperties());
             }
 
-            var msg = result as Message;
-            if (msg == null)
+            if (!(result is Message))
             {
                 throw new MessageConversionException("No IMessageConverter specified - cannot handle message [" + result + "]");
             }
 
-            return msg;
+            return (Message)result;
         }
 
         /// <summary>Post-process the given response message before it will be sent. The default implementation
@@ -532,7 +537,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             {
                 if (string.IsNullOrEmpty(this.responseExchange))
                 {
-                    throw new AmqpException("Cannot determine ReplyTo message property value: " + "Request message does not contain reply-to property, and no default response Exchange was set.");
+                    throw new AmqpException("Cannot determine ReplyTo message property value: Request message does not contain reply-to property, and no default response Exchange was set.");
                 }
 
                 replyTo = new Address(null, this.responseExchange, this.responseRoutingKey);
@@ -551,7 +556,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
 
             try
             {
-                this.logger.Debug("Publishing response to exchanage = [" + replyTo.ExchangeName + "], routingKey = [" + replyTo.RoutingKey + "]");
+                this.logger.Debug(m => m("Publishing response to exchanage = [{0}], routingKey = [{1}]", replyTo.ExchangeName, replyTo.RoutingKey));
                 channel.BasicPublish(
                     replyTo.ExchangeName, replyTo.RoutingKey, this.mandatoryPublish, this.immediatePublish, this.messagePropertiesConverter.FromMessageProperties(channel, message.MessageProperties, this.encoding), message.Body);
             }

@@ -17,7 +17,7 @@
 using System;
 #endregion
 
-namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
+namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
     /// <summary>
     /// Exception to be thrown when the execution of a listener method failed.

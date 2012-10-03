@@ -134,7 +134,7 @@
     <Compile Include="Core\Support\RabbitGatewaySupport.cs" />
     <Compile Include="Listener\AbstractMessageListenerContainer.cs" />
     <Compile Include="Listener\ActiveObjectCounter.cs" />
-    <Compile Include="Listener\Adapter\ListenerExecutionFailedException.cs" />
+    <Compile Include="Listener\ListenerExecutionFailedException.cs" />
     <Compile Include="Listener\Adapter\MessageListenerAdapter.cs" />
     <Compile Include="Listener\BlockingQueueConsumer.cs" />
     <Compile Include="Listener\FatalListenerExecutionException.cs" />

@@ -260,7 +260,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         /// <summary>The to string.</summary>
         /// <returns>The System.String.</returns>
-        public string ToString() { return "Consumer: tag=[" + (this.consumer != null ? this.consumer.ConsumerTag : null) + "], channel=" + this.channel + ", acknowledgeMode=" + this.acknowledgeMode + " local queue size=" + this.queue.Count; }
+        public override string ToString() { return "Consumer: tag=[" + (this.consumer != null ? this.consumer.ConsumerTag : null) + "], channel=" + this.channel + ", acknowledgeMode=" + this.acknowledgeMode + " local queue size=" + this.queue.Count; }
 
         /// <summary>Perform a rollback, handling rollback excepitons properly.</summary>
         /// <param name="channel">The channel to rollback.</param>
@@ -384,16 +384,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public InternalConsumer(IModel channel, BlockingQueueConsumer outer) : base(channel) { this.outer = outer; }
 
         /// <summary>Handle model shutdown, given a consumerTag.</summary>
-        /// <param name="consumerTag">The consumer tag.</param>
-        /// <param name="sig">The sig.</param>
-        public void HandleModelShutdown(string consumerTag, ShutdownEventArgs sig)
+        public override void HandleModelShutdown(IModel channel, ShutdownEventArgs reason)
         {
-            if (this.logger.IsDebugEnabled)
-            {
-                this.logger.Debug("Received shutdown signal for consumer tag=" + consumerTag + " , cause=" + sig.Cause);
-            }
-
-            this.outer.shutdown = sig;
+            base.HandleModelShutdown(channel, reason);
+            this.logger.Warn(m => m("Received shutdown signal for channel, cause: {0}", reason.Cause));
+            
+            this.outer.shutdown = reason;
             this.outer.deliveryTags.Clear();
         }
 
