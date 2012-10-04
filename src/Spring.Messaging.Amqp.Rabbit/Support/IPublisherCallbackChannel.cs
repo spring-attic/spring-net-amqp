@@ -24,7 +24,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// Instances of this interface support a single listener being  registered for publisher confirms with multiple channels, by adding context to the callbacks.
     /// </summary>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IPublisherCallbackChannel : IModel
     {
         // static string RETURN_CORRELATION = "spring_return_correlation";

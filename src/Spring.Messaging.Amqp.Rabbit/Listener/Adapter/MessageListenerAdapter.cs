@@ -68,7 +68,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
     /// <author>Juergen Hoeller</author>
     /// <author>Mark Fisher</author>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class MessageListenerAdapter : IMessageListener, IChannelAwareMessageListener
     {
         /// <summary>

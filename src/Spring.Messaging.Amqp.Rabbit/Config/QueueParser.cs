@@ -27,7 +27,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// A queue parser.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class QueueParser : AbstractSingleObjectDefinitionParser
     {
         private static readonly string ARGUMENTS = "queue-arguments"; // element OR attribute

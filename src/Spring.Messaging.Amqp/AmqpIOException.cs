@@ -24,7 +24,7 @@ namespace Spring.Messaging.Amqp
     /// SystemException wrapper for an <see cref="IOException"/> which can be commonly thrown from AMQP operations.
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class AmqpIOException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="AmqpIOException"/> class.</summary>

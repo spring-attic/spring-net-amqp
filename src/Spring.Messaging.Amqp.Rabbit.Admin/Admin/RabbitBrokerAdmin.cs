@@ -48,7 +48,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <author>Mark Pollack</author>
     /// <author>Dave Syer</author>
     /// <author>Helena Edelson</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class RabbitBrokerAdmin : IRabbitBrokerOperations
     {
         /// <summary>

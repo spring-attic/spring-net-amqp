@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Retry
     /// tracking the processing of a message (e.g. there is no need to check a cache for a hit).
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface INewMessageIdentifier
     {
         /// <summary>Query a message to see if it has been seen before. Usually it is only possible to know if it has definitely not

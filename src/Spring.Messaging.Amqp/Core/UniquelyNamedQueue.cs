@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Core
     /// Create a queue with a unique name.
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class UniquelyNamedQueue : Queue
     {
         /// <summary>Initializes a new instance of the <see cref="UniquelyNamedQueue"/> class.</summary>

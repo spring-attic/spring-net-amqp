@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// <author>Mark Pollack</author>
     /// <author>Mark Fisher</author>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     [NamespaceParser(Namespace = "http://www.springframework.net/schema/rabbit", SchemaLocationAssemblyHint = typeof(RabbitNamespaceHandler), SchemaLocation = "/Spring.Messaging.Amqp.Rabbit.Config/spring-rabbit-1.1.xsd")]
     public class RabbitNamespaceHandler : NamespaceParserSupport
     {

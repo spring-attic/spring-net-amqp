@@ -29,7 +29,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// A direct exchange parser.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class DirectExchangeParser : AbstractExchangeParser
     {
         private static readonly string BINDING_KEY_ATTR = "key";

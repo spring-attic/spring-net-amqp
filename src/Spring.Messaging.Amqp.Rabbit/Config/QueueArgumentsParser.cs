@@ -26,7 +26,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// Queue Arguments Parser
     /// </summary>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     internal class QueueArgumentsParser : AbstractSingleObjectDefinitionParser
     {
         /// <summary>The do parse.</summary>

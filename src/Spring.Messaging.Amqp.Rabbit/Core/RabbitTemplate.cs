@@ -57,7 +57,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// <author>Mark Pollack</author>
     /// <author>Mark Fisher</author>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class RabbitTemplate : RabbitAccessor, IRabbitOperations
     {
         /// <summary>

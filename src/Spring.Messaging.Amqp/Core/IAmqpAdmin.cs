@@ -20,7 +20,7 @@ namespace Spring.Messaging.Amqp.Core
     /// </summary>
     /// <author>Mark Pollack</author>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IAmqpAdmin
     {
         #region Exchange Operations

@@ -9,7 +9,7 @@ namespace Spring.Erlang.Connection
     /// </summary>
     /// <remarks></remarks>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class ConnectionParameters
     {
         /// <summary>

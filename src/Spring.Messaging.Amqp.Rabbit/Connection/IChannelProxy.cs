@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// A channel proxy interface.
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IChannelProxy : IModel
     {
         /// <summary>

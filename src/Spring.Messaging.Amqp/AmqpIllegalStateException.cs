@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp
     /// Equivalent of an IllegalStateException but within the AmqpException hierarchy.
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class AmqpIllegalStateException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="AmqpIllegalStateException"/> class. Initializes a new instance of the <see cref="AmqpException"/> class.</summary>

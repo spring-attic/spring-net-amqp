@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// and RabbitMQ BasicProperties.
     /// </summary>
     /// <author>Mark Fisher</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IMessagePropertiesConverter
     {
         /// <summary>Toes the message properties.</summary>

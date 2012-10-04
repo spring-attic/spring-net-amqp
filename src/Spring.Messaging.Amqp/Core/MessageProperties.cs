@@ -26,7 +26,7 @@ namespace Spring.Messaging.Amqp.Core
     /// <author>Mark Fisher</author>
     /// <author>Mark Pollack</author>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class MessageProperties
     {
         public static readonly string CONTENT_TYPE_BYTES = @"application/octet-stream";

@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// Exception to be thrown when the execution of a listener method failed on startup.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class FatalListenerStartupException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="FatalListenerStartupException"/> class.</summary>

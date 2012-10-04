@@ -29,7 +29,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// A topic exchange parser.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class TopicExchangeParser : AbstractExchangeParser
     {
         private static readonly string BINDING_PATTERN_ATTR = "pattern";

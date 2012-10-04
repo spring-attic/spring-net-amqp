@@ -28,7 +28,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// </summary>
     /// <author>Dave Syer</author>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class ConnectionFactoryParser : AbstractSingleObjectDefinitionParser
     {
         private static readonly string CONNECTION_FACTORY_ATTRIBUTE = "connection-factory";

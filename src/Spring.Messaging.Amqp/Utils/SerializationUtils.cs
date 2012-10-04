@@ -27,7 +27,7 @@ namespace Spring.Messaging.Amqp.Core
     /// Utilities for serialization and deserialization.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public static class SerializationUtils
     {
         /// <summary>Convert an object to a byte array.</summary>

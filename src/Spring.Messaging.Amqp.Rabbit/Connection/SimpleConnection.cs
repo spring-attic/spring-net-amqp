@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <summary>
     /// A Simple Connection implementation.
     /// </summary>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class SimpleConnection : IConnection
     {
         /// <summary>

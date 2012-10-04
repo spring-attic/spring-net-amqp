@@ -29,7 +29,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     ///  The status object returned from querying the broker
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class RabbitStatus
     {
         /// <summary>

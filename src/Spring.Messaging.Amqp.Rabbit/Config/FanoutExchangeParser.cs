@@ -29,7 +29,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// A fanout exchange parser.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class FanoutExchangeParser : AbstractExchangeParser
     {
         /// <summary>The get object type.</summary>

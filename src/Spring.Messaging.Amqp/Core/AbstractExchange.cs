@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Core
     /// Subclasses of this class are typically used with administrative operations that declare an exchange.
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public abstract class AbstractExchange : IExchange
     {
         /// <summary>

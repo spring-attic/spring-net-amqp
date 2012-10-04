@@ -22,7 +22,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// the CorrelationData is returned with the ack/nack.
     /// </summary>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class CorrelationData
     {
         private readonly string id;

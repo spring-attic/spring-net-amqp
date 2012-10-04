@@ -32,7 +32,7 @@ namespace Spring.Messaging.Amqp.Core
     /// <author>Mark Fisher</author>
     /// <author>Oleg Zhurakousky</author>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class Message
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();

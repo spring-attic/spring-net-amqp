@@ -27,7 +27,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// <summary>
     /// Namespace Utilities
     /// </summary>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class NamespaceUtils
     {
         private static readonly string BASE_PACKAGE = "Spring.Messaging.Amqp.Rabbit.Config";

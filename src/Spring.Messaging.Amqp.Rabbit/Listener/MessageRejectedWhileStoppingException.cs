@@ -20,7 +20,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// external transaction manager in that case.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class MessageRejectedWhileStoppingException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="MessageRejectedWhileStoppingException"/> class.</summary>

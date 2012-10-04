@@ -22,7 +22,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <summary>
     /// Callback interface implementation.
     /// </summary>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class ResourceFactory : IResourceFactory
     {
         /// <summary>

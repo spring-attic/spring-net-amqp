@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp
     /// Exception for listener implementations used to indicate the basic.reject will be sent with requeue=false in order to enable features such as DLQ.
     /// </summary>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class AmqpRejectAndDontRequeueException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="AmqpRejectAndDontRequeueException"/> class.</summary>

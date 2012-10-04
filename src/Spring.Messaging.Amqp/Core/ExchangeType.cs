@@ -20,7 +20,7 @@ namespace Spring.Messaging.Amqp.Core
     /// </summary>
     /// <author>Mark Fisher</author>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public abstract class ExchangeTypes
     {
         /// <summary>

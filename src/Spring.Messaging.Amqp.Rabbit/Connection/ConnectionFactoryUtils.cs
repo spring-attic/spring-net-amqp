@@ -30,7 +30,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// <author>Mark Pollack</author>
     /// <author>Mark Fisher</author>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class ConnectionFactoryUtils
     {
         /// <summary>

@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// </summary>
     /// <author>Mark Pollack</author>
     /// <author>James Carr</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface ITypeMapper
     {
         /// <summary>Convert from Type to string</summary>

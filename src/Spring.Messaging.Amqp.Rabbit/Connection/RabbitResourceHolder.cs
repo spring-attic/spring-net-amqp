@@ -28,7 +28,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// A rabbit resource holder.
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class RabbitResourceHolder : ResourceHolderSupport
     {
         /// <summary>

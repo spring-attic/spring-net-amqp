@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// An interface for connections.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IConnection
     {
         /// <summary>Create a new channel, using an internally allocated channel number.</summary>

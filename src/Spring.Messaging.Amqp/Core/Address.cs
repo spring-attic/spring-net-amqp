@@ -30,7 +30,7 @@ namespace Spring.Messaging.Amqp.Core
     /// <author>Mark Pollack</author>
     /// <author>Mark Fisher</author>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class Address
     {
         public static readonly Regex pattern = new Regex("^([^:]+)://([^/]*)/?(.*)$");

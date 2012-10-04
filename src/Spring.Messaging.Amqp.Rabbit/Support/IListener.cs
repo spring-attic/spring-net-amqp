@@ -28,7 +28,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// registered on multiple channels.
     /// </summary>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IListener
     {
         /// <summary>Invoked by the channel when a confirm is received.</summary>

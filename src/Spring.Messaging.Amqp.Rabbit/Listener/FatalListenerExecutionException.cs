@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// Exception to be thrown when the execution of a listener method failed unrecoverably.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class FatalListenerExecutionException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="FatalListenerExecutionException"/> class.</summary>

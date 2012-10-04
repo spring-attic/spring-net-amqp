@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// A composite connection listener.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class CompositeConnectionListener : IConnectionListener
     {
         /// <summary>

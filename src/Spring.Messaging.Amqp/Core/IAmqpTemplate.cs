@@ -31,7 +31,7 @@ namespace Spring.Messaging.Amqp.Core
     /// </remarks>
     /// <author>Mark Pollack</author>
     /// <author>Mark Fisher</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IAmqpTemplate
     {
         #region Send methods for messages

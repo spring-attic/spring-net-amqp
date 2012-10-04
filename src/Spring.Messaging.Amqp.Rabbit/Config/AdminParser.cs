@@ -26,7 +26,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// A admin parser.
     /// </summary>
     /// <author>tomas.lukosius@opencredo.com</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class AdminParser : AbstractSingleObjectDefinitionParser
     {
         private static readonly string CONNECTION_FACTORY_ATTRIBUTE = "connection-factory";

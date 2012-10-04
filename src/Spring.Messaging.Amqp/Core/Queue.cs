@@ -24,7 +24,7 @@ namespace Spring.Messaging.Amqp.Core
     /// Simple container collecting information to describe a queue.
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     /// <see cref="IAmqpAdmin"/>
     public class Queue
     {

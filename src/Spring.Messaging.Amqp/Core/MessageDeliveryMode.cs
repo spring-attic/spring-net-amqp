@@ -20,7 +20,7 @@ namespace Spring.Messaging.Amqp.Core
     /// do not contain any delivery mode value.
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public enum MessageDeliveryMode
     {
         /// <summary>

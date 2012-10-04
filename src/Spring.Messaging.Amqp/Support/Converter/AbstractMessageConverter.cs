@@ -24,7 +24,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// Convenient base class for IMessageConverter implementations.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public abstract class AbstractMessageConverter : IMessageConverter
     {
         private bool createMessageIds;

@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp
     /// SystemException wrapper for an {@link ConnectException} which can be commonly thrown from AMQP operations if the remote process dies or there is a network issue.
     /// </summary>
     /// <author>Dave Syder</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class AmqpConnectException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="AmqpConnectException"/> class.</summary>

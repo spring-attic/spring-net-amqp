@@ -32,7 +32,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// RabbitMQ implementation of portable AMQP administrative operations for AMQP >= 0.8
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class RabbitAdmin : IAmqpAdmin, IApplicationContextAware, IInitializingObject
     {
         /// <summary>

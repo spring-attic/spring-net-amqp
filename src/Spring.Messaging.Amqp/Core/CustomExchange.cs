@@ -26,7 +26,7 @@ namespace Spring.Messaging.Amqp.Core
     /// administrative operations.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class CustomExchange : AbstractExchange
     {
         /// <summary>

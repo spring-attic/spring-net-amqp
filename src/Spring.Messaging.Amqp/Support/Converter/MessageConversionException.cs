@@ -24,7 +24,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// </summary>
     /// <author>Mark Pollack</author>
     /// <author>Mark Fisher</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class MessageConversionException : Exception
     {
         #region Constructor (s) / Destructor

@@ -19,13 +19,13 @@ namespace Spring.Messaging.Amqp.Core
     /// Acknowledge Mode Utilities
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public static class AcknowledgeModeUtils
     {
         /// <summary>
         /// Enumeration of Acknowledge Modes
         /// </summary>
-        /// <author>Joe Fitzgerald</author>
+        /// <author>Joe Fitzgerald (.NET)</author>
         public enum AcknowledgeMode
         {
             ///<summary>

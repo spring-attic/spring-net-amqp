@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Core
     /// An anonymous queue.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class AnonymousQueue : Queue
     {
         /// <summary>

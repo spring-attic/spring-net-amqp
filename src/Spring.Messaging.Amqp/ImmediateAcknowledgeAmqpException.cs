@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp
     /// An immediate acknowledge AMQP Exception.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class ImmediateAcknowledgeAmqpException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="ImmediateAcknowledgeAmqpException"/> class. Initializes a new instance of the <see cref="AmqpException"/> class.</summary>

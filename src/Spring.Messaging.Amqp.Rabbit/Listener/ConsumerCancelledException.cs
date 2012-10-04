@@ -24,7 +24,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// queue is drained.
     /// </summary>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class ConsumerCancelledException : Exception
     {
         // private static readonly long serialVersionUID = 1L;

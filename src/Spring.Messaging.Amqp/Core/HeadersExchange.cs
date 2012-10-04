@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Core
     /// </summary>
     /// <author>Mark Fisher</author>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class HeadersExchange : AbstractExchange
     {
         /// <summary>Initializes a new instance of the <see cref="HeadersExchange"/> class.</summary>

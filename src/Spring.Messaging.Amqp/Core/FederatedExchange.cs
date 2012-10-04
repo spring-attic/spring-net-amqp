@@ -24,7 +24,7 @@ namespace Spring.Messaging.Amqp.Core
     /// <see cref="IAmqpAdmin"/>
     /// </summary>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class FederatedExchange : AbstractExchange
     {
         public static readonly FederatedExchange DEFAULT = new FederatedExchange(string.Empty);

@@ -22,7 +22,7 @@ namespace Spring.Messaging.Amqp.Core
     /// by the converter. This is useful for setting of Header and Properties.
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IMessagePostProcessor
     {
         /// <summary>The post process message.</summary>

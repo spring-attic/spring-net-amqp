@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp
     /// A "catch-all" exception type within the AmqpException hierarchy when no more specific cause is known.
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class UncategorizedAmqpException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="UncategorizedAmqpException"/> class.</summary>

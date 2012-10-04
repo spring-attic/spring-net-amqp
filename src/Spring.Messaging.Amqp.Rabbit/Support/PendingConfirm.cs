@@ -22,7 +22,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// the client to correlate a confirm with a sent message.
     /// </summary>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class PendingConfirm
     {
         private readonly CorrelationData correlationData;

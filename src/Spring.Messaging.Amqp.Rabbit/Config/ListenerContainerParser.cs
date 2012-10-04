@@ -28,7 +28,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// </summary>
     /// <author>Mark Fisher</author>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class ListenerContainerParser : IObjectDefinitionParser
     {
         private static readonly string LISTENER_ELEMENT = "listener";

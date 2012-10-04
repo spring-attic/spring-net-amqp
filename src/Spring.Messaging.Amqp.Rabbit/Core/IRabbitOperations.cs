@@ -24,7 +24,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// </summary>
     /// <author>Mark Pollack</author>
     /// <author>Mark Fisher</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IRabbitOperations : IAmqpTemplate
     {
         /// <summary>Execute the action.</summary>

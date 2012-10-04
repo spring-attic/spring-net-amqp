@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp
     /// SystemException for unsupported encoding in an AMQP operation. 
     /// </summary>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class AmqpUnsupportedEncodingException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="AmqpUnsupportedEncodingException"/> class.</summary>

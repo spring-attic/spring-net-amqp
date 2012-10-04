@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
     /// <summary>An active object counter.</summary>
     /// <typeparam name="T">Type T.</typeparam>
-    /// <author>Dave Syer</author><author>Joe Fitzgerald</author>
+    /// <author>Dave Syer</author><author>Joe Fitzgerald (.NET)</author>
     public class ActiveObjectCounter<T>
     {
         /// <summary>

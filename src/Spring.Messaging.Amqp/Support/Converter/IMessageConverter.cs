@@ -24,7 +24,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// </summary>
     /// <author>Mark Fisher</author>
     /// <author>Mark Pollack</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IMessageConverter
     {
         /// <summary>Convert a .NET object to an AMQP Message.</summary>

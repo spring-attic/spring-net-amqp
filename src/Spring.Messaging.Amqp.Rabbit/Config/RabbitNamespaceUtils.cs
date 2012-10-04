@@ -28,7 +28,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// Rabbit Namespace Utilities
     /// </summary>
     /// <author>Gary Russell</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class RabbitNamespaceUtils
     {
         private static readonly string CONNECTION_FACTORY_ATTRIBUTE = "connection-factory";

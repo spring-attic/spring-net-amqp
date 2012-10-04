@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// A channel listener interface.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IChannelListener
     {
         /// <summary>Called when [create].</summary>

@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp
     /// Base SystemException for errors that occur when executing AMQP operations.
     /// </summary>
     /// <author>Mark Fisher</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class AmqpException : SystemException
     {
         /// <summary>Initializes a new instance of the <see cref="AmqpException"/> class.</summary>

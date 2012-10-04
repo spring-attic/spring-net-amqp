@@ -28,7 +28,7 @@ namespace Spring.Messaging.Amqp.Core
     /// </remarks>
     /// <author>Mark Pollack</author>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     /// <see cref="IAmqpAdmin"/>
     public class FanoutExchange : AbstractExchange
     {

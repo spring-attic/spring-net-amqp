@@ -26,7 +26,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
     /// the FromMessage method relies upon the content-type of the provided Message.
     /// </summary>
     /// <author>Mark Fisher</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class SimpleMessageConverter : AbstractMessageConverter
     {
         public static readonly string DEFAULT_CHARSET = "UTF-8";

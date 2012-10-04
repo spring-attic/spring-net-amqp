@@ -39,7 +39,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// </summary>
         /// <value>The arguments.</value>
         /// <author>Dave Syer</author>
-        /// <author>Joe Fitzgerald</author>
+        /// <author>Joe Fitzgerald (.NET)</author>
         public IDictionary Arguments { set { this.arguments = value; } }
 
         /// <summary>

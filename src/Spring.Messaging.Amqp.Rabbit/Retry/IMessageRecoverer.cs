@@ -24,7 +24,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Retry
     /// A message recoverer interface.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IMessageRecoverer
     {
         /// <summary>Callback for message that was consumed but failed all retry attempts.</summary>

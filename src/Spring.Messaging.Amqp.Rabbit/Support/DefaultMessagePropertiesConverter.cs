@@ -28,7 +28,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// Default implementation of the {@link MessagePropertiesConverter} strategy.
     /// </summary>
     /// <author>Mark Fisher</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class DefaultMessagePropertiesConverter : IMessagePropertiesConverter
     {
         /// <summary>Converts from BasicProperties to MessageProperties.</summary>

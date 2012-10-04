@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Retry
     /// A message key generator interface.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public interface IMessageKeyGenerator
     {
         /// <summary>Generate a unique key for the message that is repeatable on redelivery. Implementations should be very careful

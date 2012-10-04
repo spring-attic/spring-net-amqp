@@ -11,7 +11,7 @@ namespace Spring.Erlang
     /// <remarks></remarks>
     /// <author>Mark Pollack</author>
     /// <author>Mark Fisher</author>
-    /// <author>Joe Fitzgerald</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class OtpIOException : OtpException
     {
         /// <summary>
