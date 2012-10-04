@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="WaitTime.cs" company="The original author or authors.">
+// <copyright file="ConsumerCancelledException.cs" company="The original author or authors.">
 //   Copyright 2002-2012 the original author or authors.
 //   
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -17,19 +17,16 @@
 using System;
 #endregion
 
-namespace Spring.Utility
+namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
-    internal class WaitTime
+    /// <summary>
+    /// Thrown when the broker cancels the consumer and the message
+    /// queue is drained.
+    /// </summary>
+    /// <author>Gary Russell</author>
+    /// <author>Joe Fitzgerald</author>
+    public class ConsumerCancelledException : Exception
     {
-        internal static readonly TimeSpan MaxValue = TimeSpan.FromMilliseconds(int.MaxValue);
-        internal static readonly TimeSpan Forever = TimeSpan.FromMilliseconds(-1);
-
-        internal static TimeSpan Cap(TimeSpan waitTime) { return waitTime > MaxValue ? MaxValue : waitTime; }
-
-        internal static DateTime Deadline(TimeSpan waitTime)
-        {
-            var now = DateTime.UtcNow;
-            return (DateTime.MaxValue - now < waitTime) ? DateTime.MaxValue : now.Add(waitTime);
-        }
+        // private static readonly long serialVersionUID = 1L;
     }
 }

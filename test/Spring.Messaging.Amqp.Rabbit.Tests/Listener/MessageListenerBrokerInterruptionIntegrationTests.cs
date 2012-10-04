@@ -25,7 +25,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     public class MessageListenerBrokerInterruptionIntegrationTests : AbstractRabbitIntegrationTest
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerBrokerInterruptionIntegrationTests));
 
@@ -253,7 +253,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     public class VanillaListener : IChannelAwareMessageListener
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         private static ILog logger = LogManager.GetLogger(typeof(VanillaListener));
 

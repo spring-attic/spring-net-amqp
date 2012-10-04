@@ -379,9 +379,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         // //else
         // //{
         // //    // A custom namespace, not to be handled by Spring - maybe "xml:...".
-        // //    if (logger.isDebugEnabled())
+        // //    if (Logger.isDebugEnabled())
         // //    {
-        // //        logger.debug("No Spring NamespaceHandler found for XML schema namespace [" + namespaceUri + "]");
+        // //        Logger.debug("No Spring NamespaceHandler found for XML schema namespace [" + namespaceUri + "]");
         // //    }
         // //}
         // }
@@ -453,6 +453,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 
                 
                 
+                
+                
                 // else if (NodeNameEquals(ele, IDREF_ELEMENT)) {
                 // return parseIdRefElement(ele);
                 // }
@@ -483,6 +485,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             {
                 return this.ParseMapElement(ele, bd);
             }
+                
+                
                 
                 
                 

@@ -140,7 +140,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             if (ex is IOException)
             {
-                return new AmqpIOException((IOException)ex);
+                return new AmqpIOException(ex);
             }
 
             if (ex is OperationInterruptedException)

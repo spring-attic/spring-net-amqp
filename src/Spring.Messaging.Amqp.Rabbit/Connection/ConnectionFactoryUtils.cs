@@ -53,7 +53,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             consumerChannel.Value = channel;
         }
-        
+
         /// <summary>See RegisterConsumerChannel. This method is called to unregister the channel when the consumer exits.</summary>
         public static void UnRegisterConsumerChannel()
         {
@@ -61,7 +61,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             consumerChannel.Value = null;
         }
-
 
         /// <summary>Determine whether the given RabbitMQ Channel is transactional, that is, bound to the current thread by Spring's transaction facilities.</summary>
         /// <param name="channel">The channel.</param>
@@ -77,7 +76,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             var resourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory);
             return resourceHolder != null && resourceHolder.ContainsChannel(channel);
         }
-        
+
         /// <summary>Obtain a RabbitMQ Channel that is synchronized with the current transaction, if any.</summary>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <param name="synchedLocalTransactionAllowed">The synched local transaction allowed.</param>

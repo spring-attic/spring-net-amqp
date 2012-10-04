@@ -63,7 +63,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         #region Logging
 
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         private readonly ILog logger = LogManager.GetLogger(typeof(RabbitTransactionManager));
         #endregion

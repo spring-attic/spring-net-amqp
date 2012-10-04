@@ -36,7 +36,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     public class RabbitControlErlangConverter : SimpleErlangConverter
     {
         /// <summary>
-        /// The logger
+        /// The Logger
         /// </summary>
         protected static readonly ILog logger = LogManager.GetLogger(typeof(RabbitControlErlangConverter));
 

@@ -69,7 +69,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Release after completion.
         /// </summary>
-        private bool releaseAfterCompletion = true;
+        private readonly bool releaseAfterCompletion = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitResourceHolder"/> class.
@@ -90,10 +90,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         public bool Frozen { get { return this.frozen; } }
 
-        public bool ReleaseAfterCompletion
-        {
-            get { return this.releaseAfterCompletion; }
-        }
+        /// <summary>Gets a value indicating whether release after completion.</summary>
+        public bool ReleaseAfterCompletion { get { return this.releaseAfterCompletion; } }
 
         /// <summary>
         /// Gets a value indicating whether IsChannelTransactional.
@@ -137,7 +135,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                         this.channelsPerConnection.Add(connection, tempChannels);
                     }
 
-                    channels.AddLast(channel);
+                    this.channels.AddLast(channel);
                 }
             }
         }
@@ -167,10 +165,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             return (IConnection)CollectionUtils.FindValueOfType(this.connections, type);
         }
 
-        public IConnection GetConnection<T>(Type connectionType) where T : IConnection 
-        {
-			return (T)CollectionUtils.FindValueOfType(this.connections, connectionType);
-		}
+        /// <summary>The get connection.</summary>
+        /// <param name="connectionType">The connection type.</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>The Spring.Messaging.Amqp.Rabbit.Connection.IConnection.</returns>
+        public IConnection GetConnection<T>(Type connectionType) where T : IConnection { return (T)CollectionUtils.FindValueOfType(this.connections, connectionType); }
 
         /// <summary>
         /// Gets Channel.
@@ -258,8 +257,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         {
             foreach (var channel in this.channels)
             {
-                Logger.Debug(m=> m("Rollingback messages to channel: {0}", channel));
-                
+                Logger.Debug(m => m("Rollingback messages to channel: {0}", channel));
+
                 RabbitUtils.RollbackIfNecessary(channel);
                 if (this.deliveryTags.ContainsKey(channel))
                 {

@@ -19,7 +19,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         private static readonly string DEFAULT_QUEUE_NAME = typeof(BrokerRunning).Name;
 
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         private static readonly ILog logger = LogManager.GetCurrentClassLogger();
 

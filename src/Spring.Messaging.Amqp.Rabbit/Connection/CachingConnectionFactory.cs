@@ -16,14 +16,12 @@
 #region Using Directives
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using AopAlliance.Intercept;
 using Common.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Impl;
 using Spring.Aop.Framework;
-using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Util;
 #endregion
 
@@ -197,7 +195,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             else
             {
                 this.Logger.Debug(m => m("Creating cached Rabbit Channel"));
-                
+
                 channel = this.GetCachedChannelProxy(channelList, transactional);
             }
 
@@ -216,6 +214,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.Logger.Debug(m => m("Creating cached Rabbit Channel from {0}", targetChannel));
 
             this.ChannelListener.OnCreate(targetChannel, transactional);
+
             /*
              * TODO: Pending Completion of PublisherCallbackChannelImpl
              * 
@@ -230,6 +229,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
             */
             var factory = new ProxyFactory(typeof(IChannelProxy), new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this));
+
             // factory.Interfaces = interfaces.ToArray();
             var channelProxy = (IChannelProxy)factory.GetProxy();
             return channelProxy;
@@ -249,6 +249,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
 
             var channel = this.connection.CreateBareChannel(transactional);
+
             /*
              * TODO: Pending Completion of PublisherCallbackChannelImpl
             if (this.publisherConfirms)

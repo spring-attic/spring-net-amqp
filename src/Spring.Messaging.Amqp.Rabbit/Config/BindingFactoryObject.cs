@@ -16,7 +16,6 @@
 #region Using Directives
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Spring.Messaging.Amqp.Core;
 using Spring.Objects.Factory;
 using Queue = Spring.Messaging.Amqp.Core.Queue;

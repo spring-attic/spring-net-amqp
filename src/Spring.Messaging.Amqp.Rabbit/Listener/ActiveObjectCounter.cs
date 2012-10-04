@@ -29,7 +29,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     public class ActiveObjectCounter<T>
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 

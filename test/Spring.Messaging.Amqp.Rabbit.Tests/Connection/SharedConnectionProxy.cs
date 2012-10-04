@@ -21,7 +21,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
     public class SharedConnectionProxy : IConnection, IConnectionProxy
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         private readonly ILog logger = LogManager.GetCurrentClassLogger();
 

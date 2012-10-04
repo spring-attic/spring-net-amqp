@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core.Support
         #region Logging
 
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         private readonly ILog logger = LogManager.GetLogger(typeof(RabbitGatewaySupport));
         #endregion

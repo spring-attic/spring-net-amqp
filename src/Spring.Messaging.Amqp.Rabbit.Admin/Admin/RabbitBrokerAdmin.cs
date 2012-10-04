@@ -72,7 +72,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         private static readonly string DEFAULT_ENCODING = @"UTF-8";
 
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         private readonly ILog logger = LogManager.GetCurrentClassLogger();
 
@@ -488,16 +488,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         var status = this.Status;
         if (status.IsReady)
         {
-            logger.Info("Rabbit Application already running.");
+            Logger.Info("Rabbit Application already running.");
             return;
         }
         if (!status.IsAlive)
         {
-            logger.Info("Rabbit Process not running.");
+            Logger.Info("Rabbit Process not running.");
             this.StartNode();
             return;
         }
-        logger.Info("Starting Rabbit Application.");
+        Logger.Info("Starting Rabbit Application.");
 
 
         using (var cancelTokenSource = new CancellationTokenSource())
@@ -528,7 +528,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 {
                     if (e.InnerException is OperationCanceledException)
                     {
-                        this.logger.Debug("Task Cancelled");
+                        this.Logger.Debug("Task Cancelled");
                     }
                     return;
                 }
@@ -948,9 +948,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             catch (OtpException e)
             {
                 logger.Debug("Ignoring OtpException (assuming that the broker is simply not running)");
-                // if (logger.IsTraceEnabled)
+                // if (Logger.IsTraceEnabled)
                 // {
-                //     logger.Trace("Status not available owing to exception", e);
+                //     Logger.Trace("Status not available owing to exception", e);
                 // }
                 logger.Error("Status not available owing to exception", e);
                 return new RabbitStatus(new List<Application>(), new List<Node>(), new List<Node>());

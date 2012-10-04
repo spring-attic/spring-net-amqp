@@ -16,8 +16,11 @@
 namespace Spring.Messaging.Amqp.Rabbit.Listener
 {
     /// <summary>
-    /// TODO: Update summary.
+    /// Exception that indicates a rejected message on shutdown. Used to trigger a rollback for an
+    /// external transaction manager in that case.
     /// </summary>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald</author>
     public class MessageRejectedWhileStoppingException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="MessageRejectedWhileStoppingException"/> class.</summary>

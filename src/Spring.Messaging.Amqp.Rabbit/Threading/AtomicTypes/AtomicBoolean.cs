@@ -20,7 +20,7 @@ using System.Threading;
 
 #pragma warning disable 420
 
-namespace Spring.Threading.AtomicTypes
+namespace Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes
 {
     /// <summary>
     /// A <see cref="bool"/> value that may be updated atomically. An <see cref="AtomicBoolean"/> 
@@ -33,7 +33,7 @@ namespace Spring.Threading.AtomicTypes
     /// <author>Andreas Doehring (.NET)</author>
     /// <author>Kenneth Xu (Interlocked)</author>
     [Serializable]
-    public class AtomicBoolean : IAtomic<bool>
+    public class AtomicBoolean
     {
         // JDK_1_6
         /// <summary>

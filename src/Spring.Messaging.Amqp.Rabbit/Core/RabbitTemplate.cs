@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using Common.Logging;
 using RabbitMQ.Client;
@@ -22,7 +23,6 @@ using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Support.Converter;
-using Spring.Threading.Collections.Generic;
 using Spring.Util;
 #endregion
 
@@ -61,9 +61,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     public class RabbitTemplate : RabbitAccessor, IRabbitOperations
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
-        protected static readonly ILog logger = LogManager.GetLogger(typeof(RabbitTemplate));
+        protected static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitTemplate));
 
         /// <summary>
         /// The default exchange.
@@ -257,7 +257,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="message">The message.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
         public void ConvertAndSend(string routingKey, object message, Func<Message, Message> messagePostProcessor) { this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor); }
-        
+
         /// <summary>Convert and send a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
@@ -472,7 +472,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             var replyMessage = this.Execute(
                 delegate(IModel channel)
                 {
-                    var replyHandoff = new SynchronousQueue<Message>();
+                    var replyHandoff = new ConcurrentQueue<Message>();
 
                     AssertUtils.IsTrue(
                         message.MessageProperties.ReplyTo == null, 
@@ -492,11 +492,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
                     if (this.replyTimeout < 0)
                     {
-                        reply = replyHandoff.Take();
+                        var dequeueSuccess = replyHandoff.TryDequeue(out reply);
                     }
                     else
                     {
-                        replyHandoff.Poll(new TimeSpan(0, 0, 0, 0, (int)this.replyTimeout), out reply);
+                        var dequeueSuccess = replyHandoff.Poll(new TimeSpan(0, 0, 0, 0, (int)this.replyTimeout), out reply);
                     }
 
                     channel.BasicCancel(consumerTag);
@@ -522,9 +522,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
             try
             {
-                if (logger.IsDebugEnabled)
+                if (Logger.IsDebugEnabled)
                 {
-                    logger.Debug("Executing callback on RabbitMQ Channel: " + channel);
+                    Logger.Debug("Executing callback on RabbitMQ Channel: " + channel);
                 }
 
                 return action(channel);
@@ -558,9 +558,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="message">The message.</param>
         protected void DoSend(IModel channel, string exchange, string routingKey, Message message)
         {
-            if (logger.IsDebugEnabled)
+            if (Logger.IsDebugEnabled)
             {
-                logger.Debug("Publishing message on exchange [" + exchange + "], routingKey = [" + routingKey + "]");
+                Logger.Debug("Publishing message on exchange [" + exchange + "], routingKey = [" + routingKey + "]");
             }
 
             if (exchange == null)
@@ -629,7 +629,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// The reply handoff.
         /// </summary>
-        private readonly SynchronousQueue<Message> replyHandoff;
+        private readonly ConcurrentQueue<Message> replyHandoff;
 
         /// <summary>
         /// The encoding.
@@ -646,7 +646,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="replyHandoff">The reply handoff.</param>
         /// <param name="encoding">The encoding.</param>
         /// <param name="messagePropertiesConverter">The message properties converter.</param>
-        public AdminDefaultBasicConsumer(IModel channel, SynchronousQueue<Message> replyHandoff, string encoding, IMessagePropertiesConverter messagePropertiesConverter) : base(channel)
+        public AdminDefaultBasicConsumer(IModel channel, ConcurrentQueue<Message> replyHandoff, string encoding, IMessagePropertiesConverter messagePropertiesConverter) : base(channel)
         {
             this.replyHandoff = replyHandoff;
             this.encoding = encoding;
@@ -664,7 +664,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             var reply = new Message(body, messageProperties);
             try
             {
-                this.replyHandoff.Put(reply);
+                this.replyHandoff.Enqueue(reply);
             }
             catch (ThreadInterruptedException e)
             {

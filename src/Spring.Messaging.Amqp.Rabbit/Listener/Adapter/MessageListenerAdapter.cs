@@ -89,7 +89,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
         #region Fields
 
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         private readonly ILog logger = LogManager.GetCurrentClassLogger();
 
@@ -407,7 +407,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
                 var targetEx = ex.InnerException;
                 if (targetEx is IOException)
                 {
-                    throw new AmqpIOException((IOException)targetEx);
+                    throw new AmqpIOException(targetEx);
                 }
                 else
                 {
@@ -454,7 +454,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
             if (channel != null)
             {
                 this.logger.Debug(m => m("Listener method returned result [{0}] - generating response message for it", result));
-                
+
                 var response = this.BuildMessage(channel, result);
                 this.PostProcessResponse(request, response);
                 var replyTo = this.GetReplyToAddress(request);

@@ -16,12 +16,12 @@
 #region Using Directives
 using System;
 using System.Threading;
+using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Context;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
-using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Objects.Factory;
 using Spring.Transaction.Support;
 using Spring.Util;
@@ -35,6 +35,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// <author>Mark Pollack</author>
     public abstract class AbstractMessageListenerContainer : RabbitAccessor, IDisposable, IContainerDelegate, IObjectNameAware, ILifecycle, IInitializingObject
     {
+        /// <summary>
+        /// Logger available to subclasses.
+        /// </summary>
+        protected new static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitAccessor));
+
         /// <summary>
         /// The object name.
         /// </summary>
@@ -280,7 +285,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </summary>
         public void Shutdown()
         {
-            this.logger.Debug(m => m("Shutting down Rabbit listener container"));
+            Logger.Debug(m => m("Shutting down Rabbit listener container"));
             lock (this.lifecycleMonitor)
             {
                 this.active = false;
@@ -351,8 +356,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             try
             {
-                this.logger.Debug(m => m("Starting Rabbit listener container."));
-                
+                Logger.Debug(m => m("Starting Rabbit listener container."));
+
                 this.DoStart();
             }
             catch (Exception ex)
@@ -439,7 +444,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             else
             {
-                this.logger.Warn(m => m("Execution of Rabbit message listener failed, and no ErrorHandler has been set."), ex);
+                Logger.Warn(m => m("Execution of Rabbit message listener failed, and no ErrorHandler has been set."), ex);
             }
         }
 
@@ -456,8 +461,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             if (!this.IsRunning)
             {
-                this.logger.Warn(m => m("Rejecting received message because the listener container has been stopped: {0}", message));
-                
+                Logger.Warn(m => m("Rejecting received message because the listener container has been stopped: {0}", message));
+
                 throw new MessageRejectedWhileStoppingException();
             }
 
@@ -486,10 +491,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             else if (listener is IMessageListener)
             {
                 var bindChannel = this.ExposeListenerChannel && this.IsChannelLocallyTransacted(channel);
-				if (bindChannel) 
+                if (bindChannel)
                 {
-					TransactionSynchronizationManager.BindResource(this.ConnectionFactory, new RabbitResourceHolder(channel, false));
-				}
+                    TransactionSynchronizationManager.BindResource(this.ConnectionFactory, new RabbitResourceHolder(channel, false));
+                }
+
                 try
                 {
                     this.DoInvokeListener((IMessageListener)listener, message);
@@ -499,10 +505,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     if (bindChannel)
                     {
                         // unbind if we bound
-						TransactionSynchronizationManager.UnbindResource(this.ConnectionFactory);
+                        TransactionSynchronizationManager.UnbindResource(this.ConnectionFactory);
                     }
                 }
-               
             }
             else if (listener != null)
             {
@@ -540,7 +545,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                         !TransactionSynchronizationManager.ActualTransactionActive)
                     {
                         TransactionSynchronizationManager.BindResource(
-                            this.ConnectionFactory,
+                            this.ConnectionFactory, 
                             resourceHolder);
                         boundHere = true;
                     }
@@ -572,7 +577,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 {
                     // unbind if we bound
                     TransactionSynchronizationManager.UnbindResource(this.ConnectionFactory);
-                    if (!ExposeListenerChannel && IsChannelLocallyTransacted(channelToUse))
+                    if (!this.ExposeListenerChannel && this.IsChannelLocallyTransacted(channelToUse))
                     {
                         /*
                          *  commit the temporary channel we exposed; the consumer's channel
@@ -632,7 +637,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 // Rare case: listener thread failed after container shutdown.
                 // Log at debug level, to avoid spamming the shutdown log.
-                this.logger.Debug(m => m("Listener exception after container shutdown"), ex);
+                Logger.Debug(m => m("Listener exception after container shutdown"), ex);
             }
         }
 

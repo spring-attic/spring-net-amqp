@@ -188,7 +188,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
             factory.MessageRecoverer(new MessageRecoverer() {
                 public void recover(Message message, Throwable cause) {
-                    logger.Info("Recovered: [" + SerializationUtils.deserialize(message.getBody()).toString()+"], message: " +message);
+                    Logger.Info("Recovered: [" + SerializationUtils.deserialize(message.getBody()).toString()+"], message: " +message);
                     latch.Signal();
                 }
             });

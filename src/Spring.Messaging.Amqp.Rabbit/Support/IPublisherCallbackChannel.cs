@@ -29,15 +29,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     {
         // static string RETURN_CORRELATION = "spring_return_correlation";
 
-        /// <summary>
-        /// Adds a {@link Listener} and returns a reference to the pending confirms map for that listener's pending
+        /// <summary>Adds a {@link Listener} and returns a reference to the pending confirms map for that listener's pending
         /// confirms, allowing the Listener to assess unconfirmed sends at any point in time.
-        /// The client must <b>NOT</b> modify the contents of this array, and must synchronize on it when iterating over its collections.
-        /// </summary>
+        /// The client must <b>NOT</b> modify the contents of this array, and must synchronize on it when iterating over its collections.</summary>
         /// <param name="listener">The listener.</param>
         /// <returns>A reference to pending confirms for the listener. The System.Collections.Generic.SortedList`2[TKey -&gt; System.Int64, TValue -&gt; Spring.Messaging.Amqp.Rabbit.Support.PendingConfirm].</returns>
         SortedList<long, PendingConfirm> AddListener(IListener listener);
-        
+
+        /// <summary>The remove listener.</summary>
         /// <param name="listener">Removes the listener.</param>
         /// <returns>The System.Boolean.</returns>
         bool RemoveListener(IListener listener);

@@ -15,17 +15,15 @@
 
 #region Using Directives
 using System;
-using System.Collections;
 using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Context;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
+using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using Spring.Objects.Factory;
-using Spring.Threading.AtomicTypes;
 using Spring.Util;
 using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;
-using Queue = Spring.Messaging.Amqp.Core.Queue;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Core
@@ -38,7 +36,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     public class RabbitAdmin : IAmqpAdmin, IApplicationContextAware, IInitializingObject
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         protected static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitAdmin));
 
@@ -382,7 +380,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                         Logger.Debug("Declaring Queue '" + queue.Name + "'");
                     }
 
-                    channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, (IDictionary)queue.Arguments);
+                    channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments);
                 }
                 else if (Logger.IsDebugEnabled)
                 {

@@ -20,7 +20,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     public class MessageListenerContainerLifecycleIntegrationTests : AbstractRabbitIntegrationTest
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerLifecycleIntegrationTests));
 

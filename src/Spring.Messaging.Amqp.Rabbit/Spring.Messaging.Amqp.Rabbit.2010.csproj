@@ -134,6 +134,7 @@
     <Compile Include="Core\Support\RabbitGatewaySupport.cs" />
     <Compile Include="Listener\AbstractMessageListenerContainer.cs" />
     <Compile Include="Listener\ActiveObjectCounter.cs" />
+    <Compile Include="Listener\ConsumerCancelledException.cs" />
     <Compile Include="Listener\ListenerExecutionFailedException.cs" />
     <Compile Include="Listener\Adapter\MessageListenerAdapter.cs" />
     <Compile Include="Listener\BlockingQueueConsumer.cs" />
@@ -144,6 +145,7 @@
     <Compile Include="Retry\IMessageKeyGenerator.cs" />
     <Compile Include="Retry\IMessageRecoverer.cs" />
     <Compile Include="Retry\INewMessageIdentifier.cs" />
+    <Compile Include="Support\ConcurrentQueueExtensions.cs" />
     <Compile Include="Support\CorrelationData.cs" />
     <Compile Include="Support\DateExtensions.cs" />
     <Compile Include="Support\DefaultMessagePropertiesConverter.cs" />
@@ -152,31 +154,6 @@
     <Compile Include="Support\IPublisherCallbackChannel.cs" />
     <Compile Include="Support\PendingConfirm.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicBoolean.cs" />
-    <Compile Include="Threading\AtomicTypes\AtomicInteger.cs" />
-    <Compile Include="Threading\AtomicTypes\AtomicReference.cs" />
-    <Compile Include="Threading\AtomicTypes\IAtomic.cs" />
-    <Compile Include="Threading\Collections\Generic\AbstractBlockingQueue.cs" />
-    <Compile Include="Threading\Collections\Generic\AbstractCollection.cs" />
-    <Compile Include="Threading\Collections\Generic\AbstractEnumerator.cs" />
-    <Compile Include="Threading\Collections\Generic\AbstractQueue.cs" />
-    <Compile Include="Threading\Collections\Generic\EnumerableToArrayBuffer.cs" />
-    <Compile Include="Threading\Collections\Generic\IBlockingQueue.cs" />
-    <Compile Include="Threading\Collections\Generic\IQueue.cs" />
-    <Compile Include="Threading\Collections\Generic\LinkedBlockingQueue.cs" />
-    <Compile Include="Threading\Collections\Generic\QueueBrokenException.cs" />
-    <Compile Include="Threading\Collections\Generic\SynchronousQueue.cs" />
-    <Compile Include="Threading\Helpers\FIFOWaitQueue.cs" />
-    <Compile Include="Threading\Helpers\IQueuedSync.cs" />
-    <Compile Include="Threading\Helpers\IWaitQueue.cs" />
-    <Compile Include="Threading\Helpers\WaitNode.cs" />
-    <Compile Include="Threading\Locks\ConditionVariable.cs" />
-    <Compile Include="Threading\Locks\FIFOConditionVariable.cs" />
-    <Compile Include="Threading\Locks\ICondition.cs" />
-    <Compile Include="Threading\Locks\ILock.cs" />
-    <Compile Include="Threading\Locks\ReentrantLock.cs" />
-    <Compile Include="Threading\SystemExtensions.cs" />
-    <Compile Include="Threading\Utility\SerializationUtilities.cs" />
-    <Compile Include="Threading\Utility\WaitTime.cs" />
     <Compile Include="Transaction\RabbitTransactionManager.cs" />
   </ItemGroup>
   <ItemGroup>

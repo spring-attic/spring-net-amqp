@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         #region Logging Definition
 
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
         protected readonly ILog Logger = LogManager.GetLogger(typeof(AbstractConnectionFactory));
         #endregion
@@ -56,7 +56,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         private readonly CompositeChannelListener channelListener = new CompositeChannelListener();
 
         // private volatile IExecutorService executorService;
-
         private volatile AmqpTcpEndpoint[] addresses;
 
         /// <summary>Initializes a new instance of the <see cref="AbstractConnectionFactory"/> class.</summary>
@@ -94,11 +93,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         public int Port { get { return this.rabbitConnectionFactory.Port; } set { this.rabbitConnectionFactory.Port = value; } }
 
+        /// <summary>Sets the addresses.</summary>
         public string Addresses
         {
             set
             {
-                var addressArray = AmqpTcpEndpoint.ParseMultiple(RabbitMQ.Client.Protocols.DefaultProtocol, value);
+                var addressArray = AmqpTcpEndpoint.ParseMultiple(Protocols.DefaultProtocol, value);
                 if (addressArray != null && addressArray.Length > 0)
                 {
                     this.addresses = addressArray;
@@ -162,7 +162,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 }
                 else
                 {
-                    return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection());    
+                    return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection());
                 }
             }
             catch (Exception ex)
