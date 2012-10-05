@@ -1,10 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SimpleTrade.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Spring.Messaging.Amqp.Tests.Support.Converter
 {
+    /// <summary>The simple trade.</summary>
     public class SimpleTrade
     {
         private string ticker;
@@ -23,157 +34,150 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
 
         private string requestId;
 
-        public string Ticker
-        {
-            get
-            {
-                return this.ticker;
-            }
-            set
-            {
-                this.ticker = value;
-            }
-        }
+        /// <summary>Gets or sets the ticker.</summary>
+        public string Ticker { get { return this.ticker; } set { this.ticker = value; } }
 
-        public ulong Quantity
-        {
-            get
-            {
-                return this.quantity;
-            }
-            set
-            {
-                this.quantity = value;
-            }
-        }
+        /// <summary>Gets or sets the quantity.</summary>
+        public ulong Quantity { get { return this.quantity; } set { this.quantity = value; } }
 
-        public decimal Price
-        {
-            get
-            {
-                return this.price;
-            }
-            set
-            {
-                this.price = value;
-            }
-        }
+        /// <summary>Gets or sets the price.</summary>
+        public decimal Price { get { return this.price; } set { this.price = value; } }
 
-        public string OrderType
-        {
-            get
-            {
-                return this.orderType;
-            }
-            set
-            {
-                this.orderType = value;
-            }
-        }
+        /// <summary>Gets or sets the order type.</summary>
+        public string OrderType { get { return this.orderType; } set { this.orderType = value; } }
 
-        public string AccountName
-        {
-            get
-            {
-                return this.accountName;
-            }
-            set
-            {
-                this.accountName = value;
-            }
-        }
+        /// <summary>Gets or sets the account name.</summary>
+        public string AccountName { get { return this.accountName; } set { this.accountName = value; } }
 
+        /// <summary>Gets or sets a value indicating whether is buy request.</summary>
+        public bool IsBuyRequest { get { return this.buyRequest; } set { this.buyRequest = value; } }
 
-        public bool IsBuyRequest
-        {
-            get
-            {
-                return this.buyRequest;
-            }
-            set
-            {
-                this.buyRequest = value;
-            }
-        }
+        /// <summary>Gets or sets the user name.</summary>
+        public string UserName { get { return this.userName; } set { this.userName = value; } }
 
-        public string UserName
-        {
-            get
-            {
-                return this.userName;
-            }
-            set
-            {
-                this.userName = value;
-            }
-        }
+        /// <summary>Gets or sets the request id.</summary>
+        public string RequestId { get { return this.requestId; } set { this.requestId = value; } }
 
-        public string RequestId
-        {
-            get
-            {
-                return this.requestId;
-            }
-            set
-            {
-                this.requestId = value;
-            }
-        }
-
+        /// <summary>The get hash code.</summary>
+        /// <returns>The System.Int32.</returns>
         public override int GetHashCode()
         {
             const int prime = 31;
             var result = 1;
-            result = prime * result + ((accountName == null) ? 0 : accountName.GetHashCode());
-            result = prime * result + (buyRequest ? 1231 : 1237);
-            result = prime * result + ((orderType == null) ? 0 : orderType.GetHashCode());
-            result = prime * result + ((price == null) ? 0 : price.GetHashCode());
-            result = prime * result + (int)(quantity ^ (quantity >> 32));
-            result = prime * result + ((requestId == null) ? 0 : requestId.GetHashCode());
-            result = prime * result + ((ticker == null) ? 0 : ticker.GetHashCode());
-            result = prime * result + ((userName == null) ? 0 : userName.GetHashCode());
+            result = prime * result + ((this.accountName == null) ? 0 : this.accountName.GetHashCode());
+            result = prime * result + (this.buyRequest ? 1231 : 1237);
+            result = prime * result + ((this.orderType == null) ? 0 : this.orderType.GetHashCode());
+            result = prime * result + ((this.price == null) ? 0 : this.price.GetHashCode());
+            result = prime * result + (int)(this.quantity ^ (this.quantity >> 32));
+            result = prime * result + ((this.requestId == null) ? 0 : this.requestId.GetHashCode());
+            result = prime * result + ((this.ticker == null) ? 0 : this.ticker.GetHashCode());
+            result = prime * result + ((this.userName == null) ? 0 : this.userName.GetHashCode());
             return result;
         }
 
+        /// <summary>The equals.</summary>
+        /// <param name="obj">The obj.</param>
+        /// <returns>The System.Boolean.</returns>
         public override bool Equals(object obj)
         {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (typeof(SimpleTrade) != obj.GetType()) return false;
+            if (this == obj)
+            {
+                return true;
+            }
 
-            SimpleTrade other = (SimpleTrade)obj;
-            if (accountName == null)
+            if (obj == null)
             {
-                if (other.accountName != null) return false;
+                return false;
             }
-            else if (!accountName.Equals(other.accountName)) return false;
-            if (buyRequest != other.buyRequest) return false;
-            if (orderType == null)
+
+            if (typeof(SimpleTrade) != obj.GetType())
             {
-                if (other.orderType != null) return false;
+                return false;
             }
-            else if (!orderType.Equals(other.orderType)) return false;
-            if (price == null)
+
+            var other = (SimpleTrade)obj;
+            if (this.accountName == null)
             {
-                if (other.price != null) return false;
+                if (other.accountName != null)
+                {
+                    return false;
+                }
             }
-            else if (!price.Equals(other.price)) return false;
-            if (quantity != other.quantity) return false;
-            if (requestId == null)
+            else if (!this.accountName.Equals(other.accountName))
             {
-                if (other.requestId != null) return false;
+                return false;
             }
-            else if (!requestId.Equals(other.requestId)) return false;
-            if (ticker == null)
+
+            if (this.buyRequest != other.buyRequest)
             {
-                if (other.ticker != null) return false;
+                return false;
             }
-            else if (!ticker.Equals(other.ticker)) return false;
-            if (userName == null)
+
+            if (this.orderType == null)
             {
-                if (other.userName != null) return false;
+                if (other.orderType != null)
+                {
+                    return false;
+                }
             }
-            else if (!userName.Equals(other.userName)) return false;
+            else if (!this.orderType.Equals(other.orderType))
+            {
+                return false;
+            }
+
+            if (this.price == null)
+            {
+                if (other.price != null)
+                {
+                    return false;
+                }
+            }
+            else if (!this.price.Equals(other.price))
+            {
+                return false;
+            }
+
+            if (this.quantity != other.quantity)
+            {
+                return false;
+            }
+
+            if (this.requestId == null)
+            {
+                if (other.requestId != null)
+                {
+                    return false;
+                }
+            }
+            else if (!this.requestId.Equals(other.requestId))
+            {
+                return false;
+            }
+
+            if (this.ticker == null)
+            {
+                if (other.ticker != null)
+                {
+                    return false;
+                }
+            }
+            else if (!this.ticker.Equals(other.ticker))
+            {
+                return false;
+            }
+
+            if (this.userName == null)
+            {
+                if (other.userName != null)
+                {
+                    return false;
+                }
+            }
+            else if (!this.userName.Equals(other.userName))
+            {
+                return false;
+            }
+
             return true;
         }
     }

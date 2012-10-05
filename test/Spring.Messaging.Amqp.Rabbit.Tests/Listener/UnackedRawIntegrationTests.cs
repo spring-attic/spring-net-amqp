@@ -1,18 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UnackedRawIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Net;
 using System.Text;
-using System.Threading;
+using Common.Logging;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
-    using Common.Logging;
-
     /// <summary>
     /// Used to verify raw Rabbit .NET Client behaviour for corner cases.
     /// </summary>
@@ -22,41 +35,34 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Ignore("Ignored in the spring-amqp also. Initiated discussion with the rabbitmq folks to determine why publish/consume/reject/consume won't work as expected...")]
     public class UnackedRawIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private ILog logger = LogManager.GetCurrentClassLogger();
+        private readonly ILog logger = LogManager.GetCurrentClassLogger();
 
-        private ConnectionFactory factory = new ConnectionFactory();
+        private readonly ConnectionFactory factory = new ConnectionFactory();
         private IConnection conn;
         private IModel noTxChannel;
         private IModel txChannel;
 
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
         /// <summary>
@@ -70,7 +76,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.conn = this.factory.CreateConnection();
             this.noTxChannel = this.conn.CreateModel();
             this.txChannel = this.conn.CreateModel();
-            
+
             // Note: the Java client includes a convenience method with one int argument that sets the prefetchSize to 0 and global to false.
             this.txChannel.BasicQos(0, 1, false);
             this.txChannel.TxSelect();
@@ -101,7 +107,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 }
                 catch (Exception e)
                 {
-                    logger.Error("An error occurred closing the channel", e);
+                    this.logger.Error("An error occurred closing the channel", e);
                 }
             }
 
@@ -113,7 +119,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 }
                 catch (Exception e)
                 {
-                    logger.Error("An error occurred deleting the queue 'test.queue'", e);
+                    this.logger.Error("An error occurred deleting the queue 'test.queue'", e);
                 }
 
                 this.noTxChannel.Close();
@@ -138,7 +144,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Assert.IsNotNull(next);
             this.txChannel.BasicReject(((BasicDeliverEventArgs)next).DeliveryTag, true);
             this.txChannel.TxCommit();
-            
+
             var get = this.noTxChannel.BasicGet("test.queue", true);
             Assert.IsNotNull(get);
         }

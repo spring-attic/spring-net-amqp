@@ -1,14 +1,23 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ExchangeParserIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-
 using Common.Logging;
-
 using NUnit.Framework;
-
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Config;
@@ -17,6 +26,7 @@ using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Objects.Factory.Xml;
 using Spring.Testing.NUnit;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 {
@@ -38,17 +48,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         protected IExchange fanoutTest;
 
         protected Queue bucket;
-        
-      public ExchangeParserIntegrationTests()
-        {
-            PopulateProtectedVariables = true;
-        }
+
+        /// <summary>Initializes a new instance of the <see cref="ExchangeParserIntegrationTests"/> class.</summary>
+        public ExchangeParserIntegrationTests() { this.PopulateProtectedVariables = true; }
 
         /// <summary>
         /// Determines if the broker is running.
         /// </summary>
         protected BrokerRunning brokerIsRunning = BrokerRunning.IsRunning();
 
+        /// <summary>Gets the config locations.</summary>
         protected override string[] ConfigLocations
         {
             get
@@ -56,10 +65,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                 var resourceName =
                     @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                     + typeof(ExchangeParserIntegrationTests).Name + "-context.xml";
-                return new string[] { resourceName };
+                return new[] { resourceName };
             }
         }
 
+        /// <summary>The fixture set up.</summary>
         [TestFixtureSetUp]
         public void FixtureSetUp()
         {
@@ -70,7 +80,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                 if (environment.IsActive())
                 {
                     // Set up broker admin for non-root user
-                    this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(); //"rabbit@LOCALHOST", 5672);
+                    this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(); // "rabbit@LOCALHOST", 5672);
                     this.brokerAdmin.StartNode();
                 }
             }
@@ -79,23 +89,26 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                 Logger.Error("An error occurred during SetUp", ex);
                 Assert.Fail("An error occurred during SetUp.");
             }
+
             if (!this.brokerIsRunning.Apply())
             {
                 Assert.Ignore("Rabbit broker is not running. Ignoring integration test fixture.");
             }
         }
 
+        /// <summary>The test bindings declared.</summary>
         [Test]
         public void testBindingsDeclared()
         {
             const string messagePayload = "message";
 
-            var template = new RabbitTemplate(connectionFactory);
-            template.ConvertAndSend(fanoutTest.Name, string.Empty, messagePayload);
+            var template = new RabbitTemplate(this.connectionFactory);
+            template.ConvertAndSend(this.fanoutTest.Name, string.Empty, messagePayload);
             Thread.Sleep(200);
+
             // The queue is anonymous so it will be deleted at the end of the test, but it should get the message as long as
             // we use the same connection
-            var result = (String)template.ReceiveAndConvert(bucket.Name);
+            var result = (String)template.ReceiveAndConvert(this.bucket.Name);
             Assert.AreEqual(messagePayload, result);
         }
     }

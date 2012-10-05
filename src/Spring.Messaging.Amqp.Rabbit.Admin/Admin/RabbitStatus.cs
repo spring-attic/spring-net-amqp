@@ -1,27 +1,22 @@
-#region License
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitStatus.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
-using System;
+#region Using Directives
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using Spring.Erlang.Core;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
@@ -35,7 +30,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// The running applications.
         /// </summary>
-        private IList<Application> runningApplications;
+        private readonly IList<Application> runningApplications;
 
         /// <summary>
         /// The nodes.
@@ -47,9 +42,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// </summary>
         private IList<Node> runningNodes;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RabbitStatus"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="RabbitStatus"/> class.</summary>
         /// <param name="runningApplications">The running applications.</param>
         /// <param name="nodes">The nodes.</param>
         /// <param name="runningNodes">The running nodes.</param>
@@ -65,19 +58,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// Gets a value indicating whether this instance is alive.
         /// </summary>
         /// <remarks></remarks>
-        public bool IsAlive
-        {
-            get { return this.nodes != null && !(this.nodes.Count <= 0); }
-        }
+        public bool IsAlive { get { return this.nodes != null && !(this.nodes.Count <= 0); } }
 
         /// <summary>
         /// Gets a value indicating whether this instance is running.
         /// </summary>
         /// <remarks></remarks>
-        public bool IsRunning
-        {
-            get { return this.runningNodes != null && !(this.runningNodes.Count <= 0); }
-        }
+        public bool IsRunning { get { return this.runningNodes != null && !(this.runningNodes.Count <= 0); } }
 
         /// <summary>
         /// Gets a value indicating whether this instance is ready.
@@ -92,7 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 {
                     return false;
                 }
-                
+
                 var rabbitIsRunning = false;
                 foreach (var application in this.runningApplications)
                 {
@@ -110,39 +97,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// Gets the running applications.
         /// </summary>
         /// <remarks></remarks>
-        public IList<Application> RunningApplications
-        {
-            get { return this.runningApplications; }
-        }
+        public IList<Application> RunningApplications { get { return this.runningApplications; } }
 
         /// <summary>
         /// Gets the nodes.
         /// </summary>
         /// <remarks></remarks>
-        public IList<Node> Nodes
-        {
-            get { return this.nodes; }
-            set { this.nodes = value; }
-        }
+        public IList<Node> Nodes { get { return this.nodes; } set { this.nodes = value; } }
 
         /// <summary>
         /// Gets the running nodes.
         /// </summary>
         /// <remarks></remarks>
-        public IList<Node> RunningNodes
-        {
-            get { return this.runningNodes; }
-            set { this.runningNodes = value; }
-        }
+        public IList<Node> RunningNodes { get { return this.runningNodes; } set { this.runningNodes = value; } }
 
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
         /// <remarks></remarks>
-        public override string ToString()
-        {
-            return string.Format("IsAlive: {0}, IsRunning: {1}, IsReady: {2}, RunningApplications: {3}, Nodes: {4}, RunningNodes: {5}", this.IsAlive, this.IsRunning, this.IsReady, this.runningApplications, this.nodes, this.runningNodes);
-        }
+        public override string ToString() { return string.Format("IsAlive: {0}, IsRunning: {1}, IsReady: {2}, RunningApplications: {3}, Nodes: {4}, RunningNodes: {5}", this.IsAlive, this.IsRunning, this.IsReady, this.runningApplications, this.nodes, this.runningNodes); }
     }
 }

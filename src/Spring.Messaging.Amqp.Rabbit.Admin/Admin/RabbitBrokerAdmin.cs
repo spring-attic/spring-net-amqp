@@ -1,29 +1,23 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitBrokerAdmin.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-#region License
-
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -32,13 +26,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using Erlang.NET;
-using RabbitMQ.Client;
 using Spring.Erlang.Connection;
 using Spring.Erlang.Core;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Util;
-using IConnectionFactory = Spring.Messaging.Amqp.Rabbit.Connection.IConnectionFactory;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
@@ -59,7 +51,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// The default node name.
         /// </summary>
-        private static string DEFAULT_NODE_NAME = GetDefaultNodeName();
+        private static readonly string DEFAULT_NODE_NAME = GetDefaultNodeName();
 
         /// <summary>
         /// The default port.
@@ -89,14 +81,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// The timeout.
         /// </summary>
-        private long timeout = 0;
+        private long timeout;
 
         /// <summary>
         /// The executor.
         /// </summary>
         // Not used - replaced with System.Threading.Tasks.
         // private IExecutor executor;
-        
         /// <summary>
         /// The node name.
         /// </summary>
@@ -147,53 +138,37 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
         /// </summary>
-        public RabbitBrokerAdmin() : this(DEFAULT_NODE_NAME)
-        {
-        }
+        public RabbitBrokerAdmin() : this(DEFAULT_NODE_NAME) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
+        /// <summary>Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
         /// Create an instance by supplying the erlang node name (e.g. "rabbit@myserver"), or simply the hostname (if the
-        /// alive name is "rabbit").
-        /// </summary>
+        /// alive name is "rabbit").</summary>
         /// <param name="nodeName">The node name or hostname to use.</param>
-        public RabbitBrokerAdmin(string nodeName) : this(nodeName, null)
-        {
-        }
+        public RabbitBrokerAdmin(string nodeName) : this(nodeName, null) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
-        /// Create an instance by supplying the erlang node name and cookie (unique string).
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
+        /// Create an instance by supplying the erlang node name and cookie (unique string).</summary>
         /// <param name="nodeName">The node name or hostname to use.</param>
         /// <param name="cookie">The cookie value to use.</param>
-        public RabbitBrokerAdmin(string nodeName, string cookie) : this(nodeName, DEFAULT_PORT, cookie)
-        {
-        }
+        public RabbitBrokerAdmin(string nodeName, string cookie) : this(nodeName, DEFAULT_PORT, cookie) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
+        /// <summary>Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
         /// Create an instance by supplying the erlang node name and port number. Use this on a UN*X system if you want to
         /// run the broker as a user without root privileges, supplying values that do not clash with the default broker
         /// (usually "rabbit@&lt;servername&gt;" and 5672). If, as well as managing an existing broker, you need to start the
         /// broker process, you will also need to set {@link #setRabbitLogBaseDirectory(String) RABBITMQ_LOG_BASE} and
-        /// {@link #setRabbitMnesiaBaseDirectory(String) RABBITMQ_MNESIA_BASE} to point to writable directories).
-        /// </summary>
+        /// {@link #setRabbitMnesiaBaseDirectory(String) RABBITMQ_MNESIA_BASE} to point to writable directories).</summary>
         /// <param name="nodeName">The node name or hostname to use.</param>
         /// <param name="port">The port number (overriding the default which is 5672.</param>
-        public RabbitBrokerAdmin(string nodeName, int port) : this(nodeName, port, null)
-        {
-        }
+        public RabbitBrokerAdmin(string nodeName, int port) : this(nodeName, port, null) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
+        /// <summary>Initializes a new instance of the <see cref="T:Spring.Messaging.Amqp.Rabbit.Admin.RabbitBrokerAdmin"/> class.
         /// Create an instance by supplying the erlang node name, port number and cookie (unique string). If the node name
         /// does not contain an 
         /// <code>@</code>
-        ///  character, it will be prepended with an alivename 
+        /// character, it will be prepended with an alivename 
         /// <code>rabbit@</code>
-        /// (interpreting the supplied value as just the hostname).
-        /// </summary>
+        /// (interpreting the supplied value as just the hostname).</summary>
         /// <param name="nodeName">The node name or hostname to use.</param>
         /// <param name="port">The port number (overriding the default which is 5672.</param>
         /// <param name="cookie">The cookie value to use.</param>
@@ -206,8 +181,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
             var parts = nodeName.Split(@"@".ToCharArray());
             AssertUtils.State(parts.Length == 2, @"The node name should be in the form alivename@host, e.g. rabbit@myserver");
-            
-            if (/* Os.isFamily("windows") */ true && !DEFAULT_NODE_NAME.Equals(nodeName))
+
+            if ( /* Os.isFamily("windows") */ true && !DEFAULT_NODE_NAME.Equals(nodeName))
             {
                 nodeName = parts[0] + @"@" + parts[1].ToUpper();
             }
@@ -232,10 +207,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// user). Only needed for launching the broker process. Can also be set as a system property.
         /// @param rabbitLogBaseDirectory the rabbit log base directory to set
         /// </summary>
-        public string RabbitLogBaseDirectory
-        {
-            set { this.rabbitLogBaseDirectory = value; }
-        }
+        public string RabbitLogBaseDirectory { set { this.rabbitLogBaseDirectory = value; } }
 
         /// <summary>
         /// Sets the rabbit mnesia base directory.
@@ -246,36 +218,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// user). Only needed for launching the broker process. Can also be set as a system property.
         /// @param rabbitMnesiaBaseDirectory the rabbit Mnesia base directory to set
         /// </summary>
-        public string RabbitMnesiaBaseDirectory
-        {
-            set { this.rabbitMnesiaBaseDirectory = value; }
-        }
+        public string RabbitMnesiaBaseDirectory { set { this.rabbitMnesiaBaseDirectory = value; } }
 
-        /// <summary>
-        /// Sets the encoding.
-        /// </summary>
-        /// <value>The encoding.</value>
-        /// The encoding to use for converting host names to byte arrays (which is needed on the remote side).
-        /// @param encoding the encoding to use (default UTF-8)
-        /// </summary>
-        public string Encoding
-        {
-            set { this.encoding = value; }
-        }
+        /// <summary>Sets the encoding.</summary>
+        public string Encoding { set { this.encoding = value; } }
 
-        /// <summary>
-        /// Sets the startup timeout.
-        /// </summary>
-        /// <value>The startup timeout.</value>
-        /// Timeout (milliseconds) to wait for the broker to come up. If the provided timeout is greater than zero then we
-        /// wait for that period for the broker to be ready. If it is not ready after that time the process is stopped.
-        /// Defaults to 0 (no wait).
-        /// @param timeout the timeout value to set in milliseconds
-        /// </summary>
-        public long StartupTimeout
-        {
-            set { this.timeout = value; }
-        }
+        /// <summary>Sets the startup timeout.</summary>
+        public long StartupTimeout { set { this.timeout = value; } }
 
         /// <summary>
         /// Sets the module adapter.
@@ -290,73 +239,42 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// separator).
         /// @param moduleAdapter the module adapter to set
         /// </summary>
-        public IDictionary<string, string> ModuleAdapter
-        {
-            set { this.moduleAdapter = value; }
-        }
+        public IDictionary<string, string> ModuleAdapter { set { this.moduleAdapter = value; } }
 
         /// <summary>
         /// Gets the queues.
         /// </summary>
         /// <returns>A list of queues.</returns>
-        public List<QueueInfo> GetQueues()
-        {
-            return this.ExecuteAndConvertRpc<List<QueueInfo>>("rabbit_amqqueue", "info_all", this.GetBytes(DEFAULT_VHOST));
-        }
+        public List<QueueInfo> GetQueues() { return this.ExecuteAndConvertRpc<List<QueueInfo>>("rabbit_amqqueue", "info_all", this.GetBytes(DEFAULT_VHOST)); }
 
-        /// <summary>
-        /// Gets the queues.
-        /// </summary>
+        /// <summary>Gets the queues.</summary>
         /// <param name="virtualHost">The virtual host.</param>
         /// <returns>A list of queues.</returns>
-        public List<QueueInfo> GetQueues(string virtualHost)
-        {
-            return this.ExecuteAndConvertRpc<List<QueueInfo>>("rabbit_amqqueue", "info_all", this.GetBytes(virtualHost));
-        }
+        public List<QueueInfo> GetQueues(string virtualHost) { return this.ExecuteAndConvertRpc<List<QueueInfo>>("rabbit_amqqueue", "info_all", this.GetBytes(virtualHost)); }
 
         // User management
 
-        /// <summary>
-        /// Adds the user.
-        /// </summary>
+        /// <summary>Adds the user.</summary>
         /// <param name="username">The username.</param>
         /// <param name="password">The password.</param>
-        public void AddUser(string username, string password)
-        {
-            this.ExecuteAndConvertRpc<object>("rabbit_auth_backend_internal", "add_user", this.GetBytes(username), this.GetBytes(password));
-        }
+        public void AddUser(string username, string password) { this.ExecuteAndConvertRpc<object>("rabbit_auth_backend_internal", "add_user", this.GetBytes(username), this.GetBytes(password)); }
 
-        /// <summary>
-        /// Deletes the user.
-        /// </summary>
+        /// <summary>Deletes the user.</summary>
         /// <param name="username">The username.</param>
-        public void DeleteUser(string username)
-        {
-            this.ExecuteAndConvertRpc<object>("rabbit_auth_backend_internal", "delete_user", this.GetBytes(username));
-        }
+        public void DeleteUser(string username) { this.ExecuteAndConvertRpc<object>("rabbit_auth_backend_internal", "delete_user", this.GetBytes(username)); }
 
-        /// <summary>
-        /// Changes the user password.
-        /// </summary>
+        /// <summary>Changes the user password.</summary>
         /// <param name="username">The username.</param>
         /// <param name="newPassword">The new password.</param>
-        public void ChangeUserPassword(string username, string newPassword)
-        {
-            this.ExecuteAndConvertRpc<object>("rabbit_auth_backend_internal", "change_password", this.GetBytes(username), this.GetBytes(newPassword));
-        }
+        public void ChangeUserPassword(string username, string newPassword) { this.ExecuteAndConvertRpc<object>("rabbit_auth_backend_internal", "change_password", this.GetBytes(username), this.GetBytes(newPassword)); }
 
         /// <summary>
         /// Lists the users.
         /// </summary>
         /// <returns>A list of users.</returns>
-        public List<string> ListUsers()
-        {
-            return this.ExecuteAndConvertRpc<List<string>>("rabbit_auth_backend_internal", "list_users");
-        }
+        public List<string> ListUsers() { return this.ExecuteAndConvertRpc<List<string>>("rabbit_auth_backend_internal", "list_users"); }
 
-        /// <summary>
-        /// Adds the vhost.
-        /// </summary>
+        /// <summary>Adds the vhost.</summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>The value.</returns>
         public int AddVhost(string vhostPath)
@@ -365,9 +283,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return 0;
         }
 
-        /// <summary>
-        /// Deletes the vhost.
-        /// </summary>
+        /// <summary>Deletes the vhost.</summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>The value.</returns>
         public int DeleteVhost(string vhostPath)
@@ -376,9 +292,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return 0;
         }
 
-        /// <summary>
-        /// Sets the permissions.
-        /// </summary>
+        /// <summary>Sets the permissions.</summary>
         /// <param name="username">The username.</param>
         /// <param name="configure">The configure.</param>
         /// <param name="read">The read.</param>
@@ -388,9 +302,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             // TODO Auto-generated method stub
         }
 
-        /// <summary>
-        /// Sets the permissions.
-        /// </summary>
+        /// <summary>Sets the permissions.</summary>
         /// <param name="username">The username.</param>
         /// <param name="configure">The configure.</param>
         /// <param name="read">The read.</param>
@@ -401,18 +313,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             // TODO Auto-generated method stub
         }
 
-        /// <summary>
-        /// Clears the permissions.
-        /// </summary>
+        /// <summary>Clears the permissions.</summary>
         /// <param name="username">The username.</param>
         public void ClearPermissions(string username)
         {
             // TODO Auto-generated method stub
         }
 
-        /// <summary>
-        /// Clears the permissions.
-        /// </summary>
+        /// <summary>Clears the permissions.</summary>
         /// <param name="username">The username.</param>
         /// <param name="vhostPath">The vhost path.</param>
         public void ClearPermissions(string username, string vhostPath)
@@ -430,9 +338,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return null;
         }
 
-        /// <summary>
-        /// Lists the permissions.
-        /// </summary>
+        /// <summary>Lists the permissions.</summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>A list of permissions.</returns>
         public IList<string> ListPermissions(string vhostPath)
@@ -441,9 +347,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return null;
         }
 
-        /// <summary>
-        /// Lists the user permissions.
-        /// </summary>
+        /// <summary>Lists the user permissions.</summary>
         /// <param name="username">The username.</param>
         /// <returns>A list of user permissions.</returns>
         public IList<string> ListUserPermissions(string username)
@@ -482,7 +386,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         }
 
         #region Alternate StartBrokerApplication Implementation - System.Threading.Tasks
-
         /*public void StartBrokerApplication()
     {
         var status = this.Status;
@@ -543,7 +446,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
         }
     }*/
-
         #endregion
 
         /// <summary>
@@ -554,7 +456,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         {
             this.logger.Info("Stopping Rabbit Application.");
             this.ExecuteAndConvertRpc<object>("rabbit", "stop");
-            if (timeout > 0)
+            if (this.timeout > 0)
             {
                 this.WaitForUnreadyState();
             }
@@ -641,10 +543,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             this.AddEnvironment(execute.EnvironmentVariables, "ERLANG_HOME");
 
             // Make the nodename explicitly the same so the erl process knows who we are
-            execute.EnvironmentVariables.Add("RABBITMQ_NODENAME", nodeName);
+            execute.EnvironmentVariables.Add("RABBITMQ_NODENAME", this.nodeName);
 
             // Set the port number for the new process
-            execute.EnvironmentVariables.Add("RABBITMQ_NODE_PORT", port.ToString());
+            execute.EnvironmentVariables.Add("RABBITMQ_NODE_PORT", this.port.ToString());
 
             // Ask for a detached erl process so stdout doesn't get diverted to a black hole when the JVM dies (without this
             // you can start the Rabbit broker form Java but if you forget to stop it, the erl process is hosed).
@@ -653,37 +555,40 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             execute.UseShellExecute = false;
             execute.LoadUserProfile = true;
 
-            //Process.Start(execute);
-
+            // Process.Start(execute);
             var running = new CountdownEvent(1);
             var finished = false;
             var errorHint = hint;
             var tokenSource = new CancellationTokenSource();
             var token = tokenSource.Token;
             var task = Task.Factory.StartNew(
-                                () =>
-                               {
-                                   try
-                                   {
-                                       if (running.CurrentCount > 0) running.Signal();
-                                       var process = Process.Start(execute);
-                                       process.WaitForExit();
-                                       var exit = process.ExitCode;
-                                       finished = true;
-                                       logger.Info("Finished broker launcher process with exit code=" + exit);
-                                       if (exit != 0)
-                                       {
-                                           throw new Exception("Could not start process." + errorHint);
-                                       }
-                                   }
-                                   catch (Exception e)
-                                   {
-                                       logger.Error("Failed to start node", e);
-                                   }
-                               }, 
-                               token);
+                () =>
+                {
+                    try
+                    {
+                        if (running.CurrentCount > 0)
+                        {
+                            running.Signal();
+                        }
 
-            try 
+                        var process = Process.Start(execute);
+                        process.WaitForExit();
+                        var exit = process.ExitCode;
+                        finished = true;
+                        this.logger.Info("Finished broker launcher process with exit code=" + exit);
+                        if (exit != 0)
+                        {
+                            throw new Exception("Could not start process." + errorHint);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        this.logger.Error("Failed to start node", e);
+                    }
+                }, 
+                token);
+
+            try
             {
                 this.logger.Info("Waiting for Rabbit process to be started");
                 var result = task.Wait((int)this.timeout);
@@ -692,20 +597,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 {
                     tokenSource.Cancel();
                 }
-                
-            } 
-            catch (Exception e) 
+            }
+            catch (Exception e)
             {
                 Thread.CurrentThread.Interrupt();
-                logger.Error("Exception occurred starting Rabbit process", e);
+                this.logger.Error("Exception occurred starting Rabbit process", e);
             }
 
-            if (finished) 
+            if (finished)
             {
-                //throw new Exception("Expected broker process to start in background, but it has exited early.");
+                // throw new Exception("Expected broker process to start in background, but it has exited early.");
             }
 
-            if (this.timeout > 0) 
+            if (this.timeout > 0)
             {
                 this.WaitForReadyState();
             }
@@ -715,32 +619,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// Waits the state of for ready.
         /// </summary>
         /// <returns>The value.</returns>
-        private bool WaitForReadyState()
-        {
-            return this.WaitForState((RabbitStatus status) => status.IsReady, "ready");
-        }
+        private bool WaitForReadyState() { return this.WaitForState((RabbitStatus status) => status.IsReady, "ready"); }
 
         /// <summary>
         /// Waits the state of for unready.
         /// </summary>
         /// <returns>The value.</returns>
-        private bool WaitForUnreadyState()
-        {
-            return this.WaitForState((RabbitStatus status) => !status.IsRunning , "unready");
-        }
+        private bool WaitForUnreadyState() { return this.WaitForState((RabbitStatus status) => !status.IsRunning, "unready"); }
 
         /// <summary>
         /// Waits the state of for stopped.
         /// </summary>
         /// <returns>The value.</returns>
-        private bool WaitForStoppedState()
-        {
-            return this.WaitForState((RabbitStatus status) => !status.IsReady && !status.IsRunning, "stopped");
-        }
+        private bool WaitForStoppedState() { return this.WaitForState((RabbitStatus status) => !status.IsReady && !status.IsRunning, "stopped"); }
 
-        /// <summary>
-        /// Waits for state.
-        /// </summary>
+        /// <summary>Waits for state.</summary>
         /// <param name="callable">The callable.</param>
         /// <param name="state">The state.</param>
         /// <returns>The value.</returns>
@@ -759,20 +652,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 var tokenSource = new CancellationTokenSource();
                 var token = tokenSource.Token;
                 var started = Task.Factory.StartNew(
-                                                    () =>
-                                                        {
-                                                            var internalstatus = GetStatus();
-                                                            while (!callable.Invoke(internalstatus) && !token.IsCancellationRequested)
-                                                            {
-                                                                // Any less than 1000L and we tend to clog up the socket?
-                                                                Thread.Sleep(500);
-                                                                internalstatus = GetStatus();
-                                                                logger.Info(string.Format("WaitForState: Internal Status: {0}", internalstatus.ToString()));
-                                                            }
+                    () =>
+                    {
+                        var internalstatus = this.GetStatus();
+                        while (!callable.Invoke(internalstatus) && !token.IsCancellationRequested)
+                        {
+                            // Any less than 1000L and we tend to clog up the socket?
+                            Thread.Sleep(500);
+                            internalstatus = this.GetStatus();
+                            this.logger.Info(string.Format("WaitForState: Internal Status: {0}", internalstatus));
+                        }
 
-                                                            return internalstatus;
-                                                        }, 
-                                                        token);
+                        return internalstatus;
+                    }, 
+                    token);
 
                 try
                 {
@@ -798,7 +691,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                     }
                     catch (Exception ex)
                     {
-                        logger.Error("Error occurred cancelling task", ex);
+                        this.logger.Error("Error occurred cancelling task", ex);
                     }
                 }
 
@@ -827,12 +720,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return true;
         }
 
-        /// <summary>
-        /// Finds the name of the directory.
-        /// </summary>
+        /// <summary>Finds the name of the directory.</summary>
         /// <param name="parent">The parent.</param>
         /// <param name="child">The child.</param>
-        /// <returns></returns>
+        /// <returns>The System.String.</returns>
         /// Find a directory whose name starts with a substring in a given parent directory. If there is none return null,
         /// otherwise sort the results and return the best match (an exact match if there is one or the last one in a lexical
         /// sort).
@@ -862,9 +753,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
         }
 
-        /// <summary>
-        /// Adds the environment.
-        /// </summary>
+        /// <summary>Adds the environment.</summary>
         /// <param name="env">The env.</param>
         /// <param name="key">The key.</param>
         /// <remarks></remarks>
@@ -899,7 +788,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 this.logger.Error("Failed to send stop signal", e);
             }
 
-            if (timeout >= 0) 
+            if (this.timeout >= 0)
             {
                 this.WaitForStoppedState();
             }
@@ -911,10 +800,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// configured users and vhosts, and deletes all persistent messages.
         /// </summary>
         /// <remarks></remarks>
-        public void ResetNode()
-        {
-            this.ExecuteAndConvertRpc<object>("rabbit_mnesia", "reset");
-        }
+        public void ResetNode() { this.ExecuteAndConvertRpc<object>("rabbit_mnesia", "reset"); }
 
         /// <summary>
         /// Forces the reset node.
@@ -923,11 +809,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// of the current management database state and cluster configuration. It should only be used as a last resort if
         /// the database or cluster configuration has been corrupted.
         /// <remarks></remarks>
-        public void ForceResetNode()
-        {
-            this.ExecuteAndConvertRpc<object>("rabbit_mnesia", "force_reset");
-        }
+        public void ForceResetNode() { this.ExecuteAndConvertRpc<object>("rabbit_mnesia", "force_reset"); }
 
+        /// <summary>The get status.</summary>
+        /// <returns>The Spring.Messaging.Amqp.Rabbit.Admin.RabbitStatus.</returns>
+        /// <exception cref="RabbitAdminAuthException"></exception>
         public RabbitStatus GetStatus()
         {
             try
@@ -943,21 +829,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 throw new RabbitAdminAuthException(
                     "Could not authorise connection to Erlang process. This can happen if the broker is running, "
                     + "but as root or rabbitmq and the current user is not authorised to connect. Try starting the "
-                    + "broker again as a different user.", e);
+                    + "broker again as a different user.", 
+                    e);
             }
             catch (OtpException e)
             {
-                logger.Debug("Ignoring OtpException (assuming that the broker is simply not running)");
+                this.logger.Debug("Ignoring OtpException (assuming that the broker is simply not running)");
+
                 // if (Logger.IsTraceEnabled)
                 // {
-                //     Logger.Trace("Status not available owing to exception", e);
+                // Logger.Trace("Status not available owing to exception", e);
                 // }
-                logger.Error("Status not available owing to exception", e);
+                this.logger.Error("Status not available owing to exception", e);
                 return new RabbitStatus(new List<Application>(), new List<Node>(), new List<Node>());
             }
             catch (Exception e)
             {
-                logger.Error("Error occurred getting status", e);
+                this.logger.Error("Error occurred getting status", e);
                 throw;
             }
         }
@@ -975,21 +863,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             this.CreateErlangTemplate(otpConnectionFactory);
         }
 
-        /// <summary>
-        /// Creates the erlang template.
-        /// </summary>
+        /// <summary>Creates the erlang template.</summary>
         /// <param name="otpConnectionFactory">The otp connection factory.</param>
         /// <remarks></remarks>
-        protected void CreateErlangTemplate(Spring.Erlang.Connection.IConnectionFactory otpConnectionFactory)
+        protected void CreateErlangTemplate(IConnectionFactory otpConnectionFactory)
         {
             this.erlangTemplate = new ErlangTemplate(otpConnectionFactory);
             this.erlangTemplate.ErlangConverter = new RabbitControlErlangConverter(this.moduleAdapter);
             this.erlangTemplate.AfterPropertiesSet();
         }
 
-        /// <summary>
-        /// Convenience method for lazy initialization of the {@link ErlangTemplate} and associated trimmings. All RPC calls should go through this method.
-        /// </summary>
+        /// <summary>Convenience method for lazy initialization of the {@link ErlangTemplate} and associated trimmings. All RPC calls should go through this method.</summary>
         /// <typeparam name="T">The type of result.</typeparam>
         /// <param name="module">The module to address remotely.</param>
         /// <param name="function">The function to call.</param>
@@ -1022,9 +906,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return (T)this.erlangTemplate.ExecuteAndConvertRpc(module, function, args);
         }
 
-        /// <summary>
-        /// Gets the bytes.
-        /// </summary>
+        /// <summary>Gets the bytes.</summary>
         /// <param name="value">The value.</param>
         /// <returns>The byte representation of the string.</returns>
         /// Safely convert a string to its bytes using the encoding provided.

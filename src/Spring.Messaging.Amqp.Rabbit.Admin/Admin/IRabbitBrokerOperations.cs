@@ -1,27 +1,22 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IRabbitBrokerOperations.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-#region License
-
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Spring.Messaging.Amqp.Core;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
@@ -43,34 +38,26 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <remarks></remarks>
         List<QueueInfo> GetQueues();
 
-        /// <summary>
-        /// Gets the queues.
-        /// </summary>
+        /// <summary>Gets the queues.</summary>
         /// <param name="virtualHost">The virtual host.</param>
         /// <returns>A list of queues.</returns>
         /// <remarks></remarks>
         List<QueueInfo> GetQueues(string virtualHost);
-        
+
         // User management
 
-        /// <summary>
-        /// Adds the user.
-        /// </summary>
+        /// <summary>Adds the user.</summary>
         /// <param name="username">The username.</param>
         /// <param name="password">The password.</param>
         /// <remarks></remarks>
         void AddUser(string username, string password);
 
-        /// <summary>
-        /// Deletes the user.
-        /// </summary>
+        /// <summary>Deletes the user.</summary>
         /// <param name="username">The username.</param>
         /// <remarks></remarks>
         void DeleteUser(string username);
 
-        /// <summary>
-        /// Changes the user password.
-        /// </summary>
+        /// <summary>Changes the user password.</summary>
         /// <param name="username">The username.</param>
         /// <param name="newPassword">The new password.</param>
         /// <remarks></remarks>
@@ -85,17 +72,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         // VHost management
 
-        /// <summary>
-        /// Adds the vhost.
-        /// </summary>
+        /// <summary>Adds the vhost.</summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>The value.</returns>
         /// <remarks></remarks>
         int AddVhost(string vhostPath);
 
-        /// <summary>
-        /// Deletes the vhost.
-        /// </summary>
+        /// <summary>Deletes the vhost.</summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>The value.</returns>
         /// <remarks></remarks>
@@ -103,9 +86,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         // permissions
 
-        /// <summary>
-        /// Sets the permissions.
-        /// </summary>
+        /// <summary>Sets the permissions.</summary>
         /// <param name="username">The username.</param>
         /// <param name="configure">The configure.</param>
         /// <param name="read">The read.</param>
@@ -113,9 +94,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <remarks></remarks>
         void SetPermissions(string username, Regex configure, Regex read, Regex write);
 
-        /// <summary>
-        /// Sets the permissions.
-        /// </summary>
+        /// <summary>Sets the permissions.</summary>
         /// <param name="username">The username.</param>
         /// <param name="configure">The configure.</param>
         /// <param name="read">The read.</param>
@@ -124,16 +103,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <remarks></remarks>
         void SetPermissions(string username, Regex configure, Regex read, Regex write, string vhostPath);
 
-        /// <summary>
-        /// Clears the permissions.
-        /// </summary>
+        /// <summary>Clears the permissions.</summary>
         /// <param name="username">The username.</param>
         /// <remarks></remarks>
         void ClearPermissions(string username);
 
-        /// <summary>
-        /// Clears the permissions.
-        /// </summary>
+        /// <summary>Clears the permissions.</summary>
         /// <param name="username">The username.</param>
         /// <param name="vhostPath">The vhost path.</param>
         /// <remarks></remarks>
@@ -146,17 +121,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <remarks></remarks>
         IList<string> ListPermissions();
 
-        /// <summary>
-        /// Lists the permissions.
-        /// </summary>
+        /// <summary>Lists the permissions.</summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>A list of permissions.</returns>
         /// <remarks></remarks>
         IList<string> ListPermissions(string vhostPath);
 
-        /// <summary>
-        /// Lists the user permissions.
-        /// </summary>
+        /// <summary>Lists the user permissions.</summary>
         /// <param name="username">The username.</param>
         /// <returns>A list of user permissions.</returns>
         /// <remarks></remarks>

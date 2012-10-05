@@ -1,17 +1,30 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitAdminIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System;
-using System.IO;
 using NUnit.Framework;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Impl;
 using Spring.Context.Support;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
-using Spring.Threading.AtomicTypes;
+using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using IConnection = RabbitMQ.Client.IConnection;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
@@ -25,8 +38,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// The connection factory.
         /// </summary>
-        private CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        
+        private readonly CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+
         /// <summary>
         /// The context.
         /// </summary>
@@ -41,40 +54,29 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// Initializes a new instance of the <see cref="RabbitAdminIntegrationTests"/> class. 
         /// Initializes a new instance of the <see cref="T:System.Object"/> class.
         /// </summary>
-        public RabbitAdminIntegrationTests()
-        {
-            this.connectionFactory.Port = BrokerTestUtils.GetPort();
-        }
+        public RabbitAdminIntegrationTests() { this.connectionFactory.Port = BrokerTestUtils.GetPort(); }
 
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-            this.brokerIsRunning = BrokerRunning.IsRunning();
-        }
+        public override void AfterFixtureSetUp() { this.brokerIsRunning = BrokerRunning.IsRunning(); }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         {
             this.context = new GenericApplicationContext();
             this.rabbitAdmin = new RabbitAdmin(this.connectionFactory);
-            
+
             this.rabbitAdmin.DeleteQueue("test.queue");
 
             // Force connection factory to forget that it has been used to delete the queue
@@ -190,22 +192,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             var connectionHolder = new AtomicReference<IConnection>();
 
             var rabbitTemplate = new RabbitTemplate(this.connectionFactory);
-            var exists = rabbitTemplate.Execute<bool>(delegate(IModel channel)
-            {
-                var result = channel.QueueDeclarePassive(queue.Name);
-                connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-                return result != null;
-            });
+            var exists = rabbitTemplate.Execute(
+                delegate(IModel channel)
+                {
+                    var result = channel.QueueDeclarePassive(queue.Name);
+                    connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
+                    return result != null;
+                });
             Assert.True(exists, "Expected Queue to exist");
 
             Assert.True(this.QueueExists(connectionHolder.Value, queue));
 
-            exists = rabbitTemplate.Execute<bool>(delegate(IModel channel)
-            {
-                var result = channel.QueueDeclarePassive(queue.Name);
-                connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-                return result != null;
-            });
+            exists = rabbitTemplate.Execute(
+                delegate(IModel channel)
+                {
+                    var result = channel.QueueDeclarePassive(queue.Name);
+                    connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
+                    return result != null;
+                });
             Assert.True(exists, "Expected Queue to exist");
 
             this.connectionFactory.Dispose();
@@ -214,18 +218,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             Assert.False(this.QueueExists(null, queue));
 
             // Broker auto-deleted queue, but it is re-created by the connection listener
-            exists = rabbitTemplate.Execute<bool>(delegate(IModel channel)
-            {
-                var result = channel.QueueDeclarePassive(queue.Name);
-                connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-                return result != null;
-            });
+            exists = rabbitTemplate.Execute(
+                delegate(IModel channel)
+                {
+                    var result = channel.QueueDeclarePassive(queue.Name);
+                    connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
+                    return result != null;
+                });
             Assert.True(exists, "Expected Queue to exist");
 
             Assert.True(this.QueueExists(connectionHolder.Value, queue));
             Assert.True(this.rabbitAdmin.DeleteQueue(queue.Name));
             Assert.False(this.QueueExists(null, queue));
-
         }
 
         /// <summary>
@@ -244,12 +248,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             var rabbitTemplate = new RabbitTemplate(this.connectionFactory);
 
             // Force RabbitAdmin to initialize the queue
-            var exists = rabbitTemplate.Execute<bool>(delegate(IModel channel)
-            {
-                var result = channel.QueueDeclarePassive(queue.Name);
-                connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-                return result != null;
-            });
+            var exists = rabbitTemplate.Execute(
+                delegate(IModel channel)
+                {
+                    var result = channel.QueueDeclarePassive(queue.Name);
+                    connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
+                    return result != null;
+                });
             Assert.True(exists, "Expected Queue to exist");
 
             Assert.True(this.QueueExists(connectionHolder.Value, queue));
@@ -260,12 +265,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             Assert.False(this.QueueExists(null, queue));
 
             // Broker auto-deleted queue, but it is re-created by the connection listener
-            exists = rabbitTemplate.Execute<bool>(delegate(IModel channel)
-            {
-                var result = channel.QueueDeclarePassive(queue.Name);
-                connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-                return result != null;
-            });
+            exists = rabbitTemplate.Execute(
+                delegate(IModel channel)
+                {
+                    var result = channel.QueueDeclarePassive(queue.Name);
+                    connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
+                    return result != null;
+                });
             Assert.True(exists, "Expected Queue to exist");
 
             Assert.True(this.QueueExists(connectionHolder.Value, queue));
@@ -273,12 +279,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             Assert.False(this.QueueExists(null, queue));
         }
 
-        /// <summary>
-        /// Queues the exists.
-        /// </summary>
+        /// <summary>Queues the exists.</summary>
         /// <param name="connection">The connection.</param>
         /// <param name="queue">The queue.</param>
-        /// <returns></returns>
+        /// <returns>The System.Boolean.</returns>
         /// Use native Rabbit API to test queue, bypassing all the connection and channel caching and callbacks in Spring
         /// AMQP.
         /// @param connection the raw connection to use

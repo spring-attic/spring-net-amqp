@@ -130,7 +130,6 @@ namespace Spring.Messaging.Amqp.Support.Converter
             }
             catch (Exception ex)
             {
-                
                 Logger.Error(m => m("An exception was caught resolving the type: {0}", typeId), ex);
                 try
                 {
@@ -157,7 +156,6 @@ namespace Spring.Messaging.Amqp.Support.Converter
                 {
                     Logger.Error(m => m("An exception was caught trying to use the fallback type resolution method."), e);
                 }
-                
 
                 throw new MessageConversionException("failed to resolve type name [" + typeId + "]", ex);
             }

@@ -86,10 +86,10 @@ namespace Spring.Messaging.Amqp.Core
 
         private volatile int messageCount;
 
-        public void SetHeader(string key, object value)
-        {
-            this.headers.Add(key, value);
-        }
+        /// <summary>The set header.</summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        public void SetHeader(string key, object value) { this.headers.Add(key, value); }
 
         /// <summary>
         /// Gets Headers.

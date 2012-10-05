@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<objects xmlns="http://www.springframework.net"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:rabbit="http://www.springframework.net/schema/rabbit">
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-  <rabbit:queue id="foo" name="foo" />
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-  <rabbit:queue id="arguments" name="arguments">
-    <rabbit:queue-arguments value-type="System.Int64">
-      <entry key="x-message-ttl" value="100" />
-    </rabbit:queue-arguments>
-  </rabbit:queue>
+    <rabbit:queue id="foo" name="foo" />
+
+    <rabbit:queue id="arguments" name="arguments">
+        <rabbit:queue-arguments value-type="System.Int64">
+            <entry key="x-message-ttl" value="100" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
 
 </objects>

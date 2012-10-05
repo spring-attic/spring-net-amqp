@@ -1,28 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<objects xmlns="http://www.springframework.net"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:rabbit="http://www.springframework.net/schema/rabbit">
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-	<object type="Spring.Objects.Factory.Config.PropertyPlaceholderConfigurer, Spring.Core">
-    <property name="Properties">
-      <name-values>
-        <add key="five" value="5" />
-        <add key="one" value="1" />
-        <add key="false" value="false" />
-      </name-values>
-    </property>
-	</object>
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-	<rabbit:queue id="foo" name="foo" />
+    <object type="Spring.Objects.Factory.Config.PropertyPlaceholderConfigurer, Spring.Core">
+        <property name="Properties">
+            <name-values>
+                <add key="five" value="5" />
+                <add key="one" value="1" />
+                <add key="false" value="false" />
+            </name-values>
+        </property>
+    </object>
 
-	<rabbit:queue id="bar" name="bar" />
+    <rabbit:queue id="foo" name="foo" />
 
-	<rabbit:listener-container id="container1" connection-factory="connectionFactory" acknowledge="manual" concurrency="${five}" transaction-size="${one}" auto-startup="${false}">
-		<rabbit:listener id="testListener" queue-names="foo, bar" ref="testObject" method="Handle"/>
-	</rabbit:listener-container>
+    <rabbit:queue id="bar" name="bar" />
 
-	<object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit"/>
+    <rabbit:listener-container id="container1" connection-factory="connectionFactory" acknowledge="manual" concurrency="${five}" transaction-size="${one}" auto-startup="${false}">
+        <rabbit:listener id="testListener" queue-names="foo, bar" ref="testObject" method="Handle" />
+    </rabbit:listener-container>
 
-	<object id="testObject" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestObject, Spring.Messaging.Amqp.Rabbit.Tests"/>
+    <object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit" />
+
+    <object id="testObject" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestObject, Spring.Messaging.Amqp.Rabbit.Tests" />
 
 </objects>

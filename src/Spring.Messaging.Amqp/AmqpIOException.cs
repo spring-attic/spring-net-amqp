@@ -28,7 +28,6 @@ namespace Spring.Messaging.Amqp
     public class AmqpIOException : AmqpException
     {
         /// <summary>Initializes a new instance of the <see cref="AmqpIOException"/> class.</summary>
-        /// <param name="message">The message.</param>
         /// <param name="cause">The cause.</param>
         public AmqpIOException(Exception cause) : base(cause) { }
     }

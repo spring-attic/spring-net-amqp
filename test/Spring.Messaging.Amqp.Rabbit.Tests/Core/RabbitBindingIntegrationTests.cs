@@ -1,19 +1,33 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitBindingIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Support.Converter;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
-    using Spring.Messaging.Amqp.Rabbit.Support;
-
     /// <summary>
     /// Rabbit Binding Integration Tests
     /// </summary>
@@ -24,57 +38,48 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// The queue.
         /// </summary>
-        private static Queue queue = new Queue("test.queue");
+        private static readonly Queue queue = new Queue("test.queue");
 
         /// <summary>
         /// The connection factory.
         /// </summary>
-        private IConnectionFactory connectionFactory = new CachingConnectionFactory(BrokerTestUtils.GetPort());
+        private readonly IConnectionFactory connectionFactory = new CachingConnectionFactory(BrokerTestUtils.GetPort());
 
         /// <summary>
         /// The rabbit template.
         /// </summary>
-        private RabbitTemplate template;
+        private readonly RabbitTemplate template;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitBindingIntegrationTests"/> class.
         /// </summary>
-        public RabbitBindingIntegrationTests()
-        {
-            this.template = new RabbitTemplate(this.connectionFactory);
-        }
+        public RabbitBindingIntegrationTests() { this.template = new RabbitTemplate(this.connectionFactory); }
 
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
         #region Test Setup and Teardown
+
         /// <summary>
         /// Sets up.
         /// </summary>
@@ -87,6 +92,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                 Assert.Ignore("Cannot execute test as the broker is not running with empty queues.");
             }
         }
+
         #endregion
 
         /// <summary>
@@ -103,39 +109,39 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange).With("*.end"));
 
-            this.template.Execute<object>(delegate(IModel channel)
-                                         {
-                                             var consumer = this.CreateConsumer(this.template);
-                                             var tag = consumer.ConsumerTag;
-                                             Assert.IsNotNull(tag);
+            this.template.Execute<object>(
+                delegate(IModel channel)
+                {
+                    var consumer = this.CreateConsumer(this.template);
+                    var tag = consumer.ConsumerTag;
+                    Assert.IsNotNull(tag);
 
-                                             this.template.ConvertAndSend("foo", "message");
+                    this.template.ConvertAndSend("foo", "message");
 
-                                             try
-                                             {
-                                                 var result = this.GetResult(consumer);
-                                                 Assert.AreEqual(null, result);
+                    try
+                    {
+                        var result = this.GetResult(consumer);
+                        Assert.AreEqual(null, result);
 
-                                                 this.template.ConvertAndSend("foo.end", "message");
-                                                 result = this.GetResult(consumer);
-                                                 Assert.AreEqual("message", result);
+                        this.template.ConvertAndSend("foo.end", "message");
+                        result = this.GetResult(consumer);
+                        Assert.AreEqual("message", result);
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            channel.BasicCancel(tag);
+                        }
+                        catch (Exception e)
+                        {
+                            // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
+                            Console.WriteLine(e.Message);
+                        }
+                    }
 
-                                             }
-                                             finally
-                                             {
-                                                 try
-                                                 {
-                                                     channel.BasicCancel(tag);
-                                                 }
-                                                 catch (Exception e)
-                                                 {
-                                                     // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                                                     Console.WriteLine(e.Message);
-                                                 }
-                                             }
-
-                                             return null;
-                                         });
+                    return null;
+                });
         }
 
         /// <summary>
@@ -151,40 +157,39 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange).With("*.end"));
 
-            this.template.Execute<object>(delegate(IModel channel)
-            {
-                var consumer = this.CreateConsumer(this.template);
-                var tag = consumer.ConsumerTag;
-                Assert.IsNotNull(tag);
-
-                this.template.ConvertAndSend("topic", "foo", "message");
-
-                try
+            this.template.Execute<object>(
+                delegate(IModel channel)
                 {
+                    var consumer = this.CreateConsumer(this.template);
+                    var tag = consumer.ConsumerTag;
+                    Assert.IsNotNull(tag);
 
-                    var result = this.GetResult(consumer);
-                    Assert.AreEqual(null, result);
+                    this.template.ConvertAndSend("topic", "foo", "message");
 
-                    this.template.ConvertAndSend("topic", "foo.end", "message");
-                    result = this.GetResult(consumer);
-                    Assert.AreEqual("message", result);
-
-                }
-                finally
-                {
                     try
                     {
-                        channel.BasicCancel(tag);
-                    }
-                    catch (Exception e)
-                    {
-                        // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                        Console.WriteLine(e.Message);
-                    }
-                }
+                        var result = this.GetResult(consumer);
+                        Assert.AreEqual(null, result);
 
-                return null;
-            });
+                        this.template.ConvertAndSend("topic", "foo.end", "message");
+                        result = this.GetResult(consumer);
+                        Assert.AreEqual("message", result);
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            channel.BasicCancel(tag);
+                        }
+                        catch (Exception e)
+                        {
+                            // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
+                            Console.WriteLine(e.Message);
+                        }
+                    }
+
+                    return null;
+                });
         }
 
         /// <summary>
@@ -204,14 +209,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             var template = new RabbitTemplate(new CachingConnectionFactory());
             template.Exchange = exchange.Name;
 
-            var consumer = this.template.Execute<BlockingQueueConsumer>(delegate(IModel channel)
-            {
-                var consumerinside = this.CreateConsumer(template);
-                var tag = consumerinside.ConsumerTag;
-                Assert.IsNotNull(tag);
+            var consumer = this.template.Execute(
+                delegate
+                {
+                    var consumerinside = this.CreateConsumer(template);
+                    var tag = consumerinside.ConsumerTag;
+                    Assert.IsNotNull(tag);
 
-                return consumerinside;
-            });
+                    return consumerinside;
+                });
 
             template.ConvertAndSend("foo", "message");
             var result = this.GetResult(consumer);
@@ -247,62 +253,64 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange).With("*.end"));
 
-            this.template.Execute<object>(delegate(IModel channel)
-                                         {
-                                             var consumer = this.CreateConsumer(this.template);
-                                             var tag = consumer.ConsumerTag;
-                                             Assert.IsNotNull(tag);
+            this.template.Execute<object>(
+                delegate(IModel channel)
+                {
+                    var consumer = this.CreateConsumer(this.template);
+                    var tag = consumer.ConsumerTag;
+                    Assert.IsNotNull(tag);
 
-                                             try
-                                             {
-                                                 this.template.ConvertAndSend("foo", "message");
-                                                 var result = this.GetResult(consumer);
-                                                 Assert.AreEqual(null, result);
-                                             }
-                                             finally
-                                             {
-                                                 try
-                                                 {
-                                                     channel.BasicCancel(tag);
-                                                 }
-                                                 catch (Exception e)
-                                                 {
-                                                     // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                                                     Console.WriteLine(e.Message);
-                                                 }
-                                             }
+                    try
+                    {
+                        this.template.ConvertAndSend("foo", "message");
+                        var result = this.GetResult(consumer);
+                        Assert.AreEqual(null, result);
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            channel.BasicCancel(tag);
+                        }
+                        catch (Exception e)
+                        {
+                            // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
+                            Console.WriteLine(e.Message);
+                        }
+                    }
 
-                                             return null;
-                                         });
+                    return null;
+                });
 
-            this.template.Execute<object>(delegate(IModel channel)
-                                         {
-                                             var consumer = this.CreateConsumer(this.template);
-                                             var tag = consumer.ConsumerTag;
-                                             Assert.IsNotNull(tag);
+            this.template.Execute<object>(
+                delegate(IModel channel)
+                {
+                    var consumer = this.CreateConsumer(this.template);
+                    var tag = consumer.ConsumerTag;
+                    Assert.IsNotNull(tag);
 
-                                             try
-                                             {
-                                                 // TODO: Bug here somewhere...
-                                                 this.template.ConvertAndSend("foo.end", "message");
-                                                 var result = this.GetResult(consumer);
-                                                 Assert.AreEqual("message", result);
-                                             }
-                                             finally
-                                             {
-                                                 try
-                                                 {
-                                                     channel.BasicCancel(tag);
-                                                 }
-                                                 catch (Exception e)
-                                                 {
-                                                     // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                                                     Console.WriteLine(e.Message);
-                                                 }
-                                             }
+                    try
+                    {
+                        // TODO: Bug here somewhere...
+                        this.template.ConvertAndSend("foo.end", "message");
+                        var result = this.GetResult(consumer);
+                        Assert.AreEqual("message", result);
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            channel.BasicCancel(tag);
+                        }
+                        catch (Exception e)
+                        {
+                            // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
+                            Console.WriteLine(e.Message);
+                        }
+                    }
 
-                                             return null;
-                                         });
+                    return null;
+                });
         }
 
         /// <summary>
@@ -319,38 +327,37 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange));
 
-            this.template.Execute<object>(delegate(IModel channel)
-                                         {
-                                             var consumer = this.CreateConsumer(this.template);
-                                             var tag = consumer.ConsumerTag;
-                                             Assert.IsNotNull(tag);
+            this.template.Execute<object>(
+                delegate(IModel channel)
+                {
+                    var consumer = this.CreateConsumer(this.template);
+                    var tag = consumer.ConsumerTag;
+                    Assert.IsNotNull(tag);
 
-                                             try
-                                             {
-                                                 this.template.ConvertAndSend("message");
-                                                 var result = this.GetResult(consumer);
-                                                 Assert.AreEqual("message", result);
-                                             }
-                                             finally
-                                             {
-                                                 try
-                                                 {
-                                                     channel.BasicCancel(tag);
-                                                 }
-                                                 catch (Exception e)
-                                                 {
-                                                     // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                                                     Console.WriteLine(e.Message);
-                                                 }
-                                             }
+                    try
+                    {
+                        this.template.ConvertAndSend("message");
+                        var result = this.GetResult(consumer);
+                        Assert.AreEqual("message", result);
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            channel.BasicCancel(tag);
+                        }
+                        catch (Exception e)
+                        {
+                            // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
+                            Console.WriteLine(e.Message);
+                        }
+                    }
 
-                                             return null;
-                                         });
+                    return null;
+                });
         }
 
-        /// <summary>
-        /// Creates the consumer.
-        /// </summary>
+        /// <summary>Creates the consumer.</summary>
         /// <param name="accessor">The accessor.</param>
         /// <returns>The consumer.</returns>
         /// <remarks></remarks>
@@ -361,9 +368,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             return consumer;
         }
 
-        /// <summary>
-        /// Gets the result.
-        /// </summary>
+        /// <summary>Gets the result.</summary>
         /// <param name="consumer">The consumer.</param>
         /// <returns>The result.</returns>
         /// <remarks></remarks>

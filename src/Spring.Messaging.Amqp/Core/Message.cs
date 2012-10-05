@@ -15,7 +15,6 @@
 
 #region Using Directives
 using System;
-using System.Text;
 using Common.Logging;
 #endregion
 
@@ -79,15 +78,16 @@ namespace Spring.Messaging.Amqp.Core
             }
             else
             {
-                return string.Format("(Body: {0}; ID: {1}; Content:{2}; Headers:{3}; Exchange:{4}; RoutingKey:{5}; Reply:{6}; DeliveryMode:{7}; DeliveryTag:{8})",
-                    this.GetBodyContentAsString(),
-                    this.messageProperties.MessageId,
-                    this.messageProperties.ContentType,
-                    this.messageProperties.Headers,
-                    this.messageProperties.ReceivedExchange,
-                    this.messageProperties.ReceivedRoutingKey,
-                    this.messageProperties.ReplyTo,
-                    this.messageProperties.DeliveryMode,
+                return string.Format(
+                    "(Body: {0}; ID: {1}; Content:{2}; Headers:{3}; Exchange:{4}; RoutingKey:{5}; Reply:{6}; DeliveryMode:{7}; DeliveryTag:{8})", 
+                    this.GetBodyContentAsString(), 
+                    this.messageProperties.MessageId, 
+                    this.messageProperties.ContentType, 
+                    this.messageProperties.Headers, 
+                    this.messageProperties.ReceivedExchange, 
+                    this.messageProperties.ReceivedRoutingKey, 
+                    this.messageProperties.ReplyTo, 
+                    this.messageProperties.DeliveryMode, 
                     this.messageProperties.DeliveryTag);
             }
         }

@@ -1,7 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageListenerContainerLifecycleIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Threading;
 using Common.Logging;
 using NUnit.Framework;
@@ -11,10 +24,12 @@ using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
-using Spring.Threading.AtomicTypes;
+using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
+    /// <summary>The message listener container lifecycle integration tests.</summary>
     [TestFixture]
     [Category(TestCategory.LifecycleIntegration)]
     public class MessageListenerContainerLifecycleIntegrationTests : AbstractRabbitIntegrationTest
@@ -22,57 +37,58 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerLifecycleIntegrationTests));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerLifecycleIntegrationTests));
 
         /// <summary>
         /// The queue.
         /// </summary>
-        private static Queue queue = new Queue("test.queue");
-
+        private static readonly Queue queue = new Queue("test.queue");
 
         private enum Concurrency
         {
-            LOW = 1,
+            /// <summary>The low.</summary>
+            LOW = 1, 
+
+            /// <summary>The high.</summary>
             HIGH = 5
         }
 
         private enum MessageCount
         {
-            LOW = 1,
-            MEDIUM = 20,
+            /// <summary>The low.</summary>
+            LOW = 1, 
+
+            /// <summary>The medium.</summary>
+            MEDIUM = 20, 
+
+            /// <summary>The high.</summary>
             HIGH = 500
         }
 
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
+        /// <summary>The set up.</summary>
         [SetUp]
         public void SetUp()
         {
@@ -83,6 +99,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         private RabbitTemplate CreateTemplate(int concurrentConsumers)
         {
             var template = new RabbitTemplate();
+
             // SingleConnectionFactory connectionFactory = new SingleConnectionFactory();
             var connectionFactory = new CachingConnectionFactory();
             connectionFactory.ChannelCacheSize = concurrentConsumers;
@@ -96,64 +113,44 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// </summary>
         /// <remarks></remarks>
         [Test]
-        public void TestTransactionalLowLevel()
-        {
-            this.DoTest(MessageCount.MEDIUM, Concurrency.LOW, TransactionModeUtils.TransactionMode.ON);
-        }
+        public void TestTransactionalLowLevel() { this.DoTest(MessageCount.MEDIUM, Concurrency.LOW, TransactionModeUtils.TransactionMode.ON); }
 
         /// <summary>
         /// Tests the transactional high level.
         /// </summary>
         /// <remarks></remarks>
         [Test]
-        public void TestTransactionalHighLevel()
-        {
-            this.DoTest(MessageCount.HIGH, Concurrency.HIGH, TransactionModeUtils.TransactionMode.ON);
-        }
+        public void TestTransactionalHighLevel() { this.DoTest(MessageCount.HIGH, Concurrency.HIGH, TransactionModeUtils.TransactionMode.ON); }
 
         /// <summary>
         /// Tests the transactional low level with prefetch.
         /// </summary>
         /// <remarks></remarks>
         [Test]
-        public void TestTransactionalLowLevelWithPrefetch()
-        {
-            this.DoTest(MessageCount.MEDIUM, Concurrency.LOW, TransactionModeUtils.TransactionMode.PREFETCH);
-        }
+        public void TestTransactionalLowLevelWithPrefetch() { this.DoTest(MessageCount.MEDIUM, Concurrency.LOW, TransactionModeUtils.TransactionMode.PREFETCH); }
 
         /// <summary>
         /// Tests the transactional high level with prefetch.
         /// </summary>
         /// <remarks></remarks>
         [Test]
-        public void TestTransactionalHighLevelWithPrefetch()
-        {
-            this.DoTest(MessageCount.HIGH, Concurrency.HIGH, TransactionModeUtils.TransactionMode.PREFETCH);
-        }
+        public void TestTransactionalHighLevelWithPrefetch() { this.DoTest(MessageCount.HIGH, Concurrency.HIGH, TransactionModeUtils.TransactionMode.PREFETCH); }
 
         /// <summary>
         /// Tests the non transactional low level.
         /// </summary>
         /// <remarks></remarks>
         [Test]
-        public void TestNonTransactionalLowLevel()
-        {
-            this.DoTest(MessageCount.MEDIUM, Concurrency.LOW, TransactionModeUtils.TransactionMode.OFF);
-        }
+        public void TestNonTransactionalLowLevel() { this.DoTest(MessageCount.MEDIUM, Concurrency.LOW, TransactionModeUtils.TransactionMode.OFF); }
 
         /// <summary>
         /// Tests the non transactional high level.
         /// </summary>
         /// <remarks></remarks>
         [Test]
-        public void TestNonTransactionalHighLevel()
-        {
-            this.DoTest(MessageCount.HIGH, Concurrency.HIGH, TransactionModeUtils.TransactionMode.OFF);
-        }
+        public void TestNonTransactionalHighLevel() { this.DoTest(MessageCount.HIGH, Concurrency.HIGH, TransactionModeUtils.TransactionMode.OFF); }
 
-        /// <summary>
-        /// Does the test.
-        /// </summary>
+        /// <summary>Does the test.</summary>
         /// <param name="level">The level.</param>
         /// <param name="concurrency">The concurrency.</param>
         /// <param name="transactionMode">The transaction mode.</param>
@@ -185,7 +182,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 container.TxSize = transactionMode.TxSize();
             }
 
-            container.QueueNames = new string[] { queue.Name };
+            container.QueueNames = new[] { queue.Name };
             container.AfterPropertiesSet();
             container.Start();
 
@@ -263,34 +260,22 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     internal class LifecyclePocoListener
     {
-        private static ILog logger = LogManager.GetLogger(typeof(LifecyclePocoListener));
-        private AtomicInteger count = new AtomicInteger();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(LifecyclePocoListener));
+        private readonly AtomicInteger count = new AtomicInteger();
 
         private CountdownEvent latch;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LifecyclePocoListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="LifecyclePocoListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public LifecyclePocoListener(CountdownEvent latch)
-        {
-            this.latch = latch;
-        }
+        public LifecyclePocoListener(CountdownEvent latch) { this.latch = latch; }
 
-        /// <summary>
-        /// Resets the specified latch.
-        /// </summary>
+        /// <summary>Resets the specified latch.</summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public void Reset(CountdownEvent latch)
-        {
-            this.latch = latch;
-        }
+        public void Reset(CountdownEvent latch) { this.latch = latch; }
 
-        /// <summary>
-        /// Handles the message.
-        /// </summary>
+        /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
         /// <remarks></remarks>
         public void HandleMessage(string value)
@@ -302,7 +287,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
             finally
             {
-                if (this.latch.CurrentCount > 0) this.latch.Signal();
+                if (this.latch.CurrentCount > 0)
+                {
+                    this.latch.Signal();
+                }
             }
         }
 
@@ -310,10 +298,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Gets the count.
         /// </summary>
         /// <remarks></remarks>
-        public int Count
-        {
-            get { return this.count.Value; }
-        }
+        public int Count { get { return this.count.Value; } }
     }
 
     /// <summary>
@@ -331,12 +316,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             /// <summary>
             /// On
             /// </summary>
-            ON,
+            ON, 
 
             /// <summary>
             /// Off
             /// </summary>
-            OFF,
+            OFF, 
 
             /// <summary>
             /// Prefetch
@@ -344,48 +329,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             PREFETCH
         }
 
-        /// <summary>
-        /// Determines whether the specified mode is transactional.
-        /// </summary>
+        /// <summary>Determines whether the specified mode is transactional.</summary>
         /// <param name="mode">The mode.</param>
         /// <returns><c>true</c> if the specified mode is transactional; otherwise, <c>false</c>.</returns>
         /// <remarks></remarks>
-        public static bool IsTransactional(this TransactionMode mode)
-        {
-            return mode != TransactionMode.OFF;
-        }
+        public static bool IsTransactional(this TransactionMode mode) { return mode != TransactionMode.OFF; }
 
-        /// <summary>
-        /// Acknowledges the mode.
-        /// </summary>
+        /// <summary>Acknowledges the mode.</summary>
         /// <param name="mode">The mode.</param>
         /// <returns>The acknowledge mode.</returns>
         /// <remarks></remarks>
-        public static AcknowledgeModeUtils.AcknowledgeMode AcknowledgeMode(this TransactionMode mode)
-        {
-            return mode == TransactionMode.OFF ? AcknowledgeModeUtils.AcknowledgeMode.None : AcknowledgeModeUtils.AcknowledgeMode.Auto;
-        }
+        public static AcknowledgeModeUtils.AcknowledgeMode AcknowledgeMode(this TransactionMode mode) { return mode == TransactionMode.OFF ? AcknowledgeModeUtils.AcknowledgeMode.None : AcknowledgeModeUtils.AcknowledgeMode.Auto; }
 
-        /// <summary>
-        /// Prefetches the specified mode.
-        /// </summary>
+        /// <summary>Prefetches the specified mode.</summary>
         /// <param name="mode">The mode.</param>
         /// <returns>The prefetch size.</returns>
         /// <remarks></remarks>
-        public static int Prefetch(this TransactionMode mode)
-        {
-            return mode == TransactionMode.PREFETCH ? 10 : -1;
-        }
+        public static int Prefetch(this TransactionMode mode) { return mode == TransactionMode.PREFETCH ? 10 : -1; }
 
-        /// <summary>
-        /// Txes the size.
-        /// </summary>
+        /// <summary>Txes the size.</summary>
         /// <param name="mode">The mode.</param>
         /// <returns>The transaction size.</returns>
         /// <remarks></remarks>
-        public static int TxSize(this TransactionMode mode)
-        {
-            return mode == TransactionMode.PREFETCH ? 5 : -1;
-        }
+        public static int TxSize(this TransactionMode mode) { return mode == TransactionMode.PREFETCH ? 5 : -1; }
     }
 }

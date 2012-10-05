@@ -1,9 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageListenerContainerErrorHandlerIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Text;
 using System.Threading;
-using AutoMoq;
 using Common.Logging;
 using Moq;
 using NUnit.Framework;
@@ -15,6 +28,7 @@ using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
@@ -27,46 +41,39 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     {
         private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerErrorHandlerIntegrationTests));
 
-        private static Queue queue = new Queue("test.queue");
+        private static readonly Queue queue = new Queue("test.queue");
 
         // Mock error handler
         private Mock<IErrorHandler> errorHandler;
 
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
-        //@Rule
-        //public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.INFO, RabbitTemplate.class,
-        //		SimpleMessageListenerContainer.class, BlockingQueueConsumer.class,
-        //		MessageListenerContainerErrorHandlerIntegrationTests.class);
-        
+        // @Rule
+        // public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.INFO, RabbitTemplate.class,
+        // 		SimpleMessageListenerContainer.class, BlockingQueueConsumer.class,
+        // 		MessageListenerContainerErrorHandlerIntegrationTests.class);
+
         /// <summary>
         /// Sets up.
         /// </summary>
@@ -171,9 +178,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.errorHandler.Verify(h => h.HandleError(It.IsAny<Exception>()), Times.Exactly(messageCount));
         }
 
-        /// <summary>
-        /// Does the test.
-        /// </summary>
+        /// <summary>Does the test.</summary>
         /// <param name="messageCount">The message count.</param>
         /// <param name="errorHandler">The error handler.</param>
         /// <param name="latch">The latch.</param>
@@ -198,7 +203,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             container.PrefetchCount = messageCount;
             container.TxSize = messageCount;
-            container.QueueNames = new string[] { queue.Name };
+            container.QueueNames = new[] { queue.Name };
             container.ErrorHandler = errorHandler;
             container.AfterPropertiesSet();
             container.Start();
@@ -219,9 +224,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
         }
 
-        /// <summary>
-        /// Creates the template.
-        /// </summary>
+        /// <summary>Creates the template.</summary>
         /// <param name="concurrentConsumers">The concurrent consumers.</param>
         /// <returns>The template.</returns>
         /// <remarks></remarks>
@@ -245,12 +248,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     public class PocoThrowingExceptionListener
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(PocoThrowingExceptionListener));
-        private CountdownEvent latch;
-        private Exception exception;
+        private readonly CountdownEvent latch;
+        private readonly Exception exception;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PocoThrowingExceptionListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="PocoThrowingExceptionListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="exception">The exception.</param>
         /// <remarks></remarks>
@@ -260,9 +261,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.exception = exception;
         }
 
-        /// <summary>
-        /// Handles the message.
-        /// </summary>
+        /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
         /// <remarks></remarks>
         public void HandleMessage(string value)
@@ -288,12 +287,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     public class ThrowingExceptionListener : IMessageListener
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ThrowingExceptionListener));
-        private CountdownEvent latch;
-        private Exception exception;
+        private readonly CountdownEvent latch;
+        private readonly Exception exception;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ThrowingExceptionListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ThrowingExceptionListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="exception">The exception.</param>
         /// <remarks></remarks>
@@ -303,9 +300,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.exception = exception;
         }
 
-        /// <summary>
-        /// Called when a Message is received.
-        /// </summary>
+        /// <summary>Called when a Message is received.</summary>
         /// <param name="message">The message.</param>
         /// <remarks></remarks>
         public void OnMessage(Message message)
@@ -340,12 +335,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     public class ThrowingExceptionChannelAwareListener : IChannelAwareMessageListener
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ThrowingExceptionChannelAwareListener));
-        private CountdownEvent latch;
-        private Exception exception;
+        private readonly CountdownEvent latch;
+        private readonly Exception exception;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ThrowingExceptionChannelAwareListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ThrowingExceptionChannelAwareListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="exception">The exception.</param>
         /// <remarks></remarks>
@@ -355,9 +348,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.exception = exception;
         }
 
-        /// <summary>
-        /// Called when [message].
-        /// </summary>
+        /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
         /// <remarks></remarks>

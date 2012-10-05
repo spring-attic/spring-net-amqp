@@ -1,17 +1,29 @@
-﻿
-using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AbstractConnectionFactoryTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using AutoMoq;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
-
 using Spring.Messaging.Amqp.Rabbit.Connection;
-using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Rabbit.Tests.Support;
-using Spring.Threading.AtomicTypes;
+using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
+using IConnection = RabbitMQ.Client.IConnection;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
 {
@@ -20,9 +32,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
     /// </summary>
     public abstract class AbstractConnectionFactoryTests
     {
-        /// <summary>
-        /// Creates the connection factory.
-        /// </summary>
+        /// <summary>Creates the connection factory.</summary>
         /// <param name="mockConnectionFactory">The mock connection factory.</param>
         /// <returns>The connection factory.</returns>
         protected abstract AbstractConnectionFactory CreateConnectionFactory(ConnectionFactory mockConnectionFactory);
@@ -35,8 +45,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         {
             var mocker = new AutoMoqer();
 
-            var mockConnectionFactory = mocker.GetMock<RabbitMQ.Client.ConnectionFactory>();
-            var mockConnection = mocker.GetMock<RabbitMQ.Client.IConnection>();
+            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
+            var mockConnection = mocker.GetMock<IConnection>();
 
             mockConnectionFactory.Setup(factory => factory.CreateConnection()).Returns(mockConnection.Object);
 
@@ -44,8 +54,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             var connectionFactory = this.CreateConnectionFactory(mockConnectionFactory.Object);
             var connectionListeners = new List<IConnectionListener>();
             var mockConnectionListener = mocker.GetMock<IConnectionListener>();
-            mockConnectionListener.Setup(listener => listener.OnCreate(It.IsAny<Spring.Messaging.Amqp.Rabbit.Connection.IConnection>())).Callback(() => called.IncrementValueAndReturn());
-            mockConnectionListener.Setup(listener => listener.OnClose(It.IsAny<Spring.Messaging.Amqp.Rabbit.Connection.IConnection>())).Callback(() => called.DecrementValueAndReturn());
+            mockConnectionListener.Setup(listener => listener.OnCreate(It.IsAny<Rabbit.Connection.IConnection>())).Callback(() => called.IncrementValueAndReturn());
+            mockConnectionListener.Setup(listener => listener.OnClose(It.IsAny<Rabbit.Connection.IConnection>())).Callback(() => called.DecrementValueAndReturn());
             connectionListeners.Add(mockConnectionListener.Object);
             connectionFactory.ConnectionListeners = connectionListeners;
 
@@ -69,12 +79,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// Tests the with listener registered after open.
         /// </summary>
         [Test]
-        public void TestWithListenerRegisteredAfterOpen() 
+        public void TestWithListenerRegisteredAfterOpen()
         {
             var mocker = new AutoMoqer();
 
-            var mockConnectionFactory = mocker.GetMock<RabbitMQ.Client.ConnectionFactory>();
-            var mockConnection = mocker.GetMock<RabbitMQ.Client.IConnection>();
+            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
+            var mockConnection = mocker.GetMock<IConnection>();
 
             mockConnectionFactory.Setup(factory => factory.CreateConnection()).Returns(mockConnection.Object);
 
@@ -82,11 +92,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             var connectionFactory = this.CreateConnectionFactory(mockConnectionFactory.Object);
             var con = connectionFactory.CreateConnection();
             Assert.AreEqual(0, called.Value);
-            
+
             var connectionListeners = new List<IConnectionListener>();
             var mockConnectionListener = mocker.GetMock<IConnectionListener>();
-            mockConnectionListener.Setup(listener => listener.OnCreate(It.IsAny<Spring.Messaging.Amqp.Rabbit.Connection.IConnection>())).Callback(() => called.IncrementValueAndReturn());
-            mockConnectionListener.Setup(listener => listener.OnClose(It.IsAny<Spring.Messaging.Amqp.Rabbit.Connection.IConnection>())).Callback(() => called.DecrementValueAndReturn());
+            mockConnectionListener.Setup(listener => listener.OnCreate(It.IsAny<Rabbit.Connection.IConnection>())).Callback(() => called.IncrementValueAndReturn());
+            mockConnectionListener.Setup(listener => listener.OnClose(It.IsAny<Rabbit.Connection.IConnection>())).Callback(() => called.DecrementValueAndReturn());
             connectionListeners.Add(mockConnectionListener.Object);
             connectionFactory.ConnectionListeners = connectionListeners;
 
@@ -114,9 +124,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         {
             var mocker = new AutoMoqer();
 
-            var mockConnectionFactory = mocker.GetMock<RabbitMQ.Client.ConnectionFactory>();
-            var mockConnection1 = mocker.GetMock<RabbitMQ.Client.IConnection>();
-            var mockConnection2 = mocker.GetMock<RabbitMQ.Client.IConnection>();
+            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
+            var mockConnection1 = mocker.GetMock<IConnection>();
+            var mockConnection2 = mocker.GetMock<IConnection>();
 
             mockConnectionFactory.Setup(factory => factory.CreateConnection()).ReturnsInOrder(mockConnection1.Object, mockConnection2.Object);
 
@@ -144,7 +154,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         {
             var mocker = new AutoMoqer();
 
-            var mockConnectionFactory = mocker.GetMock<RabbitMQ.Client.ConnectionFactory>();
+            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
 
             var connectionFactory = this.CreateConnectionFactory(mockConnectionFactory.Object);
             connectionFactory.Dispose();

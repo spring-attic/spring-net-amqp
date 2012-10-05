@@ -1,23 +1,19 @@
-#region License
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitControlErlangConverter.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
+#region Using Directives
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,6 +22,7 @@ using Erlang.NET;
 using Spring.Erlang.Core;
 using Spring.Erlang.Support.Converter;
 using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
@@ -50,9 +47,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// </summary>
         private readonly IDictionary<string, string> moduleAdapter;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RabbitControlErlangConverter"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="RabbitControlErlangConverter"/> class.</summary>
         /// <param name="moduleAdapter">The module adapter.</param>
         /// <remarks></remarks>
         public RabbitControlErlangConverter(IDictionary<string, string> moduleAdapter)
@@ -61,9 +56,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             this.InitializeConverterMap();
         }
 
-        /// <summary>
-        /// The return value from executing the Erlang RPC.
-        /// </summary>
+        /// <summary>The return value from executing the Erlang RPC.</summary>
         /// <param name="module">The module to call</param>
         /// <param name="function">The function to invoke</param>
         /// <param name="erlangObject">The erlang object that is passed in as a parameter</param>
@@ -76,16 +69,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             if (converter != null)
             {
                 return converter.FromErlang(erlangObject);
-            } 
+            }
             else
             {
                 return base.FromErlangRpc(module, function, erlangObject);
             }
         }
 
-        /// <summary>
-        /// Gets the converter.
-        /// </summary>
+        /// <summary>Gets the converter.</summary>
         /// <param name="module">The module.</param>
         /// <param name="function">The function.</param>
         /// <returns>The converter.</returns>
@@ -113,9 +104,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             this.RegisterConverter("rabbit_amqqueue", "info_all", new QueueInfoAllConverter());
         }
 
-        /// <summary>
-        /// Registers the converter.
-        /// </summary>
+        /// <summary>Registers the converter.</summary>
         /// <param name="module">The module.</param>
         /// <param name="function">The function.</param>
         /// <param name="listUsersConverter">The list users converter.</param>
@@ -135,17 +124,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             this.converterMap.Add(this.GenerateKey(module, function), listUsersConverter);
         }
 
-        /// <summary>
-        /// Generates the key.
-        /// </summary>
+        /// <summary>Generates the key.</summary>
         /// <param name="module">The module.</param>
         /// <param name="function">The function.</param>
         /// <returns>The key.</returns>
         /// <remarks></remarks>
-        protected string GenerateKey(string module, string function)
-        {
-            return module + "%" + function;
-        }
+        protected string GenerateKey(string module, string function) { return module + "%" + function; }
     }
 
     /// <summary>
@@ -154,9 +138,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <remarks></remarks>
     public class ListUsersConverter : SimpleErlangConverter
     {
-        /// <summary>
-        /// Convert from an Erlang data type to a .NET data type.
-        /// </summary>
+        /// <summary>Convert from an Erlang data type to a .NET data type.</summary>
         /// <param name="erlangObject">The erlang object.</param>
         /// <returns>The converted .NET object</returns>
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
@@ -183,9 +165,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return users;
         }
 
-        /// <summary>
-        /// Extracts the string.
-        /// </summary>
+        /// <summary>Extracts the string.</summary>
         /// <param name="obj">The obj.</param>
         /// <returns>The string.</returns>
         /// <remarks></remarks>
@@ -212,9 +192,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <remarks></remarks>
     public class RabbitStatusConverter : SimpleErlangConverter
     {
-        /// <summary>
-        /// Convert from an Erlang data type to a .NET data type.
-        /// </summary>
+        /// <summary>Convert from an Erlang data type to a .NET data type.</summary>
         /// <param name="erlangObject">The erlang object.</param>
         /// <returns>The converted .NET object</returns>
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
@@ -236,9 +214,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return new RabbitStatus(applications, nodes, runningNodes);
         }
 
-        /// <summary>
-        /// Extracts the applications.
-        /// </summary>
+        /// <summary>Extracts the applications.</summary>
         /// <param name="applications">The applications.</param>
         /// <param name="appList">The app list.</param>
         private void ExtractApplications(IList<Application> applications, OtpErlangList appList)
@@ -260,9 +236,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <remarks></remarks>
     public class RabbitMnesiaStatusConverter : SimpleErlangConverter
     {
-        /// <summary>
-        /// Convert from an Erlang data type to a .NET data type.
-        /// </summary>
+        /// <summary>Convert from an Erlang data type to a .NET data type.</summary>
         /// <param name="erlangObject">The erlang object.</param>
         /// <returns>The converted .NET object</returns>
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
@@ -280,7 +254,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 var nodesList = (OtpErlangList)nodesTuple.elementAt(1);
                 this.ExtractNodes(nodes, nodesList);
 
-
                 var runningNodesTuple = (OtpErlangTuple)erlangList.elementAt(1);
                 nodesList = (OtpErlangList)runningNodesTuple.elementAt(1);
                 this.ExtractNodes(runningNodes, nodesList);
@@ -289,9 +262,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return new RabbitStatus(applications, nodes, runningNodes);
         }
 
-        /// <summary>
-        /// Extracts the nodes.
-        /// </summary>
+        /// <summary>Extracts the nodes.</summary>
         /// <param name="nodes">The nodes.</param>
         /// <param name="nodesList">The nodes list.</param>
         /// <remarks></remarks>
@@ -314,67 +285,67 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Transactions value
         /// </summary>
-        transactions,
+        transactions, 
 
         /// <summary>
         /// Acks Uncommitted value
         /// </summary>
-        acks_uncommitted,
+        acks_uncommitted, 
 
         /// <summary>
         /// Consumers value
         /// </summary>
-        consumers,
+        consumers, 
 
         /// <summary>
         /// Pid value
         /// </summary>
-        pid,
+        pid, 
 
         /// <summary>
         /// Durable value
         /// </summary>
-        durable,
+        durable, 
 
         /// <summary>
         /// Messages value
         /// </summary>
-        messages,
+        messages, 
 
         /// <summary>
         /// Memory value
         /// </summary>
-        memory,
+        memory, 
 
         /// <summary>
         /// Auto delete value
         /// </summary>
-        auto_delete,
+        auto_delete, 
 
         /// <summary>
         /// Messages ready value
         /// </summary>
-        messages_ready,
+        messages_ready, 
 
         /// <summary>
         /// Arguments value
         /// </summary>
-        arguments,
+        arguments, 
 
         /// <summary>
         /// Name value
         /// </summary>
-        name,
+        name, 
 
         /// <summary>
         /// Messages unacknowledged value
         /// </summary>
-        messages_unacknowledged,
+        messages_unacknowledged, 
 
         /// <summary>
         /// Messages uncommitted value
         /// </summary>
-        messages_uncommitted,
+        messages_uncommitted, 
 
         /// <summary>
         /// No value
@@ -388,9 +359,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <remarks></remarks>
     public class QueueInfoAllConverter : SimpleErlangConverter
     {
-        /// <summary>
-        /// Toes the queue info field.
-        /// </summary>
+        /// <summary>Toes the queue info field.</summary>
         /// <param name="str">The string.</param>
         /// <returns>The queue info field value.</returns>
         /// <remarks></remarks>
@@ -406,6 +375,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
         }
 
+        /// <summary>The from erlang.</summary>
+        /// <param name="erlangObject">The erlang object.</param>
+        /// <returns>The System.Object.</returns>
         public override object FromErlang(OtpErlangObject erlangObject)
         {
             var queueInfoList = new List<QueueInfo>();
@@ -441,7 +413,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                                     queueInfo.Pid = ExtractPid(value);
                                     break;
                                 case QueueInfoField.durable:
-                                    queueInfo.Durable = this.ExtractAtomBoolean(value);                                    
+                                    queueInfo.Durable = this.ExtractAtomBoolean(value);
                                     break;
                                 case QueueInfoField.messages:
                                     queueInfo.Messages = ExtractLong(value);
@@ -477,8 +449,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                                     queueInfo.MessageUncommitted = ExtractLong(value);
                                     break;
                                 default:
-                                    break;    
-                                
+                                    break;
                             }
                         }
                     }
@@ -490,20 +461,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return queueInfoList;
         }
 
-        /// <summary>
-        /// Extracts the atom boolean.
-        /// </summary>
+        /// <summary>Extracts the atom boolean.</summary>
         /// <param name="value">The value.</param>
         /// <returns>The atom boolean.</returns>
         /// <remarks></remarks>
-        private bool ExtractAtomBoolean(OtpErlangObject value)
-        {
-            return ((OtpErlangAtom)value).boolValue();
-        }
+        private bool ExtractAtomBoolean(OtpErlangObject value) { return ((OtpErlangAtom)value).boolValue(); }
 
-        /// <summary>
-        /// Extracts the name value from tuple.
-        /// </summary>
+        /// <summary>Extracts the name value from tuple.</summary>
         /// <param name="value">The value.</param>
         /// <returns>The name value.</returns>
         /// <remarks></remarks>
@@ -513,6 +477,4 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return new UTF8Encoding().GetString(((OtpErlangBinary)nameElement).binaryValue());
         }
     }
-
-
 }

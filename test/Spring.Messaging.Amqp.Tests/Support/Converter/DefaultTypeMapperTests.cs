@@ -1,20 +1,35 @@
-﻿using System.Collections;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DefaultTypeMapperTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System.Collections;
 using System.Collections.Generic;
-
-using Moq;
-
 using NUnit.Framework;
-
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Support.Converter;
+#endregion
 
 namespace Spring.Messaging.Amqp.Tests.Support.Converter
 {
-    public class DefaultTypeMapperTests 
+    /// <summary>The default type mapper tests.</summary>
+    public class DefaultTypeMapperTests
     {
-	    private DefaultTypeMapper typeMapper = new DefaultTypeMapper();
-	    private  MessageProperties props = new MessageProperties();
-	
+        private DefaultTypeMapper typeMapper = new DefaultTypeMapper();
+        private MessageProperties props = new MessageProperties();
+
+        /// <summary>The set up.</summary>
         [SetUp]
         public void SetUp()
         {
@@ -22,42 +37,47 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
             this.props = new MessageProperties();
         }
 
+        /// <summary>The should throw an exception when type id not present.</summary>
         [Test]
-	    public void ShouldThrowAnExceptionWhenTypeIdNotPresent()
+        public void ShouldThrowAnExceptionWhenTypeIdNotPresent()
         {
-		    try
+            try
             {
-			    this.typeMapper.ToType(props);
-		    }
-            catch (MessageConversionException e) 
+                this.typeMapper.ToType(this.props);
+            }
+            catch (MessageConversionException e)
             {
-			    var typeIdFieldName = this.typeMapper.TypeIdFieldName;
-			    Assert.That(e.Message, Contains.Substring("Could not resolve " + typeIdFieldName + " in header"));
-		    }
-	    }
-	
-	    [Test]
-	    public void ShouldLookInTheTypeIdFieldNameToFindTheTypeName()
-        {
-		    props.Headers.Add("__TypeId__", "System.String");
-		    //Given(classMapper.TypeIdFieldName).willReturn("type");
-	        
-		    var type = this.typeMapper.ToType(props);
-		
-		    Assert.That(type, Is.EqualTo(typeof(string)));
-	    }
-	
-        [Test]
-        public void ShouldUseTheTypeProvidedByTheLookupMapIfPresent(){
-            props.Headers.Add("__TypeId__", "trade");
+                var typeIdFieldName = this.typeMapper.TypeIdFieldName;
+                Assert.That(e.Message, Contains.Substring("Could not resolve " + typeIdFieldName + " in header"));
+            }
+        }
 
-            this.typeMapper.IdTypeMapping = new Hashtable() { { "trade", typeof(SimpleTrade).ToTypeName() } };
-            
-            var type = this.typeMapper.ToType(props);
-		
+        /// <summary>The should look in the type id field name to find the type name.</summary>
+        [Test]
+        public void ShouldLookInTheTypeIdFieldNameToFindTheTypeName()
+        {
+            this.props.Headers.Add("__TypeId__", "System.String");
+
+            // Given(classMapper.TypeIdFieldName).willReturn("type");
+            var type = this.typeMapper.ToType(this.props);
+
+            Assert.That(type, Is.EqualTo(typeof(string)));
+        }
+
+        /// <summary>The should use the type provided by the lookup map if present.</summary>
+        [Test]
+        public void ShouldUseTheTypeProvidedByTheLookupMapIfPresent()
+        {
+            this.props.Headers.Add("__TypeId__", "trade");
+
+            this.typeMapper.IdTypeMapping = new Dictionary<string, object> { { "trade", typeof(SimpleTrade).ToTypeName() } };
+
+            var type = this.typeMapper.ToType(this.props);
+
             Assert.AreEqual(type, typeof(SimpleTrade));
         }
 
+        /// <summary>The test index of occurenceh works for occurence 1.</summary>
         [Test]
         public void TestIndexOfOccurencehWorksForOccurence1()
         {
@@ -65,6 +85,7 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
             Assert.AreEqual(3, input.IndexOfOccurence("<br />", 0, 1));
         }
 
+        /// <summary>The test index of occurence works for occurenceh 2.</summary>
         [Test]
         public void TestIndexOfOccurenceWorksForOccurenceh2()
         {
@@ -72,60 +93,64 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
             Assert.AreEqual(21, input.IndexOfOccurence("<br />", 0, 2));
         }
 
+        /// <summary>The test index of occurence works for occurence 3.</summary>
         [Test]
         public void TestIndexOfOccurenceWorksForOccurence3()
         {
             const string input = "foo<br />whatthedeuce<br />kthxbai<br />";
             Assert.AreEqual(34, input.IndexOfOccurence("<br />", 0, 3));
         }
-	
-        [Test]
-        public void ShouldReturnDictionaryForFieldWithDictionary(){
-            props.Headers.Add("__TypeId__", "Dictionary");
 
-            var type = this.typeMapper.ToType(props);
-		
+        /// <summary>The should return dictionary for field with dictionary.</summary>
+        [Test]
+        public void ShouldReturnDictionaryForFieldWithDictionary()
+        {
+            this.props.Headers.Add("__TypeId__", "Dictionary");
+
+            var type = this.typeMapper.ToType(this.props);
+
             Assert.That(type, Is.EqualTo(typeof(Dictionary<string, object>)));
         }
 
+        /// <summary>The from type should populate with type name by default.</summary>
         [Test]
         public void FromTypeShouldPopulateWithTypeNameByDefault()
         {
-            this.typeMapper.FromType(typeof(SimpleTrade), props);
+            this.typeMapper.FromType(typeof(SimpleTrade), this.props);
 
-            var typeName = props.Headers[this.typeMapper.TypeIdFieldName];
+            var typeName = this.props.Headers[this.typeMapper.TypeIdFieldName];
             Assert.That(typeName, Is.EqualTo(typeof(SimpleTrade).FullName));
         }
 
+        /// <summary>The should use special name for type if present.</summary>
         [Test]
         public void ShouldUseSpecialNameForTypeIfPresent()
         {
-            typeMapper.IdTypeMapping = new Hashtable () { { "daytrade", typeof(SimpleTrade).ToTypeName() } };
-            typeMapper.AfterPropertiesSet();
-		
-            typeMapper.FromType(typeof(SimpleTrade), props);
-		
-            var typeName = props.Headers[typeMapper.TypeIdFieldName];
+            this.typeMapper.IdTypeMapping = new Dictionary<string, object> { { "daytrade", typeof(SimpleTrade).ToTypeName() } };
+            this.typeMapper.AfterPropertiesSet();
+
+            this.typeMapper.FromType(typeof(SimpleTrade), this.props);
+
+            var typeName = this.props.Headers[this.typeMapper.TypeIdFieldName];
             Assert.That(typeName, Is.EqualTo("daytrade"));
-        }   
-	
+        }
+
+        /// <summary>The should convert any hashtable to use dictionaries.</summary>
         [Test]
         public void ShouldConvertAnyHashtableToUseDictionaries()
         {
-            typeMapper.FromType(typeof(Hashtable), props);
+            this.typeMapper.FromType(typeof(Hashtable), this.props);
 
-            var typeName = props.Headers[typeMapper.TypeIdFieldName];
-		
+            var typeName = this.props.Headers[this.typeMapper.TypeIdFieldName];
+
             Assert.That(typeName, Is.EqualTo("Dictionary"));
         }
 
         // Doesn't make sense for .NET...
-        //    private Map<String, Class<?>> map(String string, Class<?> class1) {
-        //        Map<String, Class<?>> map = new HashMap<String, Class<?>>();
-        //        map.put(string, class1);
-        //        return map;
-        //    }
-
-}
-
+        // private Map<String, Class<?>> map(String string, Class<?> class1) {
+        // Map<String, Class<?>> map = new HashMap<String, Class<?>>();
+        // map.put(string, class1);
+        // return map;
+        // }
+    }
 }

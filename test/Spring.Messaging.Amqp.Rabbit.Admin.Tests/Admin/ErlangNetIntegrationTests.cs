@@ -1,21 +1,33 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ErlangNetIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Net;
 using System.Text;
 using Common.Logging;
 using Erlang.NET;
 using NUnit.Framework;
+using Spring.Erlang.Connection;
+using Spring.Erlang.Core;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
-    using System.IO;
-
-    using Spring.Erlang.Core;
-    using Spring.Messaging.Amqp.Rabbit.Connection;
-
     /// <summary>
     /// Equivalent to JInterfaceIntegrationTests
     /// </summary>
@@ -23,30 +35,32 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     [Category(TestCategory.Integration)]
     public class ErlangNetIntegrationTests
     {
-        private static ILog logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog logger = LogManager.GetCurrentClassLogger();
 
         private static int counter;
 
-        private static readonly String NODE_NAME = "rabbit@" + Dns.GetHostName().ToUpper();
+        private static readonly string NODE_NAME = "rabbit@" + Dns.GetHostName().ToUpper();
 
-        private OtpConnection connection = null;
+        private OtpConnection connection;
 
         private RabbitBrokerAdmin brokerAdmin;
 
         public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
+        /// <summary>The init.</summary>
         [SetUp]
         public void Init()
         {
             environment.Apply();
             this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(NODE_NAME);
-            var status = brokerAdmin.GetStatus();
+            var status = this.brokerAdmin.GetStatus();
             if (!status.IsRunning)
             {
                 this.brokerAdmin.StartBrokerApplication();
             }
         }
 
+        /// <summary>The close.</summary>
         [TearDown]
         public void Close()
         {
@@ -61,6 +75,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
         }
 
+        /// <summary>The test raw api.</summary>
         [Test]
         public void TestRawApi()
         {
@@ -68,14 +83,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
             var hostName = NODE_NAME;
             var peer = new OtpPeer(hostName);
-            connection = self.connect(peer);
+            this.connection = self.connect(peer);
 
-            var encoding = new System.Text.UTF8Encoding();
+            var encoding = new UTF8Encoding();
             OtpErlangObject[] objectArray = { new OtpErlangBinary(encoding.GetBytes("/")) };
 
-            connection.sendRPC("rabbit_amqqueue", "info_all", new OtpErlangList(objectArray));
+            this.connection.sendRPC("rabbit_amqqueue", "info_all", new OtpErlangList(objectArray));
 
-            var received = connection.receiveRPC();
+            var received = this.connection.receiveRPC();
             logger.Info(received);
             logger.Info(received.GetType().ToString());
         }
@@ -89,7 +104,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             var selfNodeName = "rabbit-monitor";
             var peerNodeName = NODE_NAME;
 
-            var cf = new Spring.Erlang.Connection.SingleConnectionFactory(selfNodeName, peerNodeName);
+            var cf = new SingleConnectionFactory(selfNodeName, peerNodeName);
 
             cf.AfterPropertiesSet();
             var template = new ErlangTemplate(cf);
@@ -105,11 +120,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// Tests the raw otp connect.
         /// </summary>
         [Test]
-        public void TestRawOtpConnect()
-        {
-            this.CreateConnection();
-        }
+        public void TestRawOtpConnect() { this.CreateConnection(); }
 
+        /// <summary>The stress test.</summary>
         [Test]
         public void StressTest()
         {
@@ -131,9 +144,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
         }
 
-        /// <summary>
-        /// Creates the connection.
-        /// </summary>
+        /// <summary>Creates the connection.</summary>
+        /// <returns>The Erlang.NET.OtpConnection.</returns>
         public OtpConnection CreateConnection()
         {
             var self = new OtpSelf("rabbit-monitor-" + counter++);
@@ -141,9 +153,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             return self.connect(peer);
         }
 
-        /// <summary>
-        /// Executes the RPC.
-        /// </summary>
+        /// <summary>Executes the RPC.</summary>
         /// <param name="con">The con.</param>
         /// <param name="recycleConnection">if set to <c>true</c> [recycle connection].</param>
         /// <param name="module">The module.</param>
@@ -152,7 +162,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         {
             con.sendRPC(module, function, new OtpErlangList());
             var response = con.receiveRPC();
-            logger.Debug(module + " response received = " + response.ToString());
+            logger.Debug(module + " response received = " + response);
             if (recycleConnection)
             {
                 con.close();
@@ -160,9 +170,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
         }
 
-        /// <summary>
-        /// Reads the cookie.
-        /// </summary>
+        /// <summary>Reads the cookie.</summary>
+        /// <returns>The System.String.</returns>
         private string ReadCookie()
         {
             var cookie = string.Empty;

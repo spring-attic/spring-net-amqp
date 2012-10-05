@@ -1,20 +1,27 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="SharedConnectionProxy.cs" company="Microsoft">
-// TODO: Update copyright text.
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SharedConnectionProxy.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
 // </copyright>
-// -----------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
+#region Using Directives
+using Common.Logging;
+using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Rabbit.Connection;
+using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-
-    using Common.Logging;
-
     /// <summary>
     /// A shared connection proxy.
     /// </summary>
@@ -33,11 +40,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// The outer single connection factory.
         /// </summary>
-        private SingleConnectionFactory outer;
+        private readonly SingleConnectionFactory outer;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SharedConnectionProxy"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="SharedConnectionProxy"/> class.</summary>
         /// <param name="target">The target.</param>
         /// <param name="outer">The outer.</param>
         public SharedConnectionProxy(IConnection target, SingleConnectionFactory outer)
@@ -46,12 +51,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             this.outer = outer;
         }
 
-        /// <summary>
-        /// Create a new channel, using an internally allocated channel number.
-        /// </summary>
+        /// <summary>Create a new channel, using an internally allocated channel number.</summary>
         /// <param name="transactional">Transactional true if the channel should support transactions.</param>
         /// <returns>A new channel descriptor, or null if none is available.</returns>
-        public RabbitMQ.Client.IModel CreateChannel(bool transactional)
+        public IModel CreateChannel(bool transactional)
         {
             if (!this.IsOpen())
             {
@@ -75,9 +78,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// Close this connection and all its channels with the {@link com.rabbitmq.client.AMQP#REPLY_SUCCESS} close code and message 'OK'.
         /// Waits for all the close operations to complete.
         /// </summary>
-        public void Close()
-        {
-        }
+        public void Close() { }
 
         /// <summary>
         /// Disposes this instance.
@@ -89,6 +90,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
                 this.outer.ConnectionListener.OnClose(this.target);
                 RabbitUtils.CloseConnection(this.target);
             }
+
             this.target = null;
         }
 
@@ -96,32 +98,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// Flag to indicate the status of the connection.
         /// </summary>
         /// <returns>True if the connection is open</returns>
-        public bool IsOpen()
-        {
-            return this.target != null && this.target.IsOpen();
-        }
+        public bool IsOpen() { return this.target != null && this.target.IsOpen(); }
 
         /// <summary>
         /// Return the target Channel of this proxy. This will typically be the native provider IConnection
         /// </summary>
         /// <returns>The underlying connection (never null).</returns>
-        public IConnection GetTargetConnection()
-        {
-            return this.target;
-        }
+        public IConnection GetTargetConnection() { return this.target; }
 
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            return 31 + ((this.target == null) ? 0 : this.target.GetHashCode());
-        }
+        public override int GetHashCode() { return 31 + ((this.target == null) ? 0 : this.target.GetHashCode()); }
 
-        /// <summary>
-        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
-        /// </summary>
+        /// <summary>Determines whether the specified <see cref="System.Object"/> is equal to this instance.</summary>
         /// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
         /// <returns><c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj)
@@ -161,9 +152,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-        public override string ToString()
-        {
-            return "Shared Rabbit Connection: " + this.target;
-        }
+        public override string ToString() { return "Shared Rabbit Connection: " + this.target; }
     }
 }

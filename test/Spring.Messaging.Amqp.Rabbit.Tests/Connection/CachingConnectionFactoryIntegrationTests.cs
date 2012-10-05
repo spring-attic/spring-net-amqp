@@ -1,21 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CachingConnectionFactoryIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Threading;
-using AutoMoq;
-
 using Common.Logging;
-
-using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
 {
@@ -32,35 +41,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// The connection factory.
         /// </summary>
         private CachingConnectionFactory connectionFactory;
-        
+
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
         // public ExpectedException exception = ExpectedException.none();
@@ -176,18 +178,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             var queue = admin.DeclareQueue();
 
             template1.ConvertAndSend(queue.Name, "message");
-            
+
             var result = (string)template2.ReceiveAndConvert(queue.Name);
             Assert.AreEqual("message", result);
 
             try
             {
-                template2.Execute<object>(delegate(IModel channel)
-                {
-                    // Should be an exception because the channel is not transactional
-                    channel.TxRollback();
-                    return null;
-                });
+                template2.Execute<object>(
+                    delegate(IModel channel)
+                    {
+                        // Should be an exception because the channel is not transactional
+                        channel.TxRollback();
+                        return null;
+                    });
             }
             catch (Exception ex)
             {
@@ -195,11 +198,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             }
         }
 
+        /// <summary>The test hard error and reconnect.</summary>
+        /// <exception cref="SystemException"></exception>
         [Test]
         public void TestHardErrorAndReconnect()
         {
-            var template = new RabbitTemplate(connectionFactory);
-            var admin = new RabbitAdmin(connectionFactory);
+            var template = new RabbitTemplate(this.connectionFactory);
+            var admin = new RabbitAdmin(this.connectionFactory);
             var queue = new Queue("foo");
             admin.DeclareQueue(queue);
             var route = queue.Name;
@@ -207,20 +212,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             var latch = new CountdownEvent(1);
             try
             {
-                template.Execute<object>((IModel channel) =>
+                template.Execute<object>(
+                    (IModel channel) =>
                     {
-                        ((IChannelProxy)channel).GetConnection().ConnectionShutdown += new ConnectionShutdownEventHandler(delegate
+                        ((IChannelProxy)channel).GetConnection().ConnectionShutdown += delegate
+                        {
+                            Logger.Info("Error");
+                            if (latch.CurrentCount > 0)
                             {
-                                Logger.Info("Error");
-                                if (latch.CurrentCount > 0)
-                                {
-                                    latch.Signal();
-                                }
-                                /// This will be thrown on the Connection thread just before it dies, so basically ignored
-                                throw new SystemException();
-                            });
+                                latch.Signal();
+                            }
+
+                            // This will be thrown on the Connection thread just before it dies, so basically ignored
+                            throw new SystemException();
+                        };
 
                         var internalTag = channel.BasicConsume(route, false, new DefaultBasicConsumer(channel));
+
                         // Consume twice with the same tag is a hard error (connection will be reset)
                         var internalResult = channel.BasicConsume(route, false, internalTag, new DefaultBasicConsumer(channel));
                         Assert.Fail("Expected IOException, got: " + internalResult);
@@ -228,8 +236,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
                     });
 
                 Assert.Fail("Expected AmqpIOException");
-            } 
-            catch (AmqpIOException e) 
+            }
+            catch (AmqpIOException e)
             {
                 // expected
             }

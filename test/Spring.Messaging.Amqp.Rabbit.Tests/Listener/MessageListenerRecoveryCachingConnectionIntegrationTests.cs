@@ -1,20 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageListenerRecoveryCachingConnectionIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Text;
 using System.Threading;
 using Common.Logging;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
-using Spring.Threading.AtomicTypes;
+using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
@@ -26,52 +40,45 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Ignore("Some state issue (within the test fixture) is causing unreliable execution of these tests")]
     public class MessageListenerRecoveryCachingConnectionIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MessageListenerRecoveryCachingConnectionIntegrationTests));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerRecoveryCachingConnectionIntegrationTests));
 
-        private static Queue queue = new Queue("test.queue");
+        private static readonly Queue queue = new Queue("test.queue");
 
-        private static Queue sendQueue = new Queue("test.send");
+        private static readonly Queue sendQueue = new Queue("test.send");
 
         private int concurrentConsumers = 1;
 
         private int messageCount = 10;
 
-        private bool transactional = false;
+        private bool transactional;
 
         private AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
 
         private SimpleMessageListenerContainer container;
 
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
-        
+
         /// <summary>
         /// Creates the connection factory.
         /// </summary>
@@ -85,6 +92,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             return connectionFactory;
         }
 
+        /// <summary>The set up.</summary>
         [SetUp]
         public void SetUp()
         {
@@ -108,6 +116,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
         }
 
+        /// <summary>The test listener sends message and then container commits.</summary>
         [Test]
         public void TestListenerSendsMessageAndThenContainerCommits()
         {
@@ -134,170 +143,168 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Assert.AreEqual(null, template.ReceiveAndConvert(queue.Name));
         }
 
+        /// <summary>The test listener sends message and then rollback.</summary>
         [Test]
         public void TestListenerSendsMessageAndThenRollback()
         {
-            var connectionFactory = CreateConnectionFactory();
+            var connectionFactory = this.CreateConnectionFactory();
             var template = new RabbitTemplate(connectionFactory);
             new RabbitAdmin(connectionFactory).DeclareQueue(sendQueue);
 
-            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
-            transactional = true;
+            this.acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
+            this.transactional = true;
 
             var latch = new CountdownEvent(1);
-            container = CreateContainer(queue.Name, new ChannelSenderListener(sendQueue.Name, latch, true), connectionFactory);
+            this.container = this.CreateContainer(queue.Name, new ChannelSenderListener(sendQueue.Name, latch, true), connectionFactory);
             template.ConvertAndSend(queue.Name, "foo");
 
-            var timeout = GetTimeout();
+            var timeout = this.GetTimeout();
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
-            container.Stop();
+            this.container.Stop();
             Thread.Sleep(200);
 
             // Foo message is redelivered
             Assert.AreEqual("foo", template.ReceiveAndConvert(queue.Name));
+
             // Sending of bar message is also rolled back
             Assert.Null(template.ReceiveAndConvert(sendQueue.Name));
         }
 
+        /// <summary>The test listener recovers from bogus double ack.</summary>
         [Test]
         [Ignore("Need to fix")]
         public void TestListenerRecoversFromBogusDoubleAck()
         {
+            var template = new RabbitTemplate(this.CreateConnectionFactory());
 
-            var template = new RabbitTemplate(CreateConnectionFactory());
+            this.acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Manual;
 
-            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Manual;
-
-            var latch = new CountdownEvent(messageCount);
-            container = CreateContainer(queue.Name, new ManualAckListener(latch), CreateConnectionFactory());
-            for (var i = 0; i < messageCount; i++)
+            var latch = new CountdownEvent(this.messageCount);
+            this.container = this.CreateContainer(queue.Name, new ManualAckListener(latch), this.CreateConnectionFactory());
+            for (var i = 0; i < this.messageCount; i++)
             {
                 template.ConvertAndSend(queue.Name, i + "foo");
             }
 
-            var timeout = GetTimeout();
+            var timeout = this.GetTimeout();
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
             Assert.Null(template.ReceiveAndConvert(queue.Name));
-
         }
 
+        /// <summary>The test listener recovers from closed channel.</summary>
         [Test]
         [Ignore("Need to fix")]
         public void TestListenerRecoversFromClosedChannel()
         {
+            var template = new RabbitTemplate(this.CreateConnectionFactory());
 
-            var template = new RabbitTemplate(CreateConnectionFactory());
-
-            var latch = new CountdownEvent(messageCount);
-            container = CreateContainer(queue.Name, new AbortChannelListener(latch), CreateConnectionFactory());
-            for (var i = 0; i < messageCount; i++)
+            var latch = new CountdownEvent(this.messageCount);
+            this.container = this.CreateContainer(queue.Name, new AbortChannelListener(latch), this.CreateConnectionFactory());
+            for (var i = 0; i < this.messageCount; i++)
             {
                 template.ConvertAndSend(queue.Name, i + "foo");
             }
 
-            var timeout = GetTimeout();
+            var timeout = this.GetTimeout();
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
             Assert.Null(template.ReceiveAndConvert(queue.Name));
-
         }
 
+        /// <summary>The test listener recovers from closed channel and stop.</summary>
         [Test]
         [Ignore("Need to fix")]
         public void TestListenerRecoversFromClosedChannelAndStop()
         {
+            var template = new RabbitTemplate(this.CreateConnectionFactory());
 
-            var template = new RabbitTemplate(CreateConnectionFactory());
-
-            var latch = new CountdownEvent(messageCount);
-            container = CreateContainer(queue.Name, new AbortChannelListener(latch), CreateConnectionFactory());
+            var latch = new CountdownEvent(this.messageCount);
+            this.container = this.CreateContainer(queue.Name, new AbortChannelListener(latch), this.CreateConnectionFactory());
             Thread.Sleep(500);
-            Assert.AreEqual(concurrentConsumers, container.ActiveConsumerCount);
+            Assert.AreEqual(this.concurrentConsumers, this.container.ActiveConsumerCount);
 
-            for (var i = 0; i < messageCount; i++)
+            for (var i = 0; i < this.messageCount; i++)
             {
                 template.ConvertAndSend(queue.Name, i + "foo");
             }
 
-            var timeout = GetTimeout();
+            var timeout = this.GetTimeout();
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
             Assert.Null(template.ReceiveAndConvert(queue.Name));
 
-            Assert.AreEqual(concurrentConsumers, container.ActiveConsumerCount);
-            container.Stop();
-            Assert.AreEqual(0, container.ActiveConsumerCount);
-
+            Assert.AreEqual(this.concurrentConsumers, this.container.ActiveConsumerCount);
+            this.container.Stop();
+            Assert.AreEqual(0, this.container.ActiveConsumerCount);
         }
 
+        /// <summary>The test listener recovers from closed connection.</summary>
         [Test]
         [Ignore("Need to fix")]
         public void testListenerRecoversFromClosedConnection()
         {
+            var template = new RabbitTemplate(this.CreateConnectionFactory());
 
-            var template = new RabbitTemplate(CreateConnectionFactory());
-
-            var latch = new CountdownEvent(messageCount);
-            var connectionFactory = CreateConnectionFactory();
-            container = CreateContainer(queue.Name, new CloseConnectionListener((IConnectionProxy)connectionFactory.CreateConnection(), latch), connectionFactory);
-            for (var i = 0; i < messageCount; i++)
+            var latch = new CountdownEvent(this.messageCount);
+            var connectionFactory = this.CreateConnectionFactory();
+            this.container = this.CreateContainer(queue.Name, new CloseConnectionListener((IConnectionProxy)connectionFactory.CreateConnection(), latch), connectionFactory);
+            for (var i = 0; i < this.messageCount; i++)
             {
                 template.ConvertAndSend(queue.Name, i + "foo");
             }
 
-            var timeout = Math.Min(4 + messageCount / (4 * concurrentConsumers), 30);
+            var timeout = Math.Min(4 + this.messageCount / (4 * this.concurrentConsumers), 30);
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
             Assert.Null(template.ReceiveAndConvert(queue.Name));
-
         }
 
+        /// <summary>The test listener recovers and template shares connection factory.</summary>
         [Test]
         [Ignore("Need to fix")]
         public void TestListenerRecoversAndTemplateSharesConnectionFactory()
         {
-
-            var connectionFactory = CreateConnectionFactory();
+            var connectionFactory = this.CreateConnectionFactory();
             var template = new RabbitTemplate(connectionFactory);
 
-            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Manual;
+            this.acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Manual;
 
-            var latch = new CountdownEvent(messageCount);
-            container = CreateContainer(queue.Name, new ManualAckListener(latch), connectionFactory);
-            for (var i = 0; i < messageCount; i++)
+            var latch = new CountdownEvent(this.messageCount);
+            this.container = this.CreateContainer(queue.Name, new ManualAckListener(latch), connectionFactory);
+            for (var i = 0; i < this.messageCount; i++)
             {
                 template.ConvertAndSend(queue.Name, i + "foo");
             }
 
-            var timeout = GetTimeout();
+            var timeout = this.GetTimeout();
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
             Assert.Null(template.ReceiveAndConvert(queue.Name));
-
         }
 
+        /// <summary>The test listener does not recover from missing queue.</summary>
         [Test]
         public void TestListenerDoesNotRecoverFromMissingQueue()
         {
             try
             {
-                concurrentConsumers = 3;
-                var latch = new CountdownEvent(messageCount);
-                container = CreateContainer("nonexistent", new VanillaListener(latch), CreateConnectionFactory());
+                this.concurrentConsumers = 3;
+                var latch = new CountdownEvent(this.messageCount);
+                this.container = this.CreateContainer("nonexistent", new VanillaListener(latch), this.CreateConnectionFactory());
             }
             catch (Exception e)
             {
@@ -305,6 +312,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
         }
 
+        /// <summary>The test single listener does not recover from missing queue.</summary>
         [Test]
         public void testSingleListenerDoesNotRecoverFromMissingQueue()
         {
@@ -314,15 +322,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                  * A single listener sometimes doesn't have time to attempt to start before we ask it if it has failed, so this
                  * is a good test of that potential bug.
                  */
-                concurrentConsumers = 1;
-                var latch = new CountdownEvent(messageCount);
-                container = CreateContainer("nonexistent", new VanillaListener(latch), CreateConnectionFactory());
+                this.concurrentConsumers = 1;
+                var latch = new CountdownEvent(this.messageCount);
+                this.container = this.CreateContainer("nonexistent", new VanillaListener(latch), this.CreateConnectionFactory());
             }
             catch (Exception e)
             {
                 Assert.True(e is AmqpIllegalStateException);
             }
-
         }
 
         /// <summary>
@@ -330,14 +337,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// </summary>
         /// <returns>The timeout.</returns>
         /// <remarks></remarks>
-        private int GetTimeout()
-        {
-            return Math.Min(15 + this.messageCount / (4 * this.concurrentConsumers), 30);
-        }
+        private int GetTimeout() { return Math.Min(15 + this.messageCount / (4 * this.concurrentConsumers), 30); }
 
-        /// <summary>
-        /// Creates the container.
-        /// </summary>
+        /// <summary>Creates the container.</summary>
         /// <param name="queueName">Name of the queue.</param>
         /// <param name="listener">The listener.</param>
         /// <param name="connectionFactory">The connection factory.</param>
@@ -347,7 +349,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             var container = new SimpleMessageListenerContainer(connectionFactory);
             container.MessageListener = new MessageListenerAdapter(listener);
-            container.QueueNames = new string[] { queueName };
+            container.QueueNames = new[] { queueName };
             container.ConcurrentConsumers = this.concurrentConsumers;
             container.ChannelTransacted = this.transactional;
             container.AcknowledgeMode = this.acknowledgeMode;
@@ -363,25 +365,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class ManualAckListener : IChannelAwareMessageListener
     {
-        private static ILog logger = LogManager.GetLogger(typeof(ManualAckListener));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(ManualAckListener));
 
-        private AtomicBoolean failed = new AtomicBoolean(false);
+        private readonly AtomicBoolean failed = new AtomicBoolean(false);
 
         private readonly CountdownEvent latch;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ManualAckListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ManualAckListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public ManualAckListener(CountdownEvent latch)
-        {
-            this.latch = latch;
-        }
+        public ManualAckListener(CountdownEvent latch) { this.latch = latch; }
 
-        /// <summary>
-        /// Called when [message].
-        /// </summary>
+        /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
         /// <remarks></remarks>
@@ -400,7 +395,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
             finally
             {
-                if (this.latch.CurrentCount > 0) this.latch.Signal();
+                if (this.latch.CurrentCount > 0)
+                {
+                    this.latch.Signal();
+                }
             }
         }
     }
@@ -411,7 +409,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class ChannelSenderListener : IChannelAwareMessageListener
     {
-        private static ILog logger = LogManager.GetLogger(typeof(ChannelSenderListener));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(ChannelSenderListener));
 
         private readonly CountdownEvent latch;
 
@@ -419,9 +417,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         private readonly string queueName;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChannelSenderListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ChannelSenderListener"/> class.</summary>
         /// <param name="queueName">Name of the queue.</param>
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
@@ -433,9 +429,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.fail = fail;
         }
 
-        /// <summary>
-        /// Called when [message].
-        /// </summary>
+        /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
         /// <remarks></remarks>
@@ -456,7 +450,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
             finally
             {
-                if (this.latch.CurrentCount > 0) this.latch.Signal();
+                if (this.latch.CurrentCount > 0)
+                {
+                    this.latch.Signal();
+                }
             }
         }
     }
@@ -467,25 +464,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class AbortChannelListener : IChannelAwareMessageListener
     {
-        private static ILog logger = LogManager.GetLogger(typeof(AbortChannelListener));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(AbortChannelListener));
 
-        private AtomicBoolean failed = new AtomicBoolean(false);
+        private readonly AtomicBoolean failed = new AtomicBoolean(false);
 
         private readonly CountdownEvent latch;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AbortChannelListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="AbortChannelListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public AbortChannelListener(CountdownEvent latch)
-        {
-            this.latch = latch;
-        }
+        public AbortChannelListener(CountdownEvent latch) { this.latch = latch; }
 
-        /// <summary>
-        /// Called when [message].
-        /// </summary>
+        /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
         /// <remarks></remarks>
@@ -500,7 +490,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
             else
             {
-                if (this.latch.CurrentCount > 0) this.latch.Signal();
+                if (this.latch.CurrentCount > 0)
+                {
+                    this.latch.Signal();
+                }
             }
         }
     }
@@ -511,17 +504,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class CloseConnectionListener : IChannelAwareMessageListener
     {
-        private static ILog logger = LogManager.GetLogger(typeof(CloseConnectionListener));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(CloseConnectionListener));
 
-        private AtomicBoolean failed = new AtomicBoolean(false);
+        private readonly AtomicBoolean failed = new AtomicBoolean(false);
 
         private readonly CountdownEvent latch;
 
         private readonly IConnection connection;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CloseConnectionListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="CloseConnectionListener"/> class.</summary>
         /// <param name="connection">The connection.</param>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
@@ -531,9 +522,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.latch = latch;
         }
 
-        /// <summary>
-        /// Called when [message].
-        /// </summary>
+        /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
         /// <remarks></remarks>
@@ -548,7 +537,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
             else
             {
-                if (this.latch.CurrentCount > 0) this.latch.Signal();
+                if (this.latch.CurrentCount > 0)
+                {
+                    this.latch.Signal();
+                }
             }
         }
     }

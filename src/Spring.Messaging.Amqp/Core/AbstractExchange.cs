@@ -70,8 +70,8 @@ namespace Spring.Messaging.Amqp.Core
             this.name = name;
             this.durable = durable;
             this.autoDelete = autoDelete;
-            
-            if (this.arguments != null) 
+
+            if (this.arguments != null)
             {
                 this.arguments = arguments;
             }
@@ -109,10 +109,10 @@ namespace Spring.Messaging.Amqp.Core
         /// <value>The arguments.</value>
         public IDictionary Arguments { get { return this.arguments; } }
 
-        public void AddArgument(string argName, object argValue)
-        {
-            this.arguments.Add(argName, argValue);
-        }
+        /// <summary>The add argument.</summary>
+        /// <param name="argName">The arg name.</param>
+        /// <param name="argValue">The arg value.</param>
+        public void AddArgument(string argName, object argValue) { this.arguments.Add(argName, argValue); }
 
         /// <summary>The to string.</summary>
         /// <returns>The System.String.</returns>

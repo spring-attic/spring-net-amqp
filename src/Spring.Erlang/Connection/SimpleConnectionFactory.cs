@@ -1,32 +1,25 @@
-#region License
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SimpleConnectionFactory.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
-/*
- * Copyright 2002-2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#endregion
-
-#region
-
+#region Using Directives
 using System;
 using System.IO;
 using Common.Logging;
 using Erlang.NET;
 using Spring.Objects.Factory;
 using Spring.Util;
-
 #endregion
 
 namespace Spring.Erlang.Connection
@@ -35,7 +28,7 @@ namespace Spring.Erlang.Connection
     ///  
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class SimpleConnectionFactory : Spring.Erlang.Connection.IConnectionFactory, IInitializingObject
+    public class SimpleConnectionFactory : IConnectionFactory, IInitializingObject
     {
         /// <summary>
         /// The logger.
@@ -72,9 +65,7 @@ namespace Spring.Erlang.Connection
         /// </summary>
         private OtpPeer otpPeer;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleConnectionFactory"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="SimpleConnectionFactory"/> class.</summary>
         /// <param name="selfNodeName">Name of the self node.</param>
         /// <param name="peerNodeName">Name of the peer node.</param>
         /// <param name="cookie">The cookie.</param>
@@ -86,9 +77,7 @@ namespace Spring.Erlang.Connection
             this.cookie = cookie;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleConnectionFactory"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="SimpleConnectionFactory"/> class.</summary>
         /// <param name="selfNodeName">Name of the self node.</param>
         /// <param name="peerNodeName">Name of the peer node.</param>
         /// <remarks></remarks>
@@ -103,11 +92,7 @@ namespace Spring.Erlang.Connection
         /// </summary>
         /// <value><c>true</c> if [unique self node name]; otherwise, <c>false</c>.</value>
         /// <remarks></remarks>
-        public bool UniqueSelfNodeName
-        {
-            get { return this.uniqueSelfNodeName; }
-            set { this.uniqueSelfNodeName = value; }
-        }
+        public bool UniqueSelfNodeName { get { return this.uniqueSelfNodeName; } set { this.uniqueSelfNodeName = value; } }
 
         #region Implementation of IConnectionFactory
 

@@ -1,75 +1,84 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageListenerContainerRetryIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using AopAlliance.Aop;
 using Common.Logging;
 using NUnit.Framework;
+using Spring.Aspects;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using Spring.Messaging.Amqp.Support.Converter;
-using Spring.Threading.AtomicTypes;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
+    /// <summary>The message listener container retry integration tests.</summary>
     [TestFixture]
     [Category(TestCategory.Integration)]
     [Ignore("Spring.NET doesn't support retry yet...")]
     public class MessageListenerContainerRetryIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerRetryIntegrationTests));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerRetryIntegrationTests));
 
-        private static Queue queue = new Queue("test.queue");
-        
+        private static readonly Queue queue = new Queue("test.queue");
+
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
-        //@Rule
-        //public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.INFO, RabbitTemplate.class,
-        //		SimpleMessageListenerContainer.class, BlockingQueueConsumer.class);
+        // @Rule
+        // public Log4jLevelAdjuster logLevels = new Log4jLevelAdjuster(Level.INFO, RabbitTemplate.class,
+        // 		SimpleMessageListenerContainer.class, BlockingQueueConsumer.class);
 
-        //@Rule
-        //public ExpectedException exception = ExpectedException.none();
-
+        // @Rule
+        // public ExpectedException exception = ExpectedException.none();
         private RabbitTemplate template;
 
-        private Spring.Aspects.RetryAdvice retryTemplate;
+        private RetryAdvice retryTemplate;
 
         private IMessageConverter messageConverter;
 
+        /// <summary>The setup.</summary>
         [SetUp]
         public void Setup()
         {
@@ -77,9 +86,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.brokerIsRunning.Apply();
         }
 
-        /// <summary>
-        /// Creates the template.
-        /// </summary>
+        /// <summary>Creates the template.</summary>
         /// <param name="concurrentConsumers">The concurrent consumers.</param>
         /// <returns>The template.</returns>
         /// <remarks></remarks>
@@ -96,85 +103,83 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 internalmessageConverter.CreateMessageIds = true;
                 this.messageConverter = internalmessageConverter;
             }
+
             template.MessageConverter = this.messageConverter;
             return template;
         }
 
+        /// <summary>The test stateful retry with all messages failing.</summary>
         [Test]
         [Ignore]
         public void testStatefulRetryWithAllMessagesFailing()
         {
-
             var messageCount = 10;
             var txSize = 1;
             var failFrequency = 1;
             var concurrentConsumers = 3;
-            DoTestStatefulRetry(messageCount, txSize, failFrequency, concurrentConsumers);
-
+            this.DoTestStatefulRetry(messageCount, txSize, failFrequency, concurrentConsumers);
         }
 
+        /// <summary>The test stateless retry with all messages failing.</summary>
         [Test]
         [Ignore]
         public void testStatelessRetryWithAllMessagesFailing()
         {
-
             var messageCount = 10;
             var txSize = 1;
             var failFrequency = 1;
             var concurrentConsumers = 3;
-            DoTestStatelessRetry(messageCount, txSize, failFrequency, concurrentConsumers);
-
+            this.DoTestStatelessRetry(messageCount, txSize, failFrequency, concurrentConsumers);
         }
 
+        /// <summary>The test stateful retry with no message ids.</summary>
         [Test]
         [Ignore]
         public void testStatefulRetryWithNoMessageIds()
         {
-
             var messageCount = 2;
             var txSize = 1;
             var failFrequency = 1;
             var concurrentConsumers = 1;
             var messageConverter = new SimpleMessageConverter();
+
             // There will be no key for these messages so they cannot be recovered...
             messageConverter.CreateMessageIds = false;
             this.messageConverter = messageConverter;
+
             // Beware of context cache busting if retry policy fails...
             /* TODO: Once Spring Batch is implemented.
              * this.retryTemplate = new RetryTemplate();
             this.retryTemplate.setRetryContextCache(new MapRetryContextCache(1));
              */
             // The container should have shutdown, so there are now no active consumers
-            //exception.expectMessage("expected:<1> but was:<0>");
-            DoTestStatefulRetry(messageCount, txSize, failFrequency, concurrentConsumers);
-
+            // exception.expectMessage("expected:<1> but was:<0>");
+            this.DoTestStatefulRetry(messageCount, txSize, failFrequency, concurrentConsumers);
         }
 
+        /// <summary>The test stateful retry with tx size and intermittent failure.</summary>
         [Test]
         [Ignore]
         [Repeat(10)]
         public void testStatefulRetryWithTxSizeAndIntermittentFailure()
         {
-
             var messageCount = 10;
             var txSize = 4;
             var failFrequency = 3;
             var concurrentConsumers = 3;
-            DoTestStatefulRetry(messageCount, txSize, failFrequency, concurrentConsumers);
-
+            this.DoTestStatefulRetry(messageCount, txSize, failFrequency, concurrentConsumers);
         }
 
+        /// <summary>The test stateful retry with more messages.</summary>
         [Test]
         [Ignore]
         public void testStatefulRetryWithMoreMessages()
         {
-
             var messageCount = 200;
             var txSize = 10;
             var failFrequency = 6;
             var concurrentConsumers = 3;
-            DoTestStatefulRetry(messageCount, txSize, failFrequency, concurrentConsumers);
-
+            this.DoTestStatefulRetry(messageCount, txSize, failFrequency, concurrentConsumers);
         }
 
         // Spring Batch Not Implemented - Can't implement this...
@@ -201,28 +206,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             throw new NotImplementedException();
         }
 
-        private void DoTestStatefulRetry(int messageCount, int txSize, int failFrequency, int concurrentConsumers)
-        {
-            DoTestRetry(messageCount, txSize, failFrequency, concurrentConsumers, true);
-        }
+        private void DoTestStatefulRetry(int messageCount, int txSize, int failFrequency, int concurrentConsumers) { this.DoTestRetry(messageCount, txSize, failFrequency, concurrentConsumers, true); }
 
-        private void DoTestStatelessRetry(int messageCount, int txSize, int failFrequency, int concurrentConsumers)
-        {
-            DoTestRetry(messageCount, txSize, failFrequency, concurrentConsumers, false);
-        }
+        private void DoTestStatelessRetry(int messageCount, int txSize, int failFrequency, int concurrentConsumers) { this.DoTestRetry(messageCount, txSize, failFrequency, concurrentConsumers, false); }
 
         private void DoTestRetry(int messageCount, int txSize, int failFrequency, int concurrentConsumers, bool stateful)
         {
-
             var failedMessageCount = messageCount / failFrequency + (messageCount % failFrequency == 0 ? 0 : 1);
 
-            template = CreateTemplate(concurrentConsumers);
+            this.template = this.CreateTemplate(concurrentConsumers);
             for (var i = 0; i < messageCount; i++)
             {
-                template.ConvertAndSend(queue.Name, i.ToString());
+                this.template.ConvertAndSend(queue.Name, i.ToString());
             }
 
-            var container = new SimpleMessageListenerContainer(template.ConnectionFactory);
+            var container = new SimpleMessageListenerContainer(this.template.ConnectionFactory);
             var listener = new RetryPocoListener(failFrequency);
             container.MessageListener = new MessageListenerAdapter(listener);
             container.AcknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
@@ -231,9 +229,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.ConcurrentConsumers = concurrentConsumers;
 
             var latch = new CountdownEvent(failedMessageCount);
-            //container.AdviceChain = new IAdvice[] { CreateRetryInterceptor(latch, stateful) };
 
-            container.QueueNames = new string[] { queue.Name };
+            // container.AdviceChain = new IAdvice[] { CreateRetryInterceptor(latch, stateful) };
+            container.QueueNames = new[] { queue.Name };
             container.AfterPropertiesSet();
             container.Start();
 
@@ -243,26 +241,35 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
                 var count = messageCount;
                 logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
-                Task.Factory.StartNew(() =>
-                                          {
-                                              while (container.ActiveConsumerCount > 0)
-                                              {
-                                                  try
-                                                  {
-                                                      Thread.Sleep(100);
-                                                  }
-                                                  catch (ThreadInterruptedException e)
-                                                  {
-                                                      if (latch.CurrentCount > 0) latch.Signal();
-                                                      Thread.CurrentThread.Interrupt();
-                                                      return;
-                                                  }
-                                              }
-                                              for (var i = 0; i < count; i++)
-                                              {
-                                                  if (latch.CurrentCount > 0) latch.Signal();
-                                              }
-                                          });
+                Task.Factory.StartNew(
+                    () =>
+                    {
+                        while (container.ActiveConsumerCount > 0)
+                        {
+                            try
+                            {
+                                Thread.Sleep(100);
+                            }
+                            catch (ThreadInterruptedException e)
+                            {
+                                if (latch.CurrentCount > 0)
+                                {
+                                    latch.Signal();
+                                }
+
+                                Thread.CurrentThread.Interrupt();
+                                return;
+                            }
+                        }
+
+                        for (var i = 0; i < count; i++)
+                        {
+                            if (latch.CurrentCount > 0)
+                            {
+                                latch.Signal();
+                            }
+                        }
+                    });
                 var waited = latch.Wait(timeout * 1000);
                 logger.Info("All messages recovered: " + waited);
                 Assert.AreEqual(concurrentConsumers, container.ActiveConsumerCount);
@@ -288,23 +295,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class RetryPocoListener
     {
-        private static ILog logger = LogManager.GetLogger(typeof(RetryPocoListener));
-        private AtomicInteger count = new AtomicInteger();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(RetryPocoListener));
+        private readonly AtomicInteger count = new AtomicInteger();
         private readonly int failFrequency;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RetryPocoListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="RetryPocoListener"/> class.</summary>
         /// <param name="failFrequency">The fail frequency.</param>
         /// <remarks></remarks>
-        public RetryPocoListener(int failFrequency)
-        {
-            this.failFrequency = failFrequency;
-        }
+        public RetryPocoListener(int failFrequency) { this.failFrequency = failFrequency; }
 
-        /// <summary>
-        /// Handles the message.
-        /// </summary>
+        /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
         /// <remarks></remarks>
         public void HandleMessage(int value)
@@ -320,9 +320,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Gets the count.
         /// </summary>
         /// <remarks></remarks>
-        public int Count
-        {
-            get { return this.count.Value; }
-        }
+        public int Count { get { return this.count.Value; } }
     }
 }

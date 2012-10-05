@@ -1,19 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageListenerBrokerInterruptionIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using Common.Logging;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
@@ -27,12 +41,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static ILog logger = LogManager.GetLogger(typeof(MessageListenerBrokerInterruptionIntegrationTests));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerBrokerInterruptionIntegrationTests));
 
         /// <summary>
         /// The queue. Ensure it is durable or it won't survive the broker restart.
         /// </summary>
-        private Queue queue = new Queue("test.queue", true);
+        private readonly Queue queue = new Queue("test.queue", true);
 
         /// <summary>
         /// Concurrent consumers.
@@ -64,45 +78,37 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// </summary>
         private SimpleMessageListenerContainer container;
 
-        //@Rule
+        // @Rule
         public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
         /*
          * Ensure broker dies if a test fails (otherwise the erl process might have to be killed manually)
          */
-        //@Rule
-        //public static BrokerPanic panic = new BrokerPanic();
-
+        // @Rule
+        // public static BrokerPanic panic = new BrokerPanic();
         private IConnectionFactory connectionFactory;
 
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
         /// <summary>
@@ -208,7 +214,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.brokerAdmin.StartBrokerApplication();
             queues = this.brokerAdmin.GetQueues();
             logger.Info("Queues: " + queues);
-            container.Start();
+            this.container.Start();
             Logger.Info(string.Format("Concurrent Consumers After Container Start: {0}", this.container.ActiveConsumerCount));
             Assert.AreEqual(this.concurrentConsumers, this.container.ActiveConsumerCount);
             Logger.Info(string.Format("Latch.CurrentCount After Container Start: {0}", latch.CurrentCount));
@@ -220,9 +226,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Assert.IsNull(template.ReceiveAndConvert(this.queue.Name));
         }
 
-        /// <summary>
-        /// Creates the container.
-        /// </summary>
+        /// <summary>Creates the container.</summary>
         /// <param name="queueName">Name of the queue.</param>
         /// <param name="listener">The listener.</param>
         /// <param name="connectionFactory">The connection factory.</param>
@@ -232,7 +236,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             var container = new SimpleMessageListenerContainer(connectionFactory);
             container.MessageListener = new MessageListenerAdapter(listener);
-            container.QueueNames = new string[] { queueName };
+            container.QueueNames = new[] { queueName };
             container.TxSize = this.txSize;
             container.PrefetchCount = this.txSize;
             container.ConcurrentConsumers = this.concurrentConsumers;
@@ -242,8 +246,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.Start();
             return container;
         }
-
-
     }
 
     /// <summary>
@@ -255,26 +257,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static ILog logger = LogManager.GetLogger(typeof(VanillaListener));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(VanillaListener));
 
         /// <summary>
         /// The latch.
         /// </summary>
         private readonly CountdownEvent latch;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VanillaListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="VanillaListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public VanillaListener(CountdownEvent latch)
-        {
-            this.latch = latch;
-        }
+        public VanillaListener(CountdownEvent latch) { this.latch = latch; }
 
-        /// <summary>
-        /// Called when [message].
-        /// </summary>
+        /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
         /// <remarks></remarks>
@@ -283,7 +278,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var value = Encoding.UTF8.GetString(message.Body);
             logger.Debug("Receiving: " + value);
             Thread.Sleep(75);
-            if(this.latch.CurrentCount > 0) this.latch.Signal();
+            if (this.latch.CurrentCount > 0)
+            {
+                this.latch.Signal();
+            }
         }
     }
 }

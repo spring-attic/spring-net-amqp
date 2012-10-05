@@ -1,54 +1,53 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<objects xmlns="http://www.springframework.net"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:rabbit="http://www.springframework.net/schema/rabbit">
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-	<direct-exchange id="direct-test" name="direct-test" xmlns="http://www.springframework.net/schema/rabbit">
-		<bindings>
-			<binding queue="foo" key="foo" />
-			<binding queue="bar" />
-			<binding queue="spam" />
-			<binding queue="bucket" />
-		</bindings>
-	</direct-exchange>
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-	<topic-exchange id="topic-test" name="topic-test" xmlns="http://www.springframework.net/schema/rabbit">
-		<bindings>
-			<binding queue="foo" pattern="foo.#" />
-			<binding queue="bar" pattern="bar.#" />
-			<binding queue="spam" pattern="spam.#"/>
-			<binding queue="bucket" pattern="bucket.#"/>
-		</bindings>
-	</topic-exchange>
+    <direct-exchange id="direct-test" name="direct-test" xmlns="http://www.springframework.net/schema/rabbit">
+        <bindings>
+            <binding queue="foo" key="foo" />
+            <binding queue="bar" />
+            <binding queue="spam" />
+            <binding queue="bucket" />
+        </bindings>
+    </direct-exchange>
 
-  <fanout-exchange id="fanout-test" name="fanout-test" xmlns="http://www.springframework.net/schema/rabbit">
-		<bindings>
-			<binding queue="foo" />
-			<binding queue="bar" />
-			<binding queue="spam" />
-			<binding queue="bucket" />
-		</bindings>
-	</fanout-exchange>
+    <topic-exchange id="topic-test" name="topic-test" xmlns="http://www.springframework.net/schema/rabbit">
+        <bindings>
+            <binding queue="foo" pattern="foo.#" />
+            <binding queue="bar" pattern="bar.#" />
+            <binding queue="spam" pattern="spam.#" />
+            <binding queue="bucket" pattern="bucket.#" />
+        </bindings>
+    </topic-exchange>
 
-	<headers-exchange id="headers-test" name="headers-test" xmlns="http://www.springframework.net/schema/rabbit">
-		<bindings>
-			<binding queue="foo" key="type" value="foo" />
-			<binding queue="bar" key="type" value="bar" />
-			<binding queue="spam" key="type" value="spam" />
-			<binding queue="bucket" key="type" value="bucket"  />
-		</bindings>
-	</headers-exchange>
+    <fanout-exchange id="fanout-test" name="fanout-test" xmlns="http://www.springframework.net/schema/rabbit">
+        <bindings>
+            <binding queue="foo" />
+            <binding queue="bar" />
+            <binding queue="spam" />
+            <binding queue="bucket" />
+        </bindings>
+    </fanout-exchange>
 
-	<rabbit:queue id="foo" name="foo" />
-	
-  <rabbit:queue id="bar" name="bar" />
-  
-	<rabbit:queue id="spam" name="bar" />
+    <headers-exchange id="headers-test" name="headers-test" xmlns="http://www.springframework.net/schema/rabbit">
+        <bindings>
+            <binding queue="foo" key="type" value="foo" />
+            <binding queue="bar" key="type" value="bar" />
+            <binding queue="spam" key="type" value="spam" />
+            <binding queue="bucket" key="type" value="bucket" />
+        </bindings>
+    </headers-exchange>
 
-	<rabbit:queue id="bucket" />
-	
-	<rabbit:admin id="admin-test" connection-factory="connectionFactory"/>
+    <rabbit:queue id="foo" name="foo" />
 
-	<object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit" />
+    <rabbit:queue id="bar" name="bar" />
+
+    <rabbit:queue id="spam" name="bar" />
+
+    <rabbit:queue id="bucket" />
+
+    <rabbit:admin id="admin-test" connection-factory="connectionFactory" />
+
+    <object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit" />
 
 </objects>

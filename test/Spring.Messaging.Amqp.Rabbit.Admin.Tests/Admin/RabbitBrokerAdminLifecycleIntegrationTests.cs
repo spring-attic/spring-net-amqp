@@ -1,33 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitBrokerAdminLifecycleIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using Common.Logging;
 using Erlang.NET;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Admin
 {
+    /// <summary>The rabbit broker admin lifecycle integration tests.</summary>
     [TestFixture]
     [Category(TestCategory.LifecycleIntegration)]
     public class RabbitBrokerAdminLifecycleIntegrationTests
     {
-        private static ILog logger = LogManager.GetLogger(typeof(RabbitBrokerAdminLifecycleIntegrationTests));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(RabbitBrokerAdminLifecycleIntegrationTests));
 
         private static readonly string NODE_NAME = "spring@" + Dns.GetHostName().ToUpper();
 
         public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
+        /// <summary>The set up.</summary>
         [TestFixtureSetUp]
-        public void SetUp()
-        {
-            environment.Apply();
-        }
+        public void SetUp() { environment.Apply(); }
 
+        /// <summary>The tear down.</summary>
         [TestFixtureTearDown]
         public void TearDown()
         {
@@ -53,6 +66,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
         }
 
+        /// <summary>The end.</summary>
         [TearDown]
         public void End()
         {
@@ -144,9 +158,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             {
                 this.TestStopAndStartBroker();
                 Thread.Sleep(200);
+
                 // if (i % 5 == 0)
                 // {
-                    logger.Debug("i = " + i);
+                logger.Debug("i = " + i);
+
                 // }
             }
 
@@ -154,9 +170,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             brokerAdmin.StopNode();
         }
 
-        /// <summary>
-        /// Asserts the broker app running. Asserts that the named-node is running.
-        /// </summary>
+        /// <summary>Asserts the broker app running. Asserts that the named-node is running.</summary>
         /// <param name="status">The status.</param>
         private void AssertBrokerAppRunning(RabbitStatus status)
         {

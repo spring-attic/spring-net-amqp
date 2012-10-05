@@ -14,9 +14,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System.Text;
 using System.Text.RegularExpressions;
-using Spring.Util;
 #endregion
 
 namespace Spring.Messaging.Amqp.Core
@@ -92,9 +90,6 @@ namespace Spring.Messaging.Amqp.Core
 
         /// <summary>The to string.</summary>
         /// <returns>The System.String.</returns>
-        public override string ToString()
-        {
-            return string.Format("{0}://{1}/{2}", this.exchangeType.ToLower(), this.exchangeName, string.IsNullOrWhiteSpace(this.routingKey) ? string.Empty : this.routingKey);
-        }
+        public override string ToString() { return string.Format("{0}://{1}/{2}", this.exchangeType.ToLower(), this.exchangeName, string.IsNullOrWhiteSpace(this.routingKey) ? string.Empty : this.routingKey); }
     }
 }

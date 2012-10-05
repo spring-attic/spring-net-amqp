@@ -1,8 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitTransactionManagerIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Data;
-using System.Linq;
-using System.Text;
 using AutoMoq;
 using Moq;
 using NUnit.Framework;
@@ -12,6 +25,7 @@ using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Rabbit.Transaction;
 using Spring.Transaction;
 using Spring.Transaction.Support;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
 {
@@ -36,35 +50,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// The transaction template.
         /// </summary>
         private TransactionTemplate transactionTemplate;
-        
+
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
         /// <summary>
@@ -103,11 +110,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
             var mocker = new AutoMoqer();
 
             var mockCallback = mocker.GetMock<ITransactionCallback>();
-            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() =>
-                                                                                                   {
-                                                                                                       this.template.ConvertAndSend(ROUTE, "message");
-                                                                                                       return (string)this.template.ReceiveAndConvert(ROUTE);
-                                                                                                   });
+            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
+                () =>
+                {
+                    this.template.ConvertAndSend(ROUTE, "message");
+                    return (string)this.template.ReceiveAndConvert(ROUTE);
+                });
             var result = (string)this.transactionTemplate.Execute(mockCallback.Object);
 
             Assert.AreEqual(null, result);
@@ -144,11 +152,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
             var mocker = new AutoMoqer();
 
             var mockCallback = mocker.GetMock<ITransactionCallback>();
-            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() =>
-                                                                                                   {
-                                                                                                       this.template.ReceiveAndConvert(ROUTE);
-                                                                                                       throw new PlannedException();
-                                                                                                   });
+            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
+                () =>
+                {
+                    this.template.ReceiveAndConvert(ROUTE);
+                    throw new PlannedException();
+                });
 
             // Makes receive (and send in principle) transactional
             this.template.ChannelTransacted = true;
@@ -179,11 +188,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
             var mocker = new AutoMoqer();
 
             var mockCallback = mocker.GetMock<ITransactionCallback>();
-            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() =>
-                                                                                                   {
-                                                                                                       template.ConvertAndSend(ROUTE, "message");
-                                                                                                       return null;
-                                                                                                   });
+            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
+                () =>
+                {
+                    this.template.ConvertAndSend(ROUTE, "message");
+                    return null;
+                });
             this.template.ChannelTransacted = true;
             this.transactionTemplate.Execute(mockCallback.Object);
             var result = (string)this.template.ReceiveAndConvert(ROUTE);
@@ -202,11 +212,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
             var mocker = new AutoMoqer();
 
             var mockCallback = mocker.GetMock<ITransactionCallback>();
-            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() =>
-                                                                                                   {
-                                                                                                       template.ConvertAndSend(ROUTE, "message");
-                                                                                                       throw new PlannedException();
-                                                                                                   });
+            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
+                () =>
+                {
+                    this.template.ConvertAndSend(ROUTE, "message");
+                    throw new PlannedException();
+                });
             this.template.ChannelTransacted = true;
             try
             {
@@ -234,8 +245,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// </summary>
         /// <remarks>
         /// </remarks>
-        public PlannedException() : base("Planned")
-        {
-        }
+        public PlannedException() : base("Planned") { }
     }
 }

@@ -1,10 +1,25 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Producer.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System;
 using System.Text;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Tests.Connection;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
@@ -14,9 +29,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     /// <remarks></remarks>
     public class Producer
     {
-        /// <summary>
-        /// Mains the specified args.
-        /// </summary>
+        /// <summary>Mains the specified args.</summary>
         /// <param name="args">The args.</param>
         /// <remarks></remarks>
         public static void Main(string[] args)
@@ -37,9 +50,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             SendMessages(template, TestConstants.EXCHANGE_NAME, routingKey, TestConstants.NUM_MESSAGES);
         }
 
-        /// <summary>
-        /// Sends the messages.
-        /// </summary>
+        /// <summary>Sends the messages.</summary>
         /// <param name="template">The template.</param>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
@@ -51,7 +62,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             {
                 byte[] bytes = Encoding.UTF8.GetBytes("testing");
                 var properties = new MessageProperties();
-                properties.Headers.Add("float", (double)3.14);
+                properties.Headers.Add("float", 3.14);
                 var message = new Message(bytes, properties);
                 template.Send(exchange, routingKey, message);
                 Console.WriteLine("sending " + i + "...");

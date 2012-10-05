@@ -370,7 +370,7 @@ namespace Spring.Messaging.Amqp.Core
                 internal HeadersExchangeMapBindingCreator(DestinationConfigurer destination, HeadersExchange exchange, IDictionary headerMap, bool matchAll)
                 {
                     // Assert.notEmpty(headerMap, "header map must not be empty");
-                    this.headerMap = new Dictionary<string, object>() { { "x-match", matchAll ? "all" : "any" } };
+                    this.headerMap = new Dictionary<string, object> { { "x-match", matchAll ? "all" : "any" } };
                     this.destination = destination;
                     this.exchange = exchange;
                 }
@@ -430,7 +430,7 @@ namespace Spring.Messaging.Amqp.Core
                 /// <returns>The binding.</returns>
                 public Binding Matches(object value)
                 {
-                    IDictionary map = new Dictionary<string, object>() { { this.key, value } };
+                    IDictionary map = new Dictionary<string, object> { { this.key, value } };
                     return new Binding(this.destination.Name, this.destination.Type, this.exchange.Name, string.Empty, map);
                 }
             }

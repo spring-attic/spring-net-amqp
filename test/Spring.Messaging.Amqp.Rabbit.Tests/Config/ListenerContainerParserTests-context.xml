@@ -1,29 +1,28 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<objects xmlns="http://www.springframework.net"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:rabbit="http://www.springframework.net/schema/rabbit">
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-	<rabbit:queue id="foo" name="foo" />
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-	<rabbit:queue id="bar" name="bar" />
+    <rabbit:queue id="foo" name="foo" />
 
-	<rabbit:listener-container id="container1" connection-factory="connectionFactory" acknowledge="manual" concurrency="5">
-		<rabbit:listener id="testListener" queue-names="foo, bar" ref="testObject" method="Handle"/>
-	</rabbit:listener-container>
+    <rabbit:queue id="bar" name="bar" />
 
-	<rabbit:listener-container id="container2" connection-factory="connectionFactory" acknowledge="manual" concurrency="5">
-		<rabbit:listener id="testListener" queues="foo, bar" ref="testObject" method="Handle"/>
-	</rabbit:listener-container>
+    <rabbit:listener-container id="container1" connection-factory="connectionFactory" acknowledge="manual" concurrency="5">
+        <rabbit:listener id="testListener" queue-names="foo, bar" ref="testObject" method="Handle" />
+    </rabbit:listener-container>
 
-	<rabbit:listener-container id="container3" connection-factory="connectionFactory"> <!-- TODO: advice-chain="adviceChain"> -->
-		<rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle"/>
-	</rabbit:listener-container>
+    <rabbit:listener-container id="container2" connection-factory="connectionFactory" acknowledge="manual" concurrency="5">
+        <rabbit:listener id="testListener" queues="foo, bar" ref="testObject" method="Handle" />
+    </rabbit:listener-container>
 
-	<rabbit:listener-container id="container4" connection-factory="connectionFactory">
-		<rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle"/>
-	</rabbit:listener-container>
+    <rabbit:listener-container id="container3" connection-factory="connectionFactory"> <!-- TODO: advice-chain="adviceChain"> -->
+        <rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle" />
+    </rabbit:listener-container>
 
-	<!--
+    <rabbit:listener-container id="container4" connection-factory="connectionFactory">
+        <rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle" />
+    </rabbit:listener-container>
+
+    <!--
   TODO
   <list id="adviceChain">
 		<object type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests"/>
@@ -33,12 +32,12 @@
   
   -->
 
-	<object type="Spring.Messaging.Amqp.Rabbit.Core.RabbitAdmin, Spring.Messaging.Amqp.Rabbit">
-		<constructor-arg name="connectionFactory" ref="connectionFactory"/>
-	</object>
+    <object type="Spring.Messaging.Amqp.Rabbit.Core.RabbitAdmin, Spring.Messaging.Amqp.Rabbit">
+        <constructor-arg name="connectionFactory" ref="connectionFactory" />
+    </object>
 
-  <object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit"/>
+    <object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit" />
 
-  <object id="testObject" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestObject, Spring.Messaging.Amqp.Rabbit.Tests"/>
+    <object id="testObject" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestObject, Spring.Messaging.Amqp.Rabbit.Tests" />
 
 </objects>

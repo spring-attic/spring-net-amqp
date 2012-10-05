@@ -145,6 +145,8 @@
     <Compile Include="Retry\IMessageKeyGenerator.cs" />
     <Compile Include="Retry\IMessageRecoverer.cs" />
     <Compile Include="Retry\INewMessageIdentifier.cs" />
+    <Compile Include="Retry\MissingMessageIdAdvice.cs" />
+    <Compile Include="Retry\RejectAndDontRequeueRecoverer.cs" />
     <Compile Include="Support\ConcurrentQueueExtensions.cs" />
     <Compile Include="Support\CorrelationData.cs" />
     <Compile Include="Support\DateExtensions.cs" />
@@ -154,6 +156,8 @@
     <Compile Include="Support\IPublisherCallbackChannel.cs" />
     <Compile Include="Support\PendingConfirm.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicBoolean.cs" />
+    <Compile Include="Threading\AtomicTypes\AtomicInteger.cs" />
+    <Compile Include="Threading\AtomicTypes\AtomicReference.cs" />
     <Compile Include="Transaction\RabbitTransactionManager.cs" />
   </ItemGroup>
   <ItemGroup>

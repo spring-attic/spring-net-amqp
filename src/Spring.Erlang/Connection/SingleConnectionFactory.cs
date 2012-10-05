@@ -1,14 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SingleConnectionFactory.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 using AopAlliance.Intercept;
 using Common.Logging;
 using Erlang.NET;
 using Spring.Aop.Framework;
 using Spring.Objects.Factory;
 using Spring.Util;
+#endregion
 
 namespace Spring.Erlang.Connection
 {
@@ -31,12 +45,12 @@ namespace Spring.Erlang.Connection
         /// <summary>
         /// The self node name.
         /// </summary>
-        private string selfNodeName;
+        private readonly string selfNodeName;
 
         /// <summary>
         /// The cookie.
         /// </summary>
-        private string cookie;
+        private readonly string cookie;
 
         /// <summary>
         /// The peer node name.
@@ -68,9 +82,7 @@ namespace Spring.Erlang.Connection
         /// </summary>
         private readonly object connectionMonitor = new object();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SingleConnectionFactory"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="SingleConnectionFactory"/> class.</summary>
         /// <param name="selfNodeName">Name of the self node.</param>
         /// <param name="cookie">The cookie.</param>
         /// <param name="peerNodeName">Name of the peer node.</param>
@@ -82,9 +94,7 @@ namespace Spring.Erlang.Connection
             this.peerNodeName = peerNodeName;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SingleConnectionFactory"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="SingleConnectionFactory"/> class.</summary>
         /// <param name="selfNodeName">Name of the self node.</param>
         /// <param name="peerNodeName">Name of the peer node.</param>
         /// <remarks></remarks>
@@ -99,11 +109,7 @@ namespace Spring.Erlang.Connection
         /// </summary>
         /// <value><c>true</c> if [unique self node name]; otherwise, <c>false</c>.</value>
         /// <remarks></remarks>
-        public bool UniqueSelfNodeName
-        {
-            get { return this.uniqueSelfNodeName; }
-            set { this.uniqueSelfNodeName = value; }
-        }
+        public bool UniqueSelfNodeName { get { return this.uniqueSelfNodeName; } set { this.uniqueSelfNodeName = value; } }
 
         #region Implementation of IConnectionFactory
 
@@ -126,7 +132,6 @@ namespace Spring.Erlang.Connection
                     {
                         throw new OtpIOException("failed to connect from '" + this.selfNodeName + "' to peer node '" + this.peerNodeName + "'", e);
                     }
-
                 }
 
                 return this.connection;
@@ -150,8 +155,9 @@ namespace Spring.Erlang.Connection
                 this.PrepareConnection(this.targetConnection);
                 if (this.logger.IsInfoEnabled)
                 {
-                    this.logger.Info("Established shared Rabbit Connection: "
-                                     + this.targetConnection);
+                    this.logger.Info(
+                        "Established shared Rabbit Connection: "
+                        + this.targetConnection);
                 }
 
                 this.connection = this.GetSharedConnectionProxy(this.targetConnection);
@@ -177,9 +183,7 @@ namespace Spring.Erlang.Connection
             }
         }
 
-        /// <summary>
-        /// Closes the connection.
-        /// </summary>
+        /// <summary>Closes the connection.</summary>
         /// <param name="connection">The connection.</param>
         /// Close the given Connection.
         /// @param connection
@@ -212,23 +216,14 @@ namespace Spring.Erlang.Connection
         /// @return the new Otp Connection
         /// @throws OtpAuthException
         /// <remarks></remarks>
-        protected IConnection DoCreateConnection()
-        {
-            return new DefaultConnection(this.otpSelf.connect(this.otpPeer));
-        }
+        protected IConnection DoCreateConnection() { return new DefaultConnection(this.otpSelf.connect(this.otpPeer)); }
 
-        /// <summary>
-        /// Prepares the connection.
-        /// </summary>
+        /// <summary>Prepares the connection.</summary>
         /// <param name="con">The con.</param>
         /// <remarks></remarks>
-        protected virtual void PrepareConnection(IConnection con)
-        {
-        }
+        protected virtual void PrepareConnection(IConnection con) { }
 
-        /// <summary>
-        /// Gets the shared connection proxy.
-        /// </summary>
+        /// <summary>Gets the shared connection proxy.</summary>
         /// <param name="target">The target.</param>
         /// <returns>The connection proxy.</returns>
         /// Wrap the given OtpConnection with a proxy that delegates every method
@@ -251,7 +246,6 @@ namespace Spring.Erlang.Connection
             //                                                typeof(SharedConnectionInvocationHandler).Name
             //                                            }
             //                 };*/
-
             return (IConnection)ProxyFactory.GetProxy(typeof(IConnection), new SharedConnectionInvocationHandler(target));
 
             /*factory.GetObject();
@@ -310,11 +304,7 @@ namespace Spring.Erlang.Connection
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <filterpriority>2</filterpriority>
-        public void Dispose()
-        {
-            this.ResetConnection();
-        }
-
+        public void Dispose() { this.ResetConnection(); }
         #endregion
     }
 
@@ -329,23 +319,16 @@ namespace Spring.Erlang.Connection
         /// </summary>
         private readonly IConnection target;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SharedConnectionInvocationHandler"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="SharedConnectionInvocationHandler"/> class.</summary>
         /// <param name="target">The target.</param>
         /// <remarks></remarks>
-        public SharedConnectionInvocationHandler(IConnection target)
-        {
-            this.target = target;
-        }
+        public SharedConnectionInvocationHandler(IConnection target) { this.target = target; }
 
-        /// <summary>
-        /// Invokes the specified mi.
-        /// </summary>
+        /// <summary>Invokes the specified mi.</summary>
         /// <param name="mi">The mi.</param>
         /// <returns>The object.</returns>
         /// <remarks></remarks>
-        public Object Invoke(IMethodInvocation mi)
+        public object Invoke(IMethodInvocation mi)
         {
             if (mi.Method.Name.Equals("equals"))
             {

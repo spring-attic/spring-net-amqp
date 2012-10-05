@@ -31,9 +31,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Retry
     /// <author>Joe Fitzgerald (.NET)</author>
     public class RejectAndDontRequeueRecoverer : IMessageRecoverer
     {
-        /// <summary>
-        /// Recover without requeuing.
-        /// </summary>
+        /// <summary>Recover without requeuing.</summary>
         /// <param name="message">The message.</param>
         /// <param name="cause">The cause.</param>
         public void Recover(Message message, Exception cause) { throw new ListenerExecutionFailedException("Retry Policy Exhausted", new AmqpRejectAndDontRequeueException(cause)); }

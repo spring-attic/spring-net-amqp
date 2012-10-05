@@ -18,6 +18,7 @@ using System;
 using System.Data;
 using Common.Logging;
 using Spring.Messaging.Amqp.Rabbit.Connection;
+using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Objects.Factory;
 using Spring.Transaction;
 using Spring.Transaction.Support;
@@ -26,38 +27,70 @@ using Spring.Transaction.Support;
 namespace Spring.Messaging.Amqp.Rabbit.Transaction
 {
     /**
- * {@link org.springframework.transaction.PlatformTransactionManager} implementation for a single Rabbit
- * {@link ConnectionFactory}. Binds a Rabbit Channel from the specified ConnectionFactory to the thread, potentially
- * allowing for one thread-bound channel per ConnectionFactory.
- * 
- * <p>
- * This local strategy is an alternative to executing Rabbit operations within, and synchronized with, external
- * transactions. This strategy is <i>not</i> able to provide XA transactions, for example in order to share transactions
- * between messaging and database access.
- * 
- * <p>
- * Application code is required to retrieve the transactional Rabbit resources via
- * {@link ConnectionFactoryUtils#getTransactionalResourceHolder(ConnectionFactory, boolean)} instead of a standard
- * {@link Connection#createChannel()} call with subsequent Channel creation. Spring's {@link RabbitTemplate} will
- * autodetect a thread-bound Channel and automatically participate in it.
- * 
- * <p>
- * <b>The use of {@link CachingConnectionFactory} as a target for this transaction manager is strongly recommended.</b>
- * CachingConnectionFactory uses a single Rabbit Connection for all Rabbit access in order to avoid the overhead of
- * repeated Connection creation, as well as maintaining a cache of Channels. Each transaction will then share the same
- * Rabbit Connection, while still using its own individual Rabbit Channel.
- * 
- * <p>
- * Transaction synchronization is turned off by default, as this manager might be used alongside a datastore-based
- * Spring transaction manager such as the JDBC {@link org.springframework.jdbc.datasource.DataSourceTransactionManager},
- * which has stronger needs for synchronization.
- * 
+/// <para>
+/// {@link org.springframework.transaction.PlatformTransactionManager} implementation for a single Rabbit
+/// {@link ConnectionFactory}. Binds a Rabbit Channel from the specified ConnectionFactory to the thread, potentially
+/// allowing for one thread-bound channel per ConnectionFactory.
+/// </para>
+/// <para>
+/// This local strategy is an alternative to executing Rabbit operations within, and synchronized with, external
+/// transactions. This strategy is <i>not</i> able to provide XA transactions, for example in order to share transactions
+/// between messaging and database access.
+/// </para>
+/// <para>
+/// Application code is required to retrieve the transactional Rabbit resources via
+/// {@link ConnectionFactoryUtils#getTransactionalResourceHolder(ConnectionFactory, boolean)} instead of a standard
+/// {@link Connection#createChannel()} call with subsequent Channel creation. Spring's {@link RabbitTemplate} will
+/// autodetect a thread-bound Channel and automatically participate in it.
+/// </para>
+/// <para>
+/// <b>The use of {@link CachingConnectionFactory} as a target for this transaction manager is strongly recommended.</b>
+/// CachingConnectionFactory uses a single Rabbit Connection for all Rabbit access in order to avoid the overhead of
+/// repeated Connection creation, as well as maintaining a cache of Channels. Each transaction will then share the same
+/// Rabbit Connection, while still using its own individual Rabbit Channel.
+/// </para>
+/// <para>
+/// Transaction synchronization is turned off by default, as this manager might be used alongside a datastore-based
+/// Spring transaction manager such as the JDBC {@link org.springframework.jdbc.datasource.DataSourceTransactionManager},
+/// which has stronger needs for synchronization.
+/// </para>
  * @author Dave Syer
  */
 
     /// <summary>
     /// A rabbit transaction manager.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <see cref="IPlatformTransactionManager"/> implementation for a single Rabbit
+    /// <see cref="IConnectionFactory"/>. Binds a Rabbit Channel from the specified ConnectionFactory to the thread, potentially
+    /// allowing for one thread-bound channel per ConnectionFactory.
+    /// </para>
+    /// <para>
+    /// This local strategy is an alternative to executing Rabbit operations within, and synchronized with, external
+    /// transactions. This strategy is <i>not</i> able to provide XA transactions, for example in order to share transactions
+    /// between messaging and database access.
+    /// </para>
+    /// <para>
+    /// Application code is required to retrieve the transactional Rabbit resources via
+    /// <see cref="ConnectionFactoryUtils.GetTransactionalResourceHolder"/> instead of a standard
+    /// <see cref="IConnection.CreateChannel"/> call with subsequent Channel creation. Spring's <see cref="RabbitTemplate"/> will
+    /// autodetect a thread-bound Channel and automatically participate in it.
+    /// </para>
+    /// <para>
+    /// <b>The use of <see cref="CachingConnectionFactory"/> as a target for this transaction manager is strongly recommended.</b>
+    /// CachingConnectionFactory uses a single Rabbit Connection for all Rabbit access in order to avoid the overhead of
+    /// repeated Connection creation, as well as maintaining a cache of Channels. Each transaction will then share the same
+    /// Rabbit Connection, while still using its own individual Rabbit Channel.
+    /// </para>
+    /// <para>
+    /// Transaction synchronization is turned off by default, as this manager might be used alongside a datastore-based
+    /// Spring transaction manager such as the JDBC {@link org.springframework.jdbc.datasource.DataSourceTransactionManager},
+    /// which has stronger needs for synchronization.
+    /// </para>
+    /// </remarks>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     public class RabbitTransactionManager : AbstractPlatformTransactionManager, IResourceTransactionManager, IInitializingObject
     {
         #region Logging
@@ -65,7 +98,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <summary>
         /// The Logger.
         /// </summary>
-        private readonly ILog logger = LogManager.GetLogger(typeof(RabbitTransactionManager));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitTransactionManager));
         #endregion
 
         /// <summary>
@@ -73,22 +106,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// </summary>
         private IConnectionFactory connectionFactory;
 
-        /**
-         * Create a new RabbitTransactionManager for object-style usage.
-         * <p>
-         * Note: The ConnectionFactory has to be set before using the instance. This constructor can be used to prepare a
-         * RabbitTemplate via a ObjectFactory, typically setting the ConnectionFactory via setConnectionFactory.
-         * <p>
-         * Turns off transaction synchronization by default, as this manager might be used alongside a datastore-based
-         * Spring transaction manager like DataSourceTransactionManager, which has stronger needs for synchronization. Only
-         * one manager is allowed to drive synchronization at any point of time.
-         * @see #setConnectionFactory
-         * @see #setTransactionSynchronization
-         */
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitTransactionManager"/> class.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Create a new RabbitTransactionManager for object-style usage.
+        /// </para>
+        /// <para>
+        /// Note: The ConnectionFactory has to be set before using the instance. This constructor can be used to prepare a
+        /// RabbitTemplate via a ObjectFactory, typically setting the ConnectionFactory via setConnectionFactory.
+        /// </para>
+        /// <para>
+        /// Turns off transaction synchronization by default, as this manager might be used alongside a datastore-based
+        /// Spring transaction manager like DataSourceTransactionManager, which has stronger needs for synchronization. Only
+        /// one manager is allowed to drive synchronization at any point of time.
+        /// </para>
+        /// </remarks>
         public RabbitTransactionManager() { this.TransactionSynchronization = TransactionSynchronizationState.Never; }
 
         /// <summary>Initializes a new instance of the <see cref="RabbitTransactionManager"/> class.</summary>
@@ -107,8 +141,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <summary>
         /// Actions to perform after properties are set. Make sure the ConnectionFactory has been set.
         /// </summary>
-        /// <exception cref="ArgumentException">
-        /// </exception>
         public void AfterPropertiesSet()
         {
             if (this.ConnectionFactory == null)
@@ -130,9 +162,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// </returns>
         protected override object DoGetTransaction()
         {
-            var txObject = new RabbitTransactionObject();
-            txObject.ResourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(this.ConnectionFactory);
-            return txObject;
+            var transactionObject = new RabbitTransactionObject();
+            transactionObject.ResourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(this.ConnectionFactory);
+            return transactionObject;
         }
 
         /// <summary>Determines if the supplied object is an existing transaction.</summary>
@@ -140,43 +172,38 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <returns>True if the object is an existing transaction, else false.</returns>
         protected override bool IsExistingTransaction(object transaction)
         {
-            var txObject = (RabbitTransactionObject)transaction;
-            return txObject.ResourceHolder != null;
+            var transactionObject = (RabbitTransactionObject)transaction;
+            return transactionObject.ResourceHolder != null;
         }
 
         /// <summary>Do begin.</summary>
         /// <param name="transaction">The transaction.</param>
         /// <param name="definition">The definition.</param>
-        /// <exception cref="InvalidIsolationLevelException"></exception>
-        /// <exception cref="CannotCreateTransactionException"></exception>
         protected override void DoBegin(object transaction, ITransactionDefinition definition)
         {
-            // TODO: Figure out the right isolation level.
+            // TODO: Figure out the right isolation level. https://jira.springsource.org/browse/SPRNET-1444
             if (definition.TransactionIsolationLevel != IsolationLevel.Unspecified)
             {
                 throw new InvalidIsolationLevelException("AMQP does not support an isolation level concept");
             }
 
-            var txObject = (RabbitTransactionObject)transaction;
+            var transactionObject = (RabbitTransactionObject)transaction;
             RabbitResourceHolder resourceHolder = null;
             try
             {
                 resourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(this.ConnectionFactory, true);
-                if (this.logger.IsDebugEnabled)
-                {
-                    this.logger.Debug("Created AMQP transaction on channel [" + resourceHolder.Channel + "]");
-                }
+                Logger.Debug(m => m("Created AMQP transaction on channel [{0}]", resourceHolder.Channel));
 
                 // resourceHolder.DeclareTransactional();
-                txObject.ResourceHolder = resourceHolder;
-                txObject.ResourceHolder.SynchronizedWithTransaction = true;
+                transactionObject.ResourceHolder = resourceHolder;
+                transactionObject.ResourceHolder.SynchronizedWithTransaction = true;
                 var timeout = this.DetermineTimeout(definition);
                 if (timeout != DefaultTransactionDefinition.TIMEOUT_DEFAULT)
                 {
-                    txObject.ResourceHolder.TimeoutInSeconds = timeout;
+                    transactionObject.ResourceHolder.TimeoutInSeconds = timeout;
                 }
 
-                TransactionSynchronizationManager.BindResource(this.ConnectionFactory, txObject.ResourceHolder);
+                TransactionSynchronizationManager.BindResource(this.ConnectionFactory, transactionObject.ResourceHolder);
             }
             catch (AmqpException ex)
             {
@@ -194,8 +221,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <returns>The object.</returns>
         protected override object DoSuspend(object transaction)
         {
-            var txObject = (RabbitTransactionObject)transaction;
-            txObject.ResourceHolder = null;
+            var transactionObject = (RabbitTransactionObject)transaction;
+            transactionObject.ResourceHolder = null;
             return TransactionSynchronizationManager.UnbindResource(this.ConnectionFactory);
         }
 
@@ -212,8 +239,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <param name="status">The status.</param>
         protected override void DoCommit(DefaultTransactionStatus status)
         {
-            var txObject = (RabbitTransactionObject)status.Transaction;
-            var resourceHolder = txObject.ResourceHolder;
+            var transactionObject = (RabbitTransactionObject)status.Transaction;
+            var resourceHolder = transactionObject.ResourceHolder;
             resourceHolder.CommitAll();
         }
 
@@ -221,27 +248,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <param name="status">The status.</param>
         protected override void DoRollback(DefaultTransactionStatus status)
         {
-            var txObject = (RabbitTransactionObject)status.Transaction;
-            var resourceHolder = txObject.ResourceHolder;
+            var transactionObject = (RabbitTransactionObject)status.Transaction;
+            var resourceHolder = transactionObject.ResourceHolder;
             resourceHolder.RollbackAll();
         }
 
         /// <summary>Do set rollback only.</summary>
         /// <param name="status">The status.</param>
-        protected void DoSetRollbackOnly(DefaultTransactionStatus status)
+        protected override void DoSetRollbackOnly(DefaultTransactionStatus status)
         {
-            var txObject = (RabbitTransactionObject)status.Transaction;
-            txObject.ResourceHolder.RollbackOnly = true;
+            var transactionObject = (RabbitTransactionObject)status.Transaction;
+            transactionObject.ResourceHolder.RollbackOnly = true;
         }
 
         /// <summary>Do cleanup after completion.</summary>
         /// <param name="transaction">The transaction.</param>
         protected void DoCleanupAfterCompletion(object transaction)
         {
-            var txObject = (RabbitTransactionObject)transaction;
+            var transactionObject = (RabbitTransactionObject)transaction;
             TransactionSynchronizationManager.UnbindResource(this.ConnectionFactory);
-            txObject.ResourceHolder.CloseAll();
-            txObject.ResourceHolder.Clear();
+            transactionObject.ResourceHolder.CloseAll();
+            transactionObject.ResourceHolder.Clear();
         }
     }
 

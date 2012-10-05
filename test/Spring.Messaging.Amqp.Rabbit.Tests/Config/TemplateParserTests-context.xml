@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<objects xmlns="http://www.springframework.net"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:rabbit="http://www.springframework.net/schema/rabbit">
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-	<rabbit:template id="template" connection-factory="connectionFactory" />
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-	<rabbit:template id="kitchenSink" connection-factory="connectionFactory" channel-transacted="true" encoding="UTF-8" exchange="foo" queue="bar" routing-key="spam" message-converter="converter" reply-timeout="1000" />
+    <rabbit:template id="template" connection-factory="connectionFactory" />
 
-	<rabbit:connection-factory id="connectionFactory" />
-	
-	<object id="converter" type="Spring.Messaging.Amqp.Support.Converter.SimpleMessageConverter, Spring.Messaging.Amqp"/>
+    <rabbit:template id="kitchenSink" connection-factory="connectionFactory" channel-transacted="true" encoding="UTF-8" exchange="foo" queue="bar" routing-key="spam" message-converter="converter" reply-timeout="1000" />
+
+    <rabbit:connection-factory id="connectionFactory" />
+
+    <object id="converter" type="Spring.Messaging.Amqp.Support.Converter.SimpleMessageConverter, Spring.Messaging.Amqp" />
 
 </objects>

@@ -1,31 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageListenerTxSizeIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Text;
 using System.Threading;
 using Common.Logging;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
-using Spring.Threading;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
+    /// <summary>The message listener tx size integration tests.</summary>
     [TestFixture]
     [Category(TestCategory.Integration)]
     public class MessageListenerTxSizeIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MessageListenerTxSizeIntegrationTests));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerTxSizeIntegrationTests));
 
-        private Queue queue = new Queue("test.queue");
+        private readonly Queue queue = new Queue("test.queue");
 
-        private RabbitTemplate template = new RabbitTemplate();
+        private readonly RabbitTemplate template = new RabbitTemplate();
 
         private int concurrentConsumers = 1;
 
@@ -38,75 +52,73 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         private SimpleMessageListenerContainer container;
 
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
-        
+
+        /// <summary>The create connection factory.</summary>
         [SetUp]
         public void CreateConnectionFactory()
         {
-            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);
             this.brokerIsRunning.Apply();
             var connectionFactory = new CachingConnectionFactory();
-            connectionFactory.ChannelCacheSize = concurrentConsumers;
+            connectionFactory.ChannelCacheSize = this.concurrentConsumers;
             connectionFactory.Port = BrokerTestUtils.GetPort();
-            template.ConnectionFactory = connectionFactory;
+            this.template.ConnectionFactory = connectionFactory;
         }
 
+        /// <summary>The clear.</summary>
         [TearDown]
         public void Clear()
         {
             // Wait for broker communication to finish before trying to stop container
             Thread.Sleep(300);
             logger.Debug("Shutting down at end of test");
-            if (container != null)
+            if (this.container != null)
             {
-                container.Shutdown();
+                this.container.Shutdown();
             }
         }
 
+        /// <summary>The test listener transactional sunny day.</summary>
         [Test]
         public void TestListenerTransactionalSunnyDay()
         {
-            transactional = true;
-            var latch = new CountdownEvent(messageCount);
-            container = CreateContainer(new TxTestListener(latch, false, this));
-            for (int i = 0; i < messageCount; i++)
+            this.transactional = true;
+            var latch = new CountdownEvent(this.messageCount);
+            this.container = this.CreateContainer(new TxTestListener(latch, false, this));
+            for (int i = 0; i < this.messageCount; i++)
             {
-                template.ConvertAndSend(queue.Name, i + "foo");
+                this.template.ConvertAndSend(this.queue.Name, i + "foo");
             }
-            int timeout = Math.Min(1 + messageCount / (4 * concurrentConsumers), 30);
+
+            int timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
             logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(new TimeSpan(0, 0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
-            Assert.Null(template.ReceiveAndConvert(queue.Name));
+            Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
         }
 
+        /// <summary>The test listener transactional fails.</summary>
         [Test]
         [Ignore("Need to fix")]
         public void TestListenerTransactionalFails()
@@ -130,7 +142,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             var container = new SimpleMessageListenerContainer(this.template.ConnectionFactory);
             container.MessageListener = new MessageListenerAdapter(listener);
-            container.QueueNames = new string[] { this.queue.Name };
+            container.QueueNames = new[] { this.queue.Name };
             container.TxSize = this.txSize;
             container.PrefetchCount = this.txSize;
             container.ConcurrentConsumers = this.concurrentConsumers;
@@ -148,17 +160,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class TxTestListener : IChannelAwareMessageListener
     {
-        private static ILog logger = LogManager.GetLogger(typeof(TestListener));
-        private ThreadLocal<int> count = new ThreadLocal<int>();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(TestListener));
+        private readonly ThreadLocal<int> count = new ThreadLocal<int>();
         private readonly MessageListenerTxSizeIntegrationTests outer;
 
         private readonly CountdownEvent latch;
 
         private readonly bool fail;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TxTestListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="TxTestListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <param name="outer">The outer.</param>
@@ -170,18 +180,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.outer = outer;
         }
 
-        /// <summary>
-        /// Handles the message.
-        /// </summary>
+        /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
         /// <remarks></remarks>
-        public void HandleMessage(string value)
-        {
-        }
+        public void HandleMessage(string value) { }
 
-        /// <summary>
-        /// Called when [message].
-        /// </summary>
+        /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
         /// <remarks></remarks>
@@ -209,7 +213,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
             finally
             {
-                if (this.latch.CurrentCount > 0) this.latch.Signal();
+                if (this.latch.CurrentCount > 0)
+                {
+                    this.latch.Signal();
+                }
             }
         }
     }

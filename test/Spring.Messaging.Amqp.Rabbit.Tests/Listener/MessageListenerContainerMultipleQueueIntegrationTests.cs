@@ -1,7 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageListenerContainerMultipleQueueIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Threading;
 using AutoMoq;
 using Common.Logging;
@@ -13,56 +26,51 @@ using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using Spring.Messaging.Amqp.Support.Converter;
-using Spring.Threading.AtomicTypes;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
+    /// <summary>The message listener container multiple queue integration tests.</summary>
     [TestFixture]
     [Category(TestCategory.Integration)]
     [Ignore("Need to fix")]
     public class MessageListenerContainerMultipleQueueIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerMultipleQueueIntegrationTests));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerMultipleQueueIntegrationTests));
 
-        private static Queue queue1 = new Queue("test.queue.1");
+        private static readonly Queue queue1 = new Queue("test.queue.1");
 
-        private static Queue queue2 = new Queue("test.queue.2");
+        private static readonly Queue queue2 = new Queue("test.queue.2");
 
-        //@Rule
+        // @Rule
         public BrokerRunning brokerIsRunningAndQueue1Empty;
 
-        //@Rule
+        // @Rule
         public BrokerRunning brokerIsRunningAndQueue2Empty;
 
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
         /// <summary>
@@ -88,7 +96,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var mocker = new AutoMoqer();
 
             var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
-            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.Queues = new Queue[] { queue1, queue2 });
+            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.Queues = new[] { queue1, queue2 });
 
             this.DoTest(1, mockConfigurer.Object);
         }
@@ -103,7 +111,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var mocker = new AutoMoqer();
 
             var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
-            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.QueueNames = new string[] { queue1.Name, queue2.Name });
+            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.QueueNames = new[] { queue1.Name, queue2.Name });
 
             this.DoTest(1, mockConfigurer.Object);
         }
@@ -118,7 +126,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var mocker = new AutoMoqer();
 
             var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
-            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.Queues = new Queue[] { queue1, queue2 });
+            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.Queues = new[] { queue1, queue2 });
 
             this.DoTest(3, mockConfigurer.Object);
         }
@@ -133,15 +141,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var mocker = new AutoMoqer();
 
             var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
-            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.QueueNames = new string[] { queue1.Name, queue2.Name });
+            mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.QueueNames = new[] { queue1.Name, queue2.Name });
 
             this.DoTest(3, mockConfigurer.Object);
         }
 
-
-        /// <summary>
-        /// Does the test.
-        /// </summary>
+        /// <summary>Does the test.</summary>
         /// <param name="concurrentConsumers">The concurrent consumers.</param>
         /// <param name="configurer">The configurer.</param>
         /// <remarks></remarks>
@@ -191,6 +196,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 container.Shutdown();
                 Assert.AreEqual(0, container.ActiveConsumerCount);
             }
+
             Assert.Null(template.ReceiveAndConvert(queue1.Name));
             Assert.Null(template.ReceiveAndConvert(queue2.Name));
         }
@@ -202,9 +208,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public interface IContainerConfigurer
     {
-        /// <summary>
-        /// Configures the specified container.
-        /// </summary>
+        /// <summary>Configures the specified container.</summary>
         /// <param name="container">The container.</param>
         /// <remarks></remarks>
         void Configure(SimpleMessageListenerContainer container);
@@ -216,24 +220,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     internal class MultiplePocoListener
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MultiplePocoListener));
-        private AtomicInteger count = new AtomicInteger();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(MultiplePocoListener));
+        private readonly AtomicInteger count = new AtomicInteger();
 
         private readonly CountdownEvent latch;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MultiplePocoListener"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="MultiplePocoListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <remarks></remarks>
-        public MultiplePocoListener(CountdownEvent latch)
-        {
-            this.latch = latch;
-        }
+        public MultiplePocoListener(CountdownEvent latch) { this.latch = latch; }
 
-        /// <summary>
-        /// Handles the message.
-        /// </summary>
+        /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
         /// <remarks></remarks>
         public void HandleMessage(int value)
@@ -246,9 +243,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Gets the count.
         /// </summary>
         /// <remarks></remarks>
-        public int Count
-        {
-            get { return this.count.Value; }
-        }
+        public int Count { get { return this.count.Value; } }
     }
 }

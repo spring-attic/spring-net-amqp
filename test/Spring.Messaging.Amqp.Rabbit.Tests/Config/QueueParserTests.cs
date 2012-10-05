@@ -1,21 +1,28 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="QueueParserTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 
+#region Using Directives
 using NUnit.Framework;
-
-//using Spring.Context.Config;
-using Spring.Context.Support;
-using Spring.Context;
 using Spring.Core.IO;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Config;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Objects.Factory;
 using Spring.Objects.Factory.Xml;
+    // using Spring.Context.Config;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 {
@@ -39,13 +46,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                 + typeof(QueueParserTests).Name + "-context.xml";
             var resource = new AssemblyResource(resourceName);
-            objectFactory = new XmlObjectFactory(resource);
+            this.objectFactory = new XmlObjectFactory(resource);
         }
 
+        /// <summary>The test queue.</summary>
         [Test]
         public void testQueue()
         {
-            Queue queue = objectFactory.GetObject<Queue>("foo");
+            var queue = this.objectFactory.GetObject<Queue>("foo");
             Assert.IsNotNull(queue);
             Assert.AreEqual("foo", queue.Name);
             Assert.True(queue.Durable);
@@ -53,19 +61,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.False(queue.Exclusive);
         }
 
+        /// <summary>The test alias queue.</summary>
         [Test]
         public void testAliasQueue()
         {
-            Queue queue = objectFactory.GetObject<Queue>("alias");
+            var queue = this.objectFactory.GetObject<Queue>("alias");
             Assert.IsNotNull(queue);
             Assert.AreEqual("spam", queue.Name);
             Assert.AreNotSame("alias", queue.Name);
         }
 
+        /// <summary>The test override queue.</summary>
         [Test]
         public void testOverrideQueue()
         {
-            Queue queue = objectFactory.GetObject<Queue>("override");
+            var queue = this.objectFactory.GetObject<Queue>("override");
             Assert.IsNotNull(queue);
             Assert.AreEqual("override", queue.Name);
             Assert.True(queue.Durable);
@@ -73,10 +83,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.True(queue.AutoDelete);
         }
 
+        /// <summary>The test override alias queue.</summary>
         [Test]
         public void testOverrideAliasQueue()
         {
-            Queue queue = objectFactory.GetObject<Queue>("overrideAlias");
+            var queue = this.objectFactory.GetObject<Queue>("overrideAlias");
             Assert.IsNotNull(queue);
             Assert.AreEqual("bar", queue.Name);
             Assert.True(queue.Durable);
@@ -84,10 +95,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.True(queue.AutoDelete);
         }
 
+        /// <summary>The test anonymous queue.</summary>
         [Test]
         public void testAnonymousQueue()
         {
-            Queue queue = objectFactory.GetObject<Queue>("anonymous");
+            var queue = this.objectFactory.GetObject<Queue>("anonymous");
             Assert.IsNotNull(queue);
             Assert.AreNotEqual(queue.Name, "anonymous");
             Assert.True(queue is AnonymousQueue);
@@ -96,24 +108,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.True(queue.AutoDelete, "AutoDelete is incorrect value");
         }
 
+        /// <summary>The test arguments queue.</summary>
         [Test]
         public void testArgumentsQueue()
         {
-            Queue queue = objectFactory.GetObject<Queue>("arguments");
+            var queue = this.objectFactory.GetObject<Queue>("arguments");
             Assert.IsNotNull(queue);
             Assert.AreEqual("bar", queue.Arguments["foo"]);
             Assert.AreEqual("baz", queue.Arguments["bar"]);
         }
 
+        /// <summary>The test anonymous arguments queue.</summary>
         [Test]
         public void testAnonymousArgumentsQueue()
         {
-            Queue queue = objectFactory.GetObject<Queue>("anonymousArguments");
+            var queue = this.objectFactory.GetObject<Queue>("anonymousArguments");
             Assert.IsNotNull(queue);
             Assert.AreEqual("spam", queue.Arguments["foo"]);
             Assert.AreEqual("more-spam", queue.Arguments["bar"]);
         }
 
+        /// <summary>The test illegal anonymous queue.</summary>
         [Test]
         public void testIllegalAnonymousQueue()
         {
@@ -124,6 +139,5 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
             Assert.Throws<ObjectDefinitionStoreException>(() => new XmlObjectFactory(resource), "Parser fails to reject invalid state of anonymous queues");
         }
-
     }
 }

@@ -1,4 +1,19 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitTemplateIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
 using System;
 using System.Text;
 using System.Threading;
@@ -8,19 +23,18 @@ using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Rabbit.Tests.Connection;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Support.Converter;
 using Spring.Transaction;
 using Spring.Transaction.Support;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
-    using Spring.Messaging.Amqp.Rabbit.Support;
-
     /// <summary>
     /// Rabbit template integration tests.
     /// </summary>
@@ -29,33 +43,26 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     public class RabbitTemplateIntegrationTests : AbstractRabbitIntegrationTest
     {
         #region Fixture Setup and Teardown
+
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
-        public override void BeforeFixtureSetUp()
-        {
-        }
+        public override void BeforeFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute before fixture teardown.
         /// </summary>
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        public override void BeforeFixtureTearDown() { }
 
         /// <summary>
         /// Code to execute after fixture setup.
         /// </summary>
-        public override void AfterFixtureSetUp()
-        {
-        }
+        public override void AfterFixtureSetUp() { }
 
         /// <summary>
         /// Code to execute after fixture teardown.
         /// </summary>
-        public override void AfterFixtureTearDown()
-        {
-        }
+        public override void AfterFixtureTearDown() { }
         #endregion
 
         /// <summary>
@@ -80,7 +87,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             connectionFactory.Port = BrokerTestUtils.GetPort();
             this.template = new RabbitTemplate(connectionFactory);
         }
-        
+
         /// <summary>
         /// Tests the send to non existent and then receive.
         /// </summary>
@@ -115,14 +122,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         public void TestSendAndReceiveWithPostProcessor()
         {
             this.template.ConvertAndSend(
-                ROUTE,
-                (object)"message",
+                ROUTE, 
+                "message", 
                 message =>
-                    {
-                        message.MessageProperties.ContentType = "text/other";
-                        // message.getMessageProperties().setUserId("foo");
-                        return message;
-                    });
+                {
+                    message.MessageProperties.ContentType = "text/other";
+
+                    // message.getMessageProperties().setUserId("foo");
+                    return message;
+                });
 
             var result = (string)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual("message", result);
@@ -185,17 +193,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             // closed...
             try
             {
-                this.template.Execute<string>(delegate(IModel channel)
-                                             {
-                                                 // Switch off the auto-ack so the message is rolled back...
-                                                 channel.BasicGet(ROUTE, false);
+                this.template.Execute<string>(
+                    delegate(IModel channel)
+                    {
+                        // Switch off the auto-ack so the message is rolled back...
+                        channel.BasicGet(ROUTE, false);
 
-                                                 // This is the way to rollback with a cached channel (it is
-                                                 // the way the ConnectionFactoryUtils
-                                                 // handles it via a synchronization):
-                                                 channel.BasicRecover(true);
-                                                 throw new PlannedException();
-                                             });
+                        // This is the way to rollback with a cached channel (it is
+                        // the way the ConnectionFactoryUtils
+                        // handles it via a synchronization):
+                        channel.BasicRecover(true);
+                        throw new PlannedException();
+                    });
                 Assert.Fail("Expected PlannedException");
             }
             catch (Exception e)
@@ -217,17 +226,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         {
             this.template.ConvertAndSend(ROUTE, "message");
             var messagePropertiesConverter = new DefaultMessagePropertiesConverter();
-            var result = this.template.Execute<string>(delegate(IModel channel)
-            {
-                // We need noAck=false here for the message to be expicitly
-                // acked
-                var response = channel.BasicGet(ROUTE, false);
-                var messageProps = messagePropertiesConverter.ToMessageProperties(response.BasicProperties, response, "UTF-8");
-                
-                // Explicit ack
-                channel.BasicAck(response.DeliveryTag, false);
-                return (string)new SimpleMessageConverter().FromMessage(new Message(response.Body, messageProps));
-            });
+            var result = this.template.Execute(
+                delegate(IModel channel)
+                {
+                    // We need noAck=false here for the message to be expicitly
+                    // acked
+                    var response = channel.BasicGet(ROUTE, false);
+                    var messageProps = messagePropertiesConverter.ToMessageProperties(response.BasicProperties, response, "UTF-8");
+
+                    // Explicit ack
+                    channel.BasicAck(response.DeliveryTag, false);
+                    return (string)new SimpleMessageConverter().FromMessage(new Message(response.Body, messageProps));
+                });
             Assert.AreEqual("message", result);
             result = (string)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual(null, result);
@@ -243,7 +253,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             var mockCallback = mocker.GetMock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() => (string)this.template.ReceiveAndConvert(ROUTE));
-            
+
             this.template.ConvertAndSend(ROUTE, "message");
             this.template.ChannelTransacted = true;
             var result = (string)new TransactionTemplate(new TestTransactionManager()).Execute(mockCallback.Object);
@@ -273,33 +283,33 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             Assert.AreEqual(null, result);
         }
 
-
         /// <summary>
         /// Tests the receive in external transaction with rollback.
         /// </summary>
         /// <remarks></remarks>
         [Test]
         [Ignore("Need resolution from Rabbit Team RE: Transaction Rollback")]
-        public void TestReceiveInExternalTransactionWithRollback()  
+        public void TestReceiveInExternalTransactionWithRollback()
         {
             var mocker = new AutoMoqer();
 
             var mockCallback = mocker.GetMock<ITransactionCallback>();
-            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() =>
-                                                                                                   {
-                                                                                                       this.template.ReceiveAndConvert(ROUTE);
-                                                                                                       throw new PlannedException();
-                                                                                                   });
+            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
+                () =>
+                {
+                    this.template.ReceiveAndConvert(ROUTE);
+                    throw new PlannedException();
+                });
 
             // Makes receive (and send in principle) transactional
             this.template.ChannelTransacted = true;
             this.template.ConvertAndSend(ROUTE, "message");
-            try 
+            try
             {
                 new TransactionTemplate(new TestTransactionManager()).Execute(mockCallback.Object);
                 Assert.Fail("Expected PlannedException");
-            } 
-            catch (PlannedException e) 
+            }
+            catch (PlannedException e)
             {
                 // Expected
             }
@@ -309,7 +319,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             result = (string)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual(null, result);
         }
-
 
         /// <summary>
         /// Tests the receive in external transaction with no rollback.
@@ -321,11 +330,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             var mocker = new AutoMoqer();
 
             var mockCallback = mocker.GetMock<ITransactionCallback>();
-            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() =>
-                                                                                                   {
-                                                                                                       this.template.ReceiveAndConvert(ROUTE);
-                                                                                                       throw new PlannedException();
-                                                                                                   });
+            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
+                () =>
+                {
+                    this.template.ReceiveAndConvert(ROUTE);
+                    throw new PlannedException();
+                });
 
             // Makes receive non-transactional
             this.template.ChannelTransacted = false;
@@ -355,11 +365,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             var mocker = new AutoMoqer();
 
             var mockCallback = mocker.GetMock<ITransactionCallback>();
-            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() =>
-                                                                                                   {
-                                                                                                       this.template.ConvertAndSend(ROUTE, "message");
-                                                                                                       return null;
-                                                                                                   });
+            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
+                () =>
+                {
+                    this.template.ConvertAndSend(ROUTE, "message");
+                    return null;
+                });
 
             this.template.ChannelTransacted = true;
             new TransactionTemplate(new TestTransactionManager()).Execute(mockCallback.Object);
@@ -380,11 +391,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             var mocker = new AutoMoqer();
 
             var mockCallback = mocker.GetMock<ITransactionCallback>();
-            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() =>
-                                                                                                   {
-                                                                                                       this.template.ConvertAndSend(ROUTE, "message");
-                                                                                                       throw new PlannedException();
-                                                                                                   });
+            mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
+                () =>
+                {
+                    this.template.ConvertAndSend(ROUTE, "message");
+                    throw new PlannedException();
+                });
             this.template.ChannelTransacted = true;
             try
             {
@@ -404,17 +416,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// Tests the atomic send and receive.
         /// </summary>
         [Test]
-        public void TestAtomicSendAndReceive()  
+        public void TestAtomicSendAndReceive()
         {
             var template = new RabbitTemplate(new CachingConnectionFactory());
             template.RoutingKey = ROUTE;
             template.Queue = ROUTE;
 
             // Set up a consumer to respond to our producer
-            var received = Task.Factory.StartNew(() => 
-            {
+            var received = Task.Factory.StartNew(
+                () =>
+                {
                     Message insidemessage = null;
-                    for (int i = 0; i < 10; i++) 
+                    for (int i = 0; i < 10; i++)
                     {
                         insidemessage = template.Receive();
                         if (insidemessage != null)
@@ -428,7 +441,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     Assert.IsNotNull(insidemessage, "No message received");
                     template.Send(insidemessage.MessageProperties.ReplyTo, insidemessage);
                     return insidemessage;
-            });
+                });
 
             var message = new Message(Encoding.UTF8.GetBytes("test-message"), new MessageProperties());
             var reply = template.SendAndReceive(message);
@@ -451,30 +464,30 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// Tests the atomic send and receive with routing key.
         /// </summary>
         [Test]
-        public void TestAtomicSendAndReceiveWithRoutingKey()  
+        public void TestAtomicSendAndReceiveWithRoutingKey()
         {
             var template = new RabbitTemplate(new CachingConnectionFactory());
-            
-            // Set up a consumer to respond to our producer
-            var received = Task.Factory.StartNew(() => 
-            {
 
+            // Set up a consumer to respond to our producer
+            var received = Task.Factory.StartNew(
+                () =>
+                {
                     Message internalmessage = null;
-                    for (int i = 0; i < 10; i++) 
+                    for (int i = 0; i < 10; i++)
                     {
                         internalmessage = template.Receive(ROUTE);
                         if (internalmessage != null)
                         {
                             break;
                         }
-                       
+
                         Thread.Sleep(100);
                     }
 
                     Assert.IsNotNull(internalmessage, "No message received");
                     template.Send(internalmessage.MessageProperties.ReplyTo, internalmessage);
                     return internalmessage;
-            });
+                });
 
             var message = new Message(Encoding.UTF8.GetBytes("test-message"), new MessageProperties());
             var reply = template.SendAndReceive(ROUTE, message);
@@ -497,15 +510,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// Tests the atomic send and receive with exchange and routing key.
         /// </summary>
         [Test]
-        public void TestAtomicSendAndReceiveWithExchangeAndRoutingKey()  
+        public void TestAtomicSendAndReceiveWithExchangeAndRoutingKey()
         {
             var template = new RabbitTemplate(new CachingConnectionFactory());
-            
+
             // Set up a consumer to respond to our producer
-            var received = Task.Factory.StartNew(() => 
-            {
+            var received = Task.Factory.StartNew(
+                () =>
+                {
                     Message internalmessage = null;
-                    for (var i = 0; i < 10; i++) 
+                    for (var i = 0; i < 10; i++)
                     {
                         internalmessage = template.Receive(ROUTE);
                         if (internalmessage != null)
@@ -519,7 +533,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     Assert.IsNotNull(internalmessage, "No message received");
                     template.Send(internalmessage.MessageProperties.ReplyTo, internalmessage);
                     return internalmessage;
-            });
+                });
             var message = new Message(Encoding.UTF8.GetBytes("test-message"), new MessageProperties());
             var reply = template.SendAndReceive(string.Empty, ROUTE, message);
             var success = received.Wait(1000);
@@ -537,25 +551,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             Assert.AreEqual(null, reply);
         }
 
-
         /// <summary>
         /// Tests the atomic send and receive with conversion.
         /// </summary>
         [Test]
-        public void TestAtomicSendAndReceiveWithConversion()  
+        public void TestAtomicSendAndReceiveWithConversion()
         {
             var template = new RabbitTemplate(new CachingConnectionFactory());
             template.RoutingKey = ROUTE;
             template.Queue = ROUTE;
-            
+
             // Set up a consumer to respond to our producer
-            var received = Task.Factory.StartNew(() => 
-            {
+            var received = Task.Factory.StartNew(
+                () =>
+                {
                     Message message = null;
-                    for (var i = 0; i < 10; i++) 
+                    for (var i = 0; i < 10; i++)
                     {
                         message = template.Receive();
-                        if (message != null) 
+                        if (message != null)
                         {
                             break;
                         }
@@ -566,7 +580,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     Assert.IsNotNull(message, "No message received");
                     template.Send(message.MessageProperties.ReplyTo, message);
                     return (string)template.MessageConverter.FromMessage(message);
-            });
+                });
             var result = (string)template.ConvertSendAndReceive("message");
             var success = received.Wait(1000);
             if (!success)
@@ -586,16 +600,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// Tests the atomic send and receive with conversion using routing key.
         /// </summary>
         [Test]
-        public void TestAtomicSendAndReceiveWithConversionUsingRoutingKey()  
+        public void TestAtomicSendAndReceiveWithConversionUsingRoutingKey()
         {
             // Set up a consumer to respond to our producer
-            var received = Task.Factory.StartNew(() => 
-            {
+            var received = Task.Factory.StartNew(
+                () =>
+                {
                     Message message = null;
-                    for (var i = 0; i < 10; i++) 
+                    for (var i = 0; i < 10; i++)
                     {
-                        message = template.Receive(ROUTE);
-                        if (message != null) 
+                        message = this.template.Receive(ROUTE);
+                        if (message != null)
                         {
                             break;
                         }
@@ -604,9 +619,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     }
 
                     Assert.IsNotNull(message, "No message received");
-                    template.Send(message.MessageProperties.ReplyTo, message);
+                    this.template.Send(message.MessageProperties.ReplyTo, message);
                     return (string)this.template.MessageConverter.FromMessage(message);
-            });
+                });
 
             var result = (string)this.template.ConvertSendAndReceive(ROUTE, "message");
             var success = received.Wait(1000);
@@ -627,26 +642,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// Tests the atomic send and receive with conversion using exchange and routing key.
         /// </summary>
         [Test]
-        public void TestAtomicSendAndReceiveWithConversionUsingExchangeAndRoutingKey()  
+        public void TestAtomicSendAndReceiveWithConversionUsingExchangeAndRoutingKey()
         {
             // Set up a consumer to respond to our producer
-            var received = Task.Factory.StartNew(() => 
-            {
+            var received = Task.Factory.StartNew(
+                () =>
+                {
                     Message message = null;
-                    for (var i = 0; i < 10; i++) 
+                    for (var i = 0; i < 10; i++)
                     {
-                        message = template.Receive(ROUTE);
-                        if (message != null) 
+                        message = this.template.Receive(ROUTE);
+                        if (message != null)
                         {
                             break;
                         }
 
                         Thread.Sleep(100);
                     }
+
                     Assert.IsNotNull(message, "No message received");
-                    template.Send(message.MessageProperties.ReplyTo, message);
+                    this.template.Send(message.MessageProperties.ReplyTo, message);
                     return (string)this.template.MessageConverter.FromMessage(message);
-            });
+                });
             var result = (string)this.template.ConvertSendAndReceive(string.Empty, ROUTE, "message");
             var success = received.Wait(1000);
             if (!success)
@@ -674,9 +691,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// </summary>
         /// <remarks>
         /// </remarks>
-        public PlannedException() : base("Planned")
-        {
-        }
+        public PlannedException() : base("Planned") { }
     }
 
     /// <summary>
@@ -685,32 +700,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     /// <remarks></remarks>
     internal class TestTransactionManager : AbstractPlatformTransactionManager
     {
-        /// <summary>
-        /// Begin a new transaction with the given transaction definition.
-        /// </summary>
-        /// <param name="transaction">Transaction object returned by
-        /// <see cref="M:Spring.Transaction.Support.AbstractPlatformTransactionManager.DoGetTransaction"/>.</param>
+        /// <summary>Begin a new transaction with the given transaction definition.</summary>
+        /// <param name="transaction">Transaction object returned by<see cref="M:Spring.Transaction.Support.AbstractPlatformTransactionManager.DoGetTransaction"/>.</param>
         /// <param name="definition"><see cref="T:Spring.Transaction.ITransactionDefinition"/> instance, describing
         /// propagation behavior, isolation level, timeout etc.</param>
-        /// <exception cref="T:Spring.Transaction.TransactionException">
-        /// In the case of creation or system errors.
-        ///   </exception>
+        /// <exception cref="T:Spring.Transaction.TransactionException">In the case of creation or system errors.</exception>
         /// <remarks></remarks>
-        protected override void DoBegin(object transaction, ITransactionDefinition definition)
-        {
-        }
+        protected override void DoBegin(object transaction, ITransactionDefinition definition) { }
 
-        /// <summary>
-        /// Perform an actual commit on the given transaction.
-        /// </summary>
+        /// <summary>Perform an actual commit on the given transaction.</summary>
         /// <param name="status">The status representation of the transaction.</param>
-        /// <exception cref="T:Spring.Transaction.TransactionException">
-        /// In the case of system errors.
-        ///   </exception>
+        /// <exception cref="T:Spring.Transaction.TransactionException">In the case of system errors.</exception>
         /// <remarks></remarks>
-        protected override void DoCommit(DefaultTransactionStatus status)
-        {
-        }
+        protected override void DoCommit(DefaultTransactionStatus status) { }
 
         /// <summary>
         /// Return the current transaction object.
@@ -723,46 +725,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// In the case of lookup or system errors.
         ///   </exception>
         /// <remarks></remarks>
-        protected override object DoGetTransaction()
-        {
-            return new object();
-        }
+        protected override object DoGetTransaction() { return new object(); }
 
-        /// <summary>
-        /// Perform an actual rollback on the given transaction.
-        /// </summary>
+        /// <summary>Perform an actual rollback on the given transaction.</summary>
         /// <param name="status">The status representation of the transaction.</param>
-        /// <exception cref="T:Spring.Transaction.TransactionException">
-        /// In the case of system errors.
-        ///   </exception>
+        /// <exception cref="T:Spring.Transaction.TransactionException">In the case of system errors.</exception>
         /// <remarks></remarks>
-        protected override void DoRollback(DefaultTransactionStatus status)
-        {
-        }
+        protected override void DoRollback(DefaultTransactionStatus status) { }
     }
 
-    /// <summary>
-    /// Test transaction callback.
-    /// </summary>
+    /// <summary>Test transaction callback.</summary>
     /// <typeparam name="T">Type T.</typeparam>
     /// <remarks></remarks>
     public class TestTransactionCallback<T> : ITransactionCallback
     {
         #region Implementation of ITransactionCallback
 
-        /// <summary>
-        /// Gets called by TransactionTemplate.Execute within a 
-        ///             transaction context.
-        /// </summary>
+        /// <summary>Gets called by TransactionTemplate.Execute within a 
+        ///             transaction context.</summary>
         /// <param name="status">The associated transaction status.</param>
-        /// <returns>
-        /// A result object or <c>null</c>.
-        /// </returns>
-        public object DoInTransaction(ITransactionStatus status)
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <returns>A result object or <c>null</c>.</returns>
+        public object DoInTransaction(ITransactionStatus status) { throw new NotImplementedException(); }
         #endregion
     }
 }

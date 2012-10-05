@@ -54,7 +54,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="queueName">Name of the queue.</param>
         /// <returns>true if the queue existed and was deleted.</returns>
         bool DeleteQueue(string queueName);
-        
+
         /// <summary>Deletes the queue.</summary>
         /// <param name="queueName">Name of the queue.</param>
         /// <param name="unused">if set to <c>true</c> the queue should be deleted only if not in use.</param>

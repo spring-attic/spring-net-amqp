@@ -13,12 +13,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+#region Using Directives
 using System;
 using AopAlliance.Intercept;
 using Common.Logging;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener;
-using Spring.Util;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Retry
 {
@@ -49,6 +50,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Retry
         }
         */
 
+        /// <summary>The invoke.</summary>
+        /// <param name="invocation">The invocation.</param>
+        /// <returns>The System.Object.</returns>
+        /// <exception cref="ListenerExecutionFailedException"></exception>
         public object Invoke(IMethodInvocation invocation)
         {
             var id = string.Empty;

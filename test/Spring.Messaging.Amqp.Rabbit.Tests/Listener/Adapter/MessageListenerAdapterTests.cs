@@ -1,20 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageListenerAdapterTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#region Using Directives
+using System;
 using System.Text;
-using AutoMoq;
 using NUnit.Framework;
 using Spring.Aop.Framework;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Support.Converter;
-using Spring.Threading.AtomicTypes;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
 {
-    using Spring.Messaging.Amqp.Rabbit.Tests.Test;
-
+    /// <summary>The message listener adapter tests.</summary>
     [TestFixture]
     [Category(TestCategory.Unit)]
     public class MessageListenerAdapterTests
@@ -23,16 +36,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         private MessageListenerAdapter adapter;
         private SimpleService service;
 
+        /// <summary>The init.</summary>
         [SetUp]
         public void Init()
         {
-            service = new SimpleService();
+            this.service = new SimpleService();
 
-            messageProperties = new MessageProperties();
-            messageProperties.ContentType = MessageProperties.CONTENT_TYPE_TEXT_PLAIN;
+            this.messageProperties = new MessageProperties();
+            this.messageProperties.ContentType = MessageProperties.CONTENT_TYPE_TEXT_PLAIN;
 
-            adapter = new MockMessageListenerAdapter();
-            adapter.MessageConverter = new SimpleMessageConverter();
+            this.adapter = new MockMessageListenerAdapter();
+            this.adapter.MessageConverter = new SimpleMessageConverter();
         }
 
         /// <summary>
@@ -67,7 +81,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// Tests the proxy listener.
         /// </summary>
         [Test]
-        //[Ignore("Need Steve or Mark to look at this... Validated that the proxied type does get called, but this.service.called doesn't return true...?")]
+        // [Ignore("Need Steve or Mark to look at this... Validated that the proxied type does get called, but this.service.called doesn't return true...?")]
         public void TestProxyListener()
         {
             this.adapter.DefaultListenerMethod = "NotDefinedOnInterface";
@@ -106,19 +120,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// </summary>
         private SimpleService service;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HandlerDelegate"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="HandlerDelegate"/> class.</summary>
         /// <param name="service">The service.</param>
         /// <remarks></remarks>
-        public HandlerDelegate(SimpleService service)
-        {
-            this.service = service;
-        }
+        public HandlerDelegate(SimpleService service) { this.service = service; }
 
-        /// <summary>
-        /// Handles the message.
-        /// </summary>
+        /// <summary>Handles the message.</summary>
         /// <param name="input">The input.</param>
         /// <returns>The handled message.</returns>
         /// <remarks></remarks>
@@ -135,9 +142,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
     /// <remarks></remarks>
     public interface IService
     {
-        /// <summary>
-        /// Handles the specified input.
-        /// </summary>
+        /// <summary>Handles the specified input.</summary>
         /// <param name="input">The input.</param>
         /// <returns>The handled input.</returns>
         /// <remarks></remarks>
@@ -155,25 +160,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// </summary>
         public static bool called;
 
-        public bool Called
-        {
-            get { return called; }
-            set { called = value; }
-        }
+        /// <summary>Gets or sets a value indicating whether called.</summary>
+        public bool Called { get { return called; } set { called = value; } }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleService"/> class. 
         /// </summary>
         /// <remarks>
         /// </remarks>
-        public SimpleService()
-        {
-            called = false;
-        }
+        public SimpleService() { called = false; }
 
-        /// <summary>
-        /// Handles the specified input.
-        /// </summary>
+        /// <summary>Handles the specified input.</summary>
         /// <param name="input">The input.</param>
         /// <returns>The handled input.</returns>
         /// <remarks></remarks>
@@ -183,9 +180,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
             return "processed" + input;
         }
 
-        /// <summary>
-        /// Nots the defined on interface.
-        /// </summary>
+        /// <summary>Nots the defined on interface.</summary>
         /// <param name="input">The input.</param>
         /// <returns>Whether the input is defined on the interface.</returns>
         /// <remarks></remarks>
@@ -202,13 +197,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
     /// <remarks></remarks>
     internal class MockMessageListenerAdapter : MessageListenerAdapter
     {
-        /// <summary>
-        /// Handle the given exception that arose during listener execution.
+        /// <summary>Handle the given exception that arose during listener execution.
         /// The default implementation logs the exception at error level.
         /// <para>This method only applies when used with <see cref="IMessageListener"/>.
         /// In case of the Spring <see cref="IChannelAwareMessageListener"/> mechanism,
-        /// exceptions get handled by the caller instead.
-        /// </para>
+        /// exceptions get handled by the caller instead.</para>
         /// </summary>
         /// <param name="ex">The exception to handle.</param>
         /// <remarks></remarks>

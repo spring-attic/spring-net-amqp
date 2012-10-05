@@ -1,35 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<objects xmlns="http://www.springframework.net"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:rabbit="http://www.springframework.net/schema/rabbit">
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-  <!--<object name="appConfigPropertyHolder"
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
+
+    <!--<object name="appConfigPropertyHolder"
             type="Spring.Objects.Factory.Config.PropertyPlaceholderConfigurer, Spring.Core" />-->
 
-  <rabbit:queue id="foo" name="foo" />
+    <rabbit:queue id="foo" name="foo" />
 
-  <rabbit:queue id="override" name="override" durable="true" auto-delete="true" exclusive="true" />
+    <rabbit:queue id="override" name="override" durable="true" auto-delete="true" exclusive="true" />
 
-  <rabbit:queue id="alias" name="spam" />
+    <rabbit:queue id="alias" name="spam" />
 
-  <rabbit:queue id="overrideAlias" name="bar" durable="true" auto-delete="true" exclusive="true" />
+    <rabbit:queue id="overrideAlias" name="bar" durable="true" auto-delete="true" exclusive="true" />
 
-  <rabbit:queue id="anonymous" />
+    <rabbit:queue id="anonymous" />
 
-  <rabbit:queue id="arguments" name="arguments">
-    <rabbit:queue-arguments>
-      <entry key="foo" value="bar" />
-      <entry key="bar" value="baz" />
-    </rabbit:queue-arguments>
-  </rabbit:queue>
+    <rabbit:queue id="arguments" name="arguments">
+        <rabbit:queue-arguments>
+            <entry key="foo" value="bar" />
+            <entry key="bar" value="baz" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
 
-  <rabbit:queue id="anonymousArguments">
-    <rabbit:queue-arguments>
-      <entry key="foo" value="spam"/>
-      <entry key="bar" value="more-spam"/>
-    </rabbit:queue-arguments>
-  </rabbit:queue>
+    <rabbit:queue id="anonymousArguments">
+        <rabbit:queue-arguments>
+            <entry key="foo" value="spam" />
+            <entry key="bar" value="more-spam" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
 
-  <rabbit:queue id="anonymousOverride" durable="false" auto-delete="true" exclusive="true" />
+    <rabbit:queue id="anonymousOverride" durable="false" auto-delete="true" exclusive="true" />
 
 </objects>

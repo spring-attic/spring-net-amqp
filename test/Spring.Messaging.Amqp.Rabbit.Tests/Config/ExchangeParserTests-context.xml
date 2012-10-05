@@ -1,26 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<objects xmlns="http://www.springframework.net"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:rabbit="http://www.springframework.net/schema/rabbit"
-         xmlns:objects="http://www.springframework.net">
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-	<rabbit:direct-exchange id="direct" name="direct" />
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit" xmlns:objects="http://www.springframework.net">
 
-	<rabbit:direct-exchange id="alias" name="direct-alias" />
+    <rabbit:direct-exchange id="direct" name="direct" />
 
-	<rabbit:direct-exchange id="direct-override" name="direct-override" auto-delete="false" durable="true"/>
+    <rabbit:direct-exchange id="alias" name="direct-alias" />
 
-	<direct-exchange id="direct-arguments" name="direct-arguments" xmlns="http://www.springframework.net/schema/rabbit">
-		<exchange-arguments>
-        <objects:entry key="foo" value="bar" />
-        <objects:entry key="bar" value="baz" />
-    </exchange-arguments>
-	</direct-exchange>
+    <rabbit:direct-exchange id="direct-override" name="direct-override" auto-delete="false" durable="true" />
 
-	<rabbit:topic-exchange id="topic" name="topic" />
+    <direct-exchange id="direct-arguments" name="direct-arguments" xmlns="http://www.springframework.net/schema/rabbit">
+        <exchange-arguments>
+            <objects:entry key="foo" value="bar" />
+            <objects:entry key="bar" value="baz" />
+        </exchange-arguments>
+    </direct-exchange>
 
-	<rabbit:fanout-exchange id="fanout" name="fanout"/>
+    <rabbit:topic-exchange id="topic" name="topic" />
 
-	<rabbit:headers-exchange id="headers" name="headers" xmlns="http://www.springframework.net/schema/rabbit"/>
+    <rabbit:fanout-exchange id="fanout" name="fanout" />
+
+    <rabbit:headers-exchange id="headers" name="headers" xmlns="http://www.springframework.net/schema/rabbit" />
 
 </objects>
