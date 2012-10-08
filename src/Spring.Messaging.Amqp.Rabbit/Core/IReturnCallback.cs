@@ -1,5 +1,5 @@
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IChannelCallback.cs" company="The original author or authors.">
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IReturnCallback.cs" company="The original author or authors.">
 //   Copyright 2002-2012 the original author or authors.
 //   
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -14,19 +14,22 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using RabbitMQ.Client;
+using Spring.Messaging.Amqp.Core;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
-    /// <summary>A Channel Callback interface.</summary>
-    /// <typeparam name="T">Type t.</typeparam>
-    /// <author>Mark Pollack</author>
-    public interface IChannelCallback<T>
+    /// <summary>
+    /// Return callback interface.
+    /// </summary>
+    public interface IReturnCallback
     {
-        /// <summary>Does the in rabbit.</summary>
-        /// <param name="model">The model.</param>
-        /// <returns>An object of type T.</returns>
-        T DoInRabbit(IModel model);
+        /// <summary>The returned message.</summary>
+        /// <param name="message">The message.</param>
+        /// <param name="replyCode">The reply code.</param>
+        /// <param name="replyText">The reply text.</param>
+        /// <param name="exchange">The exchange.</param>
+        /// <param name="routingKey">The routing key.</param>
+        void ReturnedMessage(Message message, int replyCode, string replyText, string exchange, string routingKey);
     }
 }

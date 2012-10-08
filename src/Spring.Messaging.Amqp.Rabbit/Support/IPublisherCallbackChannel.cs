@@ -21,7 +21,7 @@ using RabbitMQ.Client;
 namespace Spring.Messaging.Amqp.Rabbit.Support
 {
     /// <summary>
-    /// Instances of this interface support a single listener being  registered for publisher confirms with multiple channels, by adding context to the callbacks.
+    /// Instances of this interface support a single publisherCallbackChannelListener being  registered for publisher confirms with multiple channels, by adding context to the callbacks.
     /// </summary>
     /// <author>Gary Russell</author>
     /// <author>Joe Fitzgerald (.NET)</author>
@@ -29,22 +29,22 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     {
         // static string RETURN_CORRELATION = "spring_return_correlation";
 
-        /// <summary>Adds a {@link Listener} and returns a reference to the pending confirms map for that listener's pending
+        /// <summary>Adds a {@link Listener} and returns a reference to the pending confirms map for that publisherCallbackChannelListener's pending
         /// confirms, allowing the Listener to assess unconfirmed sends at any point in time.
         /// The client must <b>NOT</b> modify the contents of this array, and must synchronize on it when iterating over its collections.</summary>
-        /// <param name="listener">The listener.</param>
-        /// <returns>A reference to pending confirms for the listener. The System.Collections.Generic.SortedList`2[TKey -&gt; System.Int64, TValue -&gt; Spring.Messaging.Amqp.Rabbit.Support.PendingConfirm].</returns>
-        SortedList<long, PendingConfirm> AddListener(IListener listener);
+        /// <param name="publisherCallbackChannelListener">The publisherCallbackChannelListener.</param>
+        /// <returns>A reference to pending confirms for the publisherCallbackChannelListener. The System.Collections.Generic.SortedList`2[TKey -&gt; System.Int64, TValue -&gt; Spring.Messaging.Amqp.Rabbit.Support.PendingConfirm].</returns>
+        SortedList<long, PendingConfirm> AddListener(IPublisherCallbackChannelListener publisherCallbackChannelListener);
 
-        /// <summary>The remove listener.</summary>
-        /// <param name="listener">Removes the listener.</param>
+        /// <summary>The remove publisherCallbackChannelListener.</summary>
+        /// <param name="publisherCallbackChannelListener">Removes the publisherCallbackChannelListener.</param>
         /// <returns>The System.Boolean.</returns>
-        bool RemoveListener(IListener listener);
+        bool RemoveListener(IPublisherCallbackChannelListener publisherCallbackChannelListener);
 
         /// <summary>Adds a pending confirmation to this channel's map.</summary>
-        /// <param name="listener">The listener.</param>
+        /// <param name="publisherCallbackChannelListener">The publisherCallbackChannelListener.</param>
         /// <param name="seq">The key to the map.</param>
         /// <param name="pendingConfirm">The PendingConfirm object.</param>
-        void AddPendingConfirm(IListener listener, long seq, PendingConfirm pendingConfirm);
+        void AddPendingConfirm(IPublisherCallbackChannelListener publisherCallbackChannelListener, long seq, PendingConfirm pendingConfirm);
     }
 }

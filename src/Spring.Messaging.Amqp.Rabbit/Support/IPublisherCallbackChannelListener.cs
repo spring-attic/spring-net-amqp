@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IListener.cs" company="The original author or authors.">
+// <copyright file="IPublisherCallbackChannelListener.cs" company="The original author or authors.">
 //   Copyright 2002-2012 the original author or authors.
 //   
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -29,7 +29,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// </summary>
     /// <author>Gary Russell</author>
     /// <author>Joe Fitzgerald (.NET)</author>
-    public interface IListener
+    public interface IPublisherCallbackChannelListener
     {
         /// <summary>Invoked by the channel when a confirm is received.</summary>
         /// <param name="pendingConfirm">The pending confirmation, containing correlation data.</param>

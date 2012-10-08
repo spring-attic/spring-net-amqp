@@ -16,6 +16,7 @@
 #region Using Directives
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using Common.Logging;
 using RabbitMQ.Client;
@@ -58,12 +59,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// <author>Mark Fisher</author>
     /// <author>Dave Syer</author>
     /// <author>Joe Fitzgerald (.NET)</author>
-    public class RabbitTemplate : RabbitAccessor, IRabbitOperations
+    public class RabbitTemplate : RabbitAccessor, IRabbitOperations, IPublisherCallbackChannelListener
     {
         /// <summary>
         /// The Logger.
         /// </summary>
-        protected static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitTemplate));
+        protected new static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitTemplate));
 
         /// <summary>
         /// The default exchange.
@@ -90,17 +91,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// The exchange
         /// </summary>
-        private string exchange = DEFAULT_EXCHANGE;
+        private volatile string exchange = DEFAULT_EXCHANGE;
 
         /// <summary>
         /// The routing key.
         /// </summary>
-        private string routingKey = DEFAULT_ROUTING_KEY;
+        private volatile string routingKey = DEFAULT_ROUTING_KEY;
 
         /// <summary>
         /// The default queue name that will be used for synchronous receives.
         /// </summary>
-        private string queue;
+        private volatile string queue;
 
         /// <summary>
         /// The reply timeout.
@@ -110,7 +111,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// The message converter.
         /// </summary>
-        private IMessageConverter messageConverter = new SimpleMessageConverter();
+        private volatile IMessageConverter messageConverter = new SimpleMessageConverter();
 
         /// <summary>
         /// The message properties converter.
@@ -120,7 +121,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// The encoding.
         /// </summary>
-        private string encoding = DEFAULT_ENCODING;
+        private volatile string encoding = DEFAULT_ENCODING;
+
+        private volatile Queue replyQueue;
+
+        private readonly ConcurrentDictionary<string, ConcurrentQueue<Message>> replyHolder = new ConcurrentDictionary<string, ConcurrentQueue<Message>>();
+
+        private volatile IConfirmCallback confirmCallback;
+
+        private volatile IReturnCallback returnCallback;
+
+        private readonly ConcurrentDictionary<object, SortedDictionary<long, PendingConfirm>> pendingConfirms = new ConcurrentDictionary<object, SortedDictionary<long, PendingConfirm>>();
+
+        private volatile bool mandatory;
+
+        private volatile bool immediate;
+
+        private readonly string uuid = Guid.NewGuid().ToString();
+
+        public static readonly string STACKED_CORRELATION_HEADER = "spring_reply_correlation";
+
+        public static readonly string STACKED_REPLY_TO_HEADER = "spring_reply_to";
         #endregion
 
         #region Constructors
@@ -177,6 +198,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         public string Encoding { set { this.encoding = value; } }
 
         /// <summary>
+        /// A queue for replies; if not provided, a temporary exclusive, auto-delete queue will be used for each reply.
+        /// </summary>
+        public Queue ReplyQueue { set { this.replyQueue = value; } }
+
+        /// <summary>
         /// Sets the reply timeout. Specify the timeout in milliseconds to be used when waiting for a reply Message when using one of the
         /// sendAndReceive methods. The default value is defined as {@link #DEFAULT_REPLY_TIMEOUT}. A negative value
         /// indicates an indefinite timeout. Not used in the plain receive methods because there is no blocking receive
@@ -200,6 +226,55 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 this.messagePropertiesConverter = value;
             }
         }
+
+        public IConfirmCallback ConfirmCallback { set { this.confirmCallback = value; } }
+
+        public IReturnCallback ReturnCallback { set { this.returnCallback = value; } }
+
+        public bool Mandatory { set { this.mandatory = value; } }
+
+        public bool Immediate { set { this.immediate = value; } }
+
+        /// <summary>
+        /// Gets unconfirmed correlation data older than age and removes them.
+        /// </summary>
+        /// <param name="age">Age in millseconds</param>
+        /// <returns>The collection of correlation data for which confirms have not been received.</returns>
+        public HashSet<CorrelationData> GetUnconfirmed(long age)
+        {
+            var unconfirmed = new HashSet<CorrelationData>();
+            lock (this.pendingConfirms)
+            {
+                var threshold = DateTime.UtcNow.ToMilliseconds() - age;
+                foreach (var channelPendingConfirmEntry in this.pendingConfirms)
+                {
+                    var channelPendingConfirms = channelPendingConfirmEntry.Value;
+                    
+                    PendingConfirm pendingConfirm;
+                    var itemsToRemove = new Dictionary<long, PendingConfirm>();
+                    foreach (var item in channelPendingConfirms)
+                    {
+                        pendingConfirm = item.Value;
+                        if (pendingConfirm.Timestamp < threshold)
+                        {
+                            unconfirmed.Add(pendingConfirm.CorrelationData);
+                            itemsToRemove.Add(item.Key, item.Value);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    foreach (var item in itemsToRemove)
+                    {
+                        channelPendingConfirms.Remove(item.Key);
+                    }
+                }
+            }
+
+            return unconfirmed.Count > 0 ? unconfirmed : null;
+        }
         #endregion
 
         #region Implementation of IAmqpTemplate
@@ -213,79 +288,102 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="message">The message.</param>
         public void Send(string routingKey, Message message) { this.Send(this.exchange, routingKey, message); }
 
+        public void Send(string exchange, string routingKey, Message message)
+        {
+            this.Send(exchange, routingKey, message, null);
+        }
+
         /// <summary>Send a message, given an exchange, a routing key, and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
-        public void Send(string exchange, string routingKey, Message message)
+        public void Send(string exchange, string routingKey, Message message, CorrelationData correlationData)
         {
             this.Execute<object>(
                 channel =>
                 {
-                    this.DoSend(channel, exchange, routingKey, message);
+                    this.DoSend(channel, exchange, routingKey, message, correlationData);
                     return null;
                 });
         }
 
         /// <summary>Convert and send a message, given the message.</summary>
         /// <param name="message">The message.</param>
-        public void ConvertAndSend(object message) { this.ConvertAndSend(this.exchange, this.routingKey, message); }
+        public void ConvertAndSend(object message) { this.ConvertAndSend(this.exchange, this.routingKey, message, (CorrelationData)null); }
+
+        public void ConvertAndSend(object message, CorrelationData correlationData) { this.ConvertAndSend(this.exchange, this.routingKey, message, correlationData); }
 
         /// <summary>Convert and send a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
-        public void ConvertAndSend(string routingKey, object message) { this.ConvertAndSend(this.exchange, routingKey, message); }
+        public void ConvertAndSend(string routingKey, object message) { this.ConvertAndSend(this.exchange, routingKey, message, (CorrelationData)null); }
+
+        public void ConvertAndSend(string routingKey, object message, CorrelationData correlationData) { this.ConvertAndSend(this.exchange, routingKey, message, correlationData); }
 
         /// <summary>Convert and send a message, given an exchange, a routing key, and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
-        public void ConvertAndSend(string exchange, string routingKey, object message) { this.Send(exchange, routingKey, this.Execute(channel => this.GetRequiredMessageConverter().ToMessage(message, new MessageProperties()))); }
+        public void ConvertAndSend(string exchange, string routingKey, object message) { this.ConvertAndSend(exchange, routingKey, message, (CorrelationData)null); }
+
+        public void ConvertAndSend(string exchange, string routingKey, object message, CorrelationData correlationData) { this.Send(exchange, routingKey, this.ConvertMessageIfNecessary(message), correlationData); }
+        
+        /// <summary>Convert and send a message, given the message.</summary>
+        /// <param name="message">The message.</param>
+        /// <param name="messagePostProcessor">The message post processor.</param>
+        public void ConvertAndSend(object message, Func<Message, Message> messagePostProcessor) { this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessor, (CorrelationData)null); }
+
+        public void ConvertAndSend(object message, Func<Message, Message> messagePostProcessor, CorrelationData correlationData) { this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessor, correlationData); }
 
         /// <summary>Convert and send a message, given the message.</summary>
         /// <param name="message">The message.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
-        public void ConvertAndSend(object message, Func<Message, Message> messagePostProcessor) { this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessor); }
+        public void ConvertAndSend(object message, IMessagePostProcessor messagePostProcessor) { this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessor, (CorrelationData)null); }
 
-        /// <summary>Convert and send a message, given the message.</summary>
-        /// <param name="message">The message.</param>
-        /// <param name="messagePostProcessor">The message post processor.</param>
-        public void ConvertAndSend(object message, IMessagePostProcessor messagePostProcessor) { this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessor); }
+        public void ConvertAndSend(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData) { this.ConvertAndSend(this.exchange, this.routingKey, message, messagePostProcessor, correlationData); }
 
         /// <summary>Convert and send a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
-        public void ConvertAndSend(string routingKey, object message, Func<Message, Message> messagePostProcessor) { this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor); }
+        public void ConvertAndSend(string routingKey, object message, Func<Message, Message> messagePostProcessor) { this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor, (CorrelationData)null); }
+
+        public void ConvertAndSend(string routingKey, object message, Func<Message, Message> messagePostProcessor, CorrelationData correlationData) { this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor, correlationData); }
 
         /// <summary>Convert and send a message, given a routing key and the message.</summary>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
-        public void ConvertAndSend(string routingKey, object message, IMessagePostProcessor messagePostProcessor) { this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor); }
+        public void ConvertAndSend(string routingKey, object message, IMessagePostProcessor messagePostProcessor) { this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor, (CorrelationData)null); }
+
+        public void ConvertAndSend(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData) { this.ConvertAndSend(this.exchange, routingKey, message, messagePostProcessor, correlationData); }
+
+        public void ConvertAndSend(string exchange, string routingKey, object message, Func<Message, Message> messagePostProcessor) { this.ConvertAndSend(exchange, routingKey, message, messagePostProcessor, (CorrelationData)null);}
 
         /// <summary>Convert and send a message, given an exchange, a routing key, and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
-        public void ConvertAndSend(string exchange, string routingKey, object message, Func<Message, Message> messagePostProcessor)
+        public void ConvertAndSend(string exchange, string routingKey, object message, Func<Message, Message> messagePostProcessor, CorrelationData correlationData)
         {
-            var messageToSend = this.GetRequiredMessageConverter().ToMessage(message, new MessageProperties());
+            var messageToSend = this.ConvertMessageIfNecessary(message);
             messageToSend = messagePostProcessor.Invoke(messageToSend);
-            this.Send(exchange, routingKey, this.Execute(channel => messageToSend));
+            this.Send(exchange, routingKey, this.Execute(channel => messageToSend), correlationData);
         }
 
+        public void ConvertAndSend(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor) { this.ConvertAndSend(exchange, routingKey, message, messagePostProcessor, (CorrelationData)null); }
+
         /// <summary>Convert and send a message, given an exchange, a routing key, and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
         /// <param name="messagePostProcessor">The message post processor.</param>
-        public void ConvertAndSend(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor)
+        public void ConvertAndSend(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
         {
-            var messageToSend = this.GetRequiredMessageConverter().ToMessage(message, new MessageProperties());
+            var messageToSend = this.ConvertMessageIfNecessary(message);
             messageToSend = messagePostProcessor.PostProcessMessage(messageToSend);
-            this.Send(exchange, routingKey, this.Execute(channel => messageToSend));
+            this.Send(exchange, routingKey, this.Execute(channel => messageToSend), correlationData);
         }
 
         /// <summary>
@@ -422,8 +520,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <returns>The message received.</returns>
         public object ConvertSendAndReceive(string exchange, string routingKey, object message, Func<Message, Message> messagePostProcessor)
         {
-            var messageProperties = new MessageProperties();
-            var requestMessage = this.GetRequiredMessageConverter().ToMessage(message, messageProperties);
+            var requestMessage = this.ConvertMessageIfNecessary(message);
             if (messagePostProcessor != null)
             {
                 requestMessage = messagePostProcessor.Invoke(requestMessage);
@@ -446,8 +543,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <returns>The message received.</returns>
         public object ConvertSendAndReceive(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor)
         {
-            var messageProperties = new MessageProperties();
-            var requestMessage = this.GetRequiredMessageConverter().ToMessage(message, messageProperties);
+            var requestMessage = this.ConvertMessageIfNecessary(message);
             if (messagePostProcessor != null)
             {
                 requestMessage = messagePostProcessor.PostProcessMessage(requestMessage);
@@ -462,12 +558,34 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return this.GetRequiredMessageConverter().FromMessage(replyMessage);
         }
 
+        protected Message ConvertMessageIfNecessary(object message)
+        {
+            if (message is Message)
+            {
+                return (Message)message;
+            }
+
+            return this.GetRequiredMessageConverter().ToMessage(message, new MessageProperties());
+        }
+
+        protected Message DoSendAndReceive(string exchange, string routingKey, Message message)
+        {
+            if (this.replyQueue == null)
+            {
+                return this.DoSendAndReceiveWithTemporary(exchange, routingKey, message);
+            }
+            else
+            {
+                return this.DoSendAndReceiveWithFixed(exchange, routingKey, message);
+            }
+        }
+
         /// <summary>Do the send and receive operation, given an exchange, a routing key and the message.</summary>
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message to send.</param>
         /// <returns>The message received.</returns>
-        protected Message DoSendAndReceive(string exchange, string routingKey, Message message)
+        protected Message DoSendAndReceiveWithTemporary(string exchange, string routingKey, Message message)
         {
             var replyMessage = this.Execute(
                 delegate(IModel channel)
@@ -556,12 +674,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="message">The message.</param>
-        protected void DoSend(IModel channel, string exchange, string routingKey, Message message)
+        protected void DoSend(IModel channel, string exchange, string routingKey, Message message, CorrelationData correlationData)
         {
-            if (Logger.IsDebugEnabled)
-            {
-                Logger.Debug("Publishing message on exchange [" + exchange + "], routingKey = [" + routingKey + "]");
-            }
+            Logger.Debug(m => m("Publishing message on exchange [{0}], routingKey = [{1}]", exchange, routingKey));
 
             if (exchange == null)
             {
@@ -575,7 +690,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 routingKey = this.routingKey;
             }
 
-            channel.BasicPublish(exchange, routingKey, false, false, this.messagePropertiesConverter.FromMessageProperties(channel, message.MessageProperties, this.encoding), message.Body);
+            if (this.confirmCallback != null && channel is IPublisherCallbackChannel)
+            {
+                var publisherCallbackChannel = (IPublisherCallbackChannel)channel;
+                publisherCallbackChannel.AddPendingConfirm(this, (long)channel.NextPublishSeqNo, new PendingConfirm(correlationData, DateTime.UtcNow.ToMilliseconds()));
+            }
+
+            var mandatory = this.returnCallback == null ? false : this.mandatory;
+            var immediate = this.returnCallback == null ? false : this.immediate;
+
+            var messageProperties = message.MessageProperties;
+            if (mandatory || immediate)
+            {
+                messageProperties.Headers.Add("spring_return_correlation", this.uuid);
+            }
+
+            var convertedMessageProperties = this.messagePropertiesConverter.FromMessageProperties(channel, message.MessageProperties, this.encoding);
+
+            channel.BasicPublish(exchange, routingKey, mandatory, immediate, convertedMessageProperties, message.Body);
 
             // Check commit is needed.
             if (this.ChannelLocallyTransacted(channel))

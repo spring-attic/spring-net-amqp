@@ -1,5 +1,5 @@
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IChannelCallback.cs" company="The original author or authors.">
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IConfirmCallback.cs" company="The original author or authors.">
 //   Copyright 2002-2012 the original author or authors.
 //   
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -14,19 +14,19 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using RabbitMQ.Client;
+using Spring.Messaging.Amqp.Rabbit.Support;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Core
 {
-    /// <summary>A Channel Callback interface.</summary>
-    /// <typeparam name="T">Type t.</typeparam>
-    /// <author>Mark Pollack</author>
-    public interface IChannelCallback<T>
+    /// <summary>
+    /// Confirm Callback interface
+    /// </summary>
+    public interface IConfirmCallback
     {
-        /// <summary>Does the in rabbit.</summary>
-        /// <param name="model">The model.</param>
-        /// <returns>An object of type T.</returns>
-        T DoInRabbit(IModel model);
+        /// <summary>The confirm.</summary>
+        /// <param name="correlationData">The correlation data.</param>
+        /// <param name="ack">The ack.</param>
+        void Confirm(CorrelationData correlationData, bool ack);
     }
 }

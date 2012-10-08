@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Messaging.Amqp.Rabbi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Messaging.Amqp.Rabbit.Admin.Tests.2010", "test\Spring.Messaging.Amqp.Rabbit.Admin.Tests\Spring.Messaging.Amqp.Rabbit.Admin.Tests.2010.csproj", "{CC100EAE-6668-4E39-977E-CB63D025BCCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Erlang.Tests.2010", "test\Spring.Erlang.Tests\Spring.Erlang.Tests.2010.csproj", "{6BF21894-DDF3-496A-969F-6E3963A12E2A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spring.Messaging.Amqp.Tests.2010", "test\Spring.Messaging.Amqp.Tests\Spring.Messaging.Amqp.Tests.2010.csproj", "{C5A985A0-45B6-499B-B8B9-A29A2BBE524A}"
 EndProject
 Global
@@ -47,10 +45,6 @@ Global
 		{CC100EAE-6668-4E39-977E-CB63D025BCCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC100EAE-6668-4E39-977E-CB63D025BCCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC100EAE-6668-4E39-977E-CB63D025BCCE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6BF21894-DDF3-496A-969F-6E3963A12E2A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C5A985A0-45B6-499B-B8B9-A29A2BBE524A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C5A985A0-45B6-499B-B8B9-A29A2BBE524A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5A985A0-45B6-499B-B8B9-A29A2BBE524A}.Release|Any CPU.ActiveCfg = Release|Any CPU
