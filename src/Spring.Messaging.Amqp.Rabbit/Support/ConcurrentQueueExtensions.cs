@@ -16,8 +16,10 @@
 #region Using Directives
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Support
@@ -89,6 +91,43 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
 
             element = result;
             return true;
+        }
+
+        public static T Poll<T>(this BlockingCollection<T> collection, TimeSpan duration)
+        {
+            T result = default(T);
+            var tokenSource = new CancellationTokenSource();
+            var task = new Task(
+                () =>
+                {
+                    try
+                    {
+                        result = collection.Take(tokenSource.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        result = default(T);
+                    }
+                }, tokenSource.Token);
+            task.Start();
+            task.Wait(duration);
+            return result;
+        }
+
+        public static T Poll<T>(this BlockingCollection<T> collection, int timeoutMilliseconds) { return collection.Poll(new TimeSpan(0, 0, 0, 0, timeoutMilliseconds)); }
+
+        public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> collection, TKey key) 
+        {
+            TValue result = default(TValue);
+            try
+            {
+                var success = collection.TryGetValue(key, out result);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return default(TValue);
+            }
         }
 
         internal static TimeSpan Cap(TimeSpan waitTime) { return waitTime > MaxValue ? MaxValue : waitTime; }

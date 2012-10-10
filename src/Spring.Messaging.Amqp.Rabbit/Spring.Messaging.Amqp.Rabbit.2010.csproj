@@ -127,8 +127,10 @@
     <Compile Include="Core\ChannelCallbackDelegate.cs" />
     <Compile Include="Core\IChannelAwareMessageListener.cs" />
     <Compile Include="Core\IChannelCallback.cs" />
+    <Compile Include="Core\IConfirmCallback.cs" />
     <Compile Include="Core\IRabbitOperations.cs" />
     <Compile Include="Connection\RabbitAccessor.cs" />
+    <Compile Include="Core\IReturnCallback.cs" />
     <Compile Include="Core\RabbitAdmin.cs" />
     <Compile Include="Core\RabbitTemplate.cs" />
     <Compile Include="Core\Support\RabbitGatewaySupport.cs" />
@@ -151,7 +153,7 @@
     <Compile Include="Support\CorrelationData.cs" />
     <Compile Include="Support\DateExtensions.cs" />
     <Compile Include="Support\DefaultMessagePropertiesConverter.cs" />
-    <Compile Include="Support\IListener.cs" />
+    <Compile Include="Support\IPublisherCallbackChannelListener.cs" />
     <Compile Include="Support\IMessagePropertiesConverter.cs" />
     <Compile Include="Support\IPublisherCallbackChannel.cs" />
     <Compile Include="Support\PendingConfirm.cs" />

@@ -664,8 +664,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <returns>
         /// A startup exception if there was one.
         /// </returns>
-        /// <exception cref="System.TimeoutException">
-        /// </exception>
         public FatalListenerStartupException GetStartupException()
         {
             if (!this.start.Wait(new TimeSpan(0, 0, 0, 0, 60000)))

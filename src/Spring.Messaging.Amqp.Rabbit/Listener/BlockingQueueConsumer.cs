@@ -32,7 +32,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// Specialized consumer encapsulating knowledge of the broker connections and having its own lifecycle (start and stop).
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class BlockingQueueConsumer : DefaultBasicConsumer
+    public class BlockingQueueConsumer
     {
         #region Private Fields
 
@@ -337,9 +337,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     foreach (var deliveryTag in this.deliveryTags)
                     {
                         // With newer RabbitMQ brokers could use basicNack here...
-                        channel.BasicReject((ulong)message.MessageProperties.DeliveryTag, true);
+                        // channel.BasicReject((ulong)message.MessageProperties.DeliveryTag, true);
 
-                        // channel.BasicNack((ulong)message.MessageProperties.DeliveryTag, true, true);
+                        // ... So we will.
+                        channel.BasicNack((ulong)message.MessageProperties.DeliveryTag, true, true);
                     }
 
                     if (this.transactional)
@@ -422,7 +423,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private readonly ILog logger = LogManager.GetLogger(typeof(InternalConsumer));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(InternalConsumer));
 
         /// <summary>
         /// The outer blocking queue consumer.
@@ -439,7 +440,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="reason">The reason.</param>
         public override void HandleModelShutdown(IModel channel, ShutdownEventArgs reason)
         {
-            this.logger.Warn(m => m("Received shutdown signal for consumer tag {0}, cause: {1}", this.ConsumerTag, reason.Cause));
+            Logger.Warn(m => m("Received shutdown signal for consumer tag {0}, cause: {1}", this.ConsumerTag, reason.Cause));
             base.HandleModelShutdown(channel, reason);
 
             this.outer.shutdown = reason;
@@ -450,7 +451,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="consumerTag">The consumer tag.</param>
         public override void HandleBasicCancel(string consumerTag)
         {
-            this.logger.Warn(m => m("Cancel received"));
+            Logger.Warn(m => m("Cancel received"));
             base.HandleBasicCancel(consumerTag);
             this.outer.cancelReceived.LazySet(true);
         }
@@ -459,7 +460,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="consumerTag">The consumer tag.</param>
         public override void HandleBasicCancelOk(string consumerTag)
         {
-            this.logger.Debug(m => m("Received cancellation notice for {0}", this.outer.ToString()));
+            Logger.Debug(m => m("Received cancellation notice for {0}", this.outer.ToString()));
             base.HandleBasicCancelOk(consumerTag);
 
             // Signal to the container that we have been cancelled
@@ -481,7 +482,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
             }
 
-            this.logger.Debug(m => m("Storing delivery for {0}", this.outer.ToString()));
+            Logger.Debug(m => m("Storing delivery for {0}", this.outer.ToString()));
 
             try
             {
@@ -505,7 +506,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="body">The body.</param>
         public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, byte[] body)
         {
-            // TODO: Validate that 1 is the right message count.
             var envelope = new BasicGetResult(deliveryTag, redelivered, exchange, routingKey, 1, properties, body);
             this.HandleBasicDeliver(consumerTag, envelope, properties, body);
         }

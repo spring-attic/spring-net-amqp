@@ -229,7 +229,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             try
             {
-                consumer.Model.BasicCancel(consumer.ConsumerTag);
+                consumer.Channel.BasicCancel(consumer.ConsumerTag);
             }
             catch (Exception e)
             {

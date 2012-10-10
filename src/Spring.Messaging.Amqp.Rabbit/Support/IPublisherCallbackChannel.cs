@@ -34,7 +34,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
         /// The client must <b>NOT</b> modify the contents of this array, and must synchronize on it when iterating over its collections.</summary>
         /// <param name="publisherCallbackChannelListener">The publisherCallbackChannelListener.</param>
         /// <returns>A reference to pending confirms for the publisherCallbackChannelListener. The System.Collections.Generic.SortedList`2[TKey -&gt; System.Int64, TValue -&gt; Spring.Messaging.Amqp.Rabbit.Support.PendingConfirm].</returns>
-        SortedList<long, PendingConfirm> AddListener(IPublisherCallbackChannelListener publisherCallbackChannelListener);
+        SortedDictionary<long, PendingConfirm> AddListener(IPublisherCallbackChannelListener publisherCallbackChannelListener);
 
         /// <summary>The remove publisherCallbackChannelListener.</summary>
         /// <param name="publisherCallbackChannelListener">Removes the publisherCallbackChannelListener.</param>
