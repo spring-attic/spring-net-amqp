@@ -66,7 +66,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// The Logger.
         /// </summary>
-        private readonly ILog logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The erlang template.
@@ -366,18 +366,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             var status = this.GetStatus();
             if (status.IsReady)
             {
-                this.logger.Info("Rabbit Application already running.");
+                Logger.Info("Rabbit Application already running.");
                 return;
             }
 
             if (!status.IsAlive)
             {
-                this.logger.Info("Rabbit Process not running.");
+                Logger.Info("Rabbit Process not running.");
                 this.StartNode();
                 return;
             }
 
-            this.logger.Info("Starting Rabbit Application.");
+            Logger.Info("Starting Rabbit Application.");
 
             /* TODO: Java version does this asynchronously, and we could do this using a Task. We've simplified this for now. 
                If integration tests are hanging, this may be why. See commented out code below for beginnings of alternate
@@ -431,7 +431,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 {
                     if (e.InnerException is OperationCanceledException)
                     {
-                        this.Logger.Debug("Task Cancelled");
+                        Logger.Debug("Task Cancelled");
                     }
                     return;
                 }
@@ -454,7 +454,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// Stops the RabbitMQ application, leaving the Erlang node running.
         public void StopBrokerApplication()
         {
-            this.logger.Info("Stopping Rabbit Application.");
+            Logger.Info("Stopping Rabbit Application.");
             this.ExecuteAndConvertRpc<object>("rabbit", "stop");
             if (this.timeout > 0)
             {
@@ -471,18 +471,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             var status = this.GetStatus();
             if (status.IsAlive)
             {
-                this.logger.Info("Rabbit Process already running.");
+                Logger.Info("Rabbit Process already running.");
                 this.StartBrokerApplication();
                 return;
             }
 
             if (!status.IsRunning && status.IsReady)
             {
-                this.logger.Info("Rabbit Process not running but status is ready. Restarting.");
+                Logger.Info("Rabbit Process not running but status is ready. Restarting.");
                 this.StopNode();
             }
 
-            this.logger.Info("Starting RabbitMQ node by shelling out command line.");
+            Logger.Info("Starting RabbitMQ node by shelling out command line.");
 
             string rabbitStartScript = null;
             var hint = string.Empty;
@@ -575,7 +575,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                         process.WaitForExit();
                         var exit = process.ExitCode;
                         finished = true;
-                        this.logger.Info("Finished broker launcher process with exit code=" + exit);
+                        Logger.Info("Finished broker launcher process with exit code=" + exit);
                         if (exit != 0)
                         {
                             throw new Exception("Could not start process." + errorHint);
@@ -583,14 +583,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                     }
                     catch (Exception e)
                     {
-                        this.logger.Error("Failed to start node", e);
+                        Logger.Error("Failed to start node", e);
                     }
                 }, 
                 token);
 
             try
             {
-                this.logger.Info("Waiting for Rabbit process to be started");
+                Logger.Info("Waiting for Rabbit process to be started");
                 var result = task.Wait((int)this.timeout);
                 AssertUtils.State(result, "Timed out waiting for thread to start Rabbit process.");
                 if (!result)
@@ -601,7 +601,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             catch (Exception e)
             {
                 Thread.CurrentThread.Interrupt();
-                this.logger.Error("Exception occurred starting Rabbit process", e);
+                Logger.Error("Exception occurred starting Rabbit process", e);
             }
 
             if (finished)
@@ -648,7 +648,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
             if (!callable.Invoke(status))
             {
-                this.logger.Info("Waiting for broker to enter state: " + state);
+                Logger.Info("Waiting for broker to enter state: " + state);
                 var tokenSource = new CancellationTokenSource();
                 var token = tokenSource.Token;
                 var started = Task.Factory.StartNew(
@@ -660,7 +660,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                             // Any less than 1000L and we tend to clog up the socket?
                             Thread.Sleep(500);
                             internalstatus = this.GetStatus();
-                            this.logger.Info(string.Format("WaitForState: Internal Status: {0}", internalstatus));
+                            Logger.Info(string.Format("WaitForState: Internal Status: {0}", internalstatus));
                         }
 
                         return internalstatus;
@@ -684,29 +684,29 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 }
                 catch (Exception e)
                 {
-                    this.logger.Error("error occurred waiting for result", e);
+                    Logger.Error("error occurred waiting for result", e);
                     try
                     {
                         tokenSource.Cancel(true);
                     }
                     catch (Exception ex)
                     {
-                        this.logger.Error("Error occurred cancelling task", ex);
+                        Logger.Error("Error occurred cancelling task", ex);
                     }
                 }
 
                 if (!callable.Invoke(status))
                 {
-                    this.logger.Error("Rabbit broker not in " + state + " state after timeout. Stopping process.");
+                    Logger.Error("Rabbit broker not in " + state + " state after timeout. Stopping process.");
                     this.StopNode();
                     return false;
                 }
                 else
                 {
-                    this.logger.Info("Finished waiting for broker to enter state: " + state);
-                    if (this.logger.IsDebugEnabled)
+                    Logger.Info("Finished waiting for broker to enter state: " + state);
+                    if (Logger.IsDebugEnabled)
                     {
-                        this.logger.Info("Status: " + status);
+                        Logger.Info("Status: " + status);
                     }
 
                     return true;
@@ -714,7 +714,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
             else
             {
-                this.logger.Info("Broker already in state: " + state);
+                Logger.Info("Broker already in state: " + state);
             }
 
             return true;
@@ -764,7 +764,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             {
                 if (!env.ContainsKey(key))
                 {
-                    this.logger.Debug("Adding environment variable: " + key + "=" + value);
+                    Logger.Debug("Adding environment variable: " + key + "=" + value);
                     env.Add(key, value);
                 }
             }
@@ -778,14 +778,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <remarks></remarks>
         public void StopNode()
         {
-            this.logger.Info("Stopping RabbitMQ node.");
+            Logger.Info("Stopping RabbitMQ node.");
             try
             {
                 this.ExecuteAndConvertRpc<object>("rabbit", "stop_and_halt");
             }
             catch (Exception e)
             {
-                this.logger.Error("Failed to send stop signal", e);
+                Logger.Error("Failed to send stop signal", e);
             }
 
             if (this.timeout >= 0)
@@ -834,18 +834,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
             catch (OtpException e)
             {
-                this.logger.Debug("Ignoring OtpException (assuming that the broker is simply not running)");
+                Logger.Debug("Ignoring OtpException (assuming that the broker is simply not running)");
 
                 // if (Logger.IsTraceEnabled)
                 // {
                 // Logger.Trace("Status not available owing to exception", e);
                 // }
-                this.logger.Error("Status not available owing to exception", e);
+                Logger.Error("Status not available owing to exception", e);
                 return new RabbitStatus(new List<Application>(), new List<Node>(), new List<Node>());
             }
             catch (Exception e)
             {
-                this.logger.Error("Error occurred getting status", e);
+                Logger.Error("Error occurred getting status", e);
                 throw;
             }
         }
@@ -857,7 +857,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         protected void InitializeDefaultErlangTemplate()
         {
             var peerNodeName = this.nodeName;
-            this.logger.Debug("Creating connection with peerNodeName = [" + peerNodeName + "]");
+            Logger.Debug("Creating connection with peerNodeName = [" + peerNodeName + "]");
             var otpConnectionFactory = new SimpleConnectionFactory("rabbit-spring-monitor", peerNodeName, this.cookie);
             otpConnectionFactory.AfterPropertiesSet();
             this.CreateErlangTemplate(otpConnectionFactory);

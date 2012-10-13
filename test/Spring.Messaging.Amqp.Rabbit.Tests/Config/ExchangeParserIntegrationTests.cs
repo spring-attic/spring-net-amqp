@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     [Category(TestCategory.Integration)]
     public class ExchangeParserIntegrationTests : AbstractDependencyInjectionSpringContextTests
     {
-        public static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 

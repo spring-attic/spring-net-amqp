@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// The Logger.
         /// </summary>
-        protected readonly ILog Logger = LogManager.GetLogger(typeof(AbstractConnectionFactory));
+        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         /// <summary>
@@ -181,11 +181,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             try
             {
                 temp = Dns.GetHostName().ToUpper();
-                this.Logger.Debug("Using hostname [" + temp + "] for hostname.");
+                Logger.Debug("Using hostname [" + temp + "] for hostname.");
             }
             catch (Exception e)
             {
-                this.Logger.Warn("Could not get host name, using 'localhost' as default value", e);
+                Logger.Warn("Could not get host name, using 'localhost' as default value", e);
                 temp = "localhost";
             }
 

@@ -38,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// The Logger.
         /// </summary>
-        protected static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitAdmin));
+        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The rabbit template.

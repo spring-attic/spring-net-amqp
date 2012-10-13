@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerLifecycleIntegrationTests));
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The queue.
@@ -189,7 +189,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             try
             {
                 var waited = latch.Wait(50);
-                logger.Info("All messages received before stop: " + waited);
+                Logger.Info("All messages received before stop: " + waited);
                 if (messageCount > 1)
                 {
                     Assert.False(waited, "Expected not to receive all messages before stop");
@@ -203,7 +203,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 {
                     var messagesReceivedAfterStop = listener.Count;
                     waited = latch.Wait(500);
-                    logger.Info("All messages received after stop: " + waited);
+                    Logger.Info("All messages received after stop: " + waited);
                     if (messageCount < 100)
                     {
                         Assert.True(waited, "Expected to receive all messages after stop");
@@ -224,9 +224,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 container.Start();
                 var timeout = Math.Min(1 + messageCount / (4 * concurrentConsumers), 30);
 
-                logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+                Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
                 waited = latch.Wait(timeout * 1000);
-                logger.Info("All messages received after start: " + waited);
+                Logger.Info("All messages received after start: " + waited);
                 Assert.AreEqual(concurrentConsumers, container.ActiveConsumerCount);
                 if (transactional)
                 {
@@ -260,7 +260,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     internal class LifecyclePocoListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(LifecyclePocoListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly AtomicInteger count = new AtomicInteger();
 
         private CountdownEvent latch;
@@ -282,7 +282,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             try
             {
-                logger.Debug(value + this.count.ReturnValueAndIncrement());
+                Logger.Debug(value + this.count.ReturnValueAndIncrement());
                 Thread.Sleep(100);
             }
             finally

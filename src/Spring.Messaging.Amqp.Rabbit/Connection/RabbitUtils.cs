@@ -39,7 +39,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitUtils));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>Closes the given Rabbit Connection and ignore any thrown exception.</summary>
         /// <remarks>This is useful for typical 'finally' blocks in manual Rabbit

@@ -38,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Ignore("Need to fix")]
     public class MessageListenerContainerMultipleQueueIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerMultipleQueueIntegrationTests));
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue1 = new Queue("test.queue.1");
 
@@ -182,7 +182,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 var timeout = Math.Min((1 + messageCount) / concurrentConsumers, 50);
                 Logger.Info("Timeout: " + timeout);
                 var waited = latch.Wait(timeout * 1000);
-                logger.Info("All messages recovered: " + waited);
+                Logger.Info("All messages recovered: " + waited);
                 Assert.AreEqual(concurrentConsumers, container.ActiveConsumerCount);
                 Assert.True(waited, "Timed out waiting for messages");
             }
@@ -220,7 +220,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     internal class MultiplePocoListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MultiplePocoListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly AtomicInteger count = new AtomicInteger();
 
         private readonly CountdownEvent latch;
@@ -235,7 +235,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <remarks></remarks>
         public void HandleMessage(int value)
         {
-            logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
+            Logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
             this.latch.Signal();
         }
 

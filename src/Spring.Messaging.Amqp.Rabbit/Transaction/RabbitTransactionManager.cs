@@ -98,7 +98,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitTransactionManager));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         /// <summary>

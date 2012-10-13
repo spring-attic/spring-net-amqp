@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Integration)]
     public class MessageListenerManualAckIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerManualAckIntegrationTests));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue = new Queue("test.queue");
 
@@ -98,7 +98,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             // Wait for broker communication to finish before trying to stop container
             Thread.Sleep(300);
-            logger.Debug("Shutting down at end of test");
+            Logger.Debug("Shutting down at end of test");
             if (this.container != null)
             {
                 this.container.Shutdown();
@@ -120,7 +120,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(queue.Name));
@@ -142,7 +142,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(queue.Name));
@@ -174,7 +174,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class TestListener : IChannelAwareMessageListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(TestListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly CountdownEvent latch;
 
         /// <summary>Initializes a new instance of the <see cref="TestListener"/> class.</summary>
@@ -196,7 +196,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var value = Encoding.UTF8.GetString(message.Body);
             try
             {
-                logger.Debug("Acking: " + value);
+                Logger.Debug("Acking: " + value);
                 channel.BasicAck((ulong)message.MessageProperties.DeliveryTag, false);
             }
             finally

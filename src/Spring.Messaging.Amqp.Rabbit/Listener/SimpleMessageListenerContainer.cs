@@ -46,7 +46,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         #region Private Fields
@@ -625,7 +625,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(AsyncMessageProcessingConsumer));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The consumer.

@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
     [Category(TestCategory.Integration)]
     public class CachingConnectionFactoryIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The connection factory.

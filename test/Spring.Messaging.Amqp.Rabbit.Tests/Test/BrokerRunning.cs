@@ -36,7 +36,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         // The broker online flag. Static so that we only test once on failure: speeds up test suite.
         private static readonly IDictionary<int, bool> brokerOnline = new Dictionary<int, bool>();
@@ -204,7 +204,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
 
                     if (this.purge)
                     {
-                        logger.Debug("Deleting queue: " + queueName);
+                        Logger.Debug("Deleting queue: " + queueName);
 
                         // Delete completely - gets rid of consumers and bindings as well
                         admin.DeleteQueue(queueName);
@@ -237,7 +237,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
             }
             catch (Exception e)
             {
-                logger.Warn("Not executing tests because basic connectivity test failed", e);
+                Logger.Warn("Not executing tests because basic connectivity test failed", e);
                 if (brokerOnline.ContainsKey(this.port))
                 {
                     brokerOnline[this.port] = false;

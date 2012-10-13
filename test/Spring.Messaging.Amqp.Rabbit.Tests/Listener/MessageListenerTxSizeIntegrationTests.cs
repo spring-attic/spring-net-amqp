@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Integration)]
     public class MessageListenerTxSizeIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerTxSizeIntegrationTests));
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly Queue queue = new Queue("test.queue");
 
@@ -92,7 +92,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             // Wait for broker communication to finish before trying to stop container
             Thread.Sleep(300);
-            logger.Debug("Shutting down at end of test");
+            Logger.Debug("Shutting down at end of test");
             if (this.container != null)
             {
                 this.container.Shutdown();
@@ -112,7 +112,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             int timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(new TimeSpan(0, 0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
@@ -132,7 +132,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(new TimeSpan(0, 0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
@@ -160,7 +160,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class TxTestListener : IChannelAwareMessageListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(TestListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly ThreadLocal<int> count = new ThreadLocal<int>();
         private readonly MessageListenerTxSizeIntegrationTests outer;
 
@@ -194,7 +194,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var value = Encoding.UTF8.GetString(message.Body);
             try
             {
-                logger.Debug("Received: " + value);
+                Logger.Debug("Received: " + value);
                 if (this.count.Value == null)
                 {
                     this.count.Value = 1;
@@ -206,7 +206,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
                 if (this.count.Value == this.outer.txSize && this.fail)
                 {
-                    logger.Debug("Failing: " + value);
+                    Logger.Debug("Failing: " + value);
                     this.count.Value = 0;
                     throw new SystemException("Planned");
                 }

@@ -39,7 +39,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Integration)]
     public class MessageListenerContainerErrorHandlerIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerErrorHandlerIntegrationTests));
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue = new Queue("test.queue");
 
@@ -247,7 +247,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class PocoThrowingExceptionListener
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(PocoThrowingExceptionListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly CountdownEvent latch;
         private readonly Exception exception;
 
@@ -286,7 +286,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class ThrowingExceptionListener : IMessageListener
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ThrowingExceptionListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly CountdownEvent latch;
         private readonly Exception exception;
 
@@ -334,7 +334,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class ThrowingExceptionChannelAwareListener : IChannelAwareMessageListener
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ThrowingExceptionChannelAwareListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly CountdownEvent latch;
         private readonly Exception exception;
 

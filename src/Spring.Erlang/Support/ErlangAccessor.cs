@@ -29,9 +29,9 @@ namespace Spring.Erlang.Support
     public abstract class ErlangAccessor : IInitializingObject
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
-        protected static readonly ILog logger = LogManager.GetLogger(typeof(ErlangAccessor));
+        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The connection factory.

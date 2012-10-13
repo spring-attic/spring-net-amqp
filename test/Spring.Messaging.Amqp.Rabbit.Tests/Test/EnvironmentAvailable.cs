@@ -30,7 +30,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetLogger(typeof(EnvironmentAvailable));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The default environment key.
@@ -60,7 +60,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <remarks></remarks>
         public void Apply()
         {
-            logger.Info("Environment: " + this.key + " active=" + this.IsActive());
+            Logger.Info("Environment: " + this.key + " active=" + this.IsActive());
             Assume.That(this.IsActive());
         }
 

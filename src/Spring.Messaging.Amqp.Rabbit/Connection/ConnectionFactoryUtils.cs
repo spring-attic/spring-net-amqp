@@ -36,7 +36,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectionFactoryUtils));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly ThreadLocal<IModel> consumerChannel = new ThreadLocal<IModel>();
 

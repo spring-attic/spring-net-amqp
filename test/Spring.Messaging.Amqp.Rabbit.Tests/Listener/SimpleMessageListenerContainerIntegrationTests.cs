@@ -51,7 +51,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Integration)]
     public class SimpleMessageListenerContainerIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(SimpleMessageListenerContainerIntegrationTests));
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly Queue queue = new Queue("test.queue");
 
@@ -148,7 +148,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             // Wait for broker communication to finish before trying to stop container
             Thread.Sleep(300);
-            logger.Debug("Shutting down at end of test");
+            Logger.Debug("Shutting down at end of test");
             if (this.container != null)
             {
                 this.container.Shutdown();
@@ -329,7 +329,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     public class SimplePocoListener
     {
         private readonly AtomicInteger count = new AtomicInteger();
-        private static readonly ILog logger = LogManager.GetLogger(typeof(SimplePocoListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly CountdownEvent latch;
 
         private readonly bool fail;
@@ -358,9 +358,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             try
             {
                 var counter = this.count.ReturnValueAndIncrement();
-                if (logger.IsDebugEnabled && counter % 100 == 0)
+                if (Logger.IsDebugEnabled && counter % 100 == 0)
                 {
-                    logger.Debug("Handling: " + value + ":" + counter + " - " + this.latch);
+                    Logger.Debug("Handling: " + value + ":" + counter + " - " + this.latch);
                 }
 
                 if (this.fail)
@@ -393,7 +393,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     public class Listener : IMessageListener
     {
         private readonly AtomicInteger count = new AtomicInteger();
-        private static readonly ILog logger = LogManager.GetLogger(typeof(Listener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly CountdownEvent latch;
 
         private readonly bool fail;
@@ -423,9 +423,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             try
             {
                 var counter = this.count.ReturnValueAndIncrement();
-                if (logger.IsDebugEnabled && counter % 100 == 0)
+                if (Logger.IsDebugEnabled && counter % 100 == 0)
                 {
-                    logger.Debug(value + counter);
+                    Logger.Debug(value + counter);
                 }
 
                 if (this.fail)
@@ -450,7 +450,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     public class ChannelAwareListener : IChannelAwareMessageListener
     {
         private readonly AtomicInteger count = new AtomicInteger();
-        private static readonly ILog logger = LogManager.GetLogger(typeof(ChannelAwareListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly CountdownEvent latch;
 
         private readonly bool fail;
@@ -481,9 +481,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             try
             {
                 var counter = this.count.ReturnValueAndIncrement();
-                if (logger.IsDebugEnabled && counter % 100 == 0)
+                if (Logger.IsDebugEnabled && counter % 100 == 0)
                 {
-                    logger.Debug(value + counter);
+                    Logger.Debug(value + counter);
                 }
 
                 if (this.fail)

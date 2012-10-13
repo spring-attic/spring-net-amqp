@@ -62,10 +62,10 @@ namespace Spring.Erlang.Core
             return this.Execute(
                 delegate(IConnection connection)
                 {
-                    logger.Debug("Sending RPC for module [" + module + "] function [" + function + "] args [" + args);
+                    Logger.Debug("Sending RPC for module [" + module + "] function [" + function + "] args [" + args);
                     connection.SendRPC(module, function, args);
                     var response = connection.ReceiveRPC();
-                    logger.Debug("Response received = " + response);
+                    Logger.Debug("Response received = " + response);
                     this.HandleResponseError(module, function, response);
                     return response;
                 });
@@ -166,7 +166,7 @@ namespace Spring.Erlang.Core
             }
             catch (Exception ex)
             {
-                logger.Error("An error occurred executing the action", ex);
+                Logger.Error("An error occurred executing the action", ex);
                 throw this.ConvertOtpAccessException(ex);
             }
             finally

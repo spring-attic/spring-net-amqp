@@ -39,7 +39,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core.Support
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitGatewaySupport));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         /// <summary>

@@ -31,9 +31,9 @@ namespace Spring.Erlang.Connection
     public class SimpleConnectionFactory : IConnectionFactory, IInitializingObject
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
-        private readonly ILog logger = LogManager.GetLogger(typeof(SimpleConnectionFactory));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The unique self node name.
@@ -130,7 +130,7 @@ namespace Spring.Erlang.Connection
             if (this.UniqueSelfNodeName)
             {
                 selfNodeNameToUse = this.selfNodeName + "-" + Guid.NewGuid().ToString();
-                this.logger.Debug("Creating OtpSelf with node name = [" + selfNodeNameToUse + "]");
+                Logger.Debug("Creating OtpSelf with node name = [" + selfNodeNameToUse + "]");
             }
 
             try

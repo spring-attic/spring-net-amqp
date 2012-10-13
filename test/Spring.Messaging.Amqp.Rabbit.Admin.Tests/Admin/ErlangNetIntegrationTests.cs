@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     [Category(TestCategory.Integration)]
     public class ErlangNetIntegrationTests
     {
-        private static readonly ILog logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static int counter;
 
@@ -91,8 +91,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             this.connection.sendRPC("rabbit_amqqueue", "info_all", new OtpErlangList(objectArray));
 
             var received = this.connection.receiveRPC();
-            logger.Info(received);
-            logger.Info(received.GetType().ToString());
+            Logger.Info(received);
+            Logger.Info(received.GetType().ToString());
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         public void StressTest()
         {
             var cookie = this.ReadCookie();
-            logger.Info("Cookie: " + cookie);
+            Logger.Info("Cookie: " + cookie);
             var con = this.CreateConnection();
             var recycleConnection = false;
             for (int i = 0; i < 100; i++)
@@ -139,7 +139,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 this.ExecuteRpc(con, recycleConnection, "rabbit", "status");
                 if (i % 10 == 0)
                 {
-                    logger.Debug("i = " + i);
+                    Logger.Debug("i = " + i);
                 }
             }
         }
@@ -162,7 +162,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         {
             con.sendRPC(module, function, new OtpErlangList());
             var response = con.receiveRPC();
-            logger.Debug(module + " response received = " + response);
+            Logger.Debug(module + " response received = " + response);
             if (recycleConnection)
             {
                 con.close();
@@ -181,7 +181,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
             if (!cookieFile.Exists)
             {
-                logger.Info(string.Format("Could not find cookie file at path: {0}", cookieFile.FullName));
+                Logger.Info(string.Format("Could not find cookie file at path: {0}", cookieFile.FullName));
                 Assert.Inconclusive("Could not read Erlang cookie file.");
             }
 
@@ -191,7 +191,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
             catch (Exception ex)
             {
-                logger.Error("Error occurred reading cookie file", ex);
+                Logger.Error("Error occurred reading cookie file", ex);
                 throw;
             }
 

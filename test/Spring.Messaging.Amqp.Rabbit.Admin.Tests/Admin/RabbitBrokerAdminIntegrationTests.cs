@@ -33,7 +33,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     [Category(TestCategory.Integration)]
     public class RabbitBrokerAdminIntegrationTests
     {
-        private readonly ILog logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The connection factory.
@@ -67,7 +67,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
             catch (Exception ex)
             {
-                this.logger.Error("An error occurred during SetUp", ex);
+                Logger.Error("An error occurred during SetUp", ex);
                 Assert.Fail("An error occurred during SetUp.");
             }
         }
@@ -148,7 +148,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
             }
             catch (Exception ex)
             {
-                this.logger.Error("An error occurred", ex);
+                Logger.Error("An error occurred", ex);
                 throw;
             }
             finally

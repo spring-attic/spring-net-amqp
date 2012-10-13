@@ -36,7 +36,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
         /// <summary>
         /// The logger.
         /// </summary>
-        public static ILog Logger = LogManager.GetCurrentClassLogger();
+        public static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The default charset.

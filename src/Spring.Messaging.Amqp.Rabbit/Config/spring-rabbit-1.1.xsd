@@ -473,7 +473,7 @@
 
     <xsd:complexType name="mapType">
         <xsd:complexContent>
-            <xsd:extension base="beans:mapType">
+            <xsd:extension base="objects:objectMap">
                 <xsd:attribute name="id" type="xsd:string" />
                 <xsd:attribute name="ref" use="optional">
                     <xsd:annotation>

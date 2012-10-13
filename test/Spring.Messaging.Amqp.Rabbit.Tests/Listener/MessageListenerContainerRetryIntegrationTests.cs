@@ -39,7 +39,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Ignore("Spring.NET doesn't support retry yet...")]
     public class MessageListenerContainerRetryIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerRetryIntegrationTests));
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue = new Queue("test.queue");
 
@@ -240,7 +240,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 var timeout = Math.Min(1 + messageCount / concurrentConsumers, 30);
 
                 var count = messageCount;
-                logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+                Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
                 Task.Factory.StartNew(
                     () =>
                     {
@@ -271,7 +271,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                         }
                     });
                 var waited = latch.Wait(timeout * 1000);
-                logger.Info("All messages recovered: " + waited);
+                Logger.Info("All messages recovered: " + waited);
                 Assert.AreEqual(concurrentConsumers, container.ActiveConsumerCount);
                 Assert.True(waited, "Timed out waiting for messages");
 
@@ -295,7 +295,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class RetryPocoListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(RetryPocoListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly AtomicInteger count = new AtomicInteger();
         private readonly int failFrequency;
 
@@ -309,7 +309,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <remarks></remarks>
         public void HandleMessage(int value)
         {
-            logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
+            Logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
             if (value % this.failFrequency == 0)
             {
                 throw new Exception("Planned");

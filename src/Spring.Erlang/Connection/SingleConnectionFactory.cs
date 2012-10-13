@@ -33,9 +33,9 @@ namespace Spring.Erlang.Connection
     public class SingleConnectionFactory : IConnectionFactory, IInitializingObject, IDisposable
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
-        protected readonly ILog logger = LogManager.GetLogger(typeof(SingleConnectionFactory));
+        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The unique self node name.
@@ -153,9 +153,9 @@ namespace Spring.Erlang.Connection
 
                 this.targetConnection = this.DoCreateConnection();
                 this.PrepareConnection(this.targetConnection);
-                if (this.logger.IsInfoEnabled)
+                if (Logger.IsInfoEnabled)
                 {
-                    this.logger.Info(
+                    Logger.Info(
                         "Established shared Rabbit Connection: "
                         + this.targetConnection);
                 }
@@ -191,9 +191,9 @@ namespace Spring.Erlang.Connection
         /// <remarks></remarks>
         protected void CloseConnection(IConnection connection)
         {
-            if (this.logger.IsDebugEnabled)
+            if (Logger.IsDebugEnabled)
             {
-                this.logger.Debug("Closing shared Rabbit Connection: " + this.targetConnection);
+                Logger.Debug("Closing shared Rabbit Connection: " + this.targetConnection);
             }
 
             try
@@ -204,7 +204,7 @@ namespace Spring.Erlang.Connection
             }
             catch (Exception ex)
             {
-                this.logger.Debug("Could not close shared Rabbit Connection", ex);
+                Logger.Debug("Could not close shared Rabbit Connection", ex);
             }
         }
 
@@ -273,7 +273,7 @@ namespace Spring.Erlang.Connection
             if (this.UniqueSelfNodeName)
             {
                 selfNodeNameToUse = this.selfNodeName + "-" + Guid.NewGuid().ToString();
-                this.logger.Debug("Creating OtpSelf with node name = [" + selfNodeNameToUse + "]");
+                Logger.Debug("Creating OtpSelf with node name = [" + selfNodeNameToUse + "]");
             }
 
             try

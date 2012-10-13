@@ -34,7 +34,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// Logger available to subclasses.
         /// </summary>
-        protected static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitAccessor));
+        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The connection factory.

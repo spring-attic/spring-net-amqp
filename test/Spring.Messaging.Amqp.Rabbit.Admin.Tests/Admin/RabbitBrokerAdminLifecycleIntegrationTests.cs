@@ -30,7 +30,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     [Category(TestCategory.LifecycleIntegration)]
     public class RabbitBrokerAdminLifecycleIntegrationTests
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(RabbitBrokerAdminLifecycleIntegrationTests));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly string NODE_NAME = "spring@" + Dns.GetHostName().ToUpper();
 
@@ -161,7 +161,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
                 // if (i % 5 == 0)
                 // {
-                logger.Debug("i = " + i);
+                Logger.Debug("i = " + i);
 
                 // }
             }

@@ -40,7 +40,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Ignore("Some state issue (within the test fixture) is causing unreliable execution of these tests")]
     public class MessageListenerRecoveryCachingConnectionIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerRecoveryCachingConnectionIntegrationTests));
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue = new Queue("test.queue");
 
@@ -109,7 +109,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             // Wait for broker communication to finish before trying to stop container
             Thread.Sleep(300);
-            logger.Debug("Shutting down at end of test");
+            Logger.Debug("Shutting down at end of test");
             if (this.container != null)
             {
                 this.container.Shutdown();
@@ -132,7 +132,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             template.ConvertAndSend(queue.Name, "foo");
 
             var timeout = this.GetTimeout();
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
@@ -159,7 +159,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             template.ConvertAndSend(queue.Name, "foo");
 
             var timeout = this.GetTimeout();
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
@@ -190,7 +190,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var timeout = this.GetTimeout();
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
@@ -212,7 +212,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var timeout = this.GetTimeout();
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
@@ -237,7 +237,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var timeout = this.GetTimeout();
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
@@ -264,7 +264,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var timeout = Math.Min(4 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
@@ -289,7 +289,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var timeout = this.GetTimeout();
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
@@ -365,7 +365,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class ManualAckListener : IChannelAwareMessageListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(ManualAckListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly AtomicBoolean failed = new AtomicBoolean(false);
 
@@ -385,7 +385,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var value = Encoding.UTF8.GetString(message.Body);
             try
             {
-                logger.Debug("Acking: " + value);
+                Logger.Debug("Acking: " + value);
                 channel.BasicAck((ulong)message.MessageProperties.DeliveryTag, false);
                 if (this.failed.CompareAndSet(false, true))
                 {
@@ -409,7 +409,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class ChannelSenderListener : IChannelAwareMessageListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(ChannelSenderListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly CountdownEvent latch;
 
@@ -438,11 +438,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var value = Encoding.UTF8.GetString(message.Body);
             try
             {
-                logger.Debug("Received: " + value + " Sending: bar");
+                Logger.Debug("Received: " + value + " Sending: bar");
                 channel.BasicPublish(string.Empty, this.queueName, null, Encoding.UTF8.GetBytes("bar"));
                 if (this.fail)
                 {
-                    logger.Debug("Failing (planned)");
+                    Logger.Debug("Failing (planned)");
 
                     // intentional error (causes exception on connection thread):
                     throw new Exception("Planned");
@@ -464,7 +464,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class AbortChannelListener : IChannelAwareMessageListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(AbortChannelListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly AtomicBoolean failed = new AtomicBoolean(false);
 
@@ -482,7 +482,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
-            logger.Debug("Receiving: " + value);
+            Logger.Debug("Receiving: " + value);
             if (this.failed.CompareAndSet(false, true))
             {
                 // intentional error (causes exception on connection thread):
@@ -504,7 +504,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <remarks></remarks>
     public class CloseConnectionListener : IChannelAwareMessageListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(CloseConnectionListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly AtomicBoolean failed = new AtomicBoolean(false);
 
@@ -529,7 +529,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
-            logger.Debug("Receiving: " + value);
+            Logger.Debug("Receiving: " + value);
             if (this.failed.CompareAndSet(false, true))
             {
                 // intentional error (causes exception on connection thread):

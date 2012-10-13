@@ -26,7 +26,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
     /// </summary>
     public class BrokerPanic
     {
-        private readonly ILog logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private RabbitBrokerAdmin brokerAdmin;
 
@@ -50,7 +50,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
                 catch (Exception e)
                 {
                     // don't hide original error (so ignored)
-                    this.logger.Error("Error occurred stopping node", e);
+                    Logger.Error("Error occurred stopping node", e);
                 }
             }
         }

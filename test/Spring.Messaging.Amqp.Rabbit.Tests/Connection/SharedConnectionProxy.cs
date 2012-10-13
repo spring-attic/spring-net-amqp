@@ -30,7 +30,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// The Logger.
         /// </summary>
-        private readonly ILog logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The target connection.
@@ -62,7 +62,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
                 {
                     if (!this.IsOpen())
                     {
-                        this.logger.Debug("Detected closed connection. Opening a new one before creating Channel.");
+                        Logger.Debug("Detected closed connection. Opening a new one before creating Channel.");
                         this.target = this.outer.CreateBareConnection();
                         this.outer.ConnectionListener.OnCreate(this.target);
                     }

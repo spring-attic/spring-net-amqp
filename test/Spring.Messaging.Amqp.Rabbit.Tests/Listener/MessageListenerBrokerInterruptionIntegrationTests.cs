@@ -41,7 +41,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerBrokerInterruptionIntegrationTests));
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The queue. Ensure it is durable or it won't survive the broker restart.
@@ -160,7 +160,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 // Wait for broker communication to finish before trying to stop container
                 Thread.Sleep(300);
-                logger.Debug("Shutting down at end of test");
+                Logger.Debug("Shutting down at end of test");
                 if (this.container != null)
                 {
                     this.container.Shutdown();
@@ -186,7 +186,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         public void TestListenerRecoversFromDeadBroker()
         {
             var queues = this.brokerAdmin.GetQueues();
-            logger.Info("Queues: " + queues);
+            Logger.Info("Queues: " + queues);
             Assert.AreEqual(1, queues.Count);
             Assert.True(queues[0].Durable);
 
@@ -213,13 +213,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Logger.Info(string.Format("Latch.CurrentCount After Container Stop: {0}", latch.CurrentCount));
             this.brokerAdmin.StartBrokerApplication();
             queues = this.brokerAdmin.GetQueues();
-            logger.Info("Queues: " + queues);
+            Logger.Info("Queues: " + queues);
             this.container.Start();
             Logger.Info(string.Format("Concurrent Consumers After Container Start: {0}", this.container.ActiveConsumerCount));
             Assert.AreEqual(this.concurrentConsumers, this.container.ActiveConsumerCount);
             Logger.Info(string.Format("Latch.CurrentCount After Container Start: {0}", latch.CurrentCount));
             var timeout = Math.Min(4 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
@@ -257,7 +257,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetLogger(typeof(VanillaListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The latch.
@@ -276,7 +276,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
-            logger.Debug("Receiving: " + value);
+            Logger.Debug("Receiving: " + value);
             Thread.Sleep(75);
             if (this.latch.CurrentCount > 0)
             {
