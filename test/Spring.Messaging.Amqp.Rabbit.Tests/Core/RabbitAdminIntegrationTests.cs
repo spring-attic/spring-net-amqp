@@ -117,7 +117,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the startup with lazy declaration.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestStartupWithLazyDeclaration()
         {
@@ -161,7 +160,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the double declaration of autodelete queue.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestDoubleDeclarationOfAutodeleteQueue()
         {
@@ -181,7 +179,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the startup with autodelete.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestStartupWithAutodelete()
         {
@@ -235,7 +232,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the startup with non durable.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestStartupWithNonDurable()
         {
@@ -288,7 +284,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// @param connection the raw connection to use
         /// @param queue the Queue to test
         /// @return true if the queue exists
-        /// <remarks></remarks>
         private bool QueueExists(IConnection connection, Queue queue)
         {
             var target = connection;

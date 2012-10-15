@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
     [Category(TestCategory.Integration)]
     public class CachingConnectionFactoryIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The connection factory.
@@ -75,7 +75,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Sets up.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void SetUp()
         {
@@ -87,7 +86,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Tears down.
         /// </summary>
-        /// <remarks></remarks>
         [TearDown]
         public void TearDown()
         {
@@ -99,7 +97,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Tests the send and receive from volatile queue.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveFromVolatileQueue()
         {
@@ -115,7 +112,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Tests the receive from non existent virtual host.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestReceiveFromNonExistentVirtualHost()
         {
@@ -139,7 +135,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Tests the send and receive from volatile queue after implicit removal.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveFromVolatileQueueAfterImplicitRemoval()
         {
@@ -166,7 +161,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Tests the mix transactional and non transactional.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestMixTransactionalAndNonTransactional()
         {

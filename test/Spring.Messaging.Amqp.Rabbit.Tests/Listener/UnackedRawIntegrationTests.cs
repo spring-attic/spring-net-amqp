@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Ignore("Ignored in the spring-amqp also. Initiated discussion with the rabbitmq folks to determine why publish/consume/reject/consume won't work as expected...")]
     public class UnackedRawIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly ConnectionFactory factory = new ConnectionFactory();
         private IConnection conn;

@@ -46,7 +46,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         #region Private Fields

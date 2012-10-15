@@ -24,7 +24,6 @@ namespace Spring.Erlang
     /// RuntimeException wrapper for an {@link IOException} which
     /// can be commonly thrown from OTP operations.
     /// </summary>
-    /// <remarks></remarks>
     /// <author>Mark Pollack</author>
     /// <author>Mark Fisher</author>
     /// <author>Joe Fitzgerald (.NET)</author>
@@ -32,13 +31,11 @@ namespace Spring.Erlang
     {
         /// <summary>Initializes a new instance of the <see cref="OtpIOException"/> class.</summary>
         /// <param name="cause">The cause.</param>
-        /// <remarks></remarks>
         public OtpIOException(IOException cause) { }
 
         /// <summary>Initializes a new instance of the <see cref="OtpIOException"/> class.</summary>
         /// <param name="message">The message.</param>
         /// <param name="cause">The cause.</param>
-        /// <remarks></remarks>
         public OtpIOException(string message, IOException cause) : base(message) { }
     }
 }

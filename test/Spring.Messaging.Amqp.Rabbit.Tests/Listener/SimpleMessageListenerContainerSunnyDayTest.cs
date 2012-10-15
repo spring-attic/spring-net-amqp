@@ -125,7 +125,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <param name="acknowledgeMode">The acknowledge Mode.</param>
         /// <param name="externalTransaction">The external Transaction.</param>
         /// <returns>The container.</returns>
-        /// <remarks></remarks>
         private static SimpleMessageListenerContainer CreateContainer(
             object listener, RabbitTemplate rabbitTemplate, string queueName, int txSize, int concurrentConsumers, bool transactional, AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode, bool externalTransaction)
         {

@@ -83,7 +83,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Declares the queue.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void DeclareQueue()
         {
@@ -100,7 +99,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Cleans up.
         /// </summary>
-        /// <remarks></remarks>
         [TearDown]
         public void CleanUp()
         {
@@ -116,7 +114,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         [Repeat(200)]
         public void TestSendAndReceive()
@@ -139,7 +136,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive transacted.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         [Repeat(2000)]
         public void TestSendAndReceiveTransacted()

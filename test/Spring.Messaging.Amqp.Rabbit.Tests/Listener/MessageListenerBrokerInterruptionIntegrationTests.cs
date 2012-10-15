@@ -41,7 +41,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The queue. Ensure it is durable or it won't survive the broker restart.
@@ -137,7 +137,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Creates the connection factory.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void CreateConnectionFactory()
         {
@@ -152,7 +151,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Clears this instance.
         /// </summary>
-        /// <remarks></remarks>
         [TearDown]
         public void Clear()
         {
@@ -180,7 +178,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the listener recovers from dead broker.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         [Ignore("Need to fix")]
         public void TestListenerRecoversFromDeadBroker()
@@ -231,7 +228,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <param name="listener">The listener.</param>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <returns>The container.</returns>
-        /// <remarks></remarks>
         private SimpleMessageListenerContainer CreateContainer(string queueName, object listener, IConnectionFactory connectionFactory)
         {
             var container = new SimpleMessageListenerContainer(connectionFactory);
@@ -251,7 +247,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A vanilla message listener.
     /// </summary>
-    /// <remarks></remarks>
     public class VanillaListener : IChannelAwareMessageListener
     {
         /// <summary>
@@ -266,13 +261,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Initializes a new instance of the <see cref="VanillaListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public VanillaListener(CountdownEvent latch) { this.latch = latch; }
 
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);

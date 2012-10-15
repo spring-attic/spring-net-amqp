@@ -24,7 +24,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Support
     /// <summary>
     /// Moq Extension methods.
     /// </summary>
-    /// <remarks></remarks>
     public static class MoqExtensions
     {
         /// <summary>Returnses the in order.</summary>
@@ -32,7 +31,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Support
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="setup">The setup.</param>
         /// <param name="results">The results.</param>
-        /// <remarks></remarks>
         public static void ReturnsInOrder<T, TResult>(this ISetup<T, TResult> setup, params object[] results) where T : class
         {
             var queue = new Queue(results);

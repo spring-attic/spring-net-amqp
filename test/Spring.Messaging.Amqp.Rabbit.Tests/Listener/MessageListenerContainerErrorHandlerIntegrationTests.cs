@@ -39,7 +39,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Integration)]
     public class MessageListenerContainerErrorHandlerIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue = new Queue("test.queue");
 
@@ -77,7 +77,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Sets up.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void SetUp()
         {
@@ -91,7 +90,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the error handler invoke exception from poco.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestErrorHandlerInvokeExceptionFromPoco()
         {
@@ -106,7 +104,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the error handler invoke runtime exception from poco.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestErrorHandlerInvokeRuntimeExceptionFromPoco()
         {
@@ -121,7 +118,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the error handler listener execution failed exception from listener.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestErrorHandlerListenerExecutionFailedExceptionFromListener()
         {
@@ -136,7 +132,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the error handler regular runtime exception from listener.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestErrorHandlerRegularRuntimeExceptionFromListener()
         {
@@ -151,7 +146,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the error handler invoke exception from channel aware listener.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestErrorHandlerInvokeExceptionFromChannelAwareListener()
         {
@@ -166,7 +160,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the error handler invoke runtime exception from channel aware listener.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestErrorHandlerInvokeRuntimeExceptionFromChannelAwareListener()
         {
@@ -183,7 +176,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <param name="errorHandler">The error handler.</param>
         /// <param name="latch">The latch.</param>
         /// <param name="listener">The listener.</param>
-        /// <remarks></remarks>
         public void DoTest(int messageCount, IErrorHandler errorHandler, CountdownEvent latch, object listener)
         {
             var concurrentConsumers = 1;
@@ -227,7 +219,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Creates the template.</summary>
         /// <param name="concurrentConsumers">The concurrent consumers.</param>
         /// <returns>The template.</returns>
-        /// <remarks></remarks>
         private RabbitTemplate CreateTemplate(int concurrentConsumers)
         {
             var template = new RabbitTemplate();
@@ -244,7 +235,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A POCO throwing exception listener.
     /// </summary>
-    /// <remarks></remarks>
     public class PocoThrowingExceptionListener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -254,7 +244,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Initializes a new instance of the <see cref="PocoThrowingExceptionListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="exception">The exception.</param>
-        /// <remarks></remarks>
         public PocoThrowingExceptionListener(CountdownEvent latch, Exception exception)
         {
             this.latch = latch;
@@ -263,7 +252,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
-        /// <remarks></remarks>
         public void HandleMessage(string value)
         {
             try
@@ -283,7 +271,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A throwing exception listener.
     /// </summary>
-    /// <remarks></remarks>
     public class ThrowingExceptionListener : IMessageListener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -293,7 +280,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Initializes a new instance of the <see cref="ThrowingExceptionListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="exception">The exception.</param>
-        /// <remarks></remarks>
         public ThrowingExceptionListener(CountdownEvent latch, Exception exception)
         {
             this.latch = latch;
@@ -302,7 +288,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Called when a Message is received.</summary>
         /// <param name="message">The message.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message)
         {
             try
@@ -331,7 +316,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A throwing exception channel aware listener.
     /// </summary>
-    /// <remarks></remarks>
     public class ThrowingExceptionChannelAwareListener : IChannelAwareMessageListener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -341,7 +325,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Initializes a new instance of the <see cref="ThrowingExceptionChannelAwareListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="exception">The exception.</param>
-        /// <remarks></remarks>
         public ThrowingExceptionChannelAwareListener(CountdownEvent latch, Exception exception)
         {
             this.latch = latch;
@@ -351,7 +334,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             try

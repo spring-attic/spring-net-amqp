@@ -286,7 +286,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the receive in external transaction with rollback.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         [Ignore("Need resolution from Rabbit Team RE: Transaction Rollback")]
         public void TestReceiveInExternalTransactionWithRollback()
@@ -323,7 +322,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the receive in external transaction with no rollback.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestReceiveInExternalTransactionWithNoRollback()
         {
@@ -358,7 +356,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send in external transaction.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendInExternalTransaction()
         {
@@ -383,7 +380,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send in external transaction with rollback.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         [Ignore("Need resolution from Rabbit Team RE: Transaction Rollback")]
         public void TestSendInExternalTransactionWithRollback()
@@ -683,7 +679,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     /// <summary>
     /// A planned exception.
     /// </summary>
-    /// <remarks></remarks>
     internal class PlannedException : Exception
     {
         /// <summary>
@@ -697,7 +692,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     /// <summary>
     /// A test transaction manager.
     /// </summary>
-    /// <remarks></remarks>
     internal class TestTransactionManager : AbstractPlatformTransactionManager
     {
         /// <summary>Begin a new transaction with the given transaction definition.</summary>
@@ -705,13 +699,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <param name="definition"><see cref="T:Spring.Transaction.ITransactionDefinition"/> instance, describing
         /// propagation behavior, isolation level, timeout etc.</param>
         /// <exception cref="T:Spring.Transaction.TransactionException">In the case of creation or system errors.</exception>
-        /// <remarks></remarks>
         protected override void DoBegin(object transaction, ITransactionDefinition definition) { }
 
         /// <summary>Perform an actual commit on the given transaction.</summary>
         /// <param name="status">The status representation of the transaction.</param>
         /// <exception cref="T:Spring.Transaction.TransactionException">In the case of system errors.</exception>
-        /// <remarks></remarks>
         protected override void DoCommit(DefaultTransactionStatus status) { }
 
         /// <summary>
@@ -724,19 +716,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <exception cref="T:Spring.Transaction.TransactionException">
         /// In the case of lookup or system errors.
         ///   </exception>
-        /// <remarks></remarks>
         protected override object DoGetTransaction() { return new object(); }
 
         /// <summary>Perform an actual rollback on the given transaction.</summary>
         /// <param name="status">The status representation of the transaction.</param>
         /// <exception cref="T:Spring.Transaction.TransactionException">In the case of system errors.</exception>
-        /// <remarks></remarks>
         protected override void DoRollback(DefaultTransactionStatus status) { }
     }
 
     /// <summary>Test transaction callback.</summary>
     /// <typeparam name="T">Type T.</typeparam>
-    /// <remarks></remarks>
     public class TestTransactionCallback<T> : ITransactionCallback
     {
         #region Implementation of ITransactionCallback

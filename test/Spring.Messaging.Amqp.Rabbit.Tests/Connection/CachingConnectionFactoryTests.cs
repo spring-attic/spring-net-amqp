@@ -83,7 +83,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Tests the size of the connection factory cache.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestWithConnectionFactoryCacheSize()
         {
@@ -139,7 +138,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Tests the cache size exceeded.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestCacheSizeExceeded()
         {
@@ -203,7 +201,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Tests the cache size exceeded after close.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestCacheSizeExceededAfterClose()
         {
@@ -257,7 +254,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Tests the transactional and non transactional channels segregated.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestTransactionalAndNonTransactionalChannelsSegregated()
         {
@@ -320,7 +316,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>
         /// Tests the with connection factory destroy.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestWithConnectionFactoryDestroy()
         {

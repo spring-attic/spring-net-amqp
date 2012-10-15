@@ -24,7 +24,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
     /// <summary>
     /// Determines if the environment is available.
     /// </summary>
-    /// <remarks></remarks>
     public class EnvironmentAvailable
     {
         /// <summary>
@@ -44,7 +43,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
 
         /// <summary>Initializes a new instance of the <see cref="EnvironmentAvailable"/> class.</summary>
         /// <param name="key">The key.</param>
-        /// <remarks></remarks>
         public EnvironmentAvailable(string key) { this.key = key; }
 
         /// <summary>
@@ -57,7 +55,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <summary>
         /// Applies this instance.
         /// </summary>
-        /// <remarks></remarks>
         public void Apply()
         {
             Logger.Info("Environment: " + this.key + " active=" + this.IsActive());
@@ -68,7 +65,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// Determines whether this instance is active.
         /// </summary>
         /// <returns><c>true</c> if this instance is active; otherwise, <c>false</c>.</returns>
-        /// <remarks></remarks>
         public bool IsActive() { return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(this.key)); }
     }
 }

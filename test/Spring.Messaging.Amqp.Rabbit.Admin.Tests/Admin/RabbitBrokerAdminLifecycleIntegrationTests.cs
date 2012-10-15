@@ -55,7 +55,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Inits this instance.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void Init()
         {
@@ -124,7 +123,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Tests the stop and start broker.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestStopAndStartBroker()
         {

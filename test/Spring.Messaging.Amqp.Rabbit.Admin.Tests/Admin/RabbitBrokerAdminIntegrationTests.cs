@@ -89,7 +89,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Users the crud.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void UserCrud()
         {
@@ -115,7 +114,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Integrations the tests user crud with module adapter.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void IntegrationTestsUserCrudWithModuleAdapter()
         {

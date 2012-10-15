@@ -42,7 +42,6 @@ namespace Spring.Erlang.Support
         /// Gets or sets the connection factory.
         /// </summary>
         /// <value>The connection factory.</value>
-        /// <remarks></remarks>
         public IConnectionFactory ConnectionFactory { get { return this.connectionFactory; } set { this.connectionFactory = value; } }
 
         /// <summary>
@@ -54,7 +53,6 @@ namespace Spring.Erlang.Support
         /// Creates the connection.
         /// </summary>
         /// <returns>The connection.</returns>
-        /// <remarks></remarks>
         protected IConnection CreateConnection() { return this.ConnectionFactory.CreateConnection(); }
     }
 }

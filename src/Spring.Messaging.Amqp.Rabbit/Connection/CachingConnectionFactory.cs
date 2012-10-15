@@ -535,7 +535,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         private void PhysicalClose()
         {
             Logger.Debug(m => m("Closing cached Channel: " + this.target));
-            
+
             if (this.target == null)
             {
                 return;

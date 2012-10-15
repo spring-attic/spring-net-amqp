@@ -34,7 +34,6 @@ namespace Spring.Erlang.Connection
         /// <summary>Releases the connection.</summary>
         /// <param name="con">The con.</param>
         /// <param name="cf">The cf.</param>
-        /// <remarks></remarks>
         public static void ReleaseConnection(IConnection con, IConnectionFactory cf)
         {
             if (con == null)

@@ -38,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Logger available to subclasses.
         /// </summary>
-        protected static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        protected new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The object name.

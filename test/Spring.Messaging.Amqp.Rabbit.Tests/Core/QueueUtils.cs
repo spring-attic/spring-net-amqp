@@ -24,13 +24,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     /// <summary>
     /// Queue Utilities
     /// </summary>
-    /// <remarks></remarks>
     public class QueueUtils
     {
         /// <summary>Declares the test queue.</summary>
         /// <param name="template">The template.</param>
         /// <param name="routingKey">The routing key.</param>
-        /// <remarks></remarks>
         public static void DeclareTestQueue(RabbitTemplate template, string routingKey)
         {
             // declare and bind queue

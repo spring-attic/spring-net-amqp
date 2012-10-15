@@ -44,7 +44,6 @@ namespace Spring.Erlang.Core
         /// <param name="description">The description.</param>
         /// <param name="id">The id.</param>
         /// <param name="version">The version.</param>
-        /// <remarks></remarks>
         public Application(string description, string id, string version)
         {
             this.description = description;
@@ -55,26 +54,22 @@ namespace Spring.Erlang.Core
         /// <summary>
         /// Gets the description.
         /// </summary>
-        /// <remarks></remarks>
         public string Description { get { return this.description; } }
 
         /// <summary>
         /// Gets the id.
         /// </summary>
-        /// <remarks></remarks>
         public string Id { get { return this.id; } }
 
         /// <summary>
         /// Gets the version.
         /// </summary>
-        /// <remarks></remarks>
         public string Version { get { return this.version; } }
 
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-        /// <remarks></remarks>
         public override string ToString() { return string.Format("Description: {0}, Id: {1}, Version: {2}", this.description, this.id, this.version); }
     }
 }

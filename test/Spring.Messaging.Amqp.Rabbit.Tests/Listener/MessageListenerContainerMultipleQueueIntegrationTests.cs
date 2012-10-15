@@ -38,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Ignore("Need to fix")]
     public class MessageListenerContainerMultipleQueueIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue1 = new Queue("test.queue.1");
 
@@ -76,7 +76,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Sets up.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void SetUp()
         {
@@ -89,7 +88,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the multiple queues.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestMultipleQueues()
         {
@@ -104,7 +102,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the multiple queue names.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestMultipleQueueNames()
         {
@@ -119,7 +116,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the multiple queues with concurrent consumers.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestMultipleQueuesWithConcurrentConsumers()
         {
@@ -134,7 +130,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the multiple queue names with concurrent consumers.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestMultipleQueueNamesWithConcurrentConsumers()
         {
@@ -149,7 +144,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Does the test.</summary>
         /// <param name="concurrentConsumers">The concurrent consumers.</param>
         /// <param name="configurer">The configurer.</param>
-        /// <remarks></remarks>
         private void DoTest(int concurrentConsumers, IContainerConfigurer configurer)
         {
             var messageCount = 10;
@@ -205,19 +199,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A container configurer interface.
     /// </summary>
-    /// <remarks></remarks>
     public interface IContainerConfigurer
     {
         /// <summary>Configures the specified container.</summary>
         /// <param name="container">The container.</param>
-        /// <remarks></remarks>
         void Configure(SimpleMessageListenerContainer container);
     }
 
     /// <summary>
     /// A multiple poco listener.
     /// </summary>
-    /// <remarks></remarks>
     internal class MultiplePocoListener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -227,12 +218,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Initializes a new instance of the <see cref="MultiplePocoListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public MultiplePocoListener(CountdownEvent latch) { this.latch = latch; }
 
         /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
-        /// <remarks></remarks>
         public void HandleMessage(int value)
         {
             Logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
@@ -242,7 +231,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Gets the count.
         /// </summary>
-        /// <remarks></remarks>
         public int Count { get { return this.count.Value; } }
     }
 }

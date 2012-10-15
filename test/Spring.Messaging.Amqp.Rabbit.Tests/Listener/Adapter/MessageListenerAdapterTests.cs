@@ -52,7 +52,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// <summary>
         /// Tests the default listener method.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestDefaultListenerMethod()
         {
@@ -67,7 +66,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// <summary>
         /// Tests the explicit listener method.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestExplicitListenerMethod()
         {
@@ -96,7 +94,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// <summary>
         /// Tests the JDK proxy listener.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestJdkProxyListener()
         {
@@ -112,7 +109,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
     /// <summary>
     /// A handler delegate.
     /// </summary>
-    /// <remarks></remarks>
     internal class HandlerDelegate
     {
         /// <summary>
@@ -122,13 +118,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
 
         /// <summary>Initializes a new instance of the <see cref="HandlerDelegate"/> class.</summary>
         /// <param name="service">The service.</param>
-        /// <remarks></remarks>
         public HandlerDelegate(SimpleService service) { this.service = service; }
 
         /// <summary>Handles the message.</summary>
         /// <param name="input">The input.</param>
         /// <returns>The handled message.</returns>
-        /// <remarks></remarks>
         public string HandleMessage(string input)
         {
             SimpleService.called = true;
@@ -139,20 +133,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
     /// <summary>
     /// An IService inteface.
     /// </summary>
-    /// <remarks></remarks>
     public interface IService
     {
         /// <summary>Handles the specified input.</summary>
         /// <param name="input">The input.</param>
         /// <returns>The handled input.</returns>
-        /// <remarks></remarks>
         string Handle(string input);
     }
 
     /// <summary>
     /// A simple service.
     /// </summary>
-    /// <remarks></remarks>
     public class SimpleService : IService
     {
         /// <summary>
@@ -173,7 +164,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// <summary>Handles the specified input.</summary>
         /// <param name="input">The input.</param>
         /// <returns>The handled input.</returns>
-        /// <remarks></remarks>
         public string Handle(string input)
         {
             called = true;
@@ -183,7 +173,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// <summary>Nots the defined on interface.</summary>
         /// <param name="input">The input.</param>
         /// <returns>Whether the input is defined on the interface.</returns>
-        /// <remarks></remarks>
         public string NotDefinedOnInterface(string input)
         {
             called = true;
@@ -194,7 +183,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
     /// <summary>
     /// A mock message listener adapter.
     /// </summary>
-    /// <remarks></remarks>
     internal class MockMessageListenerAdapter : MessageListenerAdapter
     {
         /// <summary>Handle the given exception that arose during listener execution.
@@ -204,7 +192,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// exceptions get handled by the caller instead.</para>
         /// </summary>
         /// <param name="ex">The exception to handle.</param>
-        /// <remarks></remarks>
         protected override void HandleListenerException(Exception ex)
         {
             if (ex is SystemException)

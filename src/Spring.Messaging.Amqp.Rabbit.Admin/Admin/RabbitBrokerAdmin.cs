@@ -730,7 +730,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// @param parent
         /// @param child
         /// @return the full name of a directory
-        /// <remarks></remarks>
         private string FindDirectoryName(string parent, string child)
         {
             var parentDirectory = new DirectoryInfo(parent);
@@ -756,7 +755,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>Adds the environment.</summary>
         /// <param name="env">The env.</param>
         /// <param name="key">The key.</param>
-        /// <remarks></remarks>
         private void AddEnvironment(StringDictionary env, string key)
         {
             var value = Environment.GetEnvironmentVariable(key);
@@ -775,7 +773,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// </summary>
         /// Stops the halts the Erlang node on which RabbitMQ is running. To restart the node you will need to execute the
         /// start script from a command line or via other means.
-        /// <remarks></remarks>
         public void StopNode()
         {
             Logger.Info("Stopping RabbitMQ node.");
@@ -799,7 +796,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// Removes the node from any cluster it belongs to, removes all data from the management database, such as
         /// configured users and vhosts, and deletes all persistent messages.
         /// </summary>
-        /// <remarks></remarks>
         public void ResetNode() { this.ExecuteAndConvertRpc<object>("rabbit_mnesia", "reset"); }
 
         /// <summary>
@@ -808,7 +804,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// The forceResetNode command differs from {@link #resetNode} in that it resets the node unconditionally, regardless
         /// of the current management database state and cluster configuration. It should only be used as a last resort if
         /// the database or cluster configuration has been corrupted.
-        /// <remarks></remarks>
         public void ForceResetNode() { this.ExecuteAndConvertRpc<object>("rabbit_mnesia", "force_reset"); }
 
         /// <summary>The get status.</summary>
@@ -853,7 +848,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Initializes the default erlang template.
         /// </summary>
-        /// <remarks></remarks>
         protected void InitializeDefaultErlangTemplate()
         {
             var peerNodeName = this.nodeName;
@@ -865,7 +859,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         /// <summary>Creates the erlang template.</summary>
         /// <param name="otpConnectionFactory">The otp connection factory.</param>
-        /// <remarks></remarks>
         protected void CreateErlangTemplate(IConnectionFactory otpConnectionFactory)
         {
             this.erlangTemplate = new ErlangTemplate(otpConnectionFactory);
@@ -879,7 +872,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="function">The function to call.</param>
         /// <param name="args">The arguments to pass.</param>
         /// <returns>The result from the remote erl process converted to the correct type</returns>
-        /// <remarks></remarks>
         private T ExecuteAndConvertRpc<T>(string module, string function, params object[] args)
         {
             if (this.erlangTemplate == null)
@@ -914,7 +906,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// @param string the value to convert
         /// @return the bytes from the string using the encoding provided
         /// @throws IllegalStateException if the encoding is ont supported
-        /// <remarks></remarks>
         private byte[] GetBytes(string value)
         {
             try

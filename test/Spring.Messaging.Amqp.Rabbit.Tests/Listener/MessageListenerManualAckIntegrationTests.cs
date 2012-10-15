@@ -77,7 +77,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Creates the connection factory.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void CreateConnectionFactory()
         {
@@ -92,7 +91,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Clears this instance.
         /// </summary>
-        /// <remarks></remarks>
         [TearDown]
         public void Clear()
         {
@@ -108,7 +106,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the listener with manual ack non transactional.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestListenerWithManualAckNonTransactional()
         {
@@ -129,7 +126,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the listener with manual ack transactional.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestListenerWithManualAckTransactional()
         {
@@ -151,7 +147,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Creates the container.</summary>
         /// <param name="listener">The listener.</param>
         /// <returns>The container.</returns>
-        /// <remarks></remarks>
         private SimpleMessageListenerContainer CreateContainer(object listener)
         {
             var container = new SimpleMessageListenerContainer(this.template.ConnectionFactory);
@@ -171,7 +166,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A test listener.
     /// </summary>
-    /// <remarks></remarks>
     public class TestListener : IChannelAwareMessageListener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -179,18 +173,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Initializes a new instance of the <see cref="TestListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public TestListener(CountdownEvent latch) { this.latch = latch; }
 
         /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
-        /// <remarks></remarks>
         public void HandleMessage(string value) { }
 
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);

@@ -26,7 +26,7 @@ using Spring.Objects.Factory;
 using Spring.Objects.Factory.Parsing;
 using Spring.Objects.Factory.Xml;
 using Spring.Util;
-    // using Spring.Context.Config;
+// using Spring.Context.Config;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Config

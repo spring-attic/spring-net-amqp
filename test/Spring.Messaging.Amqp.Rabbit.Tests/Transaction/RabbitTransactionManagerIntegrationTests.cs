@@ -88,7 +88,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Inits this instance.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void Init()
         {
@@ -103,7 +102,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Tests the send and receive in transaction.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveInTransaction()
         {
@@ -126,7 +124,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Tests the receive in transaction.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestReceiveInTransaction()
         {
@@ -145,7 +142,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Tests the receive in transaction with rollback.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestReceiveInTransactionWithRollback()
         {
@@ -181,7 +177,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Tests the send in transaction.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendInTransaction()
         {
@@ -205,7 +200,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Tests the send in transaction with rollback.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendInTransactionWithRollback()
         {
@@ -237,7 +231,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
     /// <summary>
     /// A planned exception.
     /// </summary>
-    /// <remarks></remarks>
     internal class PlannedException : Exception
     {
         /// <summary>

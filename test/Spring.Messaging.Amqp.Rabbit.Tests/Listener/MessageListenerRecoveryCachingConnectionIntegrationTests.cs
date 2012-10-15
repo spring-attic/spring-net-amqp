@@ -40,7 +40,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Ignore("Some state issue (within the test fixture) is causing unreliable execution of these tests")]
     public class MessageListenerRecoveryCachingConnectionIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue = new Queue("test.queue");
 
@@ -83,7 +83,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Creates the connection factory.
         /// </summary>
         /// <returns>The connection factory.</returns>
-        /// <remarks></remarks>
         protected IConnectionFactory CreateConnectionFactory()
         {
             var connectionFactory = new CachingConnectionFactory();
@@ -103,7 +102,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Clears this instance.
         /// </summary>
-        /// <remarks></remarks>
         [TearDown]
         public void Clear()
         {
@@ -336,7 +334,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Gets the timeout.
         /// </summary>
         /// <returns>The timeout.</returns>
-        /// <remarks></remarks>
         private int GetTimeout() { return Math.Min(15 + this.messageCount / (4 * this.concurrentConsumers), 30); }
 
         /// <summary>Creates the container.</summary>
@@ -344,7 +341,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <param name="listener">The listener.</param>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <returns>The container.</returns>
-        /// <remarks></remarks>
         private SimpleMessageListenerContainer CreateContainer(string queueName, object listener, IConnectionFactory connectionFactory)
         {
             var container = new SimpleMessageListenerContainer(connectionFactory);
@@ -362,7 +358,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A manual ack listener.
     /// </summary>
-    /// <remarks></remarks>
     public class ManualAckListener : IChannelAwareMessageListener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -373,13 +368,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Initializes a new instance of the <see cref="ManualAckListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public ManualAckListener(CountdownEvent latch) { this.latch = latch; }
 
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
@@ -406,7 +399,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A channel sender listener.
     /// </summary>
-    /// <remarks></remarks>
     public class ChannelSenderListener : IChannelAwareMessageListener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -421,7 +413,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <param name="queueName">Name of the queue.</param>
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
-        /// <remarks></remarks>
         public ChannelSenderListener(string queueName, CountdownEvent latch, bool fail)
         {
             this.queueName = queueName;
@@ -432,7 +423,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
@@ -461,7 +451,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// An abort channel listener.
     /// </summary>
-    /// <remarks></remarks>
     public class AbortChannelListener : IChannelAwareMessageListener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -472,13 +461,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Initializes a new instance of the <see cref="AbortChannelListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public AbortChannelListener(CountdownEvent latch) { this.latch = latch; }
 
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
@@ -501,7 +488,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A close connection listener.
     /// </summary>
-    /// <remarks></remarks>
     public class CloseConnectionListener : IChannelAwareMessageListener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -515,7 +501,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Initializes a new instance of the <see cref="CloseConnectionListener"/> class.</summary>
         /// <param name="connection">The connection.</param>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public CloseConnectionListener(IConnectionProxy connection, CountdownEvent latch)
         {
             this.connection = connection.GetTargetConnection();
@@ -525,7 +510,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);

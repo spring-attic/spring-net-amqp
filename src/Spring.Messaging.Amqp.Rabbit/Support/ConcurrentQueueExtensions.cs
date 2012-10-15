@@ -93,6 +93,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             return true;
         }
 
+        /// <summary>The poll.</summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="duration">The duration.</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>The T.</returns>
         public static T Poll<T>(this BlockingCollection<T> collection, TimeSpan duration)
         {
             T result = default(T);
@@ -108,15 +113,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
                     {
                         result = default(T);
                     }
-                }, tokenSource.Token);
+                }, 
+                tokenSource.Token);
             task.Start();
             task.Wait(duration);
             return result;
         }
 
+        /// <summary>The poll.</summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="timeoutMilliseconds">The timeout milliseconds.</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>The T.</returns>
         public static T Poll<T>(this BlockingCollection<T> collection, int timeoutMilliseconds) { return collection.Poll(new TimeSpan(0, 0, 0, 0, timeoutMilliseconds)); }
 
-        public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> collection, TKey key) 
+        /// <summary>The get.</summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="key">The key.</param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns>The TValue.</returns>
+        public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> collection, TKey key)
         {
             TValue result = default(TValue);
             try

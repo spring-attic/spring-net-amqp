@@ -98,7 +98,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive with topic single callback.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveWithTopicSingleCallback()
         {
@@ -147,7 +146,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive with non default exchange.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveWithNonDefaultExchange()
         {
@@ -195,7 +193,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive with topic consume in background.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveWithTopicConsumeInBackground()
         {
@@ -241,7 +238,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive with topic two callbacks.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         [Ignore("Need to fix")]
         public void TestSendAndReceiveWithTopicTwoCallbacks()
@@ -316,7 +312,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive with fanout.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveWithFanout()
         {
@@ -360,7 +355,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>Creates the consumer.</summary>
         /// <param name="accessor">The accessor.</param>
         /// <returns>The consumer.</returns>
-        /// <remarks></remarks>
         private BlockingQueueConsumer CreateConsumer(RabbitAccessor accessor)
         {
             var consumer = new BlockingQueueConsumer(accessor.ConnectionFactory, new DefaultMessagePropertiesConverter(), new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 1, queue.Name);
@@ -371,7 +365,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>Gets the result.</summary>
         /// <param name="consumer">The consumer.</param>
         /// <returns>The result.</returns>
-        /// <remarks></remarks>
         private string GetResult(BlockingQueueConsumer consumer)
         {
             var response = consumer.NextMessage(new TimeSpan(0, 0, 0, 20));

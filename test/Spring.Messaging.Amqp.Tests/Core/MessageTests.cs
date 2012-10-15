@@ -25,13 +25,11 @@ namespace Spring.Messaging.Amqp.Tests.Core
     /// <summary>
     /// Message Tests.
     /// </summary>
-    /// <remarks></remarks>
     public class MessageTests
     {
         /// <summary>
         /// Toes the string for empty message body.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void ToStringForEmptyMessageBody()
         {
@@ -42,7 +40,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Toes the string for null message properties.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void ToStringForNullMessageProperties()
         {
@@ -53,7 +50,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Toes the string for non string message body.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void ToStringForNonStringMessageBody()
         {
@@ -64,7 +60,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Toes the string for serializable message body.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void ToStringForSerializableMessageBody()
         {
@@ -77,7 +72,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Toes the string for non serializable message body.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void ToStringForNonSerializableMessageBody()
         {

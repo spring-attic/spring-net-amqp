@@ -24,7 +24,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
     /// Global convenience class for all integration tests, carrying constants and other utilities for broker set up.
     /// </summary>
     /// <author>Dave Syer</author>
-    /// <remarks></remarks>
     public class BrokerTestUtils
     {
         /// <summary>
@@ -47,7 +46,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// Gets the name of the admin node.
         /// </summary>
         /// <returns>The admin node name.</returns>
-        /// <remarks></remarks>
         public static string GetAdminNodeName()
         {
             var hostName = Dns.GetHostName();
@@ -59,14 +57,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <returns>The System.Int32.</returns>
         /// The port that the broker is listening on (e.g. as input for a {@link ConnectionFactory}).
         /// @return a port number
-        /// <remarks></remarks>
         public static int GetPort() { return DEFAULT_PORT; }
 
         /// <summary>Gets the tracer port.</summary>
         /// <returns>The System.Int32.</returns>
         /// The port that the tracer is listening on (e.g. as input for a {@link ConnectionFactory}).
         /// @return a port number
-        /// <remarks></remarks>
         public static int GetTracerPort() { return TRACER_PORT; }
 
         /// <summary>Gets the admin port.</summary>
@@ -74,7 +70,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// An alternative port number than can safely be used to stop and start a broker, even when one is already running
         /// on the standard port as a privileged user. Useful for tests involving {@link RabbitBrokerAdmin} on UN*X.
         /// @return a port number
-        /// <remarks></remarks>
         public static int GetAdminPort()
         {
             // TODO: this *used* to be some magic value of '15672' but this would require special config to *ever* work on any system
@@ -88,7 +83,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// Convenience factory for a {@link RabbitBrokerAdmin} instance that will usually start and stop cleanly on all
         /// systems.
         /// @return a {@link RabbitBrokerAdmin} instance
-        /// <remarks></remarks>
         public static RabbitBrokerAdmin GetRabbitBrokerAdmin() { return GetRabbitBrokerAdmin(GetAdminNodeName(), GetPort()); }
 
         /// <summary>Gets the rabbit broker admin.</summary>
@@ -98,7 +92,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// systems.
         /// @param nodeName the name of the node
         /// @return a {@link RabbitBrokerAdmin} instance
-        /// <remarks></remarks>
         public static RabbitBrokerAdmin GetRabbitBrokerAdmin(string nodeName) { return GetRabbitBrokerAdmin(nodeName, GetPort()); }
 
         /// <summary>Gets the rabbit broker admin.</summary>

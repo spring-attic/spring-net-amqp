@@ -69,7 +69,6 @@ namespace Spring.Erlang.Connection
         /// <param name="selfNodeName">Name of the self node.</param>
         /// <param name="peerNodeName">Name of the peer node.</param>
         /// <param name="cookie">The cookie.</param>
-        /// <remarks></remarks>
         public SimpleConnectionFactory(string selfNodeName, string peerNodeName, string cookie)
         {
             this.selfNodeName = selfNodeName;
@@ -80,7 +79,6 @@ namespace Spring.Erlang.Connection
         /// <summary>Initializes a new instance of the <see cref="SimpleConnectionFactory"/> class.</summary>
         /// <param name="selfNodeName">Name of the self node.</param>
         /// <param name="peerNodeName">Name of the peer node.</param>
-        /// <remarks></remarks>
         public SimpleConnectionFactory(string selfNodeName, string peerNodeName)
         {
             this.selfNodeName = selfNodeName;
@@ -91,7 +89,6 @@ namespace Spring.Erlang.Connection
         /// Gets or sets a value indicating whether [unique self node name].
         /// </summary>
         /// <value><c>true</c> if [unique self node name]; otherwise, <c>false</c>.</value>
-        /// <remarks></remarks>
         public bool UniqueSelfNodeName { get { return this.uniqueSelfNodeName; } set { this.uniqueSelfNodeName = value; } }
 
         #region Implementation of IConnectionFactory
@@ -100,7 +97,6 @@ namespace Spring.Erlang.Connection
         /// Creates the connection.
         /// </summary>
         /// <returns>The connection.</returns>
-        /// <remarks></remarks>
         public IConnection CreateConnection()
         {
             try
@@ -120,7 +116,6 @@ namespace Spring.Erlang.Connection
         /// <summary>
         /// Afters the properties set.
         /// </summary>
-        /// <remarks></remarks>
         public void AfterPropertiesSet()
         {
             AssertUtils.IsTrue(this.selfNodeName != null || this.peerNodeName != null, "'selfNodeName' or 'peerNodeName' is required");

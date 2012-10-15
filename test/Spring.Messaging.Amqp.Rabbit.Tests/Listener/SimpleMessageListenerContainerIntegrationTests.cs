@@ -51,7 +51,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Integration)]
     public class SimpleMessageListenerContainerIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly Queue queue = new Queue("test.queue");
 
@@ -130,7 +130,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Declares the queue.
         /// </summary>
-        /// <remarks></remarks>
         public void DeclareQueue()
         {
             this.brokerIsRunning.Apply();
@@ -143,7 +142,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Clears this instance.
         /// </summary>
-        /// <remarks></remarks>
         public void Clear()
         {
             // Wait for broker communication to finish before trying to stop container
@@ -158,7 +156,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the poco listener sunny day.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestPocoListenerSunnyDay()
         {
@@ -171,7 +168,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the listener sunny day.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestListenerSunnyDay()
         {
@@ -184,7 +180,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the channel aware listener sunny day.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestChannelAwareListenerSunnyDay()
         {
@@ -197,7 +192,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the poco listener with exception.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestPocoListenerWithException()
         {
@@ -210,7 +204,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the listener with exception.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestListenerWithException()
         {
@@ -223,7 +216,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the channel aware listener with exception.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestChannelAwareListenerWithException()
         {
@@ -236,7 +228,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Does the sunny day test.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="listener">The listener.</param>
-        /// <remarks></remarks>
         private void DoSunnyDayTest(CountdownEvent latch, object listener)
         {
             this.container = this.CreateContainer(listener);
@@ -253,7 +244,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Does the listener with exception test.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="listener">The listener.</param>
-        /// <remarks></remarks>
         private void DoListenerWithExceptionTest(CountdownEvent latch, object listener)
         {
             this.container = this.CreateContainer(listener);
@@ -300,7 +290,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Creates the container.</summary>
         /// <param name="listener">The listener.</param>
         /// <returns>The container.</returns>
-        /// <remarks></remarks>
         private SimpleMessageListenerContainer CreateContainer(object listener)
         {
             var container = new SimpleMessageListenerContainer(this.template.ConnectionFactory);
@@ -325,7 +314,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A Poco Listener.
     /// </summary>
-    /// <remarks></remarks>
     public class SimplePocoListener
     {
         private readonly AtomicInteger count = new AtomicInteger();
@@ -336,14 +324,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Initializes a new instance of the <see cref="SimplePocoListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public SimplePocoListener(CountdownEvent latch)
             : this(latch, false) { }
 
         /// <summary>Initializes a new instance of the <see cref="SimplePocoListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
-        /// <remarks></remarks>
         public SimplePocoListener(CountdownEvent latch, bool fail)
         {
             this.latch = latch;
@@ -352,7 +338,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
-        /// <remarks></remarks>
         public void HandleMessage(string value)
         {
             try
@@ -389,7 +374,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A listener.
     /// </summary>
-    /// <remarks></remarks>
     public class Listener : IMessageListener
     {
         private readonly AtomicInteger count = new AtomicInteger();
@@ -400,14 +384,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Initializes a new instance of the <see cref="Listener"/> class.</summary>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public Listener(CountdownEvent latch)
             : this(latch, false) { }
 
         /// <summary>Initializes a new instance of the <see cref="Listener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
-        /// <remarks></remarks>
         public Listener(CountdownEvent latch, bool fail)
         {
             this.latch = latch;
@@ -416,7 +398,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Called when a Message is received.</summary>
         /// <param name="message">The message.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message)
         {
             var value = Encoding.UTF8.GetString(message.Body);
@@ -446,7 +427,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A channel aware listener.
     /// </summary>
-    /// <remarks></remarks>
     public class ChannelAwareListener : IChannelAwareMessageListener
     {
         private readonly AtomicInteger count = new AtomicInteger();
@@ -457,14 +437,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Initializes a new instance of the <see cref="ChannelAwareListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public ChannelAwareListener(CountdownEvent latch)
             : this(latch, false) { }
 
         /// <summary>Initializes a new instance of the <see cref="ChannelAwareListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
-        /// <remarks></remarks>
         public ChannelAwareListener(CountdownEvent latch, bool fail)
         {
             this.latch = latch;
@@ -474,7 +452,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
@@ -504,7 +481,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// Integration test transaction manager.
     /// </summary>
-    /// <remarks></remarks>
     internal class IntegrationTestTransactionManager : AbstractPlatformTransactionManager
     {
         /// <summary>Begin a new transaction with the given transaction definition.</summary>
@@ -512,13 +488,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <param name="definition"><see cref="T:Spring.Transaction.ITransactionDefinition"/> instance, describing
         /// propagation behavior, isolation level, timeout etc.</param>
         /// <exception cref="T:Spring.Transaction.TransactionException">In the case of creation or system errors.</exception>
-        /// <remarks></remarks>
         protected override void DoBegin(object transaction, ITransactionDefinition definition) { }
 
         /// <summary>Perform an actual commit on the given transaction.</summary>
         /// <param name="status">The status representation of the transaction.</param>
         /// <exception cref="T:Spring.Transaction.TransactionException">In the case of system errors.</exception>
-        /// <remarks></remarks>
         protected override void DoCommit(DefaultTransactionStatus status) { }
 
         /// <summary>
@@ -531,13 +505,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <exception cref="T:Spring.Transaction.TransactionException">
         /// In the case of lookup or system errors.
         ///   </exception>
-        /// <remarks></remarks>
         protected override object DoGetTransaction() { return new object(); }
 
         /// <summary>Perform an actual rollback on the given transaction.</summary>
         /// <param name="status">The status representation of the transaction.</param>
         /// <exception cref="T:Spring.Transaction.TransactionException">In the case of system errors.</exception>
-        /// <remarks></remarks>
         protected override void DoRollback(DefaultTransactionStatus status) { }
     }
 }

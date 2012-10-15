@@ -41,7 +41,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the inconsistent transaction configuration.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestInconsistentTransactionConfiguration()
         {
@@ -65,7 +64,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the inconsistent acknowledge configuration.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestInconsistentAcknowledgeConfiguration()
         {
@@ -88,7 +86,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the default consumer count.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestDefaultConsumerCount()
         {
@@ -103,7 +100,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the lazy consumer count.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestLazyConsumerCount()
         {

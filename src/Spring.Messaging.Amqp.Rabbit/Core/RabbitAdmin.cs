@@ -50,7 +50,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// The running flag.
         /// </summary>
-        private volatile bool running = false;
+        private volatile bool running;
 
         /// <summary>
         /// The auto startup flag.
@@ -120,7 +120,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return this.rabbitTemplate.Execute(
                 channel =>
                 {
-                    if (IsDeletingDefaultExchange(exchangeName))
+                    if (this.IsDeletingDefaultExchange(exchangeName))
                     {
                         return true;
                     }
@@ -233,7 +233,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 {
                     if (binding.IsDestinationQueue())
                     {
-                        if (IsRemovingImplicitQueueBinding(binding))
+                        if (this.IsRemovingImplicitQueueBinding(binding))
                         {
                             return null;
                         }
@@ -297,7 +297,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
                 if (exchange.AutoDelete)
                 {
-                    Logger.Warn(m => m("Auto-declaring an auto-delete Exchange ({0}). It will be deleted by the broker if not in use (if all bindings are deleted), but will only be redeclared if the connection is closed and reopened.", exchange.Name));
+                    Logger.Warn(
+                        m =>
+                        m("Auto-declaring an auto-delete Exchange ({0}). It will be deleted by the broker if not in use (if all bindings are deleted), but will only be redeclared if the connection is closed and reopened.", exchange.Name));
                 }
             }
 
@@ -349,7 +351,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             foreach (var exchange in exchanges)
             {
                 Logger.Debug(m => m("declaring Exchange '{0}'", exchange.Name));
-                if (!IsDeclaringDefaultExchange(exchange))
+                if (!this.IsDeclaringDefaultExchange(exchange))
                 {
                     channel.ExchangeDeclare(exchange.Name, exchange.Type, exchange.Durable, exchange.AutoDelete, exchange.Arguments);
                 }
@@ -386,7 +388,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
                 if (binding.IsDestinationQueue())
                 {
-                    if (!IsDeclaringImplicitQueueBinding(binding))
+                    if (!this.IsDeclaringImplicitQueueBinding(binding))
                     {
                         channel.QueueBind(binding.Destination, binding.Exchange, binding.RoutingKey, binding.Arguments);
                     }
@@ -400,7 +402,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         private bool IsDeclaringDefaultExchange(IExchange exchange)
         {
-            if (IsDefaultExchange(exchange.Name))
+            if (this.IsDefaultExchange(exchange.Name))
             {
                 Logger.Debug(m => m("Default exchange is pre-declared by server."));
                 return true;
@@ -411,7 +413,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         private bool IsDeletingDefaultExchange(string exchangeName)
         {
-            if (IsDefaultExchange(exchangeName))
+            if (this.IsDefaultExchange(exchangeName))
             {
                 Logger.Debug(m => m("Default exchange cannot be deleted."));
                 return true;
@@ -420,14 +422,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return false;
         }
 
-        private bool IsDefaultExchange(string exchangeName)
-        {
-            return DEFAULT_EXCHANGE_NAME.Equals(exchangeName);
-        }
+        private bool IsDefaultExchange(string exchangeName) { return DEFAULT_EXCHANGE_NAME.Equals(exchangeName); }
 
         private bool IsDeclaringImplicitQueueBinding(Binding binding)
         {
-            if (IsImplicitQueueBinding(binding))
+            if (this.IsImplicitQueueBinding(binding))
             {
                 Logger.Debug(m => m("The default exchange is implicitly bound to every queue, with a routing key equal to the queue name."));
                 return true;
@@ -438,7 +437,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
 
         private bool IsRemovingImplicitQueueBinding(Binding binding)
         {
-            if (IsImplicitQueueBinding(binding))
+            if (this.IsImplicitQueueBinding(binding))
             {
                 Logger.Debug(m => m("Cannot remove implicit default exchange binding to queue."));
                 return true;
@@ -447,10 +446,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             return false;
         }
 
-        private bool IsImplicitQueueBinding(Binding binding)
-        {
-            return IsDefaultExchange(binding.Exchange) && binding.Destination.Equals(binding.RoutingKey);
-        }
+        private bool IsImplicitQueueBinding(Binding binding) { return this.IsDefaultExchange(binding.Exchange) && binding.Destination.Equals(binding.RoutingKey); }
     }
 
     /// <summary>

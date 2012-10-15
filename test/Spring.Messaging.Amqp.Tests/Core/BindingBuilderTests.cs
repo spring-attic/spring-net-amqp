@@ -24,13 +24,11 @@ namespace Spring.Messaging.Amqp.Tests.Core
     /// <summary>
     /// Binding builder tests.
     /// </summary>
-    /// <remarks></remarks>
     public class BindingBuilderTests
     {
         /// <summary>
         /// Fanouts the binding.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void FanoutBinding()
         {
@@ -41,7 +39,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Directs the binding.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void DirectBinding()
         {
@@ -52,7 +49,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Directs the name of the binding with queue.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void DirectBindingWithQueueName()
         {
@@ -63,7 +59,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Topics the binding.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TopicBinding()
         {
@@ -74,7 +69,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Customs the binding.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void CustomBinding()
         {
@@ -88,7 +82,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Exchanges the binding.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void ExchangeBinding()
         {
@@ -100,18 +93,15 @@ namespace Spring.Messaging.Amqp.Tests.Core
     /// <summary>
     /// A custom exchange.
     /// </summary>
-    /// <remarks></remarks>
     internal class CustomExchange : AbstractExchange
     {
         /// <summary>Initializes a new instance of the <see cref="CustomExchange"/> class. Initializes a new instance of the <see cref="AbstractExchange"/> class, given a name.</summary>
         /// <param name="name">The name of the exchange.</param>
-        /// <remarks></remarks>
         public CustomExchange(string name) : base(name) { }
 
         /// <summary>
         /// Gets the type of the exchange.
         /// </summary>
-        /// <remarks></remarks>
         public override string Type { get { return "x-custom"; } }
     }
 }

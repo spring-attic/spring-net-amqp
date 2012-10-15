@@ -22,14 +22,12 @@ namespace Spring.Erlang.Connection
     /// <summary>
     /// An interface based ConnectionFactory for creating <see cref="OtpConnection"/>s.
     /// </summary>
-    /// <remarks></remarks>
     public interface IConnectionFactory
     {
         /// <summary>
         /// Creates the connection.
         /// </summary>
         /// <returns>The connection.</returns>
-        /// <remarks></remarks>
         IConnection CreateConnection();
     }
 }

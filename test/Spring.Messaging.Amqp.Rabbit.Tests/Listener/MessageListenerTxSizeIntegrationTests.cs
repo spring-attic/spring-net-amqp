@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Integration)]
     public class MessageListenerTxSizeIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly Queue queue = new Queue("test.queue");
 
@@ -157,7 +157,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A Tx Test Listener
     /// </summary>
-    /// <remarks></remarks>
     public class TxTestListener : IChannelAwareMessageListener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -172,7 +171,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <param name="outer">The outer.</param>
-        /// <remarks></remarks>
         public TxTestListener(CountdownEvent latch, bool fail, MessageListenerTxSizeIntegrationTests outer)
         {
             this.latch = latch;
@@ -182,13 +180,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
-        /// <remarks></remarks>
         public void HandleMessage(string value) { }
 
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);

@@ -46,7 +46,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="runningApplications">The running applications.</param>
         /// <param name="nodes">The nodes.</param>
         /// <param name="runningNodes">The running nodes.</param>
-        /// <remarks></remarks>
         public RabbitStatus(IList<Application> runningApplications, IList<Node> nodes, IList<Node> runningNodes)
         {
             this.runningApplications = runningApplications;
@@ -57,19 +56,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Gets a value indicating whether this instance is alive.
         /// </summary>
-        /// <remarks></remarks>
         public bool IsAlive { get { return this.nodes != null && !(this.nodes.Count <= 0); } }
 
         /// <summary>
         /// Gets a value indicating whether this instance is running.
         /// </summary>
-        /// <remarks></remarks>
         public bool IsRunning { get { return this.runningNodes != null && !(this.runningNodes.Count <= 0); } }
 
         /// <summary>
         /// Gets a value indicating whether this instance is ready.
         /// </summary>
-        /// <remarks></remarks>
         public bool IsReady
         {
             get
@@ -96,26 +92,22 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Gets the running applications.
         /// </summary>
-        /// <remarks></remarks>
         public IList<Application> RunningApplications { get { return this.runningApplications; } }
 
         /// <summary>
         /// Gets the nodes.
         /// </summary>
-        /// <remarks></remarks>
         public IList<Node> Nodes { get { return this.nodes; } set { this.nodes = value; } }
 
         /// <summary>
         /// Gets the running nodes.
         /// </summary>
-        /// <remarks></remarks>
         public IList<Node> RunningNodes { get { return this.runningNodes; } set { this.runningNodes = value; } }
 
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-        /// <remarks></remarks>
         public override string ToString() { return string.Format("IsAlive: {0}, IsRunning: {1}, IsReady: {2}, RunningApplications: {3}, Nodes: {4}, RunningNodes: {5}", this.IsAlive, this.IsRunning, this.IsReady, this.runningApplications, this.nodes, this.runningNodes); }
     }
 }

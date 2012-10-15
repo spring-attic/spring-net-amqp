@@ -120,7 +120,6 @@ namespace Spring.Messaging.Amqp.Core
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-        /// <remarks></remarks>
         public override string ToString() { return "Binding [destination=" + this.destination + ", exchange=" + this.exchange + ", routingKey=" + this.routingKey + "]"; }
     }
 }

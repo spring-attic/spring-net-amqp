@@ -80,7 +80,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <param name="names">The names.</param>
         /// Ensure the broker is running and has an empty queue with the specified name in the default exchange.
         /// @return a new rule that assumes an existing running broker
-        /// <remarks></remarks>
         /// <returns>The Spring.Messaging.Amqp.Rabbit.Tests.Test.BrokerRunning.</returns>
         public static BrokerRunning IsRunningWithEmptyQueues(params string[] names)
         {
@@ -97,19 +96,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <param name="queues">The queues.</param>
         /// Ensure the broker is running and has an empty queue (which can be addressed via the default exchange).
         /// @return a new rule that assumes an existing running broker
-        /// <remarks></remarks>
         /// <returns>The Spring.Messaging.Amqp.Rabbit.Tests.Test.BrokerRunning.</returns>
         public static BrokerRunning IsRunningWithEmptyQueues(params Queue[] queues) { return new BrokerRunning(true, true, queues); }
 
         /// <summary>Determines whether this instance is running.</summary>
         /// @return a new rule that assumes an existing running broker
-        /// <remarks></remarks>
         /// <returns>The Spring.Messaging.Amqp.Rabbit.Tests.Test.BrokerRunning.</returns>
         public static BrokerRunning IsRunning() { return new BrokerRunning(true); }
 
         /// <summary>Determines whether [is not running].</summary>
         /// @return a new rule that assumes there is no existing broker
-        /// <remarks></remarks>
         /// <returns>The Spring.Messaging.Amqp.Rabbit.Tests.Test.BrokerRunning.</returns>
         public static BrokerRunning IsNotRunning() { return new BrokerRunning(false); }
 
@@ -118,7 +114,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <param name="assumeOnline">if set to <c>true</c> [assume online].</param>
         /// <param name="purge">if set to <c>true</c> [purge].</param>
         /// <param name="queues">The queues.</param>
-        /// <remarks></remarks>
         private BrokerRunning(bool assumeOnline, bool purge, params Queue[] queues)
         {
             this.assumeOnline = assumeOnline;
@@ -130,12 +125,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <summary>Initializes a new instance of the <see cref="BrokerRunning"/> class. Prevents a default instance of the <see cref="BrokerRunning"/> class from being created.</summary>
         /// <param name="assumeOnline">if set to <c>true</c> [assume online].</param>
         /// <param name="queues">The queues.</param>
-        /// <remarks></remarks>
         private BrokerRunning(bool assumeOnline, params Queue[] queues) : this(assumeOnline, false, queues) { }
 
         /// <summary>Initializes a new instance of the <see cref="BrokerRunning"/> class. Prevents a default instance of the <see cref="BrokerRunning"/> class from being created.</summary>
         /// <param name="assumeOnline">if set to <c>true</c> [assume online].</param>
-        /// <remarks></remarks>
         private BrokerRunning(bool assumeOnline) : this(assumeOnline, new Queue(DEFAULT_QUEUE_NAME)) { }
 
         /// <summary>
@@ -143,7 +136,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// </summary>
         /// <value><c>true</c> if port; otherwise, <c>false</c>.</value>
         /// @param port the port to set
-        /// <remarks></remarks>
         public int Port
         {
             set
@@ -166,14 +158,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// </summary>
         /// <value>The name of the host.</value>
         /// @param hostName the hostName to set
-        /// <remarks></remarks>
         public string HostName { set { this.hostName = value; } }
 
         /// <summary>
         /// Applies this instance.
         /// </summary>
         /// <returns>Something here.</returns>
-        /// <remarks></remarks>
         public bool Apply()
         {
             // Check at the beginning, so this can be used as a static field

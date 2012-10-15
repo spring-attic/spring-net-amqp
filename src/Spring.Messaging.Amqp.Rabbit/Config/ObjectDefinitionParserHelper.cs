@@ -456,6 +456,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 
                 
                 
+                
                 // else if (NodeNameEquals(ele, IDREF_ELEMENT)) {
                 // return parseIdRefElement(ele);
                 // }
@@ -486,6 +487,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             {
                 return this.ParseMapElement(ele, bd);
             }
+                
                 
                 
                 
