@@ -568,7 +568,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <param name="mapEle">The map ele.</param>
         /// <param name="od">The od.</param>
         /// <returns>The System.Collections.Generic.IDictionary`2[TKey -&gt; System.String, TValue -&gt; System.Object].</returns>
-        public IDictionary<string, object> ParseMapElementToTypedDictionary(XmlElement mapEle, IObjectDefinition od) { return this.ConvertToTypedDictionary<string, object>(this.ParseMapElement(mapEle, od)); }
+        public IDictionary<string, object> ParseMapElementToTypedDictionary(XmlElement mapEle, IObjectDefinition od) { return this.ConvertToTypedDictionary(this.ParseMapElement(mapEle, od)); }
 
         /// <summary>The parse map element.</summary>
         /// <param name="mapEle">The map ele.</param>
@@ -729,13 +729,20 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <returns>The System.Collections.Generic.Dictionary`2[TKey -&gt; TKey, TValue -&gt; TValue].</returns>
-        public Dictionary<TKey, TValue> ConvertToTypedDictionary<TKey, TValue>(IDictionary dictionary)
+        public Dictionary<string, object> ConvertToTypedDictionary(IDictionary dictionary)
         {
-            var result = new Dictionary<TKey, TValue>();
+            var result = new Dictionary<string, object>();
 
             foreach (DictionaryEntry entry in dictionary)
             {
-                result.Add((TKey)entry.Key, (TValue)entry.Value);
+                if (entry.Key is TypedStringValue)
+                {
+                    result.Add(((TypedStringValue)entry.Key).Value, entry.Value);
+                }
+                else
+                {
+                    result.Add((string)entry.Key, entry.Value);
+                }
             }
 
             return result;

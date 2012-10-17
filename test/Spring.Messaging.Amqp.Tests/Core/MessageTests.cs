@@ -18,6 +18,7 @@ using System;
 using System.Text;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Tests.Test;
 #endregion
 
 namespace Spring.Messaging.Amqp.Tests.Core
@@ -25,6 +26,11 @@ namespace Spring.Messaging.Amqp.Tests.Core
     /// <summary>
     /// Message Tests.
     /// </summary>
+    /// <author>Mark Fisher</author>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
+    [TestFixture]
+    [Category(TestCategory.Unit)]
     public class MessageTests
     {
         /// <summary>

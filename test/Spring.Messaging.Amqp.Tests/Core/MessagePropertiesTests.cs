@@ -16,6 +16,7 @@
 #region Using Directives
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Tests.Test;
 #endregion
 
 namespace Spring.Messaging.Amqp.Tests.Core
@@ -23,6 +24,10 @@ namespace Spring.Messaging.Amqp.Tests.Core
     /// <summary>
     /// Message properties tests.
     /// </summary>
+    /// <author>Dave Syer</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
+    [TestFixture]
+    [Category(TestCategory.Unit)]
     public class MessagePropertiesTests
     {
         /// <summary>

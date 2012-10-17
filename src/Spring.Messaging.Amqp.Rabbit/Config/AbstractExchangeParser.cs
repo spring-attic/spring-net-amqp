@@ -68,6 +68,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             {
                 var parser = new ObjectDefinitionParserHelper(parserContext);
                 var map = parser.ParseMapElementToTypedDictionary(argumentsElement, builder.RawObjectDefinition);
+                // var map = parser.ParseMapElement(argumentsElement, builder.RawObjectDefinition);
 
                 builder.AddConstructorArg(map);
             }

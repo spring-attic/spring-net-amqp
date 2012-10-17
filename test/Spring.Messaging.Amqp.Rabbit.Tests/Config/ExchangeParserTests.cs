@@ -45,7 +45,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test direct exchange.</summary>
         [Test]
-        public void testDirectExchange()
+        public void TestDirectExchange()
         {
             var exchange = this.objectFactory.GetObject<DirectExchange>("direct");
             Assert.IsNotNull(exchange);
@@ -56,7 +56,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test alias direct exchange.</summary>
         [Test]
-        public void testAliasDirectExchange()
+        public void TestAliasDirectExchange()
         {
             var exchange = this.objectFactory.GetObject<DirectExchange>("alias");
             Assert.IsNotNull(exchange);

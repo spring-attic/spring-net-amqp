@@ -84,6 +84,7 @@
     <Compile Include="Support\Converter\SerializerMessageConverterTests.cs" />
     <Compile Include="Support\Converter\SimpleMessageConverterTests.cs" />
     <Compile Include="Support\Converter\SimpleTrade.cs" />
+    <Compile Include="Test\TestCategory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Spring.Messaging.Amqp\Spring.Messaging.Amqp.2010.csproj">

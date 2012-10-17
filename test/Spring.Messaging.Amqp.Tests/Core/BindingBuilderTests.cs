@@ -17,6 +17,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Tests.Test;
 #endregion
 
 namespace Spring.Messaging.Amqp.Tests.Core
@@ -24,6 +25,10 @@ namespace Spring.Messaging.Amqp.Tests.Core
     /// <summary>
     /// Binding builder tests.
     /// </summary>
+    /// <author>Mark Fisher</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
+    [TestFixture]
+    [Category(TestCategory.Unit)]
     public class BindingBuilderTests
     {
         /// <summary>

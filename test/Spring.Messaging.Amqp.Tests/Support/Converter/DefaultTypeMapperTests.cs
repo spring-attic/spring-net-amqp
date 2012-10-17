@@ -19,11 +19,16 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Support.Converter;
+using Spring.Messaging.Amqp.Tests.Test;
 #endregion
 
 namespace Spring.Messaging.Amqp.Tests.Support.Converter
 {
     /// <summary>The default type mapper tests.</summary>
+    /// <author>James Carr</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
+    [TestFixture]
+    [Category(TestCategory.Unit)]
     public class DefaultTypeMapperTests
     {
         private DefaultTypeMapper typeMapper = new DefaultTypeMapper();
@@ -41,14 +46,22 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
         [Test]
         public void ShouldThrowAnExceptionWhenTypeIdNotPresent()
         {
+            var exceptionWasThrown = false;
             try
             {
                 this.typeMapper.ToType(this.props);
+                Assert.Fail("Exception should have been thrown.");
             }
             catch (MessageConversionException e)
             {
+                exceptionWasThrown = true;
                 var typeIdFieldName = this.typeMapper.TypeIdFieldName;
                 Assert.That(e.Message, Contains.Substring("Could not resolve " + typeIdFieldName + " in header"));
+            }
+
+            if (!exceptionWasThrown)
+            {
+                Assert.Fail("Exception should have been thrown.");
             }
         }
 
@@ -56,7 +69,7 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
         [Test]
         public void ShouldLookInTheTypeIdFieldNameToFindTheTypeName()
         {
-            this.props.Headers.Add("__TypeId__", "System.String");
+            this.props.Headers.Add("type", "System.String");
 
             // Given(classMapper.TypeIdFieldName).willReturn("type");
             var type = this.typeMapper.ToType(this.props);
