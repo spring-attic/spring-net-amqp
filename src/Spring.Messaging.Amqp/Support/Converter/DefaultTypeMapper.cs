@@ -53,7 +53,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
         /// <summary>
         /// Gets the name of the type id field.
         /// </summary>
-        public string TypeIdFieldName { get { return DEFAULT_TYPEID_FIELD_NAME; } }
+        public virtual string TypeIdFieldName { get { return DEFAULT_TYPEID_FIELD_NAME; } }
 
         /// <summary>
         /// Sets the id type mapping.

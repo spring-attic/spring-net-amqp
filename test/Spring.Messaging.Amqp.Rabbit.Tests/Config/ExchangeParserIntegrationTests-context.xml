@@ -2,28 +2,28 @@
 
 <objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-    <rabbit:direct-exchange id="directTest" name="directTest">
-        <rabbit:bindings>
-            <rabbit:binding queue="bucket" />
-        </rabbit:bindings>
+    <rabbit:direct-exchange id="directTest" name="directTest" xmlns="http://www.springframework.net/schema/rabbit">
+        <bindings>
+            <binding queue="bucket" />
+        </bindings>
     </rabbit:direct-exchange>
 
-    <rabbit:topic-exchange id="topicTest" name="topicTest">
-        <rabbit:bindings>
-            <rabbit:binding queue="bucket" pattern="bucket.#" />
-        </rabbit:bindings>
+    <rabbit:topic-exchange id="topicTest" name="topicTest" xmlns="http://www.springframework.net/schema/rabbit">
+        <bindings>
+            <binding queue="bucket" pattern="bucket.#" />
+        </bindings>
     </rabbit:topic-exchange>
 
-    <rabbit:fanout-exchange id="fanoutTest" name="fanoutTest">
-        <rabbit:bindings>
-            <rabbit:binding queue="bucket" />
-        </rabbit:bindings>
+    <rabbit:fanout-exchange id="fanoutTest" name="fanoutTest" xmlns="http://www.springframework.net/schema/rabbit">
+        <bindings>
+            <binding queue="bucket" />
+        </bindings>
     </rabbit:fanout-exchange>
 
-    <rabbit:headers-exchange id="headersTest" name="headersTest">
-        <rabbit:bindings>
-            <rabbit:binding queue="bucket" key="type" value="bucket" />
-        </rabbit:bindings>
+    <rabbit:headers-exchange id="headersTest" name="headersTest" xmlns="http://www.springframework.net/schema/rabbit">
+        <bindings>
+            <binding queue="bucket" key="type" value="bucket" />
+        </bindings>
     </rabbit:headers-exchange>
 
     <rabbit:queue id="bucket" name="bucket" />

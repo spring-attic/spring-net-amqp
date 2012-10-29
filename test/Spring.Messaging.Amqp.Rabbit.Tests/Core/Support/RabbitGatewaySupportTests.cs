@@ -15,7 +15,7 @@
 
 #region Using Directives
 using System.Collections.Generic;
-using AutoMoq;
+using Moq;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
@@ -38,9 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core.Support
         [Test]
         public void TestRabbitGatewaySupportWithConnectionFactory()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<IConnectionFactory>();
+            var mockConnectionFactory = new Mock<IConnectionFactory>();
             var test = new List<string>();
             var gateway = new TestGateway(test);
 

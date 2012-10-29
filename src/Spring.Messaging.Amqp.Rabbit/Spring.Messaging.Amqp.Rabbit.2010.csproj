@@ -157,6 +157,7 @@
     <Compile Include="Support\IMessagePropertiesConverter.cs" />
     <Compile Include="Support\IPublisherCallbackChannel.cs" />
     <Compile Include="Support\PendingConfirm.cs" />
+    <Compile Include="Support\XmlElementExtensions.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicBoolean.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicInteger.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicReference.cs" />

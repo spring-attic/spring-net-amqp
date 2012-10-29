@@ -18,7 +18,6 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMoq;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
@@ -249,9 +248,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [Test]
         public void TestReceiveInExternalTransaction()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() => (string)this.template.ReceiveAndConvert(ROUTE));
 
             this.template.ConvertAndSend(ROUTE, "message");
@@ -268,9 +265,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [Test]
         public void TestReceiveInExternalTransactionAutoAck()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() => (string)this.template.ReceiveAndConvert(ROUTE));
 
             this.template.ConvertAndSend(ROUTE, "message");
@@ -290,9 +285,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [Ignore("Need resolution from Rabbit Team RE: Transaction Rollback")]
         public void TestReceiveInExternalTransactionWithRollback()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
                 () =>
                 {
@@ -325,9 +318,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [Test]
         public void TestReceiveInExternalTransactionWithNoRollback()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
                 () =>
                 {
@@ -359,9 +350,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [Test]
         public void TestSendInExternalTransaction()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
                 () =>
                 {
@@ -384,9 +373,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [Ignore("Need resolution from Rabbit Team RE: Transaction Rollback")]
         public void TestSendInExternalTransactionWithRollback()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
                 () =>
                 {

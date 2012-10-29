@@ -197,13 +197,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
                         Logger.Debug("Deleting queue: " + queueName);
 
                         // Delete completely - gets rid of consumers and bindings as well
-                        admin.DeleteQueue(queueName);
+                        try
+                        {
+                            admin.DeleteQueue(queueName);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Warn("Could not delete queue. Assuming it didn't exist.", ex);
+                        }
                     }
 
                     if (this.IsDefaultQueue(queueName))
                     {
                         // Just for test probe.
-                        admin.DeleteQueue(queueName);
+                        try
+                        {
+                            admin.DeleteQueue(queueName);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Warn("Could not delete queue. Assuming it didn't exist.", ex);
+                        }
                     }
                     else
                     {

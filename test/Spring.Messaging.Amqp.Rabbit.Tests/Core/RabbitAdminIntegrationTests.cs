@@ -22,8 +22,6 @@ using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
-using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
-using IConnection = RabbitMQ.Client.IConnection;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
@@ -145,6 +143,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             try
             {
                 new RabbitAdmin(connectionFactory2).DeclareQueue(queue);
+                Assert.Fail("Expected an exception, and one was not thrown.");
             }
             catch (Exception ex)
             {
@@ -176,107 +175,299 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             connectionFactory2.Dispose();
         }
 
-        /// <summary>
-        /// Tests the startup with autodelete.
-        /// </summary>
+        /// <summary>The test queue with auto delete.</summary>
         [Test]
-        public void TestStartupWithAutodelete()
+        public void TestQueueWithAutoDelete()
         {
             var queue = new Queue("test.queue", false, true, true);
             this.context.ObjectFactory.RegisterSingleton("foo", queue);
             this.rabbitAdmin.AfterPropertiesSet();
 
-            var connectionHolder = new AtomicReference<IConnection>();
+            // Queue created on spring startup
+            this.rabbitAdmin.Initialize();
+            Assert.True(this.QueueExists(queue));
 
-            var rabbitTemplate = new RabbitTemplate(this.connectionFactory);
-            var exists = rabbitTemplate.Execute(
-                delegate(IModel channel)
-                {
-                    var result = channel.QueueDeclarePassive(queue.Name);
-                    connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-                    return result != null;
-                });
-            Assert.True(exists, "Expected Queue to exist");
-
-            Assert.True(this.QueueExists(connectionHolder.Value, queue));
-
-            exists = rabbitTemplate.Execute(
-                delegate(IModel channel)
-                {
-                    var result = channel.QueueDeclarePassive(queue.Name);
-                    connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-                    return result != null;
-                });
-            Assert.True(exists, "Expected Queue to exist");
-
+            // Stop and broker deletes queue (only verifiable in native API)
             this.connectionFactory.Dispose();
+            Assert.False(this.QueueExists(queue));
 
-            // Broker now deletes queue (only verifiable in native API)
-            Assert.False(this.QueueExists(null, queue));
+            // Start and queue re-created by the connection listener
+            this.connectionFactory.CreateConnection();
+            Assert.True(this.QueueExists(queue));
 
-            // Broker auto-deleted queue, but it is re-created by the connection listener
-            exists = rabbitTemplate.Execute(
-                delegate(IModel channel)
-                {
-                    var result = channel.QueueDeclarePassive(queue.Name);
-                    connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-                    return result != null;
-                });
-            Assert.True(exists, "Expected Queue to exist");
-
-            Assert.True(this.QueueExists(connectionHolder.Value, queue));
+            // Queue manually deleted
             Assert.True(this.rabbitAdmin.DeleteQueue(queue.Name));
-            Assert.False(this.QueueExists(null, queue));
+            Assert.False(this.QueueExists(queue));
         }
 
-        /// <summary>
-        /// Tests the startup with non durable.
-        /// </summary>
+        /// <summary>The test queue without auto delete.</summary>
         [Test]
-        public void TestStartupWithNonDurable()
+        public void TestQueueWithoutAutoDelete()
         {
             var queue = new Queue("test.queue", false, false, false);
             this.context.ObjectFactory.RegisterSingleton("foo", queue);
             this.rabbitAdmin.AfterPropertiesSet();
 
-            var connectionHolder = new AtomicReference<IConnection>();
+            // Queue created on Spring startup
+            this.rabbitAdmin.Initialize();
+            Assert.True(this.QueueExists(queue));
 
-            var rabbitTemplate = new RabbitTemplate(this.connectionFactory);
-
-            // Force RabbitAdmin to initialize the queue
-            var exists = rabbitTemplate.Execute(
-                delegate(IModel channel)
-                {
-                    var result = channel.QueueDeclarePassive(queue.Name);
-                    connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-                    return result != null;
-                });
-            Assert.True(exists, "Expected Queue to exist");
-
-            Assert.True(this.QueueExists(connectionHolder.Value, queue));
-
-            // simulate broker going down and coming back up...
-            this.rabbitAdmin.DeleteQueue(queue.Name);
+            // Stop and broker retains queue (only verifiable in native API)
             this.connectionFactory.Dispose();
-            Assert.False(this.QueueExists(null, queue));
+            Assert.True(this.QueueExists(queue));
 
-            // Broker auto-deleted queue, but it is re-created by the connection listener
-            exists = rabbitTemplate.Execute(
-                delegate(IModel channel)
-                {
-                    var result = channel.QueueDeclarePassive(queue.Name);
-                    connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-                    return result != null;
-                });
-            Assert.True(exists, "Expected Queue to exist");
+            // Start and queue still exists
+            this.connectionFactory.CreateConnection();
+            Assert.True(this.QueueExists(queue));
 
-            Assert.True(this.QueueExists(connectionHolder.Value, queue));
+            // Queue manually deleted
             Assert.True(this.rabbitAdmin.DeleteQueue(queue.Name));
-            Assert.False(this.QueueExists(null, queue));
+            Assert.False(this.QueueExists(queue));
         }
 
+        /// <summary>The test declare exchange with default exchange.</summary>
+        [Test]
+        public void TestDeclareExchangeWithDefaultExchange()
+        {
+            var exchange = new DirectExchange(RabbitAdmin.DEFAULT_EXCHANGE_NAME);
+
+            this.rabbitAdmin.DeclareExchange(exchange);
+
+            // Pass by virtue of RabbitMQ not firing a 403 reply code
+        }
+
+        /// <summary>The test spring with default exchange.</summary>
+        [Test]
+        public void TestSpringWithDefaultExchange()
+        {
+            var exchange = new DirectExchange(RabbitAdmin.DEFAULT_EXCHANGE_NAME);
+            this.context.ObjectFactory.RegisterSingleton("foo", exchange);
+            this.rabbitAdmin.AfterPropertiesSet();
+
+            this.rabbitAdmin.Initialize();
+
+            // Pass by virtue of RabbitMQ not firing a 403 reply code
+        }
+
+        /// <summary>The test delete exchange with default exchange.</summary>
+        [Test]
+        public void TestDeleteExchangeWithDefaultExchange()
+        {
+            var result = this.rabbitAdmin.DeleteExchange(RabbitAdmin.DEFAULT_EXCHANGE_NAME);
+
+            Assert.True(result);
+        }
+
+        /// <summary>The test declare binding with default exchange implicit binding.</summary>
+        [Test]
+        public void TestDeclareBindingWithDefaultExchangeImplicitBinding()
+        {
+            var exchange = new DirectExchange(RabbitAdmin.DEFAULT_EXCHANGE_NAME);
+            var queueName = "test.queue";
+            var queue = new Queue(queueName, false, false, false);
+            this.rabbitAdmin.DeclareQueue(queue);
+            var binding = new Binding(queueName, Binding.DestinationType.Queue, exchange.Name, queueName, null);
+
+            this.rabbitAdmin.DeclareBinding(binding);
+
+            // Pass by virtue of RabbitMQ not firing a 403 reply code for both exchange and binding declaration
+            Assert.True(this.QueueExists(queue));
+        }
+
+        /// <summary>The test spring with default exchange implicit binding.</summary>
+        [Test]
+        public void TestSpringWithDefaultExchangeImplicitBinding()
+        {
+            var exchange = new DirectExchange(RabbitAdmin.DEFAULT_EXCHANGE_NAME);
+            this.context.ObjectFactory.RegisterSingleton("foo", exchange);
+            var queueName = "test.queue";
+            var queue = new Queue(queueName, false, false, false);
+            this.context.ObjectFactory.RegisterSingleton("bar", queue);
+            var binding = new Binding(queueName, Binding.DestinationType.Queue, exchange.Name, queueName, null);
+            this.context.ObjectFactory.RegisterSingleton("baz", binding);
+            this.rabbitAdmin.AfterPropertiesSet();
+
+            this.rabbitAdmin.Initialize();
+
+            // Pass by virtue of RabbitMQ not firing a 403 reply code for both exchange and binding declaration
+            Assert.True(this.QueueExists(queue));
+        }
+
+        /// <summary>The test remove binding with default exchange implicit binding.</summary>
+        [Test]
+        public void TestRemoveBindingWithDefaultExchangeImplicitBinding()
+        {
+            var queueName = "test.queue";
+            var queue = new Queue(queueName, false, false, false);
+            this.rabbitAdmin.DeclareQueue(queue);
+            var binding = new Binding(queueName, Binding.DestinationType.Queue, RabbitAdmin.DEFAULT_EXCHANGE_NAME, queueName, null);
+
+            this.rabbitAdmin.RemoveBinding(binding);
+
+            // Pass by virtue of RabbitMQ not firing a 403 reply code
+        }
+
+        /// <summary>The test declare binding with default exchange non implicit binding.</summary>
+        [Test]
+        public void TestDeclareBindingWithDefaultExchangeNonImplicitBinding()
+        {
+            var exchange = new DirectExchange(RabbitAdmin.DEFAULT_EXCHANGE_NAME);
+            var queueName = "test.queue";
+            var queue = new Queue(queueName, false, false, false);
+            this.rabbitAdmin.DeclareQueue(queue);
+            var binding = new Binding(queueName, Binding.DestinationType.Queue, exchange.Name, "test.routingKey", null);
+
+            try
+            {
+                this.rabbitAdmin.DeclareBinding(binding);
+            }
+            catch (AmqpIOException ex)
+            {
+                Exception cause = ex;
+                Exception rootCause = null;
+                while (cause != null)
+                {
+                    rootCause = cause;
+                    cause = cause.InnerException;
+                }
+
+                Assert.True(rootCause.Message.Contains("code=403"));
+                Assert.True(rootCause.Message.Contains("operation not permitted on the default exchange"));
+            }
+        }
+
+        /// <summary>The test spring with default exchange non implicit binding.</summary>
+        [Test]
+        public void TestSpringWithDefaultExchangeNonImplicitBinding()
+        {
+            var exchange = new DirectExchange(RabbitAdmin.DEFAULT_EXCHANGE_NAME);
+            this.context.ObjectFactory.RegisterSingleton("foo", exchange);
+            var queueName = "test.queue";
+            var queue = new Queue(queueName, false, false, false);
+            this.context.ObjectFactory.RegisterSingleton("bar", queue);
+            var binding = new Binding(queueName, Binding.DestinationType.Queue, exchange.Name, "test.routingKey", null);
+            this.context.ObjectFactory.RegisterSingleton("baz", binding);
+            this.rabbitAdmin.AfterPropertiesSet();
+
+            try
+            {
+                this.rabbitAdmin.DeclareBinding(binding);
+            }
+            catch (AmqpIOException ex)
+            {
+                Exception cause = ex;
+                Exception rootCause = null;
+                while (cause != null)
+                {
+                    rootCause = cause;
+                    cause = cause.InnerException;
+                }
+
+                Assert.True(rootCause.Message.Contains("code=403"));
+                Assert.True(rootCause.Message.Contains("operation not permitted on the default exchange"));
+            }
+        }
+
+        ///// <summary>
+        ///// Tests the startup with autodelete.
+        ///// </summary>
+        // [Test]
+        // public void TestStartupWithAutodelete()
+        // {
+        // var queue = new Queue("test.queue", false, true, true);
+        // this.context.ObjectFactory.RegisterSingleton("foo", queue);
+        // this.rabbitAdmin.AfterPropertiesSet();
+
+        // var connectionHolder = new AtomicReference<IConnection>();
+
+        // var rabbitTemplate = new RabbitTemplate(this.connectionFactory);
+        // var exists = rabbitTemplate.Execute(
+        // delegate(IModel channel)
+        // {
+        // var result = channel.QueueDeclarePassive(queue.Name);
+        // connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
+        // return result != null;
+        // });
+        // Assert.True(exists, "Expected Queue to exist");
+
+        // Assert.True(this.QueueExists(connectionHolder.Value, queue));
+
+        // exists = rabbitTemplate.Execute(
+        // delegate(IModel channel)
+        // {
+        // var result = channel.QueueDeclarePassive(queue.Name);
+        // connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
+        // return result != null;
+        // });
+        // Assert.True(exists, "Expected Queue to exist");
+
+        // this.connectionFactory.Dispose();
+
+        // // Broker now deletes queue (only verifiable in native API)
+        // Assert.False(this.QueueExists(null, queue));
+
+        // // Broker auto-deleted queue, but it is re-created by the connection listener
+        // exists = rabbitTemplate.Execute(
+        // delegate(IModel channel)
+        // {
+        // var result = channel.QueueDeclarePassive(queue.Name);
+        // connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
+        // return result != null;
+        // });
+        // Assert.True(exists, "Expected Queue to exist");
+
+        // Assert.True(this.QueueExists(connectionHolder.Value, queue));
+        // Assert.True(this.rabbitAdmin.DeleteQueue(queue.Name));
+        // Assert.False(this.QueueExists(null, queue));
+        // }
+
+        ///// <summary>
+        ///// Tests the startup with non durable.
+        ///// </summary>
+        // [Test]
+        // public void TestStartupWithNonDurable()
+        // {
+        // var queue = new Queue("test.queue", false, false, false);
+        // this.context.ObjectFactory.RegisterSingleton("foo", queue);
+        // this.rabbitAdmin.AfterPropertiesSet();
+
+        // var connectionHolder = new AtomicReference<IConnection>();
+
+        // var rabbitTemplate = new RabbitTemplate(this.connectionFactory);
+
+        // // Force RabbitAdmin to initialize the queue
+        // var exists = rabbitTemplate.Execute(
+        // delegate(IModel channel)
+        // {
+        // var result = channel.QueueDeclarePassive(queue.Name);
+        // connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
+        // return result != null;
+        // });
+        // Assert.True(exists, "Expected Queue to exist");
+
+        // Assert.True(this.QueueExists(connectionHolder.Value, queue));
+
+        // // simulate broker going down and coming back up...
+        // this.rabbitAdmin.DeleteQueue(queue.Name);
+        // this.connectionFactory.Dispose();
+        // Assert.False(this.QueueExists(null, queue));
+
+        // // Broker auto-deleted queue, but it is re-created by the connection listener
+        // exists = rabbitTemplate.Execute(
+        // delegate(IModel channel)
+        // {
+        // var result = channel.QueueDeclarePassive(queue.Name);
+        // connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
+        // return result != null;
+        // });
+        // Assert.True(exists, "Expected Queue to exist");
+
+        // Assert.True(this.QueueExists(connectionHolder.Value, queue));
+        // Assert.True(this.rabbitAdmin.DeleteQueue(queue.Name));
+        // Assert.False(this.QueueExists(null, queue));
+        // }
+
         /// <summary>Queues the exists.</summary>
-        /// <param name="connection">The connection.</param>
         /// <param name="queue">The queue.</param>
         /// <returns>The System.Boolean.</returns>
         /// Use native Rabbit API to test queue, bypassing all the connection and channel caching and callbacks in Spring
@@ -284,17 +475,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// @param connection the raw connection to use
         /// @param queue the Queue to test
         /// @return true if the queue exists
-        private bool QueueExists(IConnection connection, Queue queue)
+        private bool QueueExists(Queue queue)
         {
-            var target = connection;
-            if (target == null)
-            {
-                var connectionFactory = new ConnectionFactory();
-                connectionFactory.Port = BrokerTestUtils.GetPort();
-                target = connectionFactory.CreateConnection();
-            }
+            var connectionFactory = new ConnectionFactory();
+            connectionFactory.Port = BrokerTestUtils.GetPort();
+            var connection = connectionFactory.CreateConnection();
+            var channel = connection.CreateModel();
 
-            var channel = target.CreateModel();
             try
             {
                 var result = channel.QueueDeclarePassive(queue.Name);
@@ -311,10 +498,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             }
             finally
             {
-                if (connection == null)
-                {
-                    target.Close();
-                }
+                connection.Close();
             }
         }
     }

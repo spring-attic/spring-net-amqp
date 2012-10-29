@@ -737,7 +737,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             {
                 if (entry.Key is TypedStringValue)
                 {
-                    result.Add(((TypedStringValue)entry.Key).Value, entry.Value);
+                    if (entry.Value is TypedStringValue)
+                    {
+                        result.Add(((TypedStringValue)entry.Key).Value, ((TypedStringValue)entry.Value).Value);
+                    }
+                    else
+                    {
+                        result.Add(((TypedStringValue)entry.Key).Value, entry.Value);
+                    }
                 }
                 else
                 {

@@ -15,7 +15,6 @@
 
 #region Using Directives
 using System.Collections.Generic;
-using AutoMoq;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
@@ -39,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// <summary>Creates the connection factory.</summary>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <returns>The created connection factory.</returns>
-        protected override AbstractConnectionFactory CreateConnectionFactory(ConnectionFactory connectionFactory) { return new SingleConnectionFactory(connectionFactory); }
+        protected override AbstractConnectionFactory CreateConnectionFactory(ConnectionFactory connectionFactory) { return new CachingConnectionFactory(connectionFactory); }
 
         /// <summary>
         /// Tests the with connection factory defaults.
@@ -47,10 +46,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         [Test]
         public void TestWithConnectionFactoryDefaults()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
-            var mockConnection = mocker.GetMock<IConnection>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
             var mockChannel = new Mock<IModel>();
 
             mockConnectionFactory.Setup(factory => factory.CreateConnection()).Returns(mockConnection.Object);
@@ -141,10 +138,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         [Test]
         public void TestCacheSizeExceeded()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
-            var mockConnection = mocker.GetMock<IConnection>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
             var mockChannel1 = new Mock<IModel>();
             var mockChannel2 = new Mock<IModel>();
             var mockChannel3 = new Mock<IModel>();
@@ -204,10 +199,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         [Test]
         public void TestCacheSizeExceededAfterClose()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
-            var mockConnection = mocker.GetMock<IConnection>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
             var mockChannel1 = new Mock<IModel>();
             var mockChannel2 = new Mock<IModel>();
 
@@ -257,10 +250,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         [Test]
         public void TestTransactionalAndNonTransactionalChannelsSegregated()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
-            var mockConnection = mocker.GetMock<IConnection>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
             var mockChannel1 = new Mock<IModel>();
             var mockChannel2 = new Mock<IModel>();
 
@@ -391,10 +382,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         [Test]
         public void TestWithListener()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
-            var mockConnection = mocker.GetMock<IConnection>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
 
             mockConnectionFactory.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
 

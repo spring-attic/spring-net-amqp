@@ -16,6 +16,7 @@
 #region Using Directives
 using System;
 using System.Collections;
+using Common.Logging;
 using Spring.Messaging.Amqp.Core;
 using Spring.Objects.Factory;
 using Queue = Spring.Messaging.Amqp.Core.Queue;
@@ -28,11 +29,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// </summary>
     public class BindingFactoryObject : IFactoryObject
     {
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
         private IDictionary arguments;
         private string routingKey = string.Empty;
         private string exchange;
         private Queue destinationQueue;
         private IExchange destinationExchange;
+
+        public BindingFactoryObject()
+        {
+            Logger.Debug("Creating new BindingFactoryObject");
+        }
 
         /// <summary>
         /// Sets the arguments.

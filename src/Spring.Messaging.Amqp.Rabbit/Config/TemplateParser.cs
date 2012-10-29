@@ -17,6 +17,7 @@
 using System;
 using System.Xml;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
@@ -102,7 +103,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
             IObjectDefinition replyContainer = null;
             XmlElement childElement = null;
-            var childElements = element.GetElementsByTagName(LISTENER_ELEMENT);
+            var childElements = element.SelectChildElementsByTagName(LISTENER_ELEMENT);
             if (childElements.Count > 0)
             {
                 childElement = childElements[0] as XmlElement;

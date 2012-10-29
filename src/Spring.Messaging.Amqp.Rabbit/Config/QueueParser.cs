@@ -17,6 +17,7 @@
 using System;
 using System.Xml;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
 #endregion
@@ -87,9 +88,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             }
 
             var queueArguments = element.GetAttribute(ARGUMENTS);
-            var argumentsElement = element.GetElementsByTagName(ARGUMENTS);
+            var argumentsElement = element.SelectChildElementByTagName(ARGUMENTS);
 
-            if (argumentsElement.Count == 1)
+            if (argumentsElement != null)
             {
                 var parser = new ObjectDefinitionParserHelper(parserContext);
                 if (!string.IsNullOrWhiteSpace(queueArguments))
@@ -97,7 +98,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                     parserContext.ReaderContext.ReportFatalException(element, "Queue may have either a queue-attributes attribute or element, but not both");
                 }
 
-                var map = parser.ParseMapElementToTypedDictionary(argumentsElement[0] as XmlElement, builder.RawObjectDefinition);
+                var map = parser.ParseMapElementToTypedDictionary(argumentsElement, builder.RawObjectDefinition);
 
                 builder.AddConstructorArg(map);
             }

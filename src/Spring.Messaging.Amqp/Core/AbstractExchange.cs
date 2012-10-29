@@ -46,7 +46,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>
         /// The arguments.
         /// </summary>
-        private readonly IDictionary arguments;
+        private readonly IDictionary<string, object> arguments;
 
         /// <summary>Initializes a new instance of the <see cref="AbstractExchange"/> class, given a name.</summary>
         /// <param name="name">The name of the exchange.</param>
@@ -65,13 +65,13 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="autoDelete">if set to <c>true</c>
         /// the server should delete the exchange when it is no longer in use</param>
         /// <param name="arguments">The arguments.</param>
-        public AbstractExchange(string name, bool durable, bool autoDelete, IDictionary arguments)
+        public AbstractExchange(string name, bool durable, bool autoDelete, IDictionary<string, object> arguments)
         {
             this.name = name;
             this.durable = durable;
             this.autoDelete = autoDelete;
 
-            if (this.arguments != null)
+            if (arguments != null)
             {
                 this.arguments = arguments;
             }
@@ -107,7 +107,7 @@ namespace Spring.Messaging.Amqp.Core
         /// Gets or sets the collection of arbitrary arguments to use when declaring an exchange.
         /// </summary>
         /// <value>The arguments.</value>
-        public IDictionary Arguments { get { return this.arguments; } }
+        public IDictionary<string, object> Arguments { get { return this.arguments; } }
 
         /// <summary>The add argument.</summary>
         /// <param name="argName">The arg name.</param>

@@ -16,7 +16,6 @@
 #region Using Directives
 using System;
 using System.Threading;
-using AutoMoq;
 using Common.Logging;
 using Moq;
 using NUnit.Framework;
@@ -91,9 +90,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [Test]
         public void TestMultipleQueues()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
+            var mockConfigurer = new Mock<IContainerConfigurer>();
             mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.Queues = new[] { queue1, queue2 });
 
             this.DoTest(1, mockConfigurer.Object);
@@ -105,9 +102,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [Test]
         public void TestMultipleQueueNames()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
+            var mockConfigurer = new Mock<IContainerConfigurer>();
             mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.QueueNames = new[] { queue1.Name, queue2.Name });
 
             this.DoTest(1, mockConfigurer.Object);
@@ -119,9 +114,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [Test]
         public void TestMultipleQueuesWithConcurrentConsumers()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
+            var mockConfigurer = new Mock<IContainerConfigurer>();
             mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.Queues = new[] { queue1, queue2 });
 
             this.DoTest(3, mockConfigurer.Object);
@@ -133,9 +126,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [Test]
         public void TestMultipleQueueNamesWithConcurrentConsumers()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConfigurer = mocker.GetMock<IContainerConfigurer>();
+            var mockConfigurer = new Mock<IContainerConfigurer>();
             mockConfigurer.Setup(c => c.Configure(It.IsAny<SimpleMessageListenerContainer>())).Callback<SimpleMessageListenerContainer>((container) => container.QueueNames = new[] { queue1.Name, queue2.Name });
 
             this.DoTest(3, mockConfigurer.Object);

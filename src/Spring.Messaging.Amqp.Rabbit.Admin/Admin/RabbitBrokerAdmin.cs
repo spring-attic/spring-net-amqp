@@ -506,7 +506,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 if (true /*Os.isFamily("windows") || Os.isFamily("dos")*/)
                 {
                     rabbitHome = this.FindDirectoryName(@"c:\Program Files (x86)\", "rabbitmq server");
-                    rabbitHome = this.FindDirectoryName(rabbitHome, "rabbitmq_server-2.6.1");
+                    rabbitHome = this.FindDirectoryName(rabbitHome, "rabbitmq_server-2.8.7");
                 }
                 else if (false /*Os.isFamily("unix") || Os.isFamily("mac")*/)
                 {

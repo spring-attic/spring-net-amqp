@@ -16,6 +16,7 @@
 #region Using Directives
 using System.Collections;
 using System.Collections.Generic;
+using Moq;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Support.Converter;
@@ -69,10 +70,11 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
         [Test]
         public void ShouldLookInTheTypeIdFieldNameToFindTheTypeName()
         {
+            var typeMapper = new Mock<DefaultTypeMapper>();
+            typeMapper.Setup(m => m.TypeIdFieldName).Returns("type");
             this.props.Headers.Add("type", "System.String");
 
-            // Given(classMapper.TypeIdFieldName).willReturn("type");
-            var type = this.typeMapper.ToType(this.props);
+            var type = typeMapper.Object.ToType(this.props);
 
             Assert.That(type, Is.EqualTo(typeof(string)));
         }
@@ -83,7 +85,7 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
         {
             this.props.Headers.Add("__TypeId__", "trade");
 
-            this.typeMapper.IdTypeMapping = new Dictionary<string, object> { { "trade", typeof(SimpleTrade).ToTypeName() } };
+            this.typeMapper.IdTypeMapping = new Dictionary<string, object> { { "trade", typeof(SimpleTrade) } };
 
             var type = this.typeMapper.ToType(this.props);
 
@@ -139,7 +141,7 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
         [Test]
         public void ShouldUseSpecialNameForTypeIfPresent()
         {
-            this.typeMapper.IdTypeMapping = new Dictionary<string, object> { { "daytrade", typeof(SimpleTrade).ToTypeName() } };
+            this.typeMapper.IdTypeMapping = new Dictionary<string, object> { { "daytrade", typeof(SimpleTrade) } };
             this.typeMapper.AfterPropertiesSet();
 
             this.typeMapper.FromType(typeof(SimpleTrade), this.props);

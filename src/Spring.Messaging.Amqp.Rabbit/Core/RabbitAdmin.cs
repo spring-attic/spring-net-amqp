@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System;
+using System.Collections;
 using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Context;
@@ -24,6 +25,7 @@ using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using Spring.Objects.Factory;
 using Spring.Util;
 using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;
+using Queue = Spring.Messaging.Amqp.Core.Queue;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Core
@@ -35,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// <author>Joe Fitzgerald (.NET)</author>
     public class RabbitAdmin : IAmqpAdmin, IApplicationContextAware, IInitializingObject
     {
-        protected static readonly string DEFAULT_EXCHANGE_NAME = string.Empty;
+        public static readonly string DEFAULT_EXCHANGE_NAME = string.Empty;
 
         /// <summary>
         /// The Logger.
@@ -353,7 +355,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 Logger.Debug(m => m("declaring Exchange '{0}'", exchange.Name));
                 if (!this.IsDeclaringDefaultExchange(exchange))
                 {
-                    channel.ExchangeDeclare(exchange.Name, exchange.Type, exchange.Durable, exchange.AutoDelete, exchange.Arguments);
+                    channel.ExchangeDeclare(exchange.Name, exchange.Type, exchange.Durable, exchange.AutoDelete, (IDictionary)exchange.Arguments);
                 }
             }
         }

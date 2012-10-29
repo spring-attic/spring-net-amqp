@@ -15,7 +15,6 @@
 
 #region Using Directives
 using System.Collections.Generic;
-using AutoMoq;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
@@ -43,17 +42,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         [Test]
         public void TestWithListener()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
-            var mockConnection = mocker.GetMock<IConnection>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
 
             mockConnectionFactory.Setup(factory => factory.CreateConnection()).Returns(mockConnection.Object);
 
             var called = new AtomicInteger(0);
             var connectionFactory = this.CreateConnectionFactory(mockConnectionFactory.Object);
             var connectionListeners = new List<IConnectionListener>();
-            var mockConnectionListener = mocker.GetMock<IConnectionListener>();
+            var mockConnectionListener = new Mock<IConnectionListener>();
             mockConnectionListener.Setup(listener => listener.OnCreate(It.IsAny<Rabbit.Connection.IConnection>())).Callback(() => called.IncrementValueAndReturn());
             mockConnectionListener.Setup(listener => listener.OnClose(It.IsAny<Rabbit.Connection.IConnection>())).Callback(() => called.DecrementValueAndReturn());
             connectionListeners.Add(mockConnectionListener.Object);
@@ -81,10 +78,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         [Test]
         public void TestWithListenerRegisteredAfterOpen()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
-            var mockConnection = mocker.GetMock<IConnection>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
 
             mockConnectionFactory.Setup(factory => factory.CreateConnection()).Returns(mockConnection.Object);
 
@@ -94,7 +89,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             Assert.AreEqual(0, called.Value);
 
             var connectionListeners = new List<IConnectionListener>();
-            var mockConnectionListener = mocker.GetMock<IConnectionListener>();
+            var mockConnectionListener = new Mock<IConnectionListener>();
             mockConnectionListener.Setup(listener => listener.OnCreate(It.IsAny<Rabbit.Connection.IConnection>())).Callback(() => called.IncrementValueAndReturn());
             mockConnectionListener.Setup(listener => listener.OnClose(It.IsAny<Rabbit.Connection.IConnection>())).Callback(() => called.DecrementValueAndReturn());
             connectionListeners.Add(mockConnectionListener.Object);
@@ -122,11 +117,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         [Test]
         public void TestCloseInvalidConnection()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
-            var mockConnection1 = mocker.GetMock<IConnection>();
-            var mockConnection2 = mocker.GetMock<IConnection>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection1 = new Mock<IConnection>();
+            var mockConnection2 = new Mock<IConnection>();
 
             mockConnectionFactory.Setup(factory => factory.CreateConnection()).ReturnsInOrder(mockConnection1.Object, mockConnection2.Object);
 
@@ -152,9 +145,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         [Test]
         public void TestDestroyBeforeUsed()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
 
             var connectionFactory = this.CreateConnectionFactory(mockConnectionFactory.Object);
             connectionFactory.Dispose();

@@ -15,7 +15,6 @@
 
 #region Using Directives
 using System.Collections.Generic;
-using AutoMoq;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
@@ -40,10 +39,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         [Test]
         public void TestWithChannelListener()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<ConnectionFactory>();
-            var mockConnection = mocker.GetMock<IConnection>();
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection =new Mock<IConnection>();
             var mockChannel = new Mock<IModel>();
 
             mockConnectionFactory.Setup(factory => factory.CreateConnection()).Returns(mockConnection.Object);
@@ -53,7 +50,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             var called = new AtomicInteger(0);
             var connectionFactory = this.CreateConnectionFactory(mockConnectionFactory.Object);
             var channelListeners = new List<IChannelListener>();
-            var mockChannelListener = mocker.GetMock<IChannelListener>();
+            var mockChannelListener = new Mock<IChannelListener>();
             mockChannelListener.Setup(listener => listener.OnCreate(It.IsAny<IModel>(), It.IsAny<bool>())).Callback(() => called.IncrementValueAndReturn());
             channelListeners.Add(mockChannelListener.Object);
             connectionFactory.ChannelListeners = channelListeners;
