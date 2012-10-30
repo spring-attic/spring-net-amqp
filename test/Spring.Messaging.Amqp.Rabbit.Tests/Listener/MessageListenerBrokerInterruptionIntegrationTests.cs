@@ -79,7 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         private SimpleMessageListenerContainer container;
 
         // @Rule
-        public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
+        public static new EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
         /*
          * Ensure broker dies if a test fails (otherwise the erl process might have to be killed manually)

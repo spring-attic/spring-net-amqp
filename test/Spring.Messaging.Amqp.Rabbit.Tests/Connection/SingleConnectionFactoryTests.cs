@@ -19,6 +19,7 @@ using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Rabbit.Connection;
+using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using IConnection = RabbitMQ.Client.IConnection;
 #endregion
@@ -28,6 +29,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
     /// <summary>
     /// Tests for the single connection factory.
     /// </summary>
+    [TestFixture]
+    [Category(TestCategory.Unit)]
     public class SingleConnectionFactoryTests : AbstractConnectionFactoryTests
     {
         /// <summary>Creates the connection factory.</summary>

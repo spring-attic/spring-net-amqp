@@ -47,7 +47,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Support
                         {
                             throw result as Exception;
                         }
-
+                        queue.Enqueue(result);
                         return (TResult)result;
                     }
                     catch (Exception ex)

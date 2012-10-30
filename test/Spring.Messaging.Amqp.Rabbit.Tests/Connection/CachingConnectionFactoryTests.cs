@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System.Collections.Generic;
+using Common.Logging;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
@@ -35,6 +36,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
     [Category(TestCategory.Unit)]
     public class CachingConnectionFactoryTests : AbstractConnectionFactoryTests
     {
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>Creates the connection factory.</summary>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <returns>The created connection factory.</returns>
@@ -91,6 +94,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             mockConnectionFactory.Setup(a => a.CreateConnection()).Returns(mockConnection.Object);
             mockConnection.Setup(a => a.IsOpen).Returns(true);
             mockConnection.Setup(a => a.CreateModel()).ReturnsInOrder(mockChannel1.Object, mockChannel2.Object);
+
             mockChannel1.Setup(a => a.BasicGet("foo", false)).Returns(new BasicGetResult(0, false, null, null, 1, null, null));
             mockChannel2.Setup(a => a.BasicGet("bar", false)).Returns(new BasicGetResult(0, false, null, null, 1, null, null));
             mockChannel1.Setup(a => a.IsOpen).Returns(true);
@@ -110,11 +114,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             channel1.Close(); // should be ignored, and add last into channel cache.
             channel2.Close(); // should be ignored, and add last into channel cache.
 
-            // (channel1)
-            var ch1 = con.CreateChannel(false); // remove first entry in cache
-
-            // (channel2)
-            var ch2 = con.CreateChannel(false); // remove first entry in cache
+            var ch1 = con.CreateChannel(false); // remove first entry in cache (channel1)
+            var ch2 = con.CreateChannel(false); // remove first entry in cache (channel2)
 
             Assert.AreNotSame(ch1, ch2);
             Assert.AreSame(ch1, channel1);
@@ -223,9 +224,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             channel2.Close(); // should be ignored, and add last into channel cache.
             Assert.AreSame(channel1, channel2);
 
-            var ch1 = con.CreateChannel(false); // remove first entry in cache
-
-            // (channel1)
+            var ch1 = con.CreateChannel(false); // remove first entry in cache (channel1)
             var ch2 = con.CreateChannel(false); // create new channel
 
             Assert.AreNotSame(ch1, ch2);
@@ -312,13 +311,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         {
             var mockConnectionFactory = new Mock<ConnectionFactory>();
             var mockConnection = new Mock<IConnection>();
-            var mockChannel1 = new Mock<IModel>();
-            var mockChannel2 = new Mock<IModel>();
 
+            var mockChannel1 = new Mock<IModel>();
+            mockChannel1.Setup(m => m.GetHashCode()).Returns(1);
+            var mockChannel2 = new Mock<IModel>();
+            mockChannel1.Setup(m => m.GetHashCode()).Returns(2);
+
+            Logger.Debug(m => m("Channel1 Hashcode: {0}", mockChannel1.Object.GetHashCode()));
+            Logger.Debug(m => m("Channel2 Hashcode: {0}", mockChannel2.Object.GetHashCode()));
             Assert.AreNotSame(mockChannel1, mockChannel2);
 
             mockConnectionFactory.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
-            mockConnection.Setup(c => c.CreateModel()).ReturnsInOrder(mockChannel1.Object, mockChannel2.Object, mockChannel1.Object);
+            mockConnection.Setup(c => c.CreateModel()).ReturnsInOrder(mockChannel1.Object, mockChannel2.Object);
             mockConnection.Setup(c => c.IsOpen).Returns(true);
 
             // Called during physical close
@@ -380,34 +384,40 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         /// Tests the with listener.
         /// </summary>
         [Test]
-        public void TestWithListener()
+        public void TestWithChannelListener()
         {
             var mockConnectionFactory = new Mock<ConnectionFactory>();
             var mockConnection = new Mock<IConnection>();
+            var mockChannel = new Mock<IModel>();
 
             mockConnectionFactory.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
+            mockConnection.Setup(m => m.IsOpen).Returns(true);
+            mockChannel.Setup(m => m.IsOpen).Returns(true);
+            mockConnection.Setup(m => m.CreateModel()).Returns(mockChannel.Object);
 
             var called = new AtomicInteger(0);
-            var connectionFactory = new CachingConnectionFactory(mockConnectionFactory.Object);
+            var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
 
             var mockConnectionListener = new Mock<IConnectionListener>();
             mockConnectionListener.Setup(m => m.OnCreate(It.IsAny<Rabbit.Connection.IConnection>())).Callback((Rabbit.Connection.IConnection conn) => called.IncrementValueAndReturn());
             mockConnectionListener.Setup(m => m.OnClose(It.IsAny<Rabbit.Connection.IConnection>())).Callback((Rabbit.Connection.IConnection conn) => called.DecrementValueAndReturn());
 
             connectionFactory.ConnectionListeners = new List<IConnectionListener> { mockConnectionListener.Object };
-
+            ((CachingConnectionFactory)connectionFactory).ChannelCacheSize = 1;
+            
             var con = connectionFactory.CreateConnection();
+            var channel = con.CreateChannel(false);
             Assert.AreEqual(1, called.Value);
+            channel.Close();
 
             con.Close();
-            Assert.AreEqual(1, called.Value);
             mockConnection.Verify(c => c.Close(), Times.Never());
 
             connectionFactory.CreateConnection();
+            con.CreateChannel(false);
             Assert.AreEqual(1, called.Value);
 
             connectionFactory.Dispose();
-            Assert.AreEqual(0, called.Value);
             mockConnection.Verify(c => c.Close(), Times.AtLeastOnce());
 
             mockConnectionFactory.Verify(c => c.CreateConnection(), Times.Exactly(1));

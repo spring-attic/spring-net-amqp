@@ -301,6 +301,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
 
             // Regular case: find a handler method reflectively.
             var convertedMessage = this.ExtractMessage(message);
+            
+            if (this.handlerObject is Func<string, string> && convertedMessage is string)
+            {
+                var anonymousResult = ((Func<string, string>)this.handlerObject).Invoke((string)convertedMessage);
+                if (anonymousResult != null)
+                {
+                    this.HandleResult(anonymousResult, message, channel);
+                    return;
+                }
+            }
 
             var methodName = this.GetListenerMethodName(message, convertedMessage);
             if (methodName == null)

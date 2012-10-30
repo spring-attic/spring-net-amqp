@@ -62,6 +62,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             con.Close();
             Assert.AreEqual(1, called.Value);
             mockConnection.Verify(c => c.Close(), Times.Never());
+
             connectionFactory.CreateConnection();
             Assert.AreEqual(1, called.Value);
 

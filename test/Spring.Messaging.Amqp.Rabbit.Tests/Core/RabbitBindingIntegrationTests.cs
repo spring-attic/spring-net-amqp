@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     [Category(TestCategory.Integration)]
     public class RabbitBindingIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private static readonly new ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The queue.

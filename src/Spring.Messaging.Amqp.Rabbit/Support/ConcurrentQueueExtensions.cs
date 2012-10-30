@@ -33,7 +33,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
 
         /// <summary>The take.</summary>
         /// <param name="queue">The queue.</param>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Type T</typeparam>
         /// <returns>The T.</returns>
         public static T Take<T>(this ConcurrentQueue<T> queue)
         {
@@ -53,7 +53,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
         /// <param name="queue">The queue.</param>
         /// <param name="duration">The duration.</param>
         /// <param name="element">The element.</param>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Type T</typeparam>
         /// <returns>The System.Boolean.</returns>
         /// <exception cref="ThreadInterruptedException"></exception>
         public static bool Poll<T>(this ConcurrentQueue<T> queue, TimeSpan duration, out T element)
@@ -96,7 +96,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
         /// <summary>The poll.</summary>
         /// <param name="collection">The collection.</param>
         /// <param name="duration">The duration.</param>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Type T</typeparam>
         /// <returns>The T.</returns>
         public static T Poll<T>(this BlockingCollection<T> collection, TimeSpan duration)
         {
@@ -123,15 +123,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
         /// <summary>The poll.</summary>
         /// <param name="collection">The collection.</param>
         /// <param name="timeoutMilliseconds">The timeout milliseconds.</param>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Type T</typeparam>
         /// <returns>The T.</returns>
         public static T Poll<T>(this BlockingCollection<T> collection, int timeoutMilliseconds) { return collection.Poll(new TimeSpan(0, 0, 0, 0, timeoutMilliseconds)); }
 
         /// <summary>The get.</summary>
         /// <param name="collection">The collection.</param>
         /// <param name="key">The key.</param>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
+        /// <typeparam name="TKey">Type TKey</typeparam>
+        /// <typeparam name="TValue">Type TValue</typeparam>
         /// <returns>The TValue.</returns>
         public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> collection, TKey key)
         {
@@ -139,12 +139,37 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             try
             {
                 var success = collection.TryGetValue(key, out result);
-                return result;
+                if (success)
+                {
+                    return result;
+                }
+                
+                return default(TValue);
             }
             catch (Exception ex)
             {
                 return default(TValue);
             }
+        }
+
+        public static bool Add<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> collection, TKey key, TValue value)
+        {
+            var result = collection.TryAdd(key, value);
+            return result;
+        }
+
+        public static TValue GetAndRemove<TKey, TValue>(this IDictionary<TKey, TValue> collection, TKey key)
+        {
+            TValue result;
+            var resultFound = collection.TryGetValue(key, out result);
+            
+            if (resultFound)
+            {
+                collection.Remove(key);
+                return result;
+            }
+
+            return default(TValue);
         }
 
         internal static TimeSpan Cap(TimeSpan waitTime) { return waitTime > MaxValue ? MaxValue : waitTime; }

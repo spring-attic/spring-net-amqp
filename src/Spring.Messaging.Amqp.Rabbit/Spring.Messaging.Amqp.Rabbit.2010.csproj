@@ -157,6 +157,7 @@
     <Compile Include="Support\IMessagePropertiesConverter.cs" />
     <Compile Include="Support\IPublisherCallbackChannel.cs" />
     <Compile Include="Support\PendingConfirm.cs" />
+    <Compile Include="Support\PublisherCallbackChannelImpl.cs" />
     <Compile Include="Support\XmlElementExtensions.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicBoolean.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicInteger.cs" />
@@ -206,6 +207,7 @@
     <Content Include="Config\spring-rabbit.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\Tools\StyleCop\StyleCop.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

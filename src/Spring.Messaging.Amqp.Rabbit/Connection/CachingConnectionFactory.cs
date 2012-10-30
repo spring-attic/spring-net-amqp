@@ -16,12 +16,15 @@
 #region Using Directives
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using AopAlliance.Intercept;
 using Common.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Impl;
+using Spring.Aop;
 using Spring.Aop.Framework;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Util;
 #endregion
 
@@ -215,9 +218,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             this.ChannelListener.OnCreate(targetChannel, transactional);
 
-            /*
-             * TODO: Pending Completion of PublisherCallbackChannelImpl
-             * 
             IList<Type> interfaces;
             if(this.publisherConfirms || this.publisherReturns)
             {
@@ -227,10 +227,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 interfaces = new List<Type>() { typeof(IChannelProxy) };
             }
-            */
-            var factory = new ProxyFactory(typeof(IChannelProxy), new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this));
 
-            // factory.Interfaces = interfaces.ToArray();
+            var handler = new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this);
+            Logger.Debug(m => m("Handler HashCode: {0}", handler.GetHashCode()));
+            var factory = new ProxyFactory(typeof(IChannelProxy), handler);
+            factory.Target = handler;
+            factory.Interfaces = interfaces.ToArray();
             var channelProxy = (IChannelProxy)factory.GetProxy();
             return channelProxy;
         }
@@ -250,8 +252,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             var channel = this.connection.CreateBareChannel(transactional);
 
-            /*
-             * TODO: Pending Completion of PublisherCallbackChannelImpl
             if (this.publisherConfirms)
             {
                 try
@@ -270,7 +270,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                     channel = new PublisherCallbackChannelImpl(channel);
                 }
             }
-            */
+
             return channel;
         }
 
@@ -410,7 +410,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// throws an exception.</exception>
         public object Invoke(IMethodInvocation invocation)
         {
-            Logger.Info(string.Format("Method Intercepted: {0}", invocation.Method.Name));
+            Logger.Trace(m => m("Method Intercepted: {0}", invocation.Method.Name));
 
             var methodName = invocation.Method.Name;
             if (methodName == "TxSelect" && !this.transactional)
@@ -431,6 +431,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             else if (methodName == "ToString")
             {
                 return "Cached Rabbit Channel: " + this.target;
+            }
+            else if (methodName == "GetTargetChannel")
+            {
+                return this.target;
             }
             else if (methodName == "GetConnection")
             {
@@ -490,8 +494,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 if (this.target == null || !this.target.IsOpen)
                 {
                     // Basic re-connection logic...
-                    this.target = null;
                     Logger.Debug(m => m("Detected closed channel on exception. Re-initializing: {0}", this.target));
+                    this.target = null;
                     lock (this.targetMonitor)
                     {
                         if (this.target == null)
@@ -513,7 +517,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 lock (this.targetMonitor)
                 {
-                    if (!this.target.IsOpen)
+                    if (this.target != null && !this.target.IsOpen)
                     {
                         this.target = null;
                         return;
@@ -553,6 +557,26 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                     this.target = null;
                 }
             }
+        }
+
+        public object GetTarget() { return this.target; }
+
+        public bool IsStatic
+        {
+            get { return false; }
+        }
+
+        public void ReleaseTarget(object target)
+        {
+            if (target != null && target == this.target)
+            {
+                this.target = null;
+            }
+        }
+
+        public Type TargetType
+        {
+            get { return typeof(IModel); }
         }
     }
     #endregion

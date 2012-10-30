@@ -16,6 +16,7 @@
 #region Using Directives
 using System;
 using System.Xml;
+using RabbitMQ.Client.Exceptions;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Objects.Factory.Support;
@@ -122,6 +123,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <param name="binding">The binding.</param>
         /// <param name="parserContext">The parser context.</param>
         /// <returns>The Spring.Objects.Factory.Support.AbstractObjectDefinition.</returns>
-        protected override AbstractObjectDefinition ParseBinding(string exchangeName, XmlElement binding, ParserContext parserContext) { throw new InvalidOperationException("Not supported for federated exchange"); }
+        protected override AbstractObjectDefinition ParseBinding(string exchangeName, XmlElement binding, ParserContext parserContext) { throw new UnsupportedMethodException("Not supported for federated exchange"); }
     }
 }

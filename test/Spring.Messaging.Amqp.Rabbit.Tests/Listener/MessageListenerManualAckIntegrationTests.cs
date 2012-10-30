@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Integration)]
     public class MessageListenerManualAckIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private static readonly new ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue = new Queue("test.queue");
 

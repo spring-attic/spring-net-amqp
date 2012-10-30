@@ -51,9 +51,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             IBasicProperties properties, 
             byte[] body);
 
-        /// <summary>When called, this listener must remove all references to the pending confirm map.</summary>
+        /// <summary>When called, this listener must remove all references to the pending confirm dictionary.</summary>
         /// <param name="channel">The channel.</param>
-        /// <param name="unconfirmed">The pending confirm map.</param>
+        /// <param name="unconfirmed">The pending confirm dictionary.</param>
         void RemovePendingConfirmsReference(IModel channel, SortedDictionary<long, PendingConfirm> unconfirmed);
 
         /// <summary>Returns the UUID used to identify this Listener for returns.</summary>
