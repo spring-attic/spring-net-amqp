@@ -95,7 +95,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             {
                 foreach (var binding in bindings.SelectChildElementsByTagName(BINDING_ELE))
                 {
-                    var objectDefinition = this.ParseBinding(exchangeName, binding as XmlElement, parserContext);
+                    var objectDefinition = parser.ParseBinding(exchangeName, binding as XmlElement, parserContext);
                     this.RegisterObjectDefinition(new ObjectDefinitionHolder(objectDefinition, parserContext.ReaderContext.GenerateObjectName(objectDefinition)), parserContext.Registry);
                 }
             }
