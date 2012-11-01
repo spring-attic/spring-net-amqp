@@ -21,6 +21,7 @@ using NUnit.Framework;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Support;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
@@ -143,12 +144,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
                 this.port = value;
                 if (!brokerOffline.ContainsKey(this.port))
                 {
-                    brokerOffline.Add(this.port, true);
+                    brokerOffline.AddOrUpdate(this.port, true);
                 }
 
                 if (!brokerOnline.ContainsKey(this.port))
                 {
-                    brokerOnline.Add(this.port, true);
+                    brokerOnline.AddOrUpdate(this.port, true);
                 }
             }
         }
@@ -225,15 +226,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
                     }
                 }
 
-                if (brokerOffline.ContainsKey(this.port))
-                {
-                    brokerOffline[this.port] = false;
-                }
-                else
-                {
-                    brokerOffline.Add(this.port, false);
-                }
-
+                brokerOffline.AddOrUpdate(this.port, false);
+                
                 if (!this.assumeOnline)
                 {
                     Assume.That(brokerOffline[this.port]);
@@ -242,14 +236,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
             catch (Exception e)
             {
                 Logger.Warn("Not executing tests because basic connectivity test failed", e);
-                if (brokerOnline.ContainsKey(this.port))
-                {
-                    brokerOnline[this.port] = false;
-                }
-                else
-                {
-                    brokerOnline.Add(this.port, false);
-                }
+                
+                brokerOnline.AddOrUpdate(this.port, false);
 
                 if (this.assumeOnline)
                 {

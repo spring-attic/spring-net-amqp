@@ -106,6 +106,7 @@
     <Compile Include="Config\ConnectionFactoryParserTests.cs" />
     <Compile Include="Config\ExchangeParserIntegrationTests.cs" />
     <Compile Include="Config\ExchangeParserTests.cs" />
+    <Compile Include="Config\FederatedExchangeParserIntegrationTests.cs" />
     <Compile Include="Config\ListenerContainerParserTests.cs" />
     <Compile Include="Config\ListenerContainerPlaceholderParserTests.cs" />
     <Compile Include="Config\QueueParserIntegrationTests.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Listener\SimpleMessageListenerContainerTests.cs" />
     <Compile Include="Listener\UnackedRawIntegrationTests.cs" />
     <Compile Include="Support\MoqExtensions.cs" />
+    <Compile Include="Test\BrokerFederated.cs" />
     <Compile Include="Test\BrokerPanic.cs" />
     <Compile Include="Test\BrokerRunning.cs" />
     <Compile Include="Test\BrokerTestUtils.cs" />

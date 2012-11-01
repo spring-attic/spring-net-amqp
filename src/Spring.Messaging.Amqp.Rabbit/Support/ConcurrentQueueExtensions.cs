@@ -172,6 +172,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             return default(TValue);
         }
 
+        public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> collection, TKey key, TValue value)
+        {
+            if (collection.ContainsKey(key))
+            {
+                collection[key] = value;
+                return;
+            }
+
+            collection.Add(key, value);
+        }
+
         internal static TimeSpan Cap(TimeSpan waitTime) { return waitTime > MaxValue ? MaxValue : waitTime; }
 
         /// <summary>Lock the stack trace information of the given <paramref name="exception"/>
