@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System.Reflection;
+using Spring.Aop;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
@@ -22,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     /// <summary>
     /// Test Advice
     /// </summary>
-    public class TestAdvice
+    public class TestAdvice : IMethodBeforeAdvice
     {
         /// <summary>Befores the specified method.</summary>
         /// <param name="method">The method.</param>
