@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Common.Logging;
 using RabbitMQ.Client;
@@ -177,7 +178,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var message = new Message(body, messageProperties);
             Logger.Debug(m => m("Received message: {0}", message));
 
-            this.deliveryTags.AddLast(messageProperties.DeliveryTag);
+            this.deliveryTags.AddOrUpdate(messageProperties.DeliveryTag);
             return message;
         }
 
@@ -189,9 +190,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </returns>
         public Message NextMessage()
         {
-            Logger.Debug(m => m("Retrieving delivery for {0}", this));
+            Logger.Trace(m => m("Retrieving delivery for {0}", this));
             return this.Handle(this.queue.Take());
         }
+
+        public Message NextMessage(long timeout) { return this.NextMessage(new TimeSpan(0, 0, 0, 0, (int)timeout)); }
 
         /// <summary>Main application-side API: wait for the next message delivery and return it.</summary>
         /// <param name="timeout">The timeout.</param>
@@ -203,7 +206,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             this.CheckShutdown();
             Delivery delivery;
             this.queue.Poll(timeout, out delivery);
-            return this.Handle(delivery);
+            var message = this.Handle(delivery);
+            if (message == null && cancelReceived.Value)
+            {
+                throw new ConsumerCancelledException();
+            }
+
+            return message;
         }
 
         /// <summary>The start.</summary>
@@ -300,13 +309,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         /// <summary>The to string.</summary>
         /// <returns>The System.String.</returns>
-        public override string ToString() { return "Consumer: tag=[" + (this.consumer != null ? this.consumer.ConsumerTag : null) + "], channel=" + this.channel + ", acknowledgeMode=" + this.acknowledgeMode + " local queue size=" + this.queue.Count; }
+        public override string ToString() { return string.Format("Consumer: tag=[{0}], channel={1}, acknowledgeMode={2}, local queue size={3}", this.consumer != null ? this.consumer.ConsumerTag : null, this.channel, this.acknowledgeMode, this.queue.Count); }
 
-        /// <summary>Perform a rollback, handling rollback excepitons properly.</summary>
-        /// <param name="channel">The channel to rollback.</param>
-        /// <param name="message">The message.</param>
+        /// <summary>Perform a rollback, handling rollback exceptions properly.</summary>
         /// <param name="ex">The thrown application exception.</param>
-        public virtual void RollbackOnExceptionIfNecessary(IModel channel, Message message, Exception ex)
+        public virtual void RollbackOnExceptionIfNecessary(Exception ex)
         {
             var ackRequired = !this.acknowledgeMode.IsAutoAck() && !this.acknowledgeMode.IsManual();
             try
@@ -314,7 +321,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 if (this.transactional)
                 {
                     Logger.Debug(m => m("Initiating transaction rollback on application exception"), ex);
-
                     RabbitUtils.RollbackIfNecessary(channel);
                 }
 
@@ -337,10 +343,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     foreach (var deliveryTag in this.deliveryTags)
                     {
                         // With newer RabbitMQ brokers could use basicNack here...
-                        // channel.BasicReject((ulong)message.MessageProperties.DeliveryTag, true);
-
-                        // ... So we will.
-                        channel.BasicNack((ulong)message.MessageProperties.DeliveryTag, true, true);
+                        channel.BasicReject((ulong)deliveryTag, shouldRequeue);
                     }
 
                     if (this.transactional)
@@ -441,9 +444,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public override void HandleModelShutdown(IModel channel, ShutdownEventArgs reason)
         {
             Logger.Warn(m => m("Received shutdown signal for consumer tag {0}, cause: {1}", this.ConsumerTag, reason.Cause));
-            base.HandleModelShutdown(channel, reason);
 
             this.outer.shutdown = reason;
+
+            // The delivery tags will be invalid if the channel shuts down
             this.outer.deliveryTags.Clear();
         }
 
@@ -452,7 +456,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public override void HandleBasicCancel(string consumerTag)
         {
             Logger.Warn(m => m("Cancel received"));
-            base.HandleBasicCancel(consumerTag);
             this.outer.cancelReceived.LazySet(true);
         }
 
@@ -461,7 +464,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public override void HandleBasicCancelOk(string consumerTag)
         {
             Logger.Debug(m => m("Received cancellation notice for {0}", this.outer.ToString()));
-            base.HandleBasicCancelOk(consumerTag);
 
             // Signal to the container that we have been cancelled
             this.outer.activeObjectCounter.Release(this.outer);

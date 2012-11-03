@@ -133,6 +133,8 @@
     <Compile Include="Core\TestConstants.cs" />
     <Compile Include="Listener\ActiveObjectCounterTests.cs" />
     <Compile Include="Listener\Adapter\MessageListenerAdapterTests.cs" />
+    <Compile Include="Listener\BlockingQueueConsumerIntegrationTests.cs" />
+    <Compile Include="Listener\BlockingQueueConsumerTests.cs" />
     <Compile Include="Listener\MessageListenerBrokerInterruptionIntegrationTests.cs" />
     <Compile Include="Listener\MessageListenerContainerErrorHandlerIntegrationTests.cs" />
     <Compile Include="Listener\MessageListenerContainerLifecycleIntegrationTests.cs" />

@@ -26,6 +26,7 @@ using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Xml;
 #endregion
 

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConcurrentQueueExtensions.cs" company="The original author or authors.">
+// <copyright file="CollectionExtensions.cs" company="The original author or authors.">
 //   Copyright 2002-2012 the original author or authors.
 //   
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -27,7 +27,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// <summary>
     /// Concurrent Queue Extensions
     /// </summary>
-    public static class ConcurrentQueueExtensions
+    public static class CollectionExtensions
     {
         internal static readonly TimeSpan MaxValue = TimeSpan.FromMilliseconds(int.MaxValue);
 
@@ -170,6 +170,39 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             }
 
             return default(TValue);
+        }
+
+        public static bool AddOrUpdate<TValue>(this LinkedList<TValue> list, TValue value)
+        {
+            if (list.Contains(value))
+            {
+                return false;
+            }
+            else
+            {
+                list.AddLast(value);
+                return true;
+            }
+        }
+
+        public static void AddListValue<TKey, TValue>(this IDictionary<TKey, LinkedList<TValue>> collection, TKey key, TValue value)
+        {
+            if (!collection.ContainsKey(key))
+            {
+                var newValueList = new LinkedList<TValue>();
+                newValueList.AddOrUpdate(value);
+                collection.Add(key, newValueList);
+                return;
+            }
+
+            var valueList = collection.Get(key);
+            if (valueList == default(LinkedList<TValue>))
+            {
+                valueList = new LinkedList<TValue>();
+            }
+
+            valueList.AddOrUpdate(value);
+            collection[key] = valueList;
         }
 
         public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> collection, TKey key, TValue value)

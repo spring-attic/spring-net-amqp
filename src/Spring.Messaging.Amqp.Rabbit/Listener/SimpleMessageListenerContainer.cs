@@ -581,7 +581,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception ex)
                 {
-                    consumer.RollbackOnExceptionIfNecessary(channel, message, ex);
+                    consumer.RollbackOnExceptionIfNecessary(ex);
                     throw;
                 }
             }

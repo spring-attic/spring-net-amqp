@@ -149,7 +149,7 @@
     <Compile Include="Retry\INewMessageIdentifier.cs" />
     <Compile Include="Retry\MissingMessageIdAdvice.cs" />
     <Compile Include="Retry\RejectAndDontRequeueRecoverer.cs" />
-    <Compile Include="Support\ConcurrentQueueExtensions.cs" />
+    <Compile Include="Support\CollectionExtensions.cs" />
     <Compile Include="Support\CorrelationData.cs" />
     <Compile Include="Support\DateExtensions.cs" />
     <Compile Include="Support\DefaultMessagePropertiesConverter.cs" />
