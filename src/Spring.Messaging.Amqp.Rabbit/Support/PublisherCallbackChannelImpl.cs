@@ -151,15 +151,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="mandatory">The mandatory.</param>
-        /// <param name="basicProperties">The basic properties.</param>
-        /// <param name="body">The body.</param>
-        /// <exception cref="NotImplementedException">This is not implemented.</exception>
-        public void BasicPublish(string exchange, string routingKey, bool mandatory, IBasicProperties basicProperties, byte[] body) { this.channelDelegate.BasicPublish(exchange, routingKey, mandatory, basicProperties, body); }
-
-        /// <summary>The basic publish.</summary>
-        /// <param name="exchange">The exchange.</param>
-        /// <param name="routingKey">The routing key.</param>
-        /// <param name="mandatory">The mandatory.</param>
         /// <param name="immediate">The immediate.</param>
         /// <param name="props">The props.</param>
         /// <param name="body">The body.</param>
