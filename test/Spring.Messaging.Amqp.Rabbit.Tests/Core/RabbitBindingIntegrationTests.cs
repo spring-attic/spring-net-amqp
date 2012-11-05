@@ -132,7 +132,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     }
                     finally
                     {
-                        channel.BasicCancel(tag);
+                        consumer.Channel.BasicCancel(tag);
                     }
 
                     return null;
@@ -171,7 +171,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     }
                     finally
                     {
-                        channel.BasicCancel(tag);
+                        consumer.Channel.BasicCancel(tag);
                     }
 
                     return null;

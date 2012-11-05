@@ -244,6 +244,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     {
                         this.channel.QueueDeclarePassive(t);
                     }
+
+                    passiveDeclareTries = 0;
                 }
                 catch (Exception e)
                 {
