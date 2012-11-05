@@ -227,7 +227,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
                 }
 
                 brokerOffline.AddOrUpdate(this.port, false);
-                
+
                 if (!this.assumeOnline)
                 {
                     Assume.That(brokerOffline[this.port]);
@@ -236,7 +236,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
             catch (Exception e)
             {
                 Logger.Warn("Not executing tests because basic connectivity test failed", e);
-                
+
                 brokerOnline.AddOrUpdate(this.port, false);
 
                 if (this.assumeOnline)

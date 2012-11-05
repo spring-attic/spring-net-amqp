@@ -143,7 +143,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
                 {
                     return result;
                 }
-                
+
                 return default(TValue);
             }
             catch (Exception ex)
@@ -152,17 +152,30 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             }
         }
 
+        /// <summary>The add.</summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns>The System.Boolean.</returns>
         public static bool Add<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> collection, TKey key, TValue value)
         {
             var result = collection.TryAdd(key, value);
             return result;
         }
 
+        /// <summary>The get and remove.</summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="key">The key.</param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns>The TValue.</returns>
         public static TValue GetAndRemove<TKey, TValue>(this IDictionary<TKey, TValue> collection, TKey key)
         {
             TValue result;
             var resultFound = collection.TryGetValue(key, out result);
-            
+
             if (resultFound)
             {
                 collection.Remove(key);
@@ -172,6 +185,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             return default(TValue);
         }
 
+        /// <summary>The add or update.</summary>
+        /// <param name="list">The list.</param>
+        /// <param name="value">The value.</param>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns>The System.Boolean.</returns>
         public static bool AddOrUpdate<TValue>(this LinkedList<TValue> list, TValue value)
         {
             if (list.Contains(value))
@@ -185,6 +203,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             }
         }
 
+        /// <summary>The add list value.</summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
         public static void AddListValue<TKey, TValue>(this IDictionary<TKey, LinkedList<TValue>> collection, TKey key, TValue value)
         {
             if (!collection.ContainsKey(key))
@@ -205,6 +229,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             collection[key] = valueList;
         }
 
+        /// <summary>The add or update.</summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
         public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> collection, TKey key, TValue value)
         {
             if (collection.ContainsKey(key))

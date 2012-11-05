@@ -53,18 +53,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Assert.IsNull(template.ReceiveAndConvert(queue.Name));
         }
 
+        /// <summary>The before fixture set up.</summary>
         public override void BeforeFixtureSetUp() { this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue); }
 
-        public override void BeforeFixtureTearDown()
-        {
-        }
+        /// <summary>The before fixture tear down.</summary>
+        public override void BeforeFixtureTearDown() { }
 
-        public override void AfterFixtureSetUp()
-        {
-        }
+        /// <summary>The after fixture set up.</summary>
+        public override void AfterFixtureSetUp() { }
 
-        public override void AfterFixtureTearDown()
-        {
-        }
+        /// <summary>The after fixture tear down.</summary>
+        public override void AfterFixtureTearDown() { }
     }
 }

@@ -8,7 +8,7 @@
 
     <object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit" />
 
-    <rabbit:connection-factory id="withExecutor" host="foo" virtual-host="/bar" channel-cache-size="10" port="6888" username="user" password="password"  /> <!-- executor="exec" /> -->
+    <rabbit:connection-factory id="withExecutor" host="foo" virtual-host="/bar" channel-cache-size="10" port="6888" username="user" password="password" /> <!-- executor="exec" /> -->
 
     <!--<task:executor id="exec" />-->
 

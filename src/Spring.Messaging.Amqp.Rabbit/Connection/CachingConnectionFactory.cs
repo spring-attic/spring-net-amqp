@@ -22,7 +22,6 @@ using AopAlliance.Intercept;
 using Common.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Impl;
-using Spring.Aop;
 using Spring.Aop.Framework;
 using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Util;
@@ -219,13 +218,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             this.ChannelListener.OnCreate(targetChannel, transactional);
 
             IList<Type> interfaces;
-            if(this.publisherConfirms || this.publisherReturns)
+            if (this.publisherConfirms || this.publisherReturns)
             {
-                interfaces = new List<Type>() { typeof(IChannelProxy), typeof(IPublisherCallbackChannel) };
+                interfaces = new List<Type> { typeof(IChannelProxy), typeof(IPublisherCallbackChannel) };
             }
             else
             {
-                interfaces = new List<Type>() { typeof(IChannelProxy) };
+                interfaces = new List<Type> { typeof(IChannelProxy) };
             }
 
             var handler = new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this);
@@ -263,6 +262,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                     Logger.Error(m => m("Could not configure the channel to receive publisher confirms"), ex);
                 }
             }
+
             if (this.publisherConfirms || this.publisherReturns)
             {
                 if (!(channel is PublisherCallbackChannelImpl))
@@ -559,13 +559,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
+        /// <summary>The get target.</summary>
+        /// <returns>The System.Object.</returns>
         public object GetTarget() { return this.target; }
 
-        public bool IsStatic
-        {
-            get { return false; }
-        }
+        /// <summary>Gets a value indicating whether is static.</summary>
+        public bool IsStatic { get { return false; } }
 
+        /// <summary>The release target.</summary>
+        /// <param name="target">The target.</param>
         public void ReleaseTarget(object target)
         {
             if (target != null && target == this.target)
@@ -574,10 +576,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
         }
 
-        public Type TargetType
-        {
-            get { return typeof(IModel); }
-        }
+        /// <summary>Gets the target type.</summary>
+        public Type TargetType { get { return typeof(IModel); } }
     }
     #endregion
 

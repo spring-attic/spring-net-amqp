@@ -43,7 +43,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
         public void TestWithChannelListener()
         {
             var mockConnectionFactory = new Mock<ConnectionFactory>();
-            var mockConnection =new Mock<IConnection>();
+            var mockConnection = new Mock<IConnection>();
             var mockChannel = new Mock<IModel>();
 
             mockConnectionFactory.Setup(factory => factory.CreateConnection()).Returns(mockConnection.Object);

@@ -56,7 +56,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         private readonly CompositeChannelListener channelListener = new CompositeChannelListener();
 
         // private volatile IExecutorService executorService;
-        
         private volatile AmqpTcpEndpoint[] addresses;
 
         /// <summary>Initializes a new instance of the <see cref="AbstractConnectionFactory"/> class.</summary>
@@ -94,6 +93,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         public int Port { get { return this.rabbitConnectionFactory.Port; } set { this.rabbitConnectionFactory.Port = value; } }
 
+        /// <summary>Gets the amqp tcp endpoints.</summary>
         public AmqpTcpEndpoint[] AmqpTcpEndpoints { get { return this.addresses; } }
 
         /// <summary>Sets the addresses.</summary>

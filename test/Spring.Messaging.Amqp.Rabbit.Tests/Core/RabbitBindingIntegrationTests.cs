@@ -18,7 +18,6 @@ using System;
 using System.Threading;
 using Common.Logging;
 using NUnit.Framework;
-using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
@@ -37,7 +36,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     [Category(TestCategory.Integration)]
     public class RabbitBindingIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly new ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The queue.
@@ -113,7 +112,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange).With("*.end"));
 
             this.template.Execute<object>(
-                delegate(IModel channel)
+                delegate
                 {
                     var consumer = this.CreateConsumer(this.template);
                     var tag = consumer.ConsumerTag;
@@ -152,7 +151,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange).With("*.end"));
 
             this.template.Execute<object>(
-                delegate(IModel channel)
+                delegate
                 {
                     var consumer = this.CreateConsumer(this.template);
                     var tag = consumer.ConsumerTag;
@@ -229,7 +228,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange).With("*.end"));
 
             this.template.Execute<object>(
-                delegate(IModel channel)
+                delegate
                 {
                     var consumer = this.CreateConsumer(this.template);
                     var tag = consumer.ConsumerTag;
@@ -250,7 +249,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                 });
 
             this.template.Execute<object>(
-                delegate(IModel channel)
+                delegate
                 {
                     var consumer = this.CreateConsumer(this.template);
                     var tag = consumer.ConsumerTag;
@@ -285,7 +284,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange));
 
             this.template.Execute<object>(
-                delegate(IModel channel)
+                delegate
                 {
                     var consumer = this.CreateConsumer(this.template);
                     var tag = consumer.ConsumerTag;

@@ -396,7 +396,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
             mockConnection.Setup(m => m.CreateModel()).Returns(mockChannel.Object);
 
             var called = new AtomicInteger(0);
-            var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
+            var connectionFactory = this.CreateConnectionFactory(mockConnectionFactory.Object);
 
             var mockConnectionListener = new Mock<IConnectionListener>();
             mockConnectionListener.Setup(m => m.OnCreate(It.IsAny<Rabbit.Connection.IConnection>())).Callback((Rabbit.Connection.IConnection conn) => called.IncrementValueAndReturn());
@@ -404,7 +404,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Connection
 
             connectionFactory.ConnectionListeners = new List<IConnectionListener> { mockConnectionListener.Object };
             ((CachingConnectionFactory)connectionFactory).ChannelCacheSize = 1;
-            
+
             var con = connectionFactory.CreateConnection();
             var channel = con.CreateChannel(false);
             Assert.AreEqual(1, called.Value);

@@ -25,7 +25,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// </summary>
     public static class XmlElementExtensions
     {
+        /// <summary>The rabbit prefix.</summary>
         public const string RabbitPrefix = "rabbit";
+
+        /// <summary>The rabbit uri.</summary>
         public const string RabbitUri = "http://www.springframework.net/schema/rabbit";
 
         /// <summary>The get elements by tag name with optional prefix.</summary>
@@ -56,6 +59,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             return nodeList;
         }
 
+        /// <summary>The select child elements by tag name.</summary>
+        /// <param name="node">The node.</param>
+        /// <param name="tagName">The tag name.</param>
+        /// <returns>The System.Collections.Generic.List`1[T -&gt; System.Xml.XmlNode].</returns>
         public static List<XmlNode> SelectChildElementsByTagName(this XmlElement node, string tagName)
         {
             if (node == null || node.OwnerDocument == null)
@@ -76,9 +83,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             {
                 result.Add(item);
             }
+
             return result;
         }
 
+        /// <summary>The select child element by tag name.</summary>
+        /// <param name="node">The node.</param>
+        /// <param name="tagName">The tag name.</param>
+        /// <returns>The System.Xml.XmlElement.</returns>
         public static XmlElement SelectChildElementByTagName(this XmlElement node, string tagName)
         {
             if (node == null || node.OwnerDocument == null)

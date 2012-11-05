@@ -20,8 +20,6 @@ using System.Threading;
 using Common.Logging;
 using NUnit.Framework;
 using Spring.Context;
-using Spring.Context.Support;
-using Spring.Core.IO;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Config;
@@ -101,6 +99,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             }
         }
 
+        /// <summary>The fixture tear down.</summary>
         [TestFixtureTearDown]
         public void FixtureTearDown()
         {

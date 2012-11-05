@@ -58,7 +58,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         private BrokerFederated()
         {
             this.assumeOnline = true;
-            Port = this.DEFAULT_PORT;
+            this.Port = this.DEFAULT_PORT;
         }
 
         /**

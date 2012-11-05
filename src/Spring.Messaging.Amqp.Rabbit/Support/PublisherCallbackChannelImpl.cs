@@ -34,8 +34,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     /// </summary>
     /// <author>Gary Russell</author>
     /// <author>Joe Fitzgerald</author>
-    public class PublisherCallbackChannelImpl : IPublisherCallbackChannel // , BasicAckEventHandler, BasicNackEventHandler
+    public class PublisherCallbackChannelImpl : IPublisherCallbackChannel
     {
+        // , BasicAckEventHandler, BasicNackEventHandler
         private readonly ILog logger = LogManager.GetCurrentClassLogger();
 
         private readonly IModel channelDelegate;
@@ -406,7 +407,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
         // public void AsyncRpc(Method method) { this.channelDelegate.AsyncRpc(method); }
 
         // public Command Rpc(Method method) { return this.channelDelegate.Rpc(method); }
-
         private readonly List<BasicAckEventHandler> ackListeners = new List<BasicAckEventHandler>();
 
         private readonly List<BasicNackEventHandler> nackListeners = new List<BasicNackEventHandler>();

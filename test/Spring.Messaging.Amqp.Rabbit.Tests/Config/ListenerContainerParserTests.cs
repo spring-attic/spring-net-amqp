@@ -26,7 +26,6 @@ using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
-using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Xml;
 #endregion
 
@@ -76,12 +75,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual("[foo, " + queue.Name + "]", queueNamesForVerification);
         }
 
-
+        /// <summary>The test parse with queues.</summary>
         [Test]
         public void TestParseWithQueues()
         {
-            var container = objectFactory.GetObject<SimpleMessageListenerContainer>("container2");
-            var queue = objectFactory.GetObject<Queue>("bar");
+            var container = this.objectFactory.GetObject<SimpleMessageListenerContainer>("container2");
+            var queue = this.objectFactory.GetObject<Queue>("bar");
             var queueNamesForVerification = "[";
             foreach (var queueName in container.QueueNames)
             {
@@ -99,7 +98,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             var container = this.objectFactory.GetObject<SimpleMessageListenerContainer>("container3");
             var fields = typeof(SimpleMessageListenerContainer).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
             var adviceChainField = typeof(SimpleMessageListenerContainer).GetField("adviceChain", BindingFlags.NonPublic | BindingFlags.Instance);
-            var list = new List<AopAlliance.Aop.IAdvice>();
+            var list = new List<IAdvice>();
 
             var adviceChain = adviceChainField.GetValue(container);
             Assert.IsNotNull(adviceChain);
@@ -117,7 +116,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual(1, concurrentConsumers);
         }
 
-
+        /// <summary>The test parse with default queue rejected false.</summary>
         [Test]
         public void TestParseWithDefaultQueueRejectedFalse()
         {
@@ -131,6 +130,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.IsFalse(container.ChannelTransacted);
         }
 
+        /// <summary>The test parse with tx.</summary>
         [Test]
         public void TestParseWithTx()
         {
@@ -141,6 +141,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual(5, (int)txSize);
         }
 
+        /// <summary>The test incompatible tx atts.</summary>
         [Test]
         [Ignore("TODO")]
         public void TestIncompatibleTxAtts()

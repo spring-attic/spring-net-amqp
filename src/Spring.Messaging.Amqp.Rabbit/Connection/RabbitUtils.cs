@@ -98,7 +98,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 throw new AmqpIOException(ioex);
             }
-            // TODO: Do we need the next two catch clauses?
+                
+                // TODO: Do we need the next two catch clauses?
             catch (OperationInterruptedException oiex)
             {
                 throw new AmqpException("An error occurred committing the transaction.", oiex);
@@ -122,7 +123,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 throw new AmqpIOException(ioex);
             }
-            // TODO: Do we need the next two catch clauses?
+                
+                // TODO: Do we need the next two catch clauses?
             catch (OperationInterruptedException oiex)
             {
                 throw new AmqpException("An error occurred rolling back the transaction.", oiex);

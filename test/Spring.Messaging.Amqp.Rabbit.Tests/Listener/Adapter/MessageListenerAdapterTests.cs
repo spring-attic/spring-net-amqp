@@ -63,6 +63,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
             Assert.True(handlerDelegate.Called);
         }
 
+        /// <summary>The test func listener method.</summary>
         [Test]
         public void TestFuncListenerMethod()
         {
@@ -129,10 +130,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
 
         /// <summary>Initializes a new instance of the <see cref="HandlerDelegate"/> class.</summary>
         /// <param name="called">The called.</param>
-        public HandlerDelegate(AtomicBoolean called)
-        {
-            this.Called = called;
-        }
+        public HandlerDelegate(AtomicBoolean called) { this.Called = called; }
 
         /// <summary>Handles the message.</summary>
         /// <param name="input">The input.</param>

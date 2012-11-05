@@ -15,7 +15,6 @@
 
 #region Using Directives
 using NUnit.Framework;
-using RabbitMQ.Client;
 using Spring.Core.IO;
 using Spring.Messaging.Amqp.Rabbit.Config;
 using Spring.Messaging.Amqp.Rabbit.Connection;
@@ -66,12 +65,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
         }
 
+        /// <summary>The test with executor.</summary>
         [Test]
         public void TestWithExecutor()
         {
             var connectionFactory = this.objectFactory.GetObject<CachingConnectionFactory>("withExecutor");
             Assert.NotNull(connectionFactory);
             Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
+
             // var executor = new DirectFieldAccessor(connectionFactory).getPropertyValue("executorService");
             // Assert.NotNull(executor);
             // var exec = this.objectFactory.GetObject<IThreadPoolTaskExecutor>("exec");
@@ -81,30 +82,35 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual(false, connectionFactory.IsPublisherReturns);
         }
 
+        /// <summary>The test with executor service.</summary>
         [Test]
         public void TestWithExecutorService()
         {
             var connectionFactory = this.objectFactory.GetObject<CachingConnectionFactory>("withExecutorService");
             Assert.NotNull(connectionFactory);
             Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
+
             // var executor = new DirectFieldAccessor(connectionFactory).getPropertyValue("executorService");
             // Assert.NotNull(executor);
             // var exec = this.objectFactory.GetObject<IExecutorService>("execService");
             // Assert.AreSame(exec, executor);
         }
 
+        /// <summary>The test multi host.</summary>
         [Test]
         public void TestMultiHost()
         {
             var connectionFactory = this.objectFactory.GetObject<CachingConnectionFactory>("multiHost");
             Assert.NotNull(connectionFactory);
             Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
+
             // DirectFieldAccessor dfa =  new DirectFieldAccessor(connectionFactory);
             var addresses = connectionFactory.AmqpTcpEndpoints;
             Assert.AreEqual(3, addresses.Length);
             Assert.AreEqual("host1", addresses[0].HostName);
             Assert.AreEqual(1234, addresses[0].Port);
             Assert.AreEqual("host2", addresses[1].HostName);
+
             // Assert.AreEqual(-1, addresses[1].Port);
             Assert.AreEqual(5672, addresses[1].Port);
             Assert.AreEqual("host3", addresses[2].HostName);

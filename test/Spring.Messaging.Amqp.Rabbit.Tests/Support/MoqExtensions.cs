@@ -27,7 +27,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Support
     /// </summary>
     public static class MoqExtensions
     {
-        private static ILog Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>Returnses the in order.</summary>
         /// <typeparam name="T">Type T</typeparam>
@@ -47,6 +47,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Support
                         {
                             throw result as Exception;
                         }
+
                         queue.Enqueue(result);
                         return (TResult)result;
                     }

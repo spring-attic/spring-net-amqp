@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Common.Logging;
 using RabbitMQ.Client;
@@ -194,6 +193,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             return this.Handle(this.queue.Take());
         }
 
+        /// <summary>The next message.</summary>
+        /// <param name="timeout">The timeout.</param>
+        /// <returns>The Spring.Messaging.Amqp.Core.Message.</returns>
         public Message NextMessage(long timeout) { return this.NextMessage(new TimeSpan(0, 0, 0, 0, (int)timeout)); }
 
         /// <summary>Main application-side API: wait for the next message delivery and return it.</summary>
@@ -207,7 +209,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             Delivery delivery;
             this.queue.Poll(timeout, out delivery);
             var message = this.Handle(delivery);
-            if (message == null && cancelReceived.Value)
+            if (message == null && this.cancelReceived.Value)
             {
                 throw new ConsumerCancelledException();
             }
@@ -323,7 +325,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 if (this.transactional)
                 {
                     Logger.Debug(m => m("Initiating transaction rollback on application exception"), ex);
-                    RabbitUtils.RollbackIfNecessary(channel);
+                    RabbitUtils.RollbackIfNecessary(this.channel);
                 }
 
                 if (ackRequired)
@@ -345,13 +347,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     foreach (var deliveryTag in this.deliveryTags)
                     {
                         // With newer RabbitMQ brokers could use basicNack here...
-                        channel.BasicReject((ulong)deliveryTag, shouldRequeue);
+                        this.channel.BasicReject((ulong)deliveryTag, shouldRequeue);
                     }
 
                     if (this.transactional)
                     {
                         // Need to commit the reject (=nack)
-                        RabbitUtils.CommitIfNecessary(channel);
+                        RabbitUtils.CommitIfNecessary(this.channel);
                     }
                 }
             }

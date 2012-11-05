@@ -37,10 +37,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         private Queue destinationQueue;
         private IExchange destinationExchange;
 
-        public BindingFactoryObject()
-        {
-            Logger.Debug("Creating new BindingFactoryObject");
-        }
+        /// <summary>Initializes a new instance of the <see cref="BindingFactoryObject"/> class.</summary>
+        public BindingFactoryObject() { Logger.Debug("Creating new BindingFactoryObject"); }
 
         /// <summary>
         /// Sets the arguments.

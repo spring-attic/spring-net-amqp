@@ -225,10 +225,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>Add a delivery tag to the channel.</summary>
         /// <param name="channel">The channel.</param>
         /// <param name="deliveryTag">The delivery tag.</param>
-        public void AddDeliveryTag(IModel channel, long deliveryTag)
-        {
-            this.deliveryTags.AddListValue(channel, deliveryTag);
-        }
+        public void AddDeliveryTag(IModel channel, long deliveryTag) { this.deliveryTags.AddListValue(channel, deliveryTag); }
 
         /// <summary>
         /// Rollback all.

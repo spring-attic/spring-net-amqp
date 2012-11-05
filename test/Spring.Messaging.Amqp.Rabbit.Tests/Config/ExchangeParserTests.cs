@@ -15,12 +15,10 @@
 
 #region Using Directives
 using NUnit.Framework;
-using Spring.Context.Support;
 using Spring.Core.IO;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Config;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
-using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
 #endregion
 
@@ -122,6 +120,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual("bar", exchange.Arguments["foo"]);
         }
 
+        /// <summary>The test federated direct exchange.</summary>
         [Test]
         public void TestFederatedDirectExchange()
         {
@@ -134,6 +133,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual("upstream-set1", exchange.Arguments["upstream-set"]);
         }
 
+        /// <summary>The test federated topic exchange.</summary>
         [Test]
         public void TestFederatedTopicExchange()
         {
@@ -146,6 +146,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual("upstream-set2", exchange.Arguments["upstream-set"]);
         }
 
+        /// <summary>The test federated fanout exchange.</summary>
         [Test]
         public void TestFederatedFanoutExchange()
         {
@@ -158,6 +159,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual("upstream-set3", exchange.Arguments["upstream-set"]);
         }
 
+        /// <summary>The test federated headers exchange.</summary>
         [Test]
         public void TestFederatedHeadersExchange()
         {

@@ -14,8 +14,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System;
-using System.Collections;
 using Common.Logging;
 using NUnit.Framework;
 using Spring.Core.IO;
@@ -24,7 +22,6 @@ using Spring.Messaging.Amqp.Rabbit.Config;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Objects.Factory.Xml;
-using Queue = Spring.Messaging.Amqp.Core.Queue;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Config

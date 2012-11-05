@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit" xmlns:objects="http://www.springframework.net">
-    
+
     <federated-exchange id="fedDirectTest" name="fedDirectTest" backing-type="direct" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
         <direct-bindings>
             <binding queue="bucket" />
@@ -10,7 +10,7 @@
 
     <federated-exchange id="fedTopicTest" name="fedTopicTest" backing-type="topic" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
         <topic-bindings>
-            <binding queue="bucket" pattern="bucket.#"/>
+            <binding queue="bucket" pattern="bucket.#" />
         </topic-bindings>
     </federated-exchange>
 
@@ -22,7 +22,7 @@
 
     <federated-exchange id="fedHeadersTest" name="fedHeadersTest" backing-type="headers" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
         <headers-bindings>
-            <binding queue="bucket" key="type" value="bucket"  />
+            <binding queue="bucket" key="type" value="bucket" />
         </headers-bindings>
     </federated-exchange>
 
@@ -32,7 +32,7 @@
         </bindings>
     </fanout-exchange>
 
-    <queue id="bucket" name="bucket"  xmlns="http://www.springframework.net/schema/rabbit" />
+    <queue id="bucket" name="bucket" xmlns="http://www.springframework.net/schema/rabbit" />
 
     <admin id="admin" connection-factory="connectionFactory" auto-startup="true" xmlns="http://www.springframework.net/schema/rabbit" />
 

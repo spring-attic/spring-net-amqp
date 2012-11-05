@@ -57,7 +57,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         {
             var exchangeName = element.GetAttribute("name");
             builder.AddConstructorArg(new TypedStringValue(exchangeName));
-            ParseBindings(element, parserContext, builder, exchangeName);
+            this.ParseBindings(element, parserContext, builder, exchangeName);
 
             NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, DURABLE_ATTRIBUTE, true);
             NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, AUTO_DELETE_ATTRIBUTE, false);
