@@ -8,7 +8,8 @@
                 <add key="foo" value="foo" />
                 <add key="true" value="true" />
                 <add key="bar" value="bar" />
-                <add key="baz" value="baz" />
+                <add key="ttl" value="100" />
+                <add key="ha" value="all" />
             </name-values>
         </property>
     </object>
@@ -37,17 +38,25 @@
     <rabbit:queue id="arguments" name="arguments">
         <rabbit:queue-arguments>
             <entry key="foo" value="${bar}" />
-            <entry key="bar" value="${baz}" />
+            <entry key="x-message-ttl">
+                <value type="System.Int64">${ttl}</value>
+            </entry>
+            <entry key="x-ha-policy" value="${ha}" />
         </rabbit:queue-arguments>
     </rabbit:queue>
 
     <rabbit:queue id="anonymousArguments">
         <rabbit:queue-arguments>
             <entry key="foo" value="spam" />
-            <entry key="bar" value="more-spam" />
         </rabbit:queue-arguments>
     </rabbit:queue>
 
     <rabbit:queue id="anonymousOverride" durable="false" auto-delete="true" exclusive="true" />
+    
+    <rabbit:queue-arguments id="topLevelArgs">
+        <entry key="baz" value="qux" />
+    </rabbit:queue-arguments>
 
+    <rabbit:queue id="referencedArguments" queue-arguments="topLevelArgs" />
+    
 </objects>

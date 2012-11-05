@@ -62,12 +62,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         {
             var obj = this.objectFactory.GetObject<Queue>("arguments");
             Assert.That(obj.Arguments["foo"], Is.EqualTo("bar"));
-            Assert.That(obj.Arguments["bar"], Is.EqualTo("baz"));
+            Assert.That(obj.Arguments["x-message-ttl"], Is.EqualTo(100L));
+            Assert.That(obj.Arguments["x-ha-policy"], Is.EqualTo("all"));
         }
 
         /// <summary>The close object factory.</summary>
         [TestFixtureTearDown]
-        public void closeObjectFactory()
+        public void CloseObjectFactory()
         {
             if (this.objectFactory != null)
             {

@@ -18,6 +18,7 @@ using NUnit.Framework;
 using Spring.Core.IO;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Config;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Objects.Factory;
 using Spring.Objects.Factory.Xml;
@@ -51,7 +52,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test queue.</summary>
         [Test]
-        public void testQueue()
+        public void TestQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("foo");
             Assert.IsNotNull(queue);
@@ -63,7 +64,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test alias queue.</summary>
         [Test]
-        public void testAliasQueue()
+        public void TestAliasQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("alias");
             Assert.IsNotNull(queue);
@@ -73,7 +74,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test override queue.</summary>
         [Test]
-        public void testOverrideQueue()
+        public void TestOverrideQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("override");
             Assert.IsNotNull(queue);
@@ -85,7 +86,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test override alias queue.</summary>
         [Test]
-        public void testOverrideAliasQueue()
+        public void TestOverrideAliasQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("overrideAlias");
             Assert.IsNotNull(queue);
@@ -97,7 +98,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test anonymous queue.</summary>
         [Test]
-        public void testAnonymousQueue()
+        public void TestAnonymousQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("anonymous");
             Assert.IsNotNull(queue);
@@ -110,27 +111,35 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test arguments queue.</summary>
         [Test]
-        public void testArgumentsQueue()
+        public void TestArgumentsQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("arguments");
             Assert.IsNotNull(queue);
             Assert.AreEqual("bar", queue.Arguments["foo"]);
-            Assert.AreEqual("baz", queue.Arguments["bar"]);
+            Assert.AreEqual(100L, queue.Arguments.Get("x-message-ttl")); // <-- TODO: sbholen Fails because TypedStringValue does not get converted to System.Int64
+            Assert.AreEqual("all", queue.Arguments["x-ha-policy"]);
         }
 
         /// <summary>The test anonymous arguments queue.</summary>
         [Test]
-        public void testAnonymousArgumentsQueue()
+        public void TestAnonymousArgumentsQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("anonymousArguments");
             Assert.IsNotNull(queue);
             Assert.AreEqual("spam", queue.Arguments["foo"]);
-            Assert.AreEqual("more-spam", queue.Arguments["bar"]);
+        }
+
+        [Test]
+        public void TestReferencedArgumentsQueue()
+        {
+            var queue = this.objectFactory.GetObject<Queue>("referencedArguments");
+            Assert.IsNotNull(queue);
+            Assert.AreEqual("qux", queue.Arguments["baz"]);
         }
 
         /// <summary>The test illegal anonymous queue.</summary>
         [Test]
-        public void testIllegalAnonymousQueue()
+        public void TestIllegalAnonymousQueue()
         {
             var resourceName =
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"

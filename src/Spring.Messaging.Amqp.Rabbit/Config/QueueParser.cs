@@ -99,7 +99,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 }
 
                 var map = parser.ParseMapElementToTypedDictionary(argumentsElement, builder.RawObjectDefinition);
-
                 builder.AddConstructorArg(map);
             }
 

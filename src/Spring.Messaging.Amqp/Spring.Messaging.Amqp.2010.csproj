@@ -117,6 +117,7 @@
     <Compile Include="Support\Converter\ITypeMapper.cs" />
     <Compile Include="Support\Converter\JsonMessageConverter.cs" />
     <Compile Include="Support\Converter\MessageConversionException.cs" />
+    <Compile Include="Support\DictionaryExtensions.cs" />
     <Compile Include="UncategorizedAmqpException.cs" />
     <Compile Include="Utils\SerializationUtils.cs" />
     <Compile Include="Support\Converter\SimpleMessageConverter.cs" />

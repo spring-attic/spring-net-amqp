@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System.Collections;
+using System.Collections.Generic;
 #endregion
 
 namespace Spring.Messaging.Amqp.Core
@@ -50,7 +51,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>
         /// The arguments.
         /// </summary>
-        private readonly IDictionary arguments;
+        private readonly IDictionary<string, object> arguments;
 
         /// <summary>Initializes a new instance of the <see cref="Queue"/> class. The queue is durable, non-exclusive and non auto-delete.</summary>
         /// <param name="name">The name.</param>
@@ -74,7 +75,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="exclusive">The exclusive. True if we are declaring an exclusive queue (the queue will only be used by the declarer's connection).</param>
         /// <param name="autoDelete">The auto delete. True if the server should delete the queue when it is no longer in use.</param>
         /// <param name="arguments">The arguments used to declare the queue.</param>
-        public Queue(string name, bool durable, bool exclusive, bool autoDelete, IDictionary arguments)
+        public Queue(string name, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
         {
             this.name = name;
             this.durable = durable;
@@ -107,7 +108,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>
         /// Gets Arguments.
         /// </summary>
-        public IDictionary Arguments { get { return this.arguments; } }
+        public IDictionary<string, object> Arguments { get { return this.arguments; } }
 
         /// <summary>
         /// A String representation of the Queue.

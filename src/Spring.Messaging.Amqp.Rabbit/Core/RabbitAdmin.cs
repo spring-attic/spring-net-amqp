@@ -22,6 +22,7 @@ using Spring.Context;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
+using Spring.Messaging.Amqp.Support;
 using Spring.Objects.Factory;
 using Spring.Util;
 using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;
@@ -370,7 +371,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 if (!queue.Name.StartsWith("amq."))
                 {
                     Logger.Debug(m => m("Declaring Queue '{0}'", queue.Name));
-                    channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments);
+                    channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments.ToDictionary());
                 }
                 else if (Logger.IsDebugEnabled)
                 {

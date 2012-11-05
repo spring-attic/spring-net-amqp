@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System.Xml;
+using Spring.Messaging.Amqp.Support;
 using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
@@ -38,7 +39,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             var parser = new ObjectDefinitionParserHelper(parserContext);
             var map = parser.ParseMapElementToTypedDictionary(element, builder.RawObjectDefinition);
 
-            builder.AddConstructorArg(map);
+            builder.AddPropertyValue("SourceDictionary", map.ToDictionary());
         }
 
         /// <summary>The get object type name.</summary>

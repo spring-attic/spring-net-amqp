@@ -390,7 +390,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         private object parseValueElement(XmlElement ele, string defaultTypeName)
         {
             // It's a literal value.
-            string value = ele.Value;
+            string value = ele.InnerText;
             string specifiedTypeName = ele.Attributes[TYPE_ATTRIBUTE].Value;
             string typeName = specifiedTypeName;
             if (!StringUtils.HasText(typeName))
@@ -398,8 +398,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 typeName = defaultTypeName;
             }
 
-            TypedStringValue typedValue = this.buildTypedStringValue(value, typeName);
-            typedValue.TargetTypeName = specifiedTypeName;
+            var typedValue = this.buildTypedStringValue(value, typeName);
+            
+            // typedValue.TargetTypeName = specifiedTypeName;
             return typedValue;
         }
 
@@ -450,14 +451,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                 var reference = new RuntimeObjectReference(refName, toParent);
                 return reference;
             }
-                
-                
-                
-                
-                
-                
-                
-                
                 // else if (NodeNameEquals(ele, IDREF_ELEMENT)) {
                 // return parseIdRefElement(ele);
                 // }
