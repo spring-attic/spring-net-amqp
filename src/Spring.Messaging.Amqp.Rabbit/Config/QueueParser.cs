@@ -98,7 +98,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
                     parserContext.ReaderContext.ReportFatalException(element, "Queue may have either a queue-attributes attribute or element, but not both");
                 }
 
-                var map = parser.ParseMapElementToTypedDictionary(argumentsElement, builder.RawObjectDefinition);
+                var map = parser.ParseMapElement(argumentsElement, builder.RawObjectDefinition);
                 builder.AddConstructorArg(map);
             }
 

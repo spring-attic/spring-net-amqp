@@ -14,6 +14,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using Spring.Messaging.Amqp.Support;
@@ -38,14 +39,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         protected override void DoParse(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder)
         {
             var parser = new ObjectDefinitionParserHelper(parserContext);
-            var map = parser.ParseMapElementToTypedDictionary(element, builder.RawObjectDefinition);
+            var map = parser.ParseMapElement(element, builder.RawObjectDefinition);
 
-            builder.AddConstructorArg(map);
+            builder.AddPropertyValue("SourceDictionary", map);
         }
 
         /// <summary>The get object type name.</summary>
         /// <param name="element">The element.</param>
         /// <returns>The System.String.</returns>
-        protected override string GetObjectTypeName(XmlElement element) { return typeof(Dictionary<string, object>).FullName; }
+        protected override string GetObjectTypeName(XmlElement element) { return typeof(DictionaryFactoryObject).FullName; }
     }
 }

@@ -14,6 +14,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +27,7 @@ using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+using Spring.Objects.Factory;
 using Spring.Objects.Factory.Xml;
 #endregion
 
@@ -143,21 +145,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test incompatible tx atts.</summary>
         [Test]
-        [Ignore("TODO")]
         public void TestIncompatibleTxAtts()
         {
-            /*
-            try
-            {
-                new ClassPathXmlApplicationContext(getClass().getSimpleName() + "-fail-context.xml", getClass());
-                fail("Parse exception exptected");
-            }
-            catch (BeanDefinitionParsingException e)
-            {
-                assertTrue(e.getMessage().startsWith(
-                        "Configuration problem: Listener Container - cannot set channel-transacted with acknowledge='NONE'"));
-            }
-            */
+             var resourceName =
+                @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
+                + typeof(QueueParserTests).Name + "-fail-context.xml";
+            var resource = new AssemblyResource(resourceName);
+
+            Assert.Throws<ObjectDefinitionStoreException>(
+                () =>
+                {
+                    try
+                    {
+                        var result = new XmlObjectFactory(resource);
+                        Assert.Fail("Expected an exception.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Assert.That(ex.Message, Is.StringStarting("Configuration problem: Listener Container - cannot set channel-transacted with acknowledge='NONE'"));
+                        throw;
+                    }
+                },
+                "Expected an exception.");
         }
     }
 }

@@ -371,7 +371,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                 if (!queue.Name.StartsWith("amq."))
                 {
                     Logger.Debug(m => m("Declaring Queue '{0}'", queue.Name));
-                    channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments.ToDictionary());
+                    channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments);
                 }
                 else if (Logger.IsDebugEnabled)
                 {

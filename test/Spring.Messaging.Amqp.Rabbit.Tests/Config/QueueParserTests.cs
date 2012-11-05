@@ -116,7 +116,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             var queue = this.objectFactory.GetObject<Queue>("arguments");
             Assert.IsNotNull(queue);
             Assert.AreEqual("bar", queue.Arguments["foo"]);
-            Assert.AreEqual(100L, queue.Arguments.Get("x-message-ttl")); // <-- TODO: sbholen Fails because TypedStringValue does not get converted to System.Int64
+            Assert.AreEqual(100L, queue.Arguments["x-message-ttl"]);
             Assert.AreEqual("all", queue.Arguments["x-ha-policy"]);
         }
 

@@ -34,20 +34,12 @@
     <object id="adviceChain" type="System.Collections.Generic.List&lt;AopAlliance.Aop.IAdvice>">
         <constructor-arg name="collection" type="System.Collections.Generic.IEnumerable&lt;AopAlliance.Aop.IAdvice>">
             <list element-type="AopAlliance.Aop.IAdvice, Spring.Aop">
-                <ref object="testAdvice1" />
-                <ref object="testAdvice2" />
-                <ref object="testAdvice3" />
+                <object id="testAdvice1" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
+                <object id="testAdvice2" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
+                <object id="testAdvice3" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
             </list>
         </constructor-arg>
     </object>
-
-    <object id="testAdvice1" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
-    <object id="testAdvice2" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
-    <object id="testAdvice3" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
-
-    <!--<object id="testAdvice1" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
-    <object id="testAdvice2" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
-    <object id="testAdvice3" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />-->
   
     <object type="Spring.Messaging.Amqp.Rabbit.Core.RabbitAdmin, Spring.Messaging.Amqp.Rabbit">
         <constructor-arg name="connectionFactory" ref="connectionFactory" />

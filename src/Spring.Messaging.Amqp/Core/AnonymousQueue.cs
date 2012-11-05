@@ -35,6 +35,6 @@ namespace Spring.Messaging.Amqp.Core
 
         /// <summary>Initializes a new instance of the <see cref="AnonymousQueue"/> class.</summary>
         /// <param name="arguments">The arguments.</param>
-        public AnonymousQueue(IDictionary<string, object> arguments) : base(Guid.NewGuid().ToString(), false, true, true, arguments) { }
+        public AnonymousQueue(IDictionary arguments) : base(Guid.NewGuid().ToString(), false, true, true, arguments) { }
     }
 }
