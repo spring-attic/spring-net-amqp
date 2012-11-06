@@ -9,11 +9,11 @@ using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
-using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Rabbit.Tests.Connection;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
@@ -58,12 +58,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         public void TestReplyToOneDeep()
         {
             var mockConnectionFactory = new Mock<ConnectionFactory>();
-            var mockConnection = new Mock<RabbitMQ.Client.IConnection>();
+            var mockConnection = new Mock<IConnection>();
             var mockChannel = new Mock<IModel>();
 
             mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
             mockConnection.Setup(m => m.IsOpen).Returns(true);
             mockConnection.Setup(m => m.CreateModel()).Returns(mockChannel.Object);
+            mockChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new RabbitMQ.Client.Framing.v0_9_1.BasicProperties());
 
             var template = new RabbitTemplate(new SingleConnectionFactory(mockConnectionFactory.Object));
             var replyQueue = new Queue("new.replyTo");
@@ -94,123 +95,123 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             Assert.IsNotNull(basicProperties.Headers[RabbitTemplate.STACKED_CORRELATION_HEADER]);
         }
 
-        /*
-	[Test]
-	public void testReplyToTwoDeep()  {
-		ConnectionFactory mockConnectionFactory = mock(ConnectionFactory.class);
-		Connection mockConnection = mock(Connection.class);
-		Channel mockChannel = mock(Channel.class);
 
-		when(mockConnectionFactory.newConnection((ExecutorService) null)).thenReturn(mockConnection);
-		when(mockConnection.isOpen()).thenReturn(true);
-		when(mockConnection.createChannel()).thenReturn(mockChannel);
+        [Test]
+        public void TestReplyToTwoDeep()
+        {
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
+            var mockChannel = new Mock<IModel>();
 
-		final RabbitTemplate template = new RabbitTemplate(new SingleConnectionFactory(mockConnectionFactory));
-		Queue replyQueue = new Queue("new.replyTo");
-		template.setReplyQueue(replyQueue);
+            mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
+            mockConnection.Setup(m => m.IsOpen).Returns(true);
+            mockConnection.Setup(m => m.CreateModel()).Returns(mockChannel.Object);
+            mockChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new RabbitMQ.Client.Framing.v0_9_1.BasicProperties());
 
-		MessageProperties messageProperties = new MessageProperties();
-		messageProperties.setReplyTo("replyTo2");
-		messageProperties.setHeader(RabbitTemplate.STACKED_REPLY_TO_HEADER, "replyTo1");
-		messageProperties.setHeader(RabbitTemplate.STACKED_CORRELATION_HEADER, "a");
-		Message message = new Message("Hello, world!".getBytes(), messageProperties);
-		final List<BasicProperties> props = new ArrayList<BasicProperties>();
-		doAnswer(new Answer<Object>() {
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				BasicProperties basicProps = (BasicProperties) invocation.getArguments()[4];
-				props.add(basicProps);
-				MessageProperties springProps = new DefaultMessagePropertiesConverter()
-						.toMessageProperties(basicProps, null, "UTF-8");
-				Message replyMessage = new Message("!dlrow olleH".getBytes(), springProps);
-				template.onMessage(replyMessage);
-				return null;
-			}}
-		).when(mockChannel).basicPublish(Mockito.any(String.class),
-				Mockito.any(String.class), Mockito.anyBoolean(),
-				Mockito.anyBoolean(), Mockito.any(BasicProperties.class), Mockito.any(byte[].class));
-		Message reply = template.sendAndReceive(message);
+            var template = new RabbitTemplate(new SingleConnectionFactory(mockConnectionFactory.Object));
+            var replyQueue = new Queue("new.replyTo");
+            template.ReplyQueue = replyQueue;
 
-		Assert.AreEqual(1, props.size());
-		BasicProperties basicProperties = props.get(0);
-		Assert.AreEqual("new.replyTo", basicProperties.getReplyTo());
-		Assert.AreEqual("replyTo2:replyTo1", basicProperties.getHeaders().get(RabbitTemplate.STACKED_REPLY_TO_HEADER));
-		assertTrue(((String)basicProperties.getHeaders().get(RabbitTemplate.STACKED_CORRELATION_HEADER)).endsWith(":a"));
+            var messageProperties = new MessageProperties();
+            messageProperties.ReplyTo = "replyTo2";
+            messageProperties.SetHeader(RabbitTemplate.STACKED_REPLY_TO_HEADER, "replyTo1");
+            messageProperties.SetHeader(RabbitTemplate.STACKED_CORRELATION_HEADER, "a");
+            var message = new Message(Encoding.UTF8.GetBytes("Hello, world!"), messageProperties);
+            var props = new List<IBasicProperties>();
 
-		Assert.AreEqual("replyTo1", reply.getMessageProperties().getHeaders().get(RabbitTemplate.STACKED_REPLY_TO_HEADER));
-		Assert.AreEqual("a", reply.getMessageProperties().getHeaders().get(RabbitTemplate.STACKED_CORRELATION_HEADER));
-	}
+            mockChannel.Setup(m => m.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<byte[]>())).Callback<string, string, bool, bool, IBasicProperties, byte[]>
+                (
+                    (a1, a2, a3, a4, a5, a6) =>
+                    {
+                        var basicProps = a5;
+                        props.Add(basicProps);
+                        var springProps = new DefaultMessagePropertiesConverter().ToMessageProperties(basicProps, null, "UTF-8");
+                        var replyMessage = new Message(Encoding.UTF8.GetBytes("!dlrow olleH"), springProps);
+                        template.OnMessage(replyMessage);
+                    });
 
-	[Test]
-	public void testReplyToThreeDeep() {
-		ConnectionFactory mockConnectionFactory = mock(ConnectionFactory.class);
-		Connection mockConnection = mock(Connection.class);
-		Channel mockChannel = mock(Channel.class);
+            var reply = template.SendAndReceive(message);
 
-		when(mockConnectionFactory.newConnection((ExecutorService) null)).thenReturn(mockConnection);
-		when(mockConnection.isOpen()).thenReturn(true);
-		when(mockConnection.createChannel()).thenReturn(mockChannel);
+            Assert.AreEqual(1, props.Count);
+            var basicProperties = props[0];
+            Assert.AreEqual("new.replyTo", basicProperties.ReplyTo);
+            Assert.AreEqual("replyTo2:replyTo1", basicProperties.Headers[RabbitTemplate.STACKED_REPLY_TO_HEADER]);
+            Assert.IsTrue(((string)basicProperties.Headers[RabbitTemplate.STACKED_CORRELATION_HEADER]).EndsWith(":a"));
 
-		final RabbitTemplate template = new RabbitTemplate(new SingleConnectionFactory(mockConnectionFactory));
-		Queue replyQueue = new Queue("new.replyTo");
-		template.setReplyQueue(replyQueue);
+            Assert.AreEqual("replyTo1", reply.MessageProperties.Headers[RabbitTemplate.STACKED_REPLY_TO_HEADER]);
+            Assert.AreEqual("a", reply.MessageProperties.Headers[RabbitTemplate.STACKED_CORRELATION_HEADER]);
+        }
 
-		MessageProperties messageProperties = new MessageProperties();
-		messageProperties.setReplyTo("replyTo2");
-		messageProperties.setHeader(RabbitTemplate.STACKED_REPLY_TO_HEADER, "replyTo1");
-		messageProperties.setHeader(RabbitTemplate.STACKED_CORRELATION_HEADER, "a");
-		Message message = new Message("Hello, world!".getBytes(), messageProperties);
-		final List<BasicProperties> props = new ArrayList<BasicProperties>();
-		final AtomicInteger count = new AtomicInteger();
-		final List<String> nestedReplyTo = new ArrayList<String>();
-		final List<String> nestedReplyStack = new ArrayList<String>();
-		final List<String> nestedCorrelation = new ArrayList<String>();
-		doAnswer(new Answer<Object>() {
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				BasicProperties basicProps = (BasicProperties) invocation.getArguments()[4];
-				props.add(basicProps);
-				MessageProperties springProps = new DefaultMessagePropertiesConverter()
-						.toMessageProperties(basicProps, null, "UTF-8");
-				Message replyMessage = new Message("!dlrow olleH".getBytes(), springProps);
-				if (count.incrementAndGet() < 2) {
-					Message anotherMessage = new Message("Second".getBytes(), springProps);
-					replyMessage = template.sendAndReceive(anotherMessage);
-					nestedReplyTo.add(replyMessage.getMessageProperties().getReplyTo());
-					nestedReplyStack.add((String) replyMessage
-							.getMessageProperties().getHeaders()
-							.get(RabbitTemplate.STACKED_REPLY_TO_HEADER));
-					nestedCorrelation.add((String) replyMessage
-							.getMessageProperties().getHeaders()
-							.get(RabbitTemplate.STACKED_CORRELATION_HEADER));
-				}
-				template.onMessage(replyMessage);
-				return null;
-			}}
-		).when(mockChannel).basicPublish(Mockito.any(String.class),
-				Mockito.any(String.class), Mockito.anyBoolean(),
-				Mockito.anyBoolean(), Mockito.any(BasicProperties.class), Mockito.any(byte[].class));
-		Message reply = template.sendAndReceive(message);
-		Assert.IsNotNull(reply);
+        [Test]
+        public void TestReplyToThreeDeep()
+        {
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
+            var mockChannel = new Mock<IModel>();
 
-		Assert.AreEqual(2, props.size());
-		BasicProperties basicProperties = props.get(0);
-		Assert.AreEqual("new.replyTo", basicProperties.getReplyTo());
-		Assert.AreEqual("replyTo2:replyTo1", basicProperties.getHeaders().get(RabbitTemplate.STACKED_REPLY_TO_HEADER));
-		assertTrue(((String)basicProperties.getHeaders().get(RabbitTemplate.STACKED_CORRELATION_HEADER)).endsWith(":a"));
+            mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
+            mockConnection.Setup(m => m.IsOpen).Returns(true);
+            mockConnection.Setup(m => m.CreateModel()).Returns(mockChannel.Object);
+            mockChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new RabbitMQ.Client.Framing.v0_9_1.BasicProperties());
 
-		basicProperties = props.get(1);
-		Assert.AreEqual("new.replyTo", basicProperties.getReplyTo());
-		Assert.AreEqual("new.replyTo:replyTo2:replyTo1", basicProperties.getHeaders().get(RabbitTemplate.STACKED_REPLY_TO_HEADER));
-		assertTrue(((String)basicProperties.getHeaders().get(RabbitTemplate.STACKED_CORRELATION_HEADER)).endsWith(":a"));
+            var template = new RabbitTemplate(new SingleConnectionFactory(mockConnectionFactory.Object));
+            var replyQueue = new Queue("new.replyTo");
+            template.ReplyQueue = replyQueue;
 
-		Assert.AreEqual("replyTo1", reply.getMessageProperties().getHeaders().get(RabbitTemplate.STACKED_REPLY_TO_HEADER));
-		Assert.AreEqual("a", reply.getMessageProperties().getHeaders().get(RabbitTemplate.STACKED_CORRELATION_HEADER));
+            var messageProperties = new MessageProperties();
+            messageProperties.ReplyTo = "replyTo2";
+            messageProperties.SetHeader(RabbitTemplate.STACKED_REPLY_TO_HEADER, "replyTo1");
+            messageProperties.SetHeader(RabbitTemplate.STACKED_CORRELATION_HEADER, "a");
+            var message = new Message(Encoding.UTF8.GetBytes("Hello, world!"), messageProperties);
+            var props = new List<IBasicProperties>();
 
-		Assert.AreEqual(1, nestedReplyTo.size());
-		Assert.AreEqual(1, nestedReplyStack.size());
-		Assert.AreEqual(1, nestedCorrelation.size());
-		Assert.AreEqual("replyTo2:replyTo1", nestedReplyStack.get(0));
-		assertTrue(nestedCorrelation.get(0).endsWith(":a"));
+            var count = new AtomicInteger();
+            var nestedReplyTo = new List<string>();
+            var nestedReplyStack = new List<string>();
+            var nestedCorrelation = new List<string>();
 
-	}*/
+            mockChannel.Setup(m => m.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<byte[]>())).Callback<string, string, bool, bool, IBasicProperties, byte[]>
+                (
+                    (a1, a2, a3, a4, a5, a6) =>
+                    {
+                        var basicProps = a5;
+                        props.Add(basicProps);
+                        var springProps = new DefaultMessagePropertiesConverter().ToMessageProperties(basicProps, null, "UTF-8");
+                        var replyMessage = new Message(Encoding.UTF8.GetBytes("!dlrow olleH"), springProps);
+                        if (count.IncrementValueAndReturn() < 2)
+                        {
+                            var anotherMessage = new Message(Encoding.UTF8.GetBytes("Second"), springProps);
+                            replyMessage = template.SendAndReceive(anotherMessage);
+                            nestedReplyTo.Add(replyMessage.MessageProperties.ReplyTo);
+                            nestedReplyStack.Add((string)replyMessage.MessageProperties.Headers[RabbitTemplate.STACKED_REPLY_TO_HEADER]);
+                            nestedCorrelation.Add((string)replyMessage.MessageProperties.Headers[RabbitTemplate.STACKED_CORRELATION_HEADER]);
+                        }
+
+                        template.OnMessage(replyMessage);
+                    });
+
+            var reply = template.SendAndReceive(message);
+            Assert.IsNotNull(reply);
+
+            Assert.AreEqual(2, props.Count);
+            var basicProperties = props[0];
+            Assert.AreEqual("new.replyTo", basicProperties.ReplyTo);
+            Assert.AreEqual("replyTo2:replyTo1", basicProperties.Headers[RabbitTemplate.STACKED_REPLY_TO_HEADER]);
+            Assert.IsTrue(((string)basicProperties.Headers[RabbitTemplate.STACKED_CORRELATION_HEADER]).EndsWith(":a"));
+
+            basicProperties = props[1];
+            Assert.AreEqual("new.replyTo", basicProperties.ReplyTo);
+            Assert.AreEqual("new.replyTo:replyTo2:replyTo1", basicProperties.Headers[RabbitTemplate.STACKED_REPLY_TO_HEADER]);
+            Assert.IsTrue(((string)basicProperties.Headers[RabbitTemplate.STACKED_CORRELATION_HEADER]).EndsWith(":a"));
+
+            Assert.AreEqual("replyTo1", reply.MessageProperties.Headers[RabbitTemplate.STACKED_REPLY_TO_HEADER]);
+            Assert.AreEqual("a", reply.MessageProperties.Headers[RabbitTemplate.STACKED_CORRELATION_HEADER]);
+
+            Assert.AreEqual(1, nestedReplyTo.Count);
+            Assert.AreEqual(1, nestedReplyStack.Count);
+            Assert.AreEqual(1, nestedCorrelation.Count);
+            Assert.AreEqual("replyTo2:replyTo1", nestedReplyStack[0]);
+            Assert.IsTrue(nestedCorrelation[0].EndsWith(":a"));
+        }
     }
 }

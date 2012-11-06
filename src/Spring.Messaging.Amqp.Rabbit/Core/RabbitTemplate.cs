@@ -689,11 +689,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
                         Logger.Debug(m => m("Dropping replyTo header:{0} in favor of template's configured reply-queue:{1}", replyTo, this.replyQueue.Name));
                     }
 
-                    var springReplyTo = (string)message.MessageProperties.Headers[STACKED_REPLY_TO_HEADER];
+                    var springReplyTo = (string)message.MessageProperties.Headers.Get(STACKED_REPLY_TO_HEADER);
                     message.MessageProperties.SetHeader(STACKED_REPLY_TO_HEADER, this.PushHeaderValue(replyTo, springReplyTo));
 
                     message.MessageProperties.ReplyTo = this.replyQueue.Name;
-                    var correlation = (string)message.MessageProperties.Headers[STACKED_CORRELATION_HEADER];
+                    var correlation = (string)message.MessageProperties.Headers.Get(STACKED_CORRELATION_HEADER);
                     if (!string.IsNullOrWhiteSpace(correlation))
                     {
                         message.MessageProperties.SetHeader(STACKED_CORRELATION_HEADER, this.PushHeaderValue(messageTag, correlation));
@@ -922,7 +922,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <param name="message">The message.</param>
         public void OnMessage(Message message)
         {
-            var messageTag = (string)message.MessageProperties.Headers[STACKED_CORRELATION_HEADER];
+            var messageTag = (string)message.MessageProperties.Headers.Get(STACKED_CORRELATION_HEADER);
             if (messageTag == null)
             {
                 Logger.Error("No correlation header in reply");
@@ -932,7 +932,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
             var poppedHeaderValue = this.PopHeaderValue(messageTag);
             messageTag = poppedHeaderValue.PoppedValue;
             message.MessageProperties.SetHeader(STACKED_CORRELATION_HEADER, poppedHeaderValue.NewValue);
-            var springReplyTo = (string)message.MessageProperties.Headers[STACKED_REPLY_TO_HEADER];
+            var springReplyTo = (string)message.MessageProperties.Headers.Get(STACKED_REPLY_TO_HEADER);
             if (springReplyTo != null)
             {
                 poppedHeaderValue = this.PopHeaderValue(springReplyTo);
