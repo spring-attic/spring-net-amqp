@@ -121,8 +121,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         public void TestSendAndReceiveWithPostProcessor()
         {
             this.template.ConvertAndSend(
-                ROUTE, 
-                "message", 
+                ROUTE,
+                "message",
                 message =>
                 {
                     message.MessageProperties.ContentType = "text/other";
@@ -282,7 +282,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// Tests the receive in external transaction with rollback.
         /// </summary>
         [Test]
-        [Ignore("Need resolution from Rabbit Team RE: Transaction Rollback")]
         public void TestReceiveInExternalTransactionWithRollback()
         {
             var mockCallback = new Mock<ITransactionCallback>();
@@ -370,7 +369,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// Tests the send in external transaction with rollback.
         /// </summary>
         [Test]
-        [Ignore("Need resolution from Rabbit Team RE: Transaction Rollback")]
         public void TestSendInExternalTransactionWithRollback()
         {
             var mockCallback = new Mock<ITransactionCallback>();
@@ -442,6 +440,82 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             reply = template.Receive();
             Assert.AreEqual(null, reply);
         }
+
+        /*
+        
+        Not applicable as there is no .NET Executor equivalent
+        
+        [Test]
+        public void testAtomicSendAndReceiveExternalExecutor() 
+        {
+            var connectionFactory = new CachingConnectionFactory();
+            ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+            var execName = "make-sure-exec-passed-in";
+            exec.setBeanName(execName);
+            exec.afterPropertiesSet();
+            connectionFactory.setExecutor(exec);
+            final Field[] fields = new Field[1];
+            ReflectionUtils.doWithFields(RabbitTemplate.class, new FieldCallback() {
+                public void doWith(Field field) throws IllegalArgumentException,
+                        IllegalAccessException {
+                    field.setAccessible(true);
+                    fields[0] = field;
+                }
+            }, new FieldFilter() {
+                public boolean matches(Field field) {
+                    return field.getName().equals("logger");
+                }
+            });
+            Log logger = Mockito.mock(Log.class);
+            when(logger.isTraceEnabled()).thenReturn(true);
+            
+            final AtomicBoolean execConfiguredOk = new AtomicBoolean();
+            
+            doAnswer(new Answer<Object>(){
+                public Object answer(InvocationOnMock invocation) throws Throwable {
+                    String log = (String) invocation.getArguments()[0];
+                    if (log.startsWith("Message received") &&
+                            Thread.currentThread().getName().startsWith(execName)) {
+                        execConfiguredOk.set(true);
+                    }
+                    return null;
+                }
+            }).when(logger).trace(Mockito.anyString());
+            final RabbitTemplate template = new RabbitTemplate(connectionFactory);
+            ReflectionUtils.setField(fields[0], template, logger);
+            template.setRoutingKey(ROUTE);
+            template.setQueue(ROUTE);
+            ExecutorService executor = Executors.newFixedThreadPool(1);
+            // Set up a consumer to respond to our producer
+            Future<Message> received = executor.submit(new Callable<Message>() {
+            
+                public Message call() throws Exception {
+                    Message message = null;
+                    for (int i = 0; i < 10; i++) {
+                        message = template.receive();
+                        if (message != null) {
+                            break;
+                        }
+                        Thread.sleep(100L);
+                    }
+                    assertNotNull("No message received", message);
+                    template.send(message.getMessageProperties().getReplyTo(), message);
+                    return message;
+                }
+            
+            });
+            Message message = new Message("test-message".getBytes(), new MessageProperties());
+            Message reply = template.sendAndReceive(message);
+            assertEquals(new String(message.getBody()), new String(received.get(1000, TimeUnit.MILLISECONDS).getBody()));
+            assertNotNull("Reply is expected", reply);
+            assertEquals(new String(message.getBody()), new String(reply.getBody()));
+            // Message was consumed so nothing left on queue
+            reply = template.receive();
+            assertEquals(null, reply);
+            
+            assertTrue(execConfiguredOk.get());
+        }
+        */
 
         /// <summary>
         /// Tests the atomic send and receive with routing key.
@@ -659,6 +733,161 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             // Message was consumed so nothing left on queue
             result = (string)this.template.ReceiveAndConvert(ROUTE);
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public void TestAtomicSendAndReceiveWithConversionAndMessagePostProcessor()
+        {
+            var template = new RabbitTemplate(new CachingConnectionFactory());
+            template.RoutingKey = ROUTE;
+            template.Queue = ROUTE;
+            // ExecutorService executor = Executors.newFixedThreadPool(1);
+            // Set up a consumer to respond to our producer
+            var received = Task.Factory.StartNew(
+                () =>
+                {
+                    Message message = null;
+                    for (var i = 0; i < 10; i++)
+                    {
+                        message = template.Receive();
+                        if (message != null)
+                        {
+                            break;
+                        }
+                        Thread.Sleep(100);
+                    }
+                    Assert.IsNotNull(message, "No message received");
+                    template.Send(message.MessageProperties.ReplyTo, message);
+                    return (string)template.MessageConverter.FromMessage(message);
+                });
+
+            var result = (string)template.ConvertSendAndReceive(
+                (object)"message",
+                message =>
+                {
+                    try
+                    {
+                        byte[] newBody = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(message.Body).ToUpper());
+                        return new Message(newBody, message.MessageProperties);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new AmqpException("unexpected failure in test", e);
+                    }
+                });
+            var success = received.Wait(1000);
+            if (!success)
+            {
+                Assert.Fail("Timed out receiving the message.");
+            }
+
+            Assert.AreEqual("MESSAGE", received.Result);
+            Assert.AreEqual("MESSAGE", result);
+            // Message was consumed so nothing left on queue
+            result = (string)template.ReceiveAndConvert();
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public void TestAtomicSendAndReceiveWithConversionAndMessagePostProcessorUsingRoutingKey()
+        {
+            // ExecutorService executor = Executors.newFixedThreadPool(1);
+            // Set up a consumer to respond to our producer
+            var received = Task.Factory.StartNew(
+                () =>
+                {
+                    Message message = null;
+                    for (var i = 0; i < 10; i++)
+                    {
+                        message = template.Receive(ROUTE);
+                        if (message != null)
+                        {
+                            break;
+                        }
+                        Thread.Sleep(100);
+                    }
+                    Assert.IsNotNull(message, "No message received");
+                    template.Send(message.MessageProperties.ReplyTo, message);
+                    return (string)template.MessageConverter.FromMessage(message);
+                });
+
+            var result = (string)template.ConvertSendAndReceive(
+                ROUTE,
+                (object)"message",
+                message =>
+                {
+                    try
+                    {
+                        byte[] newBody = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(message.Body).ToUpper());
+                        return new Message(newBody, message.MessageProperties);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new AmqpException("unexpected failure in test", e);
+                    }
+                });
+            var success = received.Wait(1000);
+            if (!success)
+            {
+                Assert.Fail("Timed out receiving the message.");
+            }
+
+            Assert.AreEqual("MESSAGE", received.Result);
+            Assert.AreEqual("MESSAGE", result);
+            // Message was consumed so nothing left on queue
+            result = (string)template.ReceiveAndConvert(ROUTE);
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public void TestAtomicSendAndReceiveWithConversionAndMessagePostProcessorUsingExchangeAndRoutingKey()
+        {
+            // ExecutorService executor = Executors.newFixedThreadPool(1);
+            // Set up a consumer to respond to our producer
+            var received = Task.Factory.StartNew(
+                () =>
+                {
+                    Message message = null;
+                    for (var i = 0; i < 10; i++)
+                    {
+                        message = template.Receive(ROUTE);
+                        if (message != null)
+                        {
+                            break;
+                        }
+                        Thread.Sleep(100);
+                    }
+                    Assert.IsNotNull(message, "No message received");
+                    template.Send(message.MessageProperties.ReplyTo, message);
+                    return (string)template.MessageConverter.FromMessage(message);
+                });
+
+            var result = (string)template.ConvertSendAndReceive(
+                ROUTE,
+                (object)"message",
+                message =>
+                {
+                    try
+                    {
+                        byte[] newBody = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(message.Body).ToUpper());
+                        return new Message(newBody, message.MessageProperties);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new AmqpException("unexpected failure in test", e);
+                    }
+                });
+            var success = received.Wait(1000);
+            if (!success)
+            {
+                Assert.Fail("Timed out receiving the message.");
+            }
+
+            Assert.AreEqual("MESSAGE", received.Result);
+            Assert.AreEqual("MESSAGE", result);
+            // Message was consumed so nothing left on queue
+            result = (String)template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual(null, result);
         }
     }

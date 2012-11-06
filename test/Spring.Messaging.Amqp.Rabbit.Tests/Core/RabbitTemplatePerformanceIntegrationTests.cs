@@ -20,6 +20,8 @@ using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+using Spring.Transaction;
+using Spring.Transaction.Support;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
@@ -86,10 +88,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [SetUp]
         public void DeclareQueue()
         {
-            /*if (repeat.isInitialized()) {
-                // Important to prevent concurrent re-initialization
-                return;
-            }*/
+            // if (repeat.isInitialized()) {
+            // // Important to prevent concurrent re-initialization
+            // return;
+            // }
             this.connectionFactory = new CachingConnectionFactory();
             this.connectionFactory.ChannelCacheSize = 4;
             this.connectionFactory.Port = BrokerTestUtils.GetPort();
@@ -102,9 +104,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [TearDown]
         public void CleanUp()
         {
-            /*if (repeat.isInitialized()) {
-            //  return;
-            //}*/
+            // if (repeat.isInitialized()) {
+            // return;
+            // }
             if (this.connectionFactory != null)
             {
                 this.connectionFactory.Dispose();
@@ -145,5 +147,43 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             var result = (string)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual("message", result);
         }
+
+        /// <summary>The test send and receive external transacted.</summary>
+        [Test]
+        [Repeat(2000)]
+        public void TestSendAndReceiveExternalTransacted()
+        {
+            this.template.ChannelTransacted = true;
+            var transactionTemplate = new TransactionTemplate(new RabbitTemplatePerformanceIntegrationTestsTransactionManager()).Execute(
+                status =>
+                {
+                    this.template.ConvertAndSend(ROUTE, "message");
+                    return null;
+                });
+
+            this.template.ConvertAndSend(ROUTE, "message");
+            var result = (string)this.template.ReceiveAndConvert(ROUTE);
+            Assert.AreEqual("message", result);
+        }
+    }
+
+    internal class RabbitTemplatePerformanceIntegrationTestsTransactionManager : AbstractPlatformTransactionManager
+    {
+        /// <summary>The do begin.</summary>
+        /// <param name="transaction">The transaction.</param>
+        /// <param name="definition">The definition.</param>
+        protected override void DoBegin(object transaction, ITransactionDefinition definition) { }
+
+        /// <summary>The do commit.</summary>
+        /// <param name="status">The status.</param>
+        protected override void DoCommit(DefaultTransactionStatus status) { }
+
+        /// <summary>The do get transaction.</summary>
+        /// <returns>The System.Object.</returns>
+        protected override object DoGetTransaction() { return new object(); }
+
+        /// <summary>The do rollback.</summary>
+        /// <param name="status">The status.</param>
+        protected override void DoRollback(DefaultTransactionStatus status) { }
     }
 }
