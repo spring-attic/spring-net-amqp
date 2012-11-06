@@ -197,7 +197,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Gateways\" />
     <Folder Include="Properties\" />
     <Folder Include="Support\Converter\" />
   </ItemGroup>
