@@ -74,8 +74,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             messageProperties.ReplyTo = "replyTo1";
             var message = new Message(Encoding.UTF8.GetBytes("Hello, world!"), messageProperties);
             var props = new List<IBasicProperties>();
-            mockChannel.Setup(m => m.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<byte[]>())).Callback<string, string, bool, bool, IBasicProperties, byte[]>
-                (
+            mockChannel.Setup(m => m.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<byte[]>())).Callback<string, string, bool, bool, IBasicProperties, byte[]>(
                     (a1, a2, a3, a4, a5, a6) =>
                     {
                         var basicProps = a5;

@@ -131,6 +131,7 @@
     <Compile Include="Core\RabbitTemplateHeaderTests.cs" />
     <Compile Include="Core\RabbitTemplateIntegrationTests.cs" />
     <Compile Include="Core\RabbitTemplatePerformanceIntegrationTests.cs" />
+    <Compile Include="Core\RabbitTemplateTests.cs" />
     <Compile Include="Core\Support\RabbitGatewaySupportTests.cs" />
     <Compile Include="Core\TestConstants.cs" />
     <Compile Include="Listener\ActiveObjectCounterTests.cs" />
