@@ -59,7 +59,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
     /// <author>Mark Fisher</author>
     /// <author>Dave Syer</author>
     /// <author>Joe Fitzgerald (.NET)</author>
-    public class RabbitTemplate : RabbitAccessor, IRabbitOperations, IPublisherCallbackChannelListener
+    public class RabbitTemplate : RabbitAccessor, IRabbitOperations, IMessageListener, IPublisherCallbackChannelListener
     {
         /// <summary>
         /// The Logger.

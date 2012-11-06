@@ -147,9 +147,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void TestIncompatibleTxAtts()
         {
-             var resourceName =
+            var resourceName =
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
-                + typeof(QueueParserTests).Name + "-fail-context.xml";
+                + typeof(ListenerContainerParserTests).Name + "-fail-context.xml";
             var resource = new AssemblyResource(resourceName);
 
             Assert.Throws<ObjectDefinitionStoreException>(
@@ -162,7 +162,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                     }
                     catch (Exception ex)
                     {
-                        Assert.That(ex.Message, Is.StringStarting("Configuration problem: Listener Container - cannot set channel-transacted with acknowledge='NONE'"));
+                        Assert.That(ex.InnerException.Message, Is.StringStarting("Listener Container - cannot set channel-transacted with acknowledge='NONE'"));
                         throw;
                     }
                 },

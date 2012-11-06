@@ -48,14 +48,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             var resourceName =
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                 + typeof(ListenerContainerPlaceholderParserTests).Name + "-context.xml";
-
-            // var resource = new AssemblyResource(resourceName);
+            
             this.objectFactory = new XmlApplicationContext(resourceName);
         }
 
         /// <summary>The close object factory.</summary>
         [TestFixtureTearDown]
-        public void closeObjectFactory()
+        public void CloseObjectFactory()
         {
             if (this.objectFactory != null)
             {
@@ -65,8 +64,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test parse with queue names.</summary>
         [Test]
-        // TODO: this thing 
-        public void testParseWithQueueNames()
+        public void TestParseWithQueueNames()
         {
             var container = this.objectFactory.GetObject<SimpleMessageListenerContainer>("container1");
             Assert.AreEqual(AcknowledgeModeUtils.AcknowledgeMode.Manual, container.AcknowledgeMode);
