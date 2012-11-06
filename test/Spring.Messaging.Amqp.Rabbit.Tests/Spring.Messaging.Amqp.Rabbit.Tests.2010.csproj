@@ -128,6 +128,7 @@
     <Compile Include="Core\RabbitAdminIntegrationTests.cs" />
     <Compile Include="Core\RabbitAdminTests.cs" />
     <Compile Include="Core\RabbitBindingIntegrationTests.cs" />
+    <Compile Include="Core\RabbitTemplateHeaderTests.cs" />
     <Compile Include="Core\RabbitTemplateIntegrationTests.cs" />
     <Compile Include="Core\RabbitTemplatePerformanceIntegrationTests.cs" />
     <Compile Include="Core\Support\RabbitGatewaySupportTests.cs" />

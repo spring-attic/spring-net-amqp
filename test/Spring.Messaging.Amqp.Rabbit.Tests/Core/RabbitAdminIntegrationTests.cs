@@ -90,7 +90,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             // Force connection factory to forget that it has been used to delete the queue
             this.connectionFactory.Dispose();
-
             this.rabbitAdmin.ApplicationContext = this.context;
             this.rabbitAdmin.AutoStartup = true;
         }
@@ -367,105 +366,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                 Assert.True(rootCause.Message.Contains("operation not permitted on the default exchange"));
             }
         }
-
-        ///// <summary>
-        ///// Tests the startup with autodelete.
-        ///// </summary>
-        // [Test]
-        // public void TestStartupWithAutodelete()
-        // {
-        // var queue = new Queue("test.queue", false, true, true);
-        // this.context.ObjectFactory.RegisterSingleton("foo", queue);
-        // this.rabbitAdmin.AfterPropertiesSet();
-
-        // var connectionHolder = new AtomicReference<IConnection>();
-
-        // var rabbitTemplate = new RabbitTemplate(this.connectionFactory);
-        // var exists = rabbitTemplate.Execute(
-        // delegate(IModel channel)
-        // {
-        // var result = channel.QueueDeclarePassive(queue.Name);
-        // connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-        // return result != null;
-        // });
-        // Assert.True(exists, "Expected Queue to exist");
-
-        // Assert.True(this.QueueExists(connectionHolder.Value, queue));
-
-        // exists = rabbitTemplate.Execute(
-        // delegate(IModel channel)
-        // {
-        // var result = channel.QueueDeclarePassive(queue.Name);
-        // connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-        // return result != null;
-        // });
-        // Assert.True(exists, "Expected Queue to exist");
-
-        // this.connectionFactory.Dispose();
-
-        // // Broker now deletes queue (only verifiable in native API)
-        // Assert.False(this.QueueExists(null, queue));
-
-        // // Broker auto-deleted queue, but it is re-created by the connection listener
-        // exists = rabbitTemplate.Execute(
-        // delegate(IModel channel)
-        // {
-        // var result = channel.QueueDeclarePassive(queue.Name);
-        // connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-        // return result != null;
-        // });
-        // Assert.True(exists, "Expected Queue to exist");
-
-        // Assert.True(this.QueueExists(connectionHolder.Value, queue));
-        // Assert.True(this.rabbitAdmin.DeleteQueue(queue.Name));
-        // Assert.False(this.QueueExists(null, queue));
-        // }
-
-        ///// <summary>
-        ///// Tests the startup with non durable.
-        ///// </summary>
-        // [Test]
-        // public void TestStartupWithNonDurable()
-        // {
-        // var queue = new Queue("test.queue", false, false, false);
-        // this.context.ObjectFactory.RegisterSingleton("foo", queue);
-        // this.rabbitAdmin.AfterPropertiesSet();
-
-        // var connectionHolder = new AtomicReference<IConnection>();
-
-        // var rabbitTemplate = new RabbitTemplate(this.connectionFactory);
-
-        // // Force RabbitAdmin to initialize the queue
-        // var exists = rabbitTemplate.Execute(
-        // delegate(IModel channel)
-        // {
-        // var result = channel.QueueDeclarePassive(queue.Name);
-        // connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-        // return result != null;
-        // });
-        // Assert.True(exists, "Expected Queue to exist");
-
-        // Assert.True(this.QueueExists(connectionHolder.Value, queue));
-
-        // // simulate broker going down and coming back up...
-        // this.rabbitAdmin.DeleteQueue(queue.Name);
-        // this.connectionFactory.Dispose();
-        // Assert.False(this.QueueExists(null, queue));
-
-        // // Broker auto-deleted queue, but it is re-created by the connection listener
-        // exists = rabbitTemplate.Execute(
-        // delegate(IModel channel)
-        // {
-        // var result = channel.QueueDeclarePassive(queue.Name);
-        // connectionHolder.LazySet(((IChannelProxy)channel).GetConnection());
-        // return result != null;
-        // });
-        // Assert.True(exists, "Expected Queue to exist");
-
-        // Assert.True(this.QueueExists(connectionHolder.Value, queue));
-        // Assert.True(this.rabbitAdmin.DeleteQueue(queue.Name));
-        // Assert.False(this.QueueExists(null, queue));
-        // }
 
         /// <summary>Queues the exists.</summary>
         /// <param name="queue">The queue.</param>

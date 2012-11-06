@@ -88,8 +88,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             }
             catch (Exception ex)
             {
-                // TODO: Should this be an ArgumentException instead of an AmqpIOException??
-                // Assert.True(ex is ArgumentException, "Expecting an ArgumentException");
                 Assert.True(ex is AmqpIOException, "Expecting an AmqpIOException");
             }
         }
