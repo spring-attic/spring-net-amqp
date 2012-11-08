@@ -24,6 +24,7 @@ using RabbitMQ.Client;
 using Spring.Aop;
 using Spring.Aop.Framework;
 using Spring.Aop.Support;
+using Spring.Collections.Generic;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Support;
@@ -39,7 +40,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// A simple message listener container.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class SimpleMessageListenerContainer : AbstractMessageListenerContainer, IContainerDelegate
+    public class SimpleMessageListenerContainer : AbstractMessageListenerContainer
     {
         #region Logging
 
@@ -108,7 +109,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The consumers.
         /// </summary>
-        private IList<BlockingQueueConsumer> consumers;
+        private System.Collections.Generic.ISet<BlockingQueueConsumer> consumers;
 
         /// <summary>
         /// The consumers monitor.
@@ -388,7 +389,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     return;
                 }
 
-                var processors = new List<AsyncMessageProcessingConsumer>();
+                var processors = new HashSet<AsyncMessageProcessingConsumer>();
 
                 foreach (var consumer in this.consumers)
                 {
@@ -460,7 +461,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 if (this.consumers == null)
                 {
                     this.cancellationLock.Dispose();
-                    this.consumers = new List<BlockingQueueConsumer>();
+                    this.consumers = new HashSet<BlockingQueueConsumer>();
                     for (var i = 0; i < this.concurrentConsumers; i++)
                     {
                         var consumer = this.CreateBlockingQueueConsumer();
@@ -592,7 +593,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>Invoke the listener.</summary>
         /// <param name="channel">The channel.</param>
         /// <param name="message">The message.</param>
-        public override void InvokeListener(IModel channel, Message message) { this.proxy.InvokeListener(channel, message); }
+        public override void InvokeListener(IModel channel, Message message)
+        {
+            this.proxy.InvokeListener(channel, message);
+        }
+
+
+        internal void InvokeListenerBase(IModel channel, Message message)
+        {
+            base.InvokeListener(channel, message);
+        }
 
         /// <summary>Handle a startup failure.
         /// Wait for a period determined by the {@link #setRecoveryInterval(long) recoveryInterval} to give the container a
@@ -818,7 +828,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>Invoke the listener.</summary>
         /// <param name="channel">The channel.</param>
         /// <param name="message">The message.</param>
-        public void InvokeListener(IModel channel, Message message) { this.outer.InvokeListener(channel, message); }
+        public void InvokeListener(IModel channel, Message message) { this.outer.InvokeListenerBase(channel, message); }
     }
 
     /// <summary>The wrapped transaction exception.</summary>

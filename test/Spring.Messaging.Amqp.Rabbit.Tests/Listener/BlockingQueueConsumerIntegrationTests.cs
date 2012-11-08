@@ -26,7 +26,7 @@ using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
     /// <summary>
-    /// TODO: Update summary.
+    /// Blocking Queue Consumer Integration Tests
     /// </summary>
     [TestFixture]
     [Category(TestCategory.Integration)]

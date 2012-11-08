@@ -41,7 +41,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The queue. Ensure it is durable or it won't survive the broker restart.
@@ -79,7 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         private SimpleMessageListenerContainer container;
 
         // @Rule
-        public new static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
+        public static new EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
         /*
          * Ensure broker dies if a test fails (otherwise the erl process might have to be killed manually)
@@ -131,7 +131,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 Logger.Error("Could not delete directory. Assuming broker is running.");
             }
 
-            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);
+            // this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);
+            // this.brokerIsRunning.Apply();
         }
 
         /// <summary>
@@ -144,7 +145,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 var connectionFactory = new CachingConnectionFactory();
                 connectionFactory.ChannelCacheSize = this.concurrentConsumers;
+                connectionFactory.Port = BrokerTestUtils.GetAdminPort();
                 this.connectionFactory = connectionFactory;
+                this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);
+                this.brokerIsRunning.Apply();
             }
         }
 
@@ -179,7 +183,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Tests the listener recovers from dead broker.
         /// </summary>
         [Test]
-        [Ignore("Need to fix")]
         public void TestListenerRecoversFromDeadBroker()
         {
             var queues = this.brokerAdmin.GetQueues();
@@ -215,7 +218,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Logger.Info(string.Format("Concurrent Consumers After Container Start: {0}", this.container.ActiveConsumerCount));
             Assert.AreEqual(this.concurrentConsumers, this.container.ActiveConsumerCount);
             Logger.Info(string.Format("Latch.CurrentCount After Container Start: {0}", latch.CurrentCount));
-            var timeout = Math.Min(4 + this.messageCount / (4 * this.concurrentConsumers), 30);
+            var timeout = Math.Min((4 + this.messageCount) / (4 * this.concurrentConsumers), 30);
             Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
@@ -270,7 +273,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             var value = Encoding.UTF8.GetString(message.Body);
             Logger.Debug("Receiving: " + value);
-            Thread.Sleep(75);
             if (this.latch.CurrentCount > 0)
             {
                 this.latch.Signal();

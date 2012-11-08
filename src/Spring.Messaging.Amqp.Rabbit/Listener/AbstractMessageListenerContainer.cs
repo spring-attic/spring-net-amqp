@@ -33,7 +33,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     ///  An abstract message listener container.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public abstract class AbstractMessageListenerContainer : RabbitAccessor, IDisposable, IContainerDelegate, IObjectNameAware, ILifecycle, IInitializingObject
+    public abstract class AbstractMessageListenerContainer : RabbitAccessor, IDisposable, IObjectNameAware, ILifecycle, IInitializingObject
     {
         /// <summary>
         /// Logger available to subclasses.

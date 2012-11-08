@@ -130,6 +130,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Declares the queue.
         /// </summary>
+        [SetUp]
         public void DeclareQueue()
         {
             this.brokerIsRunning.Apply();
@@ -142,6 +143,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Clears this instance.
         /// </summary>
+        [TearDown]
         public void Clear()
         {
             // Wait for broker communication to finish before trying to stop container
@@ -159,10 +161,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [Test]
         public void TestPocoListenerSunnyDay()
         {
-            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoSunnyDayTest(latch, new MessageListenerAdapter(new SimplePocoListener(latch)));
-            this.Clear();
         }
 
         /// <summary>
@@ -171,10 +171,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [Test]
         public void TestListenerSunnyDay()
         {
-            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoSunnyDayTest(latch, new Listener(latch));
-            this.Clear();
         }
 
         /// <summary>
@@ -183,10 +181,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [Test]
         public void TestChannelAwareListenerSunnyDay()
         {
-            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoSunnyDayTest(latch, new ChannelAwareListener(latch));
-            this.Clear();
         }
 
         /// <summary>
@@ -195,10 +191,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [Test]
         public void TestPocoListenerWithException()
         {
-            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoListenerWithExceptionTest(latch, new MessageListenerAdapter(new SimplePocoListener(latch, true)));
-            this.Clear();
         }
 
         /// <summary>
@@ -207,10 +201,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [Test]
         public void TestListenerWithException()
         {
-            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoListenerWithExceptionTest(latch, new Listener(latch, true));
-            this.Clear();
         }
 
         /// <summary>
@@ -219,10 +211,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [Test]
         public void TestChannelAwareListenerWithException()
         {
-            this.DeclareQueue();
             var latch = new CountdownEvent(this.messageCount);
             this.DoListenerWithExceptionTest(latch, new ChannelAwareListener(latch, true));
-            this.Clear();
         }
 
         /// <summary>Does the sunny day test.</summary>
@@ -236,7 +226,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 this.template.ConvertAndSend(this.queue.Name, i + "foo");
             }
 
-            var waited = latch.Wait(new TimeSpan(0, 0, 0, Math.Max(2, this.messageCount / 40)));
+            Logger.Debug(m => m("Waiting {0} seconds for messages to be received.", Math.Max(2, this.messageCount / 20)));
+            var waited = latch.Wait(new TimeSpan(0, 0, 0, Math.Max(2, this.messageCount / 20)));
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
         }
@@ -265,7 +256,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             try
             {
-                var waited = latch.Wait(new TimeSpan(0, 0, 0, 5 + Math.Max(1, this.messageCount / 20)));
+                Logger.Debug(m => m("Waiting {0} seconds for messages to be received.", 5 + Math.Max(1, this.messageCount / 10)));
+                var waited = latch.Wait(new TimeSpan(0, 0, 0, 5 + Math.Max(1, this.messageCount / 10)));
                 Assert.True(waited, "Timed out waiting for message");
             }
             finally
@@ -357,6 +349,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 if (this.latch.CurrentCount > 0)
                 {
+                    Logger.Debug(m => m("Signaling latch. Current count: {0}", latch.CurrentCount));
                     this.latch.Signal();
                 }
             }
@@ -418,6 +411,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 if (this.latch.CurrentCount > 0)
                 {
+                    Logger.Debug(m => m("Signaling latch. Current count: {0}", latch.CurrentCount));
                     this.latch.Signal();
                 }
             }
@@ -472,6 +466,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 if (this.latch.CurrentCount > 0)
                 {
+                    Logger.Debug(m => m("Signaling latch. Current count: {0}", latch.CurrentCount));
                     this.latch.Signal();
                 }
             }
@@ -504,7 +499,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// </exception>
         /// <exception cref="T:Spring.Transaction.TransactionException">
         /// In the case of lookup or system errors.
-        ///   </exception>
+        /// </exception>
         protected override object DoGetTransaction() { return new object(); }
 
         /// <summary>Perform an actual rollback on the given transaction.</summary>

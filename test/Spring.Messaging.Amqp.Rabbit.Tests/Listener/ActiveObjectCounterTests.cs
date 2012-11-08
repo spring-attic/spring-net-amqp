@@ -87,7 +87,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Tests the timeout wait for locks.
         /// </summary>
         [Test]
-        // [Ignore("Need to fix this test")]
         public void TestTimeoutWaitForLocks()
         {
             var object1 = new object();
