@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
+
+    <rabbit:connection-factory id="connectionFactory"/>
+
+    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory" exchange="stop.start.exchange" routing-key="stop.start.binding" />
+
+    <rabbit:admin id="rabbitAdmin" connection-factory="connectionFactory" />
+
+    <rabbit:queue id="stop.start.queue" name="stop.start.queue" />
+
+    <rabbit:direct-exchange id="stop.start.exchange" name="stop.start.exchange">
+        <rabbit:bindings>
+            <rabbit:binding queue="stop.start.queue" key="stop.start.binding" />
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <rabbit:listener-container id="container" connection-factory="connectionFactory" concurrency="2" prefetch="5" auto-startup="false">
+        <rabbit:listener ref="listener" queue-names="stop.start.queue" />
+    </rabbit:listener-container>
+
+    <object id="listener" type="Spring.Messaging.Amqp.Rabbit.Tests.Listener.StopStartIntegrationTestListner, Spring.Messaging.Amqp.Rabbit.Tests">
+        <constructor-arg name="deliveries" ref="deliveries" />
+    </object>
+
+    <object id="deliveries" type="Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes.AtomicInteger, Spring.Messaging.Amqp.Rabbit" />
+</objects>

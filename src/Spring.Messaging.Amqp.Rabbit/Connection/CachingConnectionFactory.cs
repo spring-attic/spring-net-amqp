@@ -228,7 +228,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             }
 
             var handler = new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this);
-            Logger.Debug(m => m("Handler HashCode: {0}", handler.GetHashCode()));
             var factory = new ProxyFactory(typeof(IChannelProxy), handler);
             factory.Target = handler;
             factory.Interfaces = interfaces.ToArray();
@@ -447,7 +446,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 {
                     lock (this.channelList)
                     {
-                        if (this.channelList.Count < this.outer.ChannelCacheSize)
+                        if (!RabbitUtils.IsPhysicalCloseRequired() && this.channelList.Count < this.outer.ChannelCacheSize)
                         {
                             this.LogicalClose((IChannelProxy)invocation.Proxy);
 

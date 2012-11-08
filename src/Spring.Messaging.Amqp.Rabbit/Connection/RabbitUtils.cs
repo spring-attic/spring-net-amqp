@@ -16,6 +16,7 @@
 #region Using Directives
 using System;
 using System.IO;
+using System.Threading;
 using Common.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
@@ -40,6 +41,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// The Logger.
         /// </summary>
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
+        private static readonly ThreadLocal<bool> physicalCloseRequired = new ThreadLocal<bool>();
 
         /// <summary>Closes the given Rabbit Connection and ignore any thrown exception.</summary>
         /// <remarks>This is useful for typical 'finally' blocks in manual Rabbit
@@ -218,6 +221,34 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 throw ConvertRabbitAccessException(e);
             }
+        }
+
+        /**
+ * Sets a ThreadLocal indicating the channel MUST be physically closed.
+ * @param b
+ */
+        public static void SetPhysicalCloseRequired(bool b)
+        {
+            physicalCloseRequired.Value = b;
+        }
+
+        /**
+         * Gets and removes a ThreadLocal indicating the channel MUST be physically closed.
+         * @return
+         */
+        public static bool IsPhysicalCloseRequired()
+        {
+            var mustClose = physicalCloseRequired.Value;
+            if (mustClose == null)
+            {
+                mustClose = false;
+            }
+            else
+            {
+                physicalCloseRequired.Value = false;
+            }
+
+            return mustClose;
         }
     }
 }

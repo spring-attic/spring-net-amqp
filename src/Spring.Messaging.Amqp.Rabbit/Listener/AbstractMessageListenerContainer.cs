@@ -605,7 +605,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             catch (Exception e)
             {
-                this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
+                throw this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
             }
         }
 

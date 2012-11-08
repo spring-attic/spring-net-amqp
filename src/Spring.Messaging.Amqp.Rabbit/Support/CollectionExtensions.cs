@@ -55,7 +55,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
         /// <param name="element">The element.</param>
         /// <typeparam name="T">Type T</typeparam>
         /// <returns>The System.Boolean.</returns>
-        /// <exception cref="ThreadInterruptedException"></exception>
         public static bool Poll<T>(this ConcurrentQueue<T> queue, TimeSpan duration, out T element)
         {
             var deadline = DateTime.UtcNow.Add(duration);
