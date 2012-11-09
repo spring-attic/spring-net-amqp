@@ -26,37 +26,6 @@ using Spring.Transaction.Support;
 
 namespace Spring.Messaging.Amqp.Rabbit.Transaction
 {
-    /**
-/// <para>
-/// {@link org.springframework.transaction.PlatformTransactionManager} implementation for a single Rabbit
-/// {@link ConnectionFactory}. Binds a Rabbit Channel from the specified ConnectionFactory to the thread, potentially
-/// allowing for one thread-bound channel per ConnectionFactory.
-/// </para>
-/// <para>
-/// This local strategy is an alternative to executing Rabbit operations within, and synchronized with, external
-/// transactions. This strategy is <i>not</i> able to provide XA transactions, for example in order to share transactions
-/// between messaging and database access.
-/// </para>
-/// <para>
-/// Application code is required to retrieve the transactional Rabbit resources via
-/// {@link ConnectionFactoryUtils#getTransactionalResourceHolder(ConnectionFactory, boolean)} instead of a standard
-/// {@link Connection#createChannel()} call with subsequent Channel creation. Spring's {@link RabbitTemplate} will
-/// autodetect a thread-bound Channel and automatically participate in it.
-/// </para>
-/// <para>
-/// <b>The use of {@link CachingConnectionFactory} as a target for this transaction manager is strongly recommended.</b>
-/// CachingConnectionFactory uses a single Rabbit Connection for all Rabbit access in order to avoid the overhead of
-/// repeated Connection creation, as well as maintaining a cache of Channels. Each transaction will then share the same
-/// Rabbit Connection, while still using its own individual Rabbit Channel.
-/// </para>
-/// <para>
-/// Transaction synchronization is turned off by default, as this manager might be used alongside a datastore-based
-/// Spring transaction manager such as the JDBC {@link org.springframework.jdbc.datasource.DataSourceTransactionManager},
-/// which has stronger needs for synchronization.
-/// </para>
- * @author Dave Syer
- */
-
     /// <summary>
     /// A rabbit transaction manager.
     /// </summary>

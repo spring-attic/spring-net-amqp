@@ -138,6 +138,7 @@
     <Compile Include="Listener\Adapter\MessageListenerAdapterTests.cs" />
     <Compile Include="Listener\BlockingQueueConsumerIntegrationTests.cs" />
     <Compile Include="Listener\BlockingQueueConsumerTests.cs" />
+    <Compile Include="Listener\ExternalTxManagerTests.cs" />
     <Compile Include="Listener\MessageListenerBrokerInterruptionIntegrationTests.cs" />
     <Compile Include="Listener\MessageListenerContainerErrorHandlerIntegrationTests.cs" />
     <Compile Include="Listener\MessageListenerContainerLifecycleIntegrationTests.cs" />

@@ -70,7 +70,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <returns>
         /// The string representation of the message.
         /// </returns>
-        public new string ToString()
+        public override string ToString()
         {
             if (this.messageProperties == null)
             {

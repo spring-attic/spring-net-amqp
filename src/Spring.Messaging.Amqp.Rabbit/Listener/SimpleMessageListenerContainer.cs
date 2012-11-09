@@ -16,6 +16,7 @@
 #region Using Directives
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using AopAlliance.Aop;
@@ -28,6 +29,7 @@ using Spring.Collections.Generic;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Support;
+using Spring.Messaging.Amqp.Rabbit.Transaction;
 using Spring.Transaction;
 using Spring.Transaction.Interceptor;
 using Spring.Transaction.Support;
@@ -124,7 +126,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The transaction attribute.
         /// </summary>
-        private ITransactionAttribute transactionAttribute = new DefaultTransactionAttribute();
+        private ITransactionAttribute transactionAttribute = new DefaultTransactionAttribute() { TransactionIsolationLevel = IsolationLevel.Unspecified };
 
         /// <summary>
         /// The advice chain.
@@ -538,8 +540,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 try
                 {
-                    return (bool)new TransactionTemplate(this.transactionManager).Execute(
-                        delegate
+                    var transactionTemplate = new TransactionTemplate(this.transactionManager);
+                    transactionTemplate.PropagationBehavior = this.transactionAttribute.PropagationBehavior;
+                    transactionTemplate.TransactionIsolationLevel = IsolationLevel.Unspecified; // TODO: revert to transactionAttribute once we take dependency on SPRNET 2.0
+                    transactionTemplate.TransactionTimeout = this.transactionAttribute.TransactionTimeout;
+                    transactionTemplate.ReadOnly = this.transactionAttribute.ReadOnly;
+                    transactionTemplate.Name = this.transactionAttribute.Name;
+                    
+                    return (bool)transactionTemplate.Execute(
+                        status =>
                         {
                             ConnectionFactoryUtils.BindResourceToTransaction(new RabbitResourceHolder(consumer.Channel, false), this.ConnectionFactory, true);
                             return this.DoReceiveAndExecute(consumer);

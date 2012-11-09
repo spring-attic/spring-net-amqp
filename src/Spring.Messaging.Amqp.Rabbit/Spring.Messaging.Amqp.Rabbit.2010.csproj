@@ -162,6 +162,7 @@
     <Compile Include="Threading\AtomicTypes\AtomicBoolean.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicInteger.cs" />
     <Compile Include="Threading\AtomicTypes\AtomicReference.cs" />
+    <Compile Include="Transaction\TransactionTemplateFactory.cs" />
     <Compile Include="Transaction\RabbitTransactionManager.cs" />
   </ItemGroup>
   <ItemGroup>

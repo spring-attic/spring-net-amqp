@@ -204,7 +204,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 try
                 {
-                    channel.Close();
+                    if (channel != ConnectionFactoryUtils.GetConsumerChannel())
+                    {
+                        channel.Close();
+                    }
+                    else
+                    {
+                        Logger.Debug(m => m("Skipping close of consumer channel: {0}", channel.ToString()));
+                    }
                 }
                 catch (Exception ex)
                 {

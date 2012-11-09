@@ -175,7 +175,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var messageProperties = this.messagePropertiesConverter.ToMessageProperties(delivery.Properties, envelope, "UTF-8");
             messageProperties.MessageCount = 0;
             var message = new Message(body, messageProperties);
-            Logger.Debug(m => m("Received message: {0}", message));
+            Logger.Debug(m => m("Received message: {0}", message.ToString()));
 
             this.deliveryTags.AddOrUpdate(messageProperties.DeliveryTag);
             return message;
