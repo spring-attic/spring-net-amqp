@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Spring.Messaging.Amqp</id>
+    <version>0.9.9.2000</version>
+    <title>Spring.Messaging.Amqp</title>
+    <authors>SpringSource</authors>
+    <owners>SpringSource</owners>
+    <licenseUrl>http://www.springframework.net/license.html</licenseUrl>
+    <projectUrl>http://www.springframework.net/</projectUrl>
+    <iconUrl>http://springframework.net/images/SpringSource_Leaves100x100.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions. We provide a "template" as a high-level abstraction for sending and receiving messages. We also provide support for Message-driven POCOs. These libraries facilitate management of AMQP resources while promoting the use of dependency injection and declarative configuration.</description>
+    <summary>The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions. We provide a "template" as a high-level abstraction for sending and receiving messages. We also provide support for Message-driven POCOs. These libraries facilitate management of AMQP resources while promoting the use of dependency injection and declarative configuration.</summary>
+    <language>en-US</language>
+    <dependencies>
+      <dependency id="Common.Logging" version="2.1.1" />
+      <dependency id="Spring.Core" version="1.3.2" />
+      <dependency id="Newtonsoft.Json" version="4.5.9" />
+    </dependencies>
+  </metadata>
+</package>
