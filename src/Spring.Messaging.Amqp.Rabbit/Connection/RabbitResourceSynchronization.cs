@@ -23,7 +23,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// Callback for resource cleanup at the end of a non-native RabbitMQ transaction (e.g. when participating in a
     /// JtaTransactionManager transaction).
     /// </summary>
-    internal class RabbitResourceSynchronization : TransactionSynchronizationAdapter
+    internal class RabbitResourceSynchronization : ResourceHolderSynchronization<RabbitResourceHolder, object>
     {
         /// <summary>
         /// </summary>
@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <param name="resourceHolder">The resource holder.</param>
         /// <param name="resourceKey">The resource key.</param>
         /// <param name="transacted">The transacted.</param>
-        public RabbitResourceSynchronization(RabbitResourceHolder resourceHolder, object resourceKey, bool transacted)
+        public RabbitResourceSynchronization(RabbitResourceHolder resourceHolder, object resourceKey, bool transacted) : base(resourceHolder, resourceKey)
         {
             // super(resourceHolder, resourceKey);
             this.resourceHolder = resourceHolder;
@@ -50,15 +50,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <returns>
         /// True if resources should be released; False if not.
         /// </returns>
-        protected bool ShouldReleaseBeforeCompletion() { return !this.transacted; }
+        protected override bool ShouldReleaseBeforeCompletion() { return !this.transacted; }
 
         /// <summary>Process resources after commit.</summary>
         /// <param name="resourceHolder">The resource holder.</param>
-        protected void ProcessResourceAfterCommit(RabbitResourceHolder resourceHolder) { resourceHolder.CommitAll(); }
+        protected override void ProcessResourceAfterCommit(RabbitResourceHolder resourceHolder) { resourceHolder.CommitAll(); }
 
         /// <summary>Actions to be done after completion.</summary>
         /// <param name="status">The status.</param>
-        public void AfterCompletion(int status)
+        public override void AfterCompletion(TransactionSynchronizationStatus status)
         {
             if (status != (int)TransactionSynchronizationStatus.Committed)
             {
@@ -70,12 +70,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 this.resourceHolder.SynchronizedWithTransaction = false;
             }
 
-            this.AfterCompletion((TransactionSynchronizationStatus)status);
+            base.AfterCompletion(status);
         }
 
         /// <summary>Release the resource.</summary>
         /// <param name="resourceHolder">The resource holder.</param>
         /// <param name="resourceKey">The resource key.</param>
-        protected void ReleaseResource(RabbitResourceHolder resourceHolder, object resourceKey) { ConnectionFactoryUtils.ReleaseResources(resourceHolder); }
+        protected override void ReleaseResource(RabbitResourceHolder resourceHolder, object resourceKey) { ConnectionFactoryUtils.ReleaseResources(resourceHolder); }
     }
 }

@@ -30,7 +30,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// </summary>
     /// <author>Mark Pollack</author>
     /// <author>Joe Fitzgerald (.NET)</author>
-    public class RabbitResourceHolder : ResourceHolderSupport
+    public class RabbitResourceHolder : RabbitResourceHolderSupport
     {
         /// <summary>
         /// The Logger.

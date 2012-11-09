@@ -119,10 +119,13 @@
     <Compile Include="Connection\IConnectionListener.cs" />
     <Compile Include="Connection\IConnectionProxy.cs" />
     <Compile Include="Connection\IResourceFactory.cs" />
+    <Compile Include="Connection\IResourceHolder.cs" />
     <Compile Include="Connection\RabbitResourceHolder.cs" />
+    <Compile Include="Connection\RabbitResourceHolderSupport.cs" />
     <Compile Include="Connection\RabbitResourceSynchronization.cs" />
     <Compile Include="Connection\RabbitUtils.cs" />
     <Compile Include="Connection\ResourceFactory.cs" />
+    <Compile Include="Connection\ResourceHolderSynchronization.cs" />
     <Compile Include="Connection\SimpleConnection.cs" />
     <Compile Include="Core\ChannelCallbackDelegate.cs" />
     <Compile Include="Core\IChannelAwareMessageListener.cs" />

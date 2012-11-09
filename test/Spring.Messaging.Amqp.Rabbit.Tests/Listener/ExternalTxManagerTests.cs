@@ -127,6 +127,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             container.Stop();
         }
+
+
     }
 
     internal class DummyTxManager : AbstractPlatformTransactionManager
@@ -145,7 +147,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>The do commit.</summary>
         /// <param name="status">The status.</param>
-        protected override void DoCommit(DefaultTransactionStatus status) { }
+        protected override void DoCommit(DefaultTransactionStatus status) {  }
 
         /// <summary>The do get transaction.</summary>
         /// <returns>The System.Object.</returns>
