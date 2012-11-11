@@ -21,6 +21,7 @@ using Common.Logging;
 using NUnit.Framework;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener;
@@ -49,9 +50,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.None, false, 1, false)]
     [TestFixture(300, 4, AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 10, false)]
     [Category(TestCategory.Integration)]
-    public class SimpleMessageListenerContainerIntegrationTests : AbstractRabbitIntegrationTest
+    public class SimpleMessageListenerContainerIntegrationTests
     {
-        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
+        private static bool hasFixtureSetupBeenRun = false;
 
         private readonly Queue queue = new Queue("test.queue");
 
@@ -61,8 +64,47 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         private readonly AcknowledgeModeUtils.AcknowledgeMode acknowledgeMode;
 
+        public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
+
+        protected static RabbitBrokerAdmin brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin();
+
+        /// <summary>
+        /// Determines if the broker is running.
+        /// </summary>
+        protected BrokerRunning brokerIsRunning = BrokerRunning.IsRunning();
+
         #region Fixture Setup and Teardown
 
+        [TestFixtureSetUp]
+        public void DerivedSetup()
+        {
+            if (!hasFixtureSetupBeenRun)
+            {
+                try
+                {
+                    if (environment.IsActive())
+                    {
+                        // Set up broker admin for non-root user
+                        // this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(); // "rabbit@LOCALHOST", 5672);
+                        brokerAdmin.StartNode();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("An error occurred during SetUp", ex);
+                    Assert.Fail("An error occurred during SetUp.");
+                }
+
+                if (!this.brokerIsRunning.Apply())
+                {
+                    Assert.Ignore("Rabbit broker is not running. Ignoring integration test fixture.");
+                }
+
+                hasFixtureSetupBeenRun = true;
+            }
+        }
+
+        /*
         /// <summary>
         /// Code to execute before fixture setup.
         /// </summary>
@@ -82,6 +124,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Code to execute after fixture teardown.
         /// </summary>
         public override void AfterFixtureTearDown() { }
+         * */
         #endregion
 
         private readonly int messageCount;
@@ -148,7 +191,29 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             // Wait for broker communication to finish before trying to stop container
             Thread.Sleep(300);
-            Logger.Debug("Shutting down at end of test");
+            Logger.Debug(m => m("Shutting down at end of test"));
+            
+            try
+            {
+                if (environment.IsActive())
+                {
+                    // Set up broker admin for non-root user
+                    // this.brokerAdmin = BrokerTestUtils.GetRabbitBrokerAdmin(); // "rabbit@LOCALHOST", 5672);
+                    brokerAdmin.StartNode();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("An error occurred during SetUp", ex);
+                Assert.Fail("An error occurred during SetUp.");
+            }
+
+            if (!this.brokerIsRunning.Apply())
+            {
+                Assert.Ignore("Rabbit broker is not running. Ignoring integration test fixture.");
+            }
+
+            hasFixtureSetupBeenRun = true;;
             if (this.container != null)
             {
                 this.container.Shutdown();
@@ -226,8 +291,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 this.template.ConvertAndSend(this.queue.Name, i + "foo");
             }
 
-            Logger.Debug(m => m("Waiting {0} seconds for messages to be received.", Math.Max(2, this.messageCount / 20)));
-            var waited = latch.Wait(new TimeSpan(0, 0, 0, Math.Max(2, this.messageCount / 20)));
+            Logger.Debug(m => m("Waiting {0} seconds for messages to be received.", (5 + Math.Max(2, this.messageCount / 20)) * 2));
+            var waited = latch.Wait(new TimeSpan(0, 0, 0, (5 + Math.Max(2, this.messageCount / 20)) * 2));
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
         }

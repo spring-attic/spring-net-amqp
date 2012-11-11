@@ -88,6 +88,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// </summary>
         // Not used - replaced with System.Threading.Tasks.
         // private IExecutor executor;
+
         /// <summary>
         /// The node name.
         /// </summary>
@@ -379,74 +380,45 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
             Logger.Info("Starting Rabbit Application.");
 
-            /* TODO: Java version does this asynchronously, and we could do this using a Task. We've simplified this for now. 
-               If integration tests are hanging, this may be why. See commented out code below for beginnings of alternate
-               implementation. */
-            this.ExecuteAndConvertRpc<object>("rabbit", "start");
-        }
-
-        #region Alternate StartBrokerApplication Implementation - System.Threading.Tasks
-        /*public void StartBrokerApplication()
-    {
-        var status = this.Status;
-        if (status.IsReady)
-        {
-            Logger.Info("Rabbit Application already running.");
-            return;
-        }
-        if (!status.IsAlive)
-        {
-            Logger.Info("Rabbit Process not running.");
-            this.StartNode();
-            return;
-        }
-        Logger.Info("Starting Rabbit Application.");
-
-
-        using (var cancelTokenSource = new CancellationTokenSource())
-        {
-            var ct = cancelTokenSource.Token;
-
             // This call in particular seems to be prone to hanging, so do it in the background...
-            using (var latch = new CountdownEvent(1))
+            using (var cancelTokenSource = new CancellationTokenSource())
             {
-                var result = Task.Factory.StartNew(() =>
-                                                       {
-                                                           try
-                                                           {
-                                                               return this.ExecuteAndConvertRpc<object>("rabbit", "start");
-                                                           }
-                                                           finally
-                                                           {
-                                                               latch.Signal();
-                                                           }
-                                                       }, ct);
-                var started = false;
+                var ct = cancelTokenSource.Token;
+                var latch = new CountdownEvent(1);
+                var executor = new Task<object>(
+                () =>
+                {
+                    try
+                    {
+                        return this.ExecuteAndConvertRpc<object>("rabbit", "start");
+                    }
+                    finally
+                    {
+                        latch.Signal();
+                    }
+                }, ct);
+                executor.Start();
+                bool started = false;
                 try
                 {
-                    result.Wait((int) timeout, ct);
-                    started = latch.Wait(new TimeSpan(0, 0, 0, 0, (int) timeout), ct);
+                    started = latch.Wait(new TimeSpan(0, 0, 0, 0, (int)timeout));
                 }
-                catch (AggregateException e)
+                catch (ThreadInterruptedException e)
                 {
-                    if (e.InnerException is OperationCanceledException)
-                    {
-                        Logger.Debug("Task Cancelled");
-                    }
+                    Thread.CurrentThread.Interrupt();
+                    cancelTokenSource.Cancel();
                     return;
                 }
 
-                if (this.timeout > 0 && started)
+                if (timeout > 0 && started)
                 {
-                    if (!this.WaitForReadyState() && !result.IsCompleted)
+                    if (!WaitForReadyState() && !executor.IsCompleted)
                     {
-                        cancelTokenSource.Cancel();
+                        cancelTokenSource.Cancel(true);
                     }
                 }
             }
         }
-    }*/
-        #endregion
 
         /// <summary>
         /// Stops the broker application.
