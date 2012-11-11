@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
-    
+
     <rabbit:queue id="foo" name="foo" />
 
     <rabbit:queue id="override" name="override" durable="true" auto-delete="true" exclusive="true" />
@@ -35,5 +35,5 @@
     </rabbit:queue-arguments>
 
     <rabbit:queue id="referencedArguments" queue-arguments="topLevelArgs" />
-    
+
 </objects>

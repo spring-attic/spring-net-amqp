@@ -25,11 +25,9 @@ using RabbitMQ.Client;
 using Spring.Aop;
 using Spring.Aop.Framework;
 using Spring.Aop.Support;
-using Spring.Collections.Generic;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Support;
-using Spring.Messaging.Amqp.Rabbit.Transaction;
 using Spring.Transaction;
 using Spring.Transaction.Interceptor;
 using Spring.Transaction.Support;
@@ -111,7 +109,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The consumers.
         /// </summary>
-        private System.Collections.Generic.ISet<BlockingQueueConsumer> consumers;
+        private ISet<BlockingQueueConsumer> consumers;
 
         /// <summary>
         /// The consumers monitor.
@@ -126,7 +124,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The transaction attribute.
         /// </summary>
-        private ITransactionAttribute transactionAttribute = new DefaultTransactionAttribute() { TransactionIsolationLevel = IsolationLevel.Unspecified };
+        private ITransactionAttribute transactionAttribute = new DefaultTransactionAttribute { TransactionIsolationLevel = IsolationLevel.Unspecified };
 
         /// <summary>
         /// The advice chain.
@@ -546,7 +544,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     transactionTemplate.TransactionTimeout = this.transactionAttribute.TransactionTimeout;
                     transactionTemplate.ReadOnly = this.transactionAttribute.ReadOnly;
                     transactionTemplate.Name = this.transactionAttribute.Name;
-                    
+
                     return (bool)transactionTemplate.Execute(
                         status =>
                         {
@@ -602,16 +600,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>Invoke the listener.</summary>
         /// <param name="channel">The channel.</param>
         /// <param name="message">The message.</param>
-        public override void InvokeListener(IModel channel, Message message)
-        {
-            this.proxy.InvokeListener(channel, message);
-        }
+        public override void InvokeListener(IModel channel, Message message) { this.proxy.InvokeListener(channel, message); }
 
-
-        internal void InvokeListenerBase(IModel channel, Message message)
-        {
-            base.InvokeListener(channel, message);
-        }
+        internal void InvokeListenerBase(IModel channel, Message message) { base.InvokeListener(channel, message); }
 
         /// <summary>Handle a startup failure.
         /// Wait for a period determined by the {@link #setRecoveryInterval(long) recoveryInterval} to give the container a

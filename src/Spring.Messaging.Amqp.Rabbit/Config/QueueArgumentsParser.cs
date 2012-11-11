@@ -14,10 +14,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System.Collections;
-using System.Collections.Generic;
 using System.Xml;
-using Spring.Messaging.Amqp.Support;
 using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;

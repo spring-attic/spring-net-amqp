@@ -65,6 +65,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.IsNull(ReflectionUtils.GetInstanceFieldValue(template, "confirmCallback"));
         }
 
+        /// <summary>The test template with callbacks.</summary>
         [Test]
         public void TestTemplateWithCallbacks()
         {
@@ -85,6 +86,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.True(template.MessageConverter is SimpleMessageConverter);
         }
 
+        /// <summary>The test with reply q.</summary>
         [Test]
         public void TestWithReplyQ()
         {
@@ -107,11 +109,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         }
     }
 
+    /// <summary>The mock callback factory.</summary>
     public class MockCallbackFactory
     {
-        public T GetMock<T>() where T : class
-        {
-            return new Mock<T>().Object;
-        }
+        /// <summary>The get mock.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>The T.</returns>
+        public T GetMock<T>() where T : class { return new Mock<T>().Object; }
     }
 }

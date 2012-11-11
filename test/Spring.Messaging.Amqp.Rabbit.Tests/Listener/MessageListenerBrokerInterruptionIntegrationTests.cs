@@ -41,7 +41,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The queue. Ensure it is durable or it won't survive the broker restart.
@@ -79,7 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         private SimpleMessageListenerContainer container;
 
         // @Rule
-        public static new EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
+        public new static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
         /*
          * Ensure broker dies if a test fails (otherwise the erl process might have to be killed manually)

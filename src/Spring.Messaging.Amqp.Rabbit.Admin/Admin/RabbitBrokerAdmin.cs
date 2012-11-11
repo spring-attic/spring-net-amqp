@@ -88,7 +88,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// </summary>
         // Not used - replaced with System.Threading.Tasks.
         // private IExecutor executor;
-
         /// <summary>
         /// The node name.
         /// </summary>
@@ -386,22 +385,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                 var ct = cancelTokenSource.Token;
                 var latch = new CountdownEvent(1);
                 var executor = new Task<object>(
-                () =>
-                {
-                    try
+                    () =>
                     {
-                        return this.ExecuteAndConvertRpc<object>("rabbit", "start");
-                    }
-                    finally
-                    {
-                        latch.Signal();
-                    }
-                }, ct);
+                        try
+                        {
+                            return this.ExecuteAndConvertRpc<object>("rabbit", "start");
+                        }
+                        finally
+                        {
+                            latch.Signal();
+                        }
+                    }, 
+                    ct);
                 executor.Start();
                 bool started = false;
                 try
                 {
-                    started = latch.Wait(new TimeSpan(0, 0, 0, 0, (int)timeout));
+                    started = latch.Wait(new TimeSpan(0, 0, 0, 0, (int)this.timeout));
                 }
                 catch (ThreadInterruptedException e)
                 {
@@ -410,9 +410,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
                     return;
                 }
 
-                if (timeout > 0 && started)
+                if (this.timeout > 0 && started)
                 {
-                    if (!WaitForReadyState() && !executor.IsCompleted)
+                    if (!this.WaitForReadyState() && !executor.IsCompleted)
                     {
                         cancelTokenSource.Cancel(true);
                     }

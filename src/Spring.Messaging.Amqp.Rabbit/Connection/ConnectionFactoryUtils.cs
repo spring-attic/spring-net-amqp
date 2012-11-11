@@ -62,6 +62,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             consumerChannel.Value = null;
         }
 
+        /// <summary>The get consumer channel.</summary>
+        /// <returns>The RabbitMQ.Client.IModel.</returns>
         public static IModel GetConsumerChannel() { return consumerChannel.Value; }
 
         /// <summary>Determine whether the given RabbitMQ Channel is transactional, that is, bound to the current thread by Spring's transaction facilities.</summary>

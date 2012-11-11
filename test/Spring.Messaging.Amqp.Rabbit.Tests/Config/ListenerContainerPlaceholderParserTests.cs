@@ -48,7 +48,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             var resourceName =
                 @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
                 + typeof(ListenerContainerPlaceholderParserTests).Name + "-context.xml";
-            
+
             this.objectFactory = new XmlApplicationContext(resourceName);
         }
 

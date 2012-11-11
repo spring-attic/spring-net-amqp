@@ -112,10 +112,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         }
     }
 
+    /// <summary>The test simple message listener container.</summary>
     public class TestSimpleMessageListenerContainer : SimpleMessageListenerContainer
     {
+        /// <summary>Initializes a new instance of the <see cref="TestSimpleMessageListenerContainer"/> class.</summary>
+        /// <param name="connectionFactory">The connection factory.</param>
         public TestSimpleMessageListenerContainer(IConnectionFactory connectionFactory) : base(connectionFactory) { }
 
+        /// <summary>The do start.</summary>
         protected override void DoStart()
         {
             // Do Nothing

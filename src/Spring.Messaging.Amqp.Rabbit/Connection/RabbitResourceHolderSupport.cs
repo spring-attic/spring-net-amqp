@@ -59,7 +59,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <returns>The deadline as a System.DateTime.</returns>
         public DateTime Deadline { get { return this.deadline; } }
 
-
         /// <summary>Return the time to live for this object in seconds. Rounds up eagerly, e.g. 9.00001 returns as 10.</summary>
         /// <returns>Number of seconds until expiration.</returns>
         public int TimeToLiveInSeconds

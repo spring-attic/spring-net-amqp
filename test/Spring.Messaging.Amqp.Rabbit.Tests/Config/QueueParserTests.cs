@@ -18,7 +18,6 @@ using NUnit.Framework;
 using Spring.Core.IO;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Config;
-using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Objects.Factory;
 using Spring.Objects.Factory.Xml;
@@ -129,6 +128,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual("spam", queue.Arguments["foo"]);
         }
 
+        /// <summary>The test referenced arguments queue.</summary>
         [Test]
         public void TestReferencedArgumentsQueue()
         {

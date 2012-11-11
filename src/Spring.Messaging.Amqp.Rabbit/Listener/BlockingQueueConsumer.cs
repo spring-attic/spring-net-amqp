@@ -305,6 +305,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
             Logger.Debug("Closing Rabbit Channel: " + this.channel);
             RabbitUtils.SetPhysicalCloseRequired(true);
+
             // This one never throws exceptions...
             RabbitUtils.CloseChannel(this.channel);
             this.deliveryTags.Clear();

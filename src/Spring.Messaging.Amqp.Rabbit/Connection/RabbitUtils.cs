@@ -102,6 +102,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 throw new AmqpIOException(ioex);
             }
                 
+                
                 // TODO: Do we need the next two catch clauses?
             catch (OperationInterruptedException oiex)
             {
@@ -126,6 +127,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 throw new AmqpIOException(ioex);
             }
+                
                 
                 // TODO: Do we need the next two catch clauses?
             catch (OperationInterruptedException oiex)
@@ -227,15 +229,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
  * Sets a ThreadLocal indicating the channel MUST be physically closed.
  * @param b
  */
-        public static void SetPhysicalCloseRequired(bool b)
-        {
-            physicalCloseRequired.Value = b;
-        }
+
+        /// <summary>The set physical close required.</summary>
+        /// <param name="b">The b.</param>
+        public static void SetPhysicalCloseRequired(bool b) { physicalCloseRequired.Value = b; }
 
         /**
          * Gets and removes a ThreadLocal indicating the channel MUST be physically closed.
          * @return
          */
+
+        /// <summary>The is physical close required.</summary>
+        /// <returns>The System.Boolean.</returns>
         public static bool IsPhysicalCloseRequired()
         {
             var mustClose = physicalCloseRequired.Value;

@@ -1,9 +1,20 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="StopStartIntegrationTests.cs" company="">
-// TODO: Update copyright text.
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="StopStartIntegrationTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
 // </copyright>
-// -----------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
+#region Using Directives
+using System;
 using System.Threading;
 using Common.Logging;
 using NUnit.Framework;
@@ -16,19 +27,15 @@ using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using Spring.Objects.Factory.Xml;
 using Spring.Testing.NUnit;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
     [TestFixture]
-    [Category(TestCategory.Unit)]
+    [Category(TestCategory.Integration)]
     public class StopStartIntegrationTests : AbstractDependencyInjectionSpringContextTests
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -51,11 +58,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         protected RabbitAdmin rabbitAdmin;
 
-        public StopStartIntegrationTests()
-        {
-            this.PopulateProtectedVariables = true;
-        }
+        /// <summary>Initializes a new instance of the <see cref="StopStartIntegrationTests"/> class.</summary>
+        public StopStartIntegrationTests() { this.PopulateProtectedVariables = true; }
 
+        /// <summary>The set up.</summary>
         [TestFixtureSetUp]
         public void SetUp()
         {
@@ -63,6 +69,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.brokerIsRunning.Apply();
         }
 
+        /// <summary>The tear down.</summary>
         [TearDown]
         public void TearDown()
         {
@@ -80,6 +87,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
         }
 
+        /// <summary>The test.</summary>
         [Test]
         public void Test()
         {
@@ -89,28 +97,29 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var t = DateTime.UtcNow.ToMilliseconds();
-            container.Start();
+            this.container.Start();
             int n;
             var lastN = 0;
-            while ((n = deliveries.Value) < COUNT)
+            while ((n = this.deliveries.Value) < COUNT)
             {
                 Thread.Sleep(2000);
-                container.Stop();
-                Logger.Debug(m => m("######### Current Deliveries Value: {0} #########", deliveries.Value));
-                container.Start();
+                this.container.Stop();
+                Logger.Debug(m => m("######### Current Deliveries Value: {0} #########", this.deliveries.Value));
+                this.container.Start();
                 if (DateTime.UtcNow.ToMilliseconds() - t > 240000 && lastN == n)
                 {
-                    Assert.Fail("Only received " + deliveries.Value);
+                    Assert.Fail("Only received " + this.deliveries.Value);
                 }
 
                 lastN = n;
             }
 
-            Logger.Debug(m => m("######### --------------------------- #########", deliveries.Value));
-            Logger.Debug(m => m("######### Final Deliveries Value: {0} #########", deliveries.Value));
-            Logger.Debug(m => m("######### --------------------------- #########", deliveries.Value));
+            Logger.Debug(m => m("######### --------------------------- #########", this.deliveries.Value));
+            Logger.Debug(m => m("######### Final Deliveries Value: {0} #########", this.deliveries.Value));
+            Logger.Debug(m => m("######### --------------------------- #########", this.deliveries.Value));
         }
 
+        /// <summary>Gets the config locations.</summary>
         protected override string[] ConfigLocations
         {
             get
@@ -121,15 +130,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         }
     }
 
+    /// <summary>The stop start integration test listner.</summary>
     public class StopStartIntegrationTestListner : IMessageListener
     {
         private readonly AtomicInteger deliveries;
 
+        /// <summary>Initializes a new instance of the <see cref="StopStartIntegrationTestListner"/> class.</summary>
+        /// <param name="deliveries">The deliveries.</param>
         public StopStartIntegrationTestListner(AtomicInteger deliveries) { this.deliveries = deliveries; }
 
-        public void OnMessage(Message message)
-        {
-            this.deliveries.IncrementValueAndReturn();
-        }
+        /// <summary>The on message.</summary>
+        /// <param name="message">The message.</param>
+        public void OnMessage(Message message) { this.deliveries.IncrementValueAndReturn(); }
     }
 }

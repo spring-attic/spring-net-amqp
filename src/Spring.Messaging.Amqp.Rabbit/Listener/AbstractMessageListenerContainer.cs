@@ -502,13 +502,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 {
                     if (listener is IMessageListener)
                     {
-                        this.DoInvokeListener((IMessageListener)listener, message);    
+                        this.DoInvokeListener((IMessageListener)listener, message);
                     }
                     else if (listener is Action<Message>)
                     {
-                        this.DoInvokeListener((Action<Message>)listener, message);    
+                        this.DoInvokeListener((Action<Message>)listener, message);
                     }
-                    
                 }
                 finally
                 {
@@ -628,6 +627,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
+        /// <summary>The do invoke listener.</summary>
+        /// <param name="listener">The listener.</param>
+        /// <param name="message">The message.</param>
+        /// <exception cref="Exception"></exception>
         protected virtual void DoInvokeListener(Action<Message> listener, Message message)
         {
             try

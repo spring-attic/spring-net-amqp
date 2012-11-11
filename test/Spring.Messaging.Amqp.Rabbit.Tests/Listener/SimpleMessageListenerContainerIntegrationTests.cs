@@ -54,7 +54,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     {
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
-        private static bool hasFixtureSetupBeenRun = false;
+        private static bool hasFixtureSetupBeenRun;
 
         private readonly Queue queue = new Queue("test.queue");
 
@@ -75,6 +75,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         #region Fixture Setup and Teardown
 
+        /// <summary>The derived setup.</summary>
         [TestFixtureSetUp]
         public void DerivedSetup()
         {
@@ -192,7 +193,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             // Wait for broker communication to finish before trying to stop container
             Thread.Sleep(300);
             Logger.Debug(m => m("Shutting down at end of test"));
-            
+
             try
             {
                 if (environment.IsActive())
@@ -213,7 +214,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 Assert.Ignore("Rabbit broker is not running. Ignoring integration test fixture.");
             }
 
-            hasFixtureSetupBeenRun = true;;
+            hasFixtureSetupBeenRun = true;
+            
             if (this.container != null)
             {
                 this.container.Shutdown();
@@ -414,7 +416,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 if (this.latch.CurrentCount > 0)
                 {
-                    Logger.Debug(m => m("Signaling latch. Current count: {0}", latch.CurrentCount));
+                    Logger.Debug(m => m("Signaling latch. Current count: {0}", this.latch.CurrentCount));
                     this.latch.Signal();
                 }
             }
@@ -476,7 +478,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 if (this.latch.CurrentCount > 0)
                 {
-                    Logger.Debug(m => m("Signaling latch. Current count: {0}", latch.CurrentCount));
+                    Logger.Debug(m => m("Signaling latch. Current count: {0}", this.latch.CurrentCount));
                     this.latch.Signal();
                 }
             }
@@ -531,7 +533,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 if (this.latch.CurrentCount > 0)
                 {
-                    Logger.Debug(m => m("Signaling latch. Current count: {0}", latch.CurrentCount));
+                    Logger.Debug(m => m("Signaling latch. Current count: {0}", this.latch.CurrentCount));
                     this.latch.Signal();
                 }
             }

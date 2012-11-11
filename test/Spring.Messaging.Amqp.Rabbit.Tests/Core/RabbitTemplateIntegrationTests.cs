@@ -121,8 +121,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         public void TestSendAndReceiveWithPostProcessor()
         {
             this.template.ConvertAndSend(
-                ROUTE,
-                "message",
+                ROUTE, 
+                "message", 
                 message =>
                 {
                     message.MessageProperties.ContentType = "text/other";
@@ -736,12 +736,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             Assert.AreEqual(null, result);
         }
 
+        /// <summary>The test atomic send and receive with conversion and message post processor.</summary>
+        /// <exception cref="AmqpException"></exception>
         [Test]
         public void TestAtomicSendAndReceiveWithConversionAndMessagePostProcessor()
         {
             var template = new RabbitTemplate(new CachingConnectionFactory());
             template.RoutingKey = ROUTE;
             template.Queue = ROUTE;
+
             // ExecutorService executor = Executors.newFixedThreadPool(1);
             // Set up a consumer to respond to our producer
             var received = Task.Factory.StartNew(
@@ -755,15 +758,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                         {
                             break;
                         }
+
                         Thread.Sleep(100);
                     }
+
                     Assert.IsNotNull(message, "No message received");
                     template.Send(message.MessageProperties.ReplyTo, message);
                     return (string)template.MessageConverter.FromMessage(message);
                 });
 
             var result = (string)template.ConvertSendAndReceive(
-                (object)"message",
+                "message", 
                 message =>
                 {
                     try
@@ -784,11 +789,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             Assert.AreEqual("MESSAGE", received.Result);
             Assert.AreEqual("MESSAGE", result);
+
             // Message was consumed so nothing left on queue
             result = (string)template.ReceiveAndConvert();
             Assert.AreEqual(null, result);
         }
 
+        /// <summary>The test atomic send and receive with conversion and message post processor using routing key.</summary>
+        /// <exception cref="AmqpException"></exception>
         [Test]
         public void TestAtomicSendAndReceiveWithConversionAndMessagePostProcessorUsingRoutingKey()
         {
@@ -800,21 +808,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     Message message = null;
                     for (var i = 0; i < 10; i++)
                     {
-                        message = template.Receive(ROUTE);
+                        message = this.template.Receive(ROUTE);
                         if (message != null)
                         {
                             break;
                         }
+
                         Thread.Sleep(100);
                     }
+
                     Assert.IsNotNull(message, "No message received");
-                    template.Send(message.MessageProperties.ReplyTo, message);
-                    return (string)template.MessageConverter.FromMessage(message);
+                    this.template.Send(message.MessageProperties.ReplyTo, message);
+                    return (string)this.template.MessageConverter.FromMessage(message);
                 });
 
-            var result = (string)template.ConvertSendAndReceive(
-                ROUTE,
-                (object)"message",
+            var result = (string)this.template.ConvertSendAndReceive(
+                ROUTE, 
+                "message", 
                 message =>
                 {
                     try
@@ -835,11 +845,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             Assert.AreEqual("MESSAGE", received.Result);
             Assert.AreEqual("MESSAGE", result);
+
             // Message was consumed so nothing left on queue
-            result = (string)template.ReceiveAndConvert(ROUTE);
+            result = (string)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual(null, result);
         }
 
+        /// <summary>The test atomic send and receive with conversion and message post processor using exchange and routing key.</summary>
+        /// <exception cref="AmqpException"></exception>
         [Test]
         public void TestAtomicSendAndReceiveWithConversionAndMessagePostProcessorUsingExchangeAndRoutingKey()
         {
@@ -851,21 +864,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     Message message = null;
                     for (var i = 0; i < 10; i++)
                     {
-                        message = template.Receive(ROUTE);
+                        message = this.template.Receive(ROUTE);
                         if (message != null)
                         {
                             break;
                         }
+
                         Thread.Sleep(100);
                     }
+
                     Assert.IsNotNull(message, "No message received");
-                    template.Send(message.MessageProperties.ReplyTo, message);
-                    return (string)template.MessageConverter.FromMessage(message);
+                    this.template.Send(message.MessageProperties.ReplyTo, message);
+                    return (string)this.template.MessageConverter.FromMessage(message);
                 });
 
-            var result = (string)template.ConvertSendAndReceive(
-                ROUTE,
-                (object)"message",
+            var result = (string)this.template.ConvertSendAndReceive(
+                ROUTE, 
+                "message", 
                 message =>
                 {
                     try
@@ -886,8 +901,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
             Assert.AreEqual("MESSAGE", received.Result);
             Assert.AreEqual("MESSAGE", result);
+
             // Message was consumed so nothing left on queue
-            result = (String)template.ReceiveAndConvert(ROUTE);
+            result = (String)this.template.ReceiveAndConvert(ROUTE);
             Assert.AreEqual(null, result);
         }
     }

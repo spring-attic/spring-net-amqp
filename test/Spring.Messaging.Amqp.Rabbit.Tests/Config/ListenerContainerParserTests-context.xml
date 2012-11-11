@@ -40,7 +40,7 @@
             </list>
         </constructor-arg>
     </object>
-  
+
     <object type="Spring.Messaging.Amqp.Rabbit.Core.RabbitAdmin, Spring.Messaging.Amqp.Rabbit">
         <constructor-arg name="connectionFactory" ref="connectionFactory" />
     </object>

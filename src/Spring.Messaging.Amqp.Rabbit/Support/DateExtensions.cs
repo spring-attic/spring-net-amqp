@@ -45,6 +45,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
             return epoch.AddSeconds(timestamp.UnixTime).ToLocalTime();
         }
 
+        /// <summary>The to milliseconds.</summary>
+        /// <param name="datetime">The datetime.</param>
+        /// <returns>The System.Int64.</returns>
         public static long ToMilliseconds(this DateTime datetime)
         {
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

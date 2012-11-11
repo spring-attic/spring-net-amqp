@@ -1,27 +1,36 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="RabbitTemplateHeaderTests.cs" company="">
-// TODO: Update copyright text.
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RabbitTemplateHeaderTests.cs" company="The original author or authors.">
+//   Copyright 2002-2012 the original author or authors.
+//   
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+//   the License. You may obtain a copy of the License at
+//   
+//   http://www.apache.org/licenses/LICENSE-2.0
+//   
+//   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+//   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+//   specific language governing permissions and limitations under the License.
 // </copyright>
-// -----------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
+#region Using Directives
+using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Framing.v0_9_1;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Messaging.Amqp.Rabbit.Tests.Connection;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
+#endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-
     /// <summary>
     /// Rabbit Template Header Tests
     /// </summary>
@@ -29,6 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     [Category(TestCategory.Unit)]
     public class RabbitTemplateHeaderTests
     {
+        /// <summary>The test push pop.</summary>
         [Test]
         public void TestPushPop()
         {
@@ -54,6 +64,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             Assert.IsNull(newValueField.GetValue(poppedHeader));
         }
 
+        /// <summary>The test reply to one deep.</summary>
         [Test]
         public void TestReplyToOneDeep()
         {
@@ -64,7 +75,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
             mockConnection.Setup(m => m.IsOpen).Returns(true);
             mockConnection.Setup(m => m.CreateModel()).Returns(mockChannel.Object);
-            mockChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new RabbitMQ.Client.Framing.v0_9_1.BasicProperties());
+            mockChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new BasicProperties());
 
             var template = new RabbitTemplate(new SingleConnectionFactory(mockConnectionFactory.Object));
             var replyQueue = new Queue("new.replyTo");
@@ -75,14 +86,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             var message = new Message(Encoding.UTF8.GetBytes("Hello, world!"), messageProperties);
             var props = new List<IBasicProperties>();
             mockChannel.Setup(m => m.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<byte[]>())).Callback<string, string, bool, bool, IBasicProperties, byte[]>(
-                    (a1, a2, a3, a4, a5, a6) =>
-                    {
-                        var basicProps = a5;
-                        props.Add(basicProps);
-                        var springProps = new DefaultMessagePropertiesConverter().ToMessageProperties(basicProps, null, "UTF-8");
-                        var replyMessage = new Message(Encoding.UTF8.GetBytes("!dlrow olleH"), springProps);
-                        template.OnMessage(replyMessage);
-                    });
+                (a1, a2, a3, a4, a5, a6) =>
+                {
+                    var basicProps = a5;
+                    props.Add(basicProps);
+                    var springProps = new DefaultMessagePropertiesConverter().ToMessageProperties(basicProps, null, "UTF-8");
+                    var replyMessage = new Message(Encoding.UTF8.GetBytes("!dlrow olleH"), springProps);
+                    template.OnMessage(replyMessage);
+                });
 
             var reply = template.SendAndReceive(message);
             Assert.IsNotNull(reply);
@@ -94,7 +105,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             Assert.IsNotNull(basicProperties.Headers[RabbitTemplate.STACKED_CORRELATION_HEADER]);
         }
 
-
+        /// <summary>The test reply to two deep.</summary>
         [Test]
         public void TestReplyToTwoDeep()
         {
@@ -105,7 +116,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
             mockConnection.Setup(m => m.IsOpen).Returns(true);
             mockConnection.Setup(m => m.CreateModel()).Returns(mockChannel.Object);
-            mockChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new RabbitMQ.Client.Framing.v0_9_1.BasicProperties());
+            mockChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new BasicProperties());
 
             var template = new RabbitTemplate(new SingleConnectionFactory(mockConnectionFactory.Object));
             var replyQueue = new Queue("new.replyTo");
@@ -141,6 +152,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             Assert.AreEqual("a", reply.MessageProperties.Headers[RabbitTemplate.STACKED_CORRELATION_HEADER]);
         }
 
+        /// <summary>The test reply to three deep.</summary>
         [Test]
         public void TestReplyToThreeDeep()
         {
@@ -151,7 +163,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
             mockConnection.Setup(m => m.IsOpen).Returns(true);
             mockConnection.Setup(m => m.CreateModel()).Returns(mockChannel.Object);
-            mockChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new RabbitMQ.Client.Framing.v0_9_1.BasicProperties());
+            mockChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new BasicProperties());
 
             var template = new RabbitTemplate(new SingleConnectionFactory(mockConnectionFactory.Object));
             var replyQueue = new Queue("new.replyTo");

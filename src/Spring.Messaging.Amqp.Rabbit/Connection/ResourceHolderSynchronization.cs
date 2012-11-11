@@ -20,44 +20,33 @@ using Spring.Transaction.Support;
 
 namespace Spring.Messaging.Amqp.Rabbit.Connection
 {
-    /// <summary>
-    /// <para>
-    /// Central helper that manages resources and transaction synchronizations per thread.
-    /// To be used by resource management code but not by typical application code.
-    /// </para>
-    /// <para>
-    /// Supports one resource per key without overwriting, that is, a resource needs
+    /// <summary><para>Central helper that manages resources and transaction synchronizations per thread.
+    /// To be used by resource management code but not by typical application code.</para>
+    /// <para>Supports one resource per key without overwriting, that is, a resource needs
     /// to be removed before a new one can be set for the same key.
-    /// Supports a list of transaction synchronizations if synchronization is active.
-    /// </para>
-    /// <para>
-    /// Resource management code should check for thread-bound resources, e.g. JDBC
-    /// Connections or Hibernate Sessions, via <code>getResource</code>. Such code is
+    /// Supports a list of transaction synchronizations if synchronization is active.</para>
+    /// <para>Resource management code should check for thread-bound resources, e.g. JDBC
+    /// Connections or Hibernate Sessions, via 
+    /// <code>getResource</code>
+    /// . Such code is
     /// normally not supposed to bind resources to threads, as this is the responsibility
     /// of transaction managers. A further option is to lazily bind on first use if
     /// transaction synchronization is active, for performing transactions that span
-    /// an arbitrary number of resources.
-    /// </para>
-    /// <para>
-    /// Transaction synchronization must be activated and deactivated by a transaction
+    /// an arbitrary number of resources.</para>
+    /// <para>Transaction synchronization must be activated and deactivated by a transaction
     /// manager via {@link #initSynchronization()} and {@link #clearSynchronization()}.
     /// This is automatically supported by {@link AbstractPlatformTransactionManager},
     /// and thus by all standard Spring transaction managers, such as
     /// {@link org.springframework.transaction.jta.JtaTransactionManager} and
-    /// {@link org.springframework.jdbc.datasource.DataSourceTransactionManager}.
-    /// </para>
-    /// <para>
-    /// Resource management code should only register synchronizations when this
+    /// {@link org.springframework.jdbc.datasource.DataSourceTransactionManager}.</para>
+    /// <para>Resource management code should only register synchronizations when this
     /// manager is active, which can be checked via {@link #isSynchronizationActive};
     /// it should perform immediate resource cleanup else. If transaction synchronization
     /// isn't active, there is either no current transaction, or the transaction manager
-    /// doesn't support transaction synchronization.
-    /// </para>
-    /// <para>
-    /// Synchronization is for example used to always return the same resources
+    /// doesn't support transaction synchronization.</para>
+    /// <para>Synchronization is for example used to always return the same resources
     /// within a JTA transaction, e.g. a JDBC Connection or a Hibernate Session for
-    /// any given DataSource or SessionFactory, respectively.
-    /// </para>
+    /// any given DataSource or SessionFactory, respectively.</para>
     /// </summary>
     /// <typeparam name="H">Type H, that implements IResourceHolder.</typeparam>
     /// <typeparam name="K">Type K.</typeparam>
@@ -193,7 +182,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <returns>The default implementation returns True</returns>
         protected virtual bool ShouldReleaseBeforeCompletion() { return true; }
 
-        /// <summary>Return whether this holder's resource should be released after transaction completion (<code>true</code>).</summary>
+        /// <summary>Return whether this holder's resource should be released after transaction completion (
+        /// <code>true</code>
+        /// ).</summary>
         /// <param name="resourceHolder">The default implementation returns !<see cref="ShouldReleaseBeforeCompletion"/>, releasing after completion is no attempt was made before completion.</param>
         /// <returns>The System.Boolean.</returns>
         protected virtual bool ShouldReleaseAfterCompletion(H resourceHolder) { return !this.ShouldReleaseBeforeCompletion(); }
@@ -222,7 +213,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>Perform a cleanup on the given resource (which is left bound to the thread).</summary>
         /// <param name="resourceHolder">The resource holder to process.</param>
         /// <param name="resourceKey">The key that the ResourceHolder was bound for.</param>
-        /// <param name="committed">Whether the transaction has committed (<value>True</value>) or rolled back (<value>false</value>).</param>
+        /// <param name="committed">Whether the transaction has committed (
+        /// <value>True</value>
+        /// ) or rolled back (
+        /// <value>false</value>
+        /// ).</param>
         protected virtual void CleanupResource(H resourceHolder, K resourceKey, bool committed) { }
     }
 }

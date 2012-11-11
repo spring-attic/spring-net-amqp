@@ -16,7 +16,6 @@
 #region Using Directives
 using System;
 using System.Collections;
-using System.Collections.Generic;
 #endregion
 
 namespace Spring.Messaging.Amqp.Core

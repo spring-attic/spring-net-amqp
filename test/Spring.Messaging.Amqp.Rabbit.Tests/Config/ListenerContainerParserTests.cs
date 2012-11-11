@@ -165,7 +165,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
                         Assert.That(ex.InnerException.Message, Is.StringStarting("Listener Container - cannot set channel-transacted with acknowledge='NONE'"));
                         throw;
                     }
-                },
+                }, 
                 "Expected an exception.");
         }
     }

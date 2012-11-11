@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using Common.Logging;
 using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Rabbit.Support;
-using Spring.Transaction.Support;
 using Spring.Util;
 #endregion
 

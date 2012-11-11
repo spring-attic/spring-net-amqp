@@ -22,7 +22,6 @@ using Spring.Context;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
-using Spring.Messaging.Amqp.Support;
 using Spring.Objects.Factory;
 using Spring.Util;
 using IConnection = Spring.Messaging.Amqp.Rabbit.Connection.IConnection;

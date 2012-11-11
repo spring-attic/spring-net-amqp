@@ -16,10 +16,8 @@
 #region Using Directives
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Reflection;
 using System.Threading;
-using Common.Logging;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
@@ -31,7 +29,6 @@ using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using Spring.Transaction;
-using Spring.Transaction.Interceptor;
 using Spring.Transaction.Support;
 using IConnection = RabbitMQ.Client.IConnection;
 #endregion
@@ -53,7 +50,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var mockConnection = new Mock<IConnection>();
             var onlyChannel = new Mock<IModel>();
             onlyChannel.Setup(m => m.IsOpen).Returns(true);
-            onlyChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new RabbitMQ.Client.Framing.v0_9_1.BasicProperties());
+            onlyChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new BasicProperties());
 
             var cachingConnectionFactory = new CachingConnectionFactory(mockConnectionFactory.Object);
 
@@ -127,34 +124,25 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             container.Stop();
         }
-
-
     }
 
     internal class DummyTxManager : AbstractPlatformTransactionManager
     {
-        public DummyTxManager()
-        {
-            this.TransactionSynchronization = TransactionSynchronizationState.Always;
-        }
+        /// <summary>Initializes a new instance of the <see cref="DummyTxManager"/> class.</summary>
+        public DummyTxManager() { this.TransactionSynchronization = TransactionSynchronizationState.Always; }
 
         /// <summary>The do begin.</summary>
         /// <param name="transaction">The transaction.</param>
         /// <param name="definition">The definition.</param>
-        protected override void DoBegin(object transaction, ITransactionDefinition definition)
-        {
-        }
+        protected override void DoBegin(object transaction, ITransactionDefinition definition) { }
 
         /// <summary>The do commit.</summary>
         /// <param name="status">The status.</param>
-        protected override void DoCommit(DefaultTransactionStatus status) {  }
+        protected override void DoCommit(DefaultTransactionStatus status) { }
 
         /// <summary>The do get transaction.</summary>
         /// <returns>The System.Object.</returns>
-        protected override object DoGetTransaction()
-        {
-            return new object();
-        }
+        protected override object DoGetTransaction() { return new object(); }
 
         /// <summary>The do rollback.</summary>
         /// <param name="status">The status.</param>
