@@ -29,16 +29,16 @@ using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Tests.Connection;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
+using Spring.Messaging.Amqp.Rabbit.Transaction;
 using Spring.Transaction;
 using Spring.Transaction.Support;
 using IConnection = RabbitMQ.Client.IConnection;
-using Spring.Messaging.Amqp.Rabbit.Transaction;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
     /// <summary>
-    /// TODO: Update summary.
+    /// External Tx Manager Tests
     /// </summary>
     [TestFixture]
     [Category(TestCategory.Unit)]
@@ -127,8 +127,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.Stop();
         }
 
-	 // Verifies that an up-stack RabbitTemplate uses the listener's
-	 // channel (ChannelAwareMessageListener).
+        /// <summary>Verifies that an up-stack RabbitTemplate uses the listener's channel (ChannelAwareMessageListener).</summary>
         [Test]
         public void TestChannelAwareMessageListener()
         {
@@ -137,7 +136,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var onlyChannel = new Mock<IModel>();
             onlyChannel.Setup(m => m.IsOpen).Returns(true);
             onlyChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new BasicProperties());
-            
+
             var singleConnectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
 
             mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
@@ -178,6 +177,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                     exposed.LazySet(channel);
                     var rabbitTemplate = new RabbitTemplate(singleConnectionFactory);
                     rabbitTemplate.ChannelTransacted = true;
+
                     // should use same channel as container
                     rabbitTemplate.ConvertAndSend("foo", "bar", "baz");
                     latch.Signal();
@@ -213,10 +213,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Assert.AreSame(onlyChannel.Object, exposed.Value);
         }
 
-        
-	 // Verifies that an up-stack RabbitTemplate uses the listener's
-	 // channel (ChannelAwareMessageListener). exposeListenerChannel=false
-	 // is ignored (ChannelAwareMessageListener).
+        /// <summary>Verifies that an up-stack RabbitTemplate uses the listener's channel (ChannelAwareMessageListener). exposeListenerChannel=false is ignored (ChannelAwareMessageListener).</summary>
         [Test]
         public void TestChannelAwareMessageListenerDontExpose()
         {
@@ -266,6 +263,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                     exposed.LazySet(channel);
                     var rabbitTemplate = new RabbitTemplate(singleConnectionFactory);
                     rabbitTemplate.ChannelTransacted = true;
+
                     // should use same channel as container
                     rabbitTemplate.ConvertAndSend("foo", "bar", "baz");
                     latch.Signal();
@@ -302,9 +300,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Assert.AreSame(onlyChannel.Object, exposed.Value);
         }
 
-	 // Verifies the proper channel is bound when using a RabbitTransactionManager.
-	 // Previously, the wrong channel was bound. See AMQP-260.
-	 // @throws Exception
+        /// <summary>Verifies the proper channel is bound when using a RabbitTransactionManager. Previously, the wrong channel was bound. See AMQP-260.</summary>
         [Test]
         public void TestMessageListenerWithRabbitTxManager()
         {
@@ -353,6 +349,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 {
                     var rabbitTemplate = new RabbitTemplate(cachingConnectionFactory);
                     rabbitTemplate.ChannelTransacted = true;
+
                     // should use same channel as container
                     rabbitTemplate.ConvertAndSend("foo", "bar", "baz");
                     latch.Signal();
