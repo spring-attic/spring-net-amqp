@@ -94,8 +94,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [SetUp]
         public void SetUp()
         {
+            concurrentConsumers = 1;
+            messageCount = 10;
+            transactional = false;
+            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
+
             this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue, sendQueue);
             this.brokerIsRunning.Apply();
+            Assert.IsTrue(this.container == null);
         }
 
         /// <summary>
@@ -140,6 +146,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var waited = latch.Wait(new TimeSpan(0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
 
+            Thread.Sleep(500);
             // All messages committed
             var bytes = (byte[])template.ReceiveAndConvert(sendQueue.Name);
             Assert.NotNull(bytes);
@@ -229,7 +236,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             var latch = new CountdownEvent(this.messageCount);
             this.container = this.CreateContainer(queue.Name, new AbortChannelListener(latch), this.CreateConnectionFactory());
-            Thread.Sleep(500);
+
+            var n = 0;
+            while (n++ < 100 && container.ActiveConsumerCount != concurrentConsumers)
+            {
+                Thread.Sleep(50);
+            }
+
             Assert.AreEqual(this.concurrentConsumers, this.container.ActiveConsumerCount);
 
             for (var i = 0; i < this.messageCount; i++)
@@ -308,6 +321,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             catch (Exception e)
             {
                 Assert.True(e is AmqpIllegalStateException);
+                this.concurrentConsumers = 1;
             }
         }
 
@@ -338,7 +352,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         private int GetTimeout()
         {
             // return 1000;
-            return Math.Min(15 + this.messageCount / (4 * this.concurrentConsumers), 30);
+            return Math.Min(1 + (this.messageCount / (4 * this.concurrentConsumers)), 30);
         }
 
         /// <summary>Creates the container.</summary>
