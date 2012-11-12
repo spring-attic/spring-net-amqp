@@ -26,11 +26,13 @@ using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener;
+using Spring.Messaging.Amqp.Rabbit.Tests.Connection;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using Spring.Transaction;
 using Spring.Transaction.Support;
 using IConnection = RabbitMQ.Client.IConnection;
+using Spring.Messaging.Amqp.Rabbit.Transaction;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
@@ -99,6 +101,267 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.ChannelTransacted = true;
             container.ShutdownTimeout = 100;
             container.TransactionManager = new DummyTxManager();
+            container.AfterPropertiesSet();
+            container.Start();
+
+            consumer.Value.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
+
+            Assert.IsTrue(latch.Wait(new TimeSpan(0, 0, 10)));
+
+            var e = tooManyChannels.Value;
+            if (e != null)
+            {
+                throw e;
+            }
+
+            mockConnection.Verify(m => m.CreateModel(), Times.Once());
+            Assert.True(commitLatch.Wait(new TimeSpan(0, 0, 10)));
+            onlyChannel.Verify(m => m.TxCommit(), Times.Once());
+            onlyChannel.Verify(m => m.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<byte[]>()), Times.Once());
+
+            // verify close() was never called on the channel
+            var cachedChannelsTransactionalField = typeof(CachingConnectionFactory).GetField("cachedChannelsTransactional", BindingFlags.NonPublic | BindingFlags.Instance);
+            var channels = (LinkedList<IChannelProxy>)cachedChannelsTransactionalField.GetValue(cachingConnectionFactory);
+            Assert.AreEqual(0, channels.Count);
+
+            container.Stop();
+        }
+
+	 // Verifies that an up-stack RabbitTemplate uses the listener's
+	 // channel (ChannelAwareMessageListener).
+        [Test]
+        public void TestChannelAwareMessageListener()
+        {
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
+            var onlyChannel = new Mock<IModel>();
+            onlyChannel.Setup(m => m.IsOpen).Returns(true);
+            onlyChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new BasicProperties());
+            
+            var singleConnectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+
+            mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
+            mockConnection.Setup(m => m.IsOpen).Returns(true);
+
+            var tooManyChannels = new AtomicReference<Exception>();
+            var done = false;
+            mockConnection.Setup(m => m.CreateModel()).Returns(
+                () =>
+                {
+                    if (!done)
+                    {
+                        done = true;
+                        return onlyChannel.Object;
+                    }
+
+                    tooManyChannels.LazySet(new Exception("More than one channel requested"));
+                    var internalChannel = new Mock<IModel>();
+                    internalChannel.Setup(m => m.IsOpen).Returns(true);
+                    return internalChannel.Object;
+                });
+
+            var consumer = new AtomicReference<IBasicConsumer>();
+
+            onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicConsumer>())).Callback<string, bool, IBasicConsumer>(
+                (a1, a2, a3) => consumer.LazySet(a3));
+
+            var commitLatch = new CountdownEvent(1);
+            onlyChannel.Setup(m => m.TxCommit()).Callback(() => commitLatch.Signal());
+
+            var latch = new CountdownEvent(1);
+            var exposed = new AtomicReference<IModel>();
+            var container = new SimpleMessageListenerContainer(singleConnectionFactory);
+            var mockListener = new Mock<IChannelAwareMessageListener>();
+            mockListener.Setup(m => m.OnMessage(It.IsAny<Message>(), It.IsAny<IModel>())).Callback<Message, IModel>(
+                (message, channel) =>
+                {
+                    exposed.LazySet(channel);
+                    var rabbitTemplate = new RabbitTemplate(singleConnectionFactory);
+                    rabbitTemplate.ChannelTransacted = true;
+                    // should use same channel as container
+                    rabbitTemplate.ConvertAndSend("foo", "bar", "baz");
+                    latch.Signal();
+                });
+            container.MessageListener = mockListener.Object;
+            container.QueueNames = new[] { "queue" };
+            container.ChannelTransacted = true;
+            container.ShutdownTimeout = 100;
+            container.TransactionManager = new DummyTxManager();
+            container.AfterPropertiesSet();
+            container.Start();
+
+            consumer.Value.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
+
+            Assert.IsTrue(latch.Wait(new TimeSpan(0, 0, 10)));
+
+            var e = tooManyChannels.Value;
+            if (e != null)
+            {
+                throw e;
+            }
+
+            mockConnection.Verify(m => m.CreateModel(), Times.Once());
+            Assert.IsTrue(commitLatch.Wait(new TimeSpan(0, 0, 10)));
+            onlyChannel.Verify(m => m.TxCommit(), Times.Once());
+            onlyChannel.Verify(m => m.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<byte[]>()), Times.Once());
+
+            // verify close() was never called on the channel
+            onlyChannel.Verify(m => m.Close(), Times.Never());
+
+            container.Stop();
+
+            Assert.AreSame(onlyChannel.Object, exposed.Value);
+        }
+
+        
+	 // Verifies that an up-stack RabbitTemplate uses the listener's
+	 // channel (ChannelAwareMessageListener). exposeListenerChannel=false
+	 // is ignored (ChannelAwareMessageListener).
+        [Test]
+        public void TestChannelAwareMessageListenerDontExpose()
+        {
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
+            var onlyChannel = new Mock<IModel>();
+            onlyChannel.Setup(m => m.IsOpen).Returns(true);
+            onlyChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new BasicProperties());
+
+            var singleConnectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+
+            mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
+            mockConnection.Setup(m => m.IsOpen).Returns(true);
+
+            var tooManyChannels = new AtomicReference<Exception>();
+            var done = false;
+            mockConnection.Setup(m => m.CreateModel()).Returns(
+                () =>
+                {
+                    if (!done)
+                    {
+                        done = true;
+                        return onlyChannel.Object;
+                    }
+
+                    tooManyChannels.LazySet(new Exception("More than one channel requested"));
+                    var internalChannel = new Mock<IModel>();
+                    internalChannel.Setup(m => m.IsOpen).Returns(true);
+                    return internalChannel.Object;
+                });
+
+            var consumer = new AtomicReference<IBasicConsumer>();
+
+            onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicConsumer>())).Callback<string, bool, IBasicConsumer>(
+                (a1, a2, a3) => consumer.LazySet(a3));
+
+            var commitLatch = new CountdownEvent(1);
+            onlyChannel.Setup(m => m.TxCommit()).Callback(() => commitLatch.Signal());
+
+            var latch = new CountdownEvent(1);
+            var exposed = new AtomicReference<IModel>();
+            var container = new SimpleMessageListenerContainer(singleConnectionFactory);
+            var mockListener = new Mock<IChannelAwareMessageListener>();
+            mockListener.Setup(m => m.OnMessage(It.IsAny<Message>(), It.IsAny<IModel>())).Callback<Message, IModel>(
+                (message, channel) =>
+                {
+                    exposed.LazySet(channel);
+                    var rabbitTemplate = new RabbitTemplate(singleConnectionFactory);
+                    rabbitTemplate.ChannelTransacted = true;
+                    // should use same channel as container
+                    rabbitTemplate.ConvertAndSend("foo", "bar", "baz");
+                    latch.Signal();
+                });
+            container.MessageListener = mockListener.Object;
+            container.QueueNames = new[] { "queue" };
+            container.ChannelTransacted = true;
+            container.ExposeListenerChannel = false;
+            container.ShutdownTimeout = 100;
+            container.TransactionManager = new DummyTxManager();
+            container.AfterPropertiesSet();
+            container.Start();
+
+            consumer.Value.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
+
+            Assert.IsTrue(latch.Wait(new TimeSpan(0, 0, 10)));
+
+            var e = tooManyChannels.Value;
+            if (e != null)
+            {
+                throw e;
+            }
+
+            mockConnection.Verify(m => m.CreateModel(), Times.Once());
+            Assert.IsTrue(commitLatch.Wait(new TimeSpan(0, 0, 10)));
+            onlyChannel.Verify(m => m.TxCommit(), Times.Once());
+            onlyChannel.Verify(m => m.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<byte[]>()), Times.Once());
+
+            // verify close() was never called on the channel
+            onlyChannel.Verify(m => m.Close(), Times.Never());
+
+            container.Stop();
+
+            Assert.AreSame(onlyChannel.Object, exposed.Value);
+        }
+
+	 // Verifies the proper channel is bound when using a RabbitTransactionManager.
+	 // Previously, the wrong channel was bound. See AMQP-260.
+	 // @throws Exception
+        [Test]
+        public void TestMessageListenerWithRabbitTxManager()
+        {
+            var mockConnectionFactory = new Mock<ConnectionFactory>();
+            var mockConnection = new Mock<IConnection>();
+            var onlyChannel = new Mock<IModel>();
+            onlyChannel.Setup(m => m.IsOpen).Returns(true);
+            onlyChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new BasicProperties());
+
+            var cachingConnectionFactory = new CachingConnectionFactory(mockConnectionFactory.Object);
+
+            mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
+            mockConnection.Setup(m => m.IsOpen).Returns(true);
+
+            var tooManyChannels = new AtomicReference<Exception>();
+            var done = false;
+            mockConnection.Setup(m => m.CreateModel()).Returns(
+                () =>
+                {
+                    if (!done)
+                    {
+                        done = true;
+                        return onlyChannel.Object;
+                    }
+
+                    tooManyChannels.LazySet(new Exception("More than one channel requested"));
+                    var internalChannel = new Mock<IModel>();
+                    internalChannel.Setup(m => m.IsOpen).Returns(true);
+                    return internalChannel.Object;
+                });
+
+            var consumer = new AtomicReference<IBasicConsumer>();
+
+            onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicConsumer>())).Callback<string, bool, IBasicConsumer>(
+                (a1, a2, a3) => consumer.LazySet(a3));
+
+            var commitLatch = new CountdownEvent(1);
+            onlyChannel.Setup(m => m.TxCommit()).Callback(() => commitLatch.Signal());
+
+            var latch = new CountdownEvent(1);
+            var container = new SimpleMessageListenerContainer(cachingConnectionFactory);
+
+            var mockListener = new Mock<IMessageListener>();
+            mockListener.Setup(m => m.OnMessage(It.IsAny<Message>())).Callback<Message>(
+                (message) =>
+                {
+                    var rabbitTemplate = new RabbitTemplate(cachingConnectionFactory);
+                    rabbitTemplate.ChannelTransacted = true;
+                    // should use same channel as container
+                    rabbitTemplate.ConvertAndSend("foo", "bar", "baz");
+                    latch.Signal();
+                });
+            container.MessageListener = mockListener.Object;
+            container.QueueNames = new[] { "queue" };
+            container.ChannelTransacted = true;
+            container.ShutdownTimeout = 100;
+            container.TransactionManager = new RabbitTransactionManager(cachingConnectionFactory);
             container.AfterPropertiesSet();
             container.Start();
 
