@@ -111,7 +111,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 this.template.ConvertAndSend(this.queue.Name, i + "foo");
             }
 
-            int timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
+            var timeout = Math.Min(1 + (this.messageCount / (4 * this.concurrentConsumers)), 30);
             Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(new TimeSpan(0, 0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
@@ -120,7 +120,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>The test listener transactional fails.</summary>
         [Test]
-        [Ignore("Need to fix")]
         public void TestListenerTransactionalFails()
         {
             this.transactional = true;
@@ -131,7 +130,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 this.template.ConvertAndSend(this.queue.Name, i + "foo");
             }
 
-            var timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
+            var timeout = Math.Min(1 + (this.messageCount / (4 * this.concurrentConsumers)), 30);
             Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(new TimeSpan(0, 0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");

@@ -33,7 +33,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Creates the connection factory.
         /// </summary>
         /// <returns>The connection factory.</returns>
-        protected new IConnectionFactory CreateConnectionFactory()
+        protected override IConnectionFactory CreateConnectionFactory()
         {
             var connectionFactory = new SingleConnectionFactory();
             connectionFactory.Port = BrokerTestUtils.GetPort();

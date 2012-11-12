@@ -525,6 +525,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
                     var processor = new AsyncMessageProcessingConsumer(consumer, this);
                     var taskExecutor = new Task(processor.Run);
+                    taskExecutor.Start();
                 }
             }
         }

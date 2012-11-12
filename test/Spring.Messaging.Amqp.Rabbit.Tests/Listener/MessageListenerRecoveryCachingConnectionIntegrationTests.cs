@@ -37,7 +37,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// </summary>
     [TestFixture]
     [Category(TestCategory.Integration)]
-    [Ignore("Some state issue (within the test fixture) is causing unreliable execution of these tests")]
     public class MessageListenerRecoveryCachingConnectionIntegrationTests : AbstractRabbitIntegrationTest
     {
         private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -83,7 +82,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Creates the connection factory.
         /// </summary>
         /// <returns>The connection factory.</returns>
-        protected IConnectionFactory CreateConnectionFactory()
+        protected virtual IConnectionFactory CreateConnectionFactory()
         {
             var connectionFactory = new CachingConnectionFactory();
             connectionFactory.ChannelCacheSize = this.concurrentConsumers;
@@ -112,6 +111,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 this.container.Shutdown();
             }
+
+            if (this.container != null)
+            {
+                this.container.Dispose();
+            }
+
+            this.container = null;
         }
 
         /// <summary>The test listener sends message and then container commits.</summary>
@@ -131,7 +137,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             var timeout = this.GetTimeout();
             Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
-            var waited = latch.Wait(timeout * 1000);
+            var waited = latch.Wait(new TimeSpan(0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
 
             // All messages committed
@@ -173,7 +179,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>The test listener recovers from bogus double ack.</summary>
         [Test]
-        [Ignore("Need to fix")]
         public void TestListenerRecoversFromBogusDoubleAck()
         {
             var template = new RabbitTemplate(this.CreateConnectionFactory());
@@ -189,7 +194,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             var timeout = this.GetTimeout();
             Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
-            var waited = latch.Wait(timeout * 1000);
+            var waited = latch.Wait(new TimeSpan(0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
 
             Assert.Null(template.ReceiveAndConvert(queue.Name));
@@ -197,7 +202,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>The test listener recovers from closed channel.</summary>
         [Test]
-        [Ignore("Need to fix")]
         public void TestListenerRecoversFromClosedChannel()
         {
             var template = new RabbitTemplate(this.CreateConnectionFactory());
@@ -211,7 +215,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             var timeout = this.GetTimeout();
             Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
-            var waited = latch.Wait(timeout * 1000);
+            var waited = latch.Wait(new TimeSpan(0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
 
             Assert.Null(template.ReceiveAndConvert(queue.Name));
@@ -219,7 +223,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>The test listener recovers from closed channel and stop.</summary>
         [Test]
-        [Ignore("Need to fix")]
         public void TestListenerRecoversFromClosedChannelAndStop()
         {
             var template = new RabbitTemplate(this.CreateConnectionFactory());
@@ -236,7 +239,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             var timeout = this.GetTimeout();
             Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
-            var waited = latch.Wait(timeout * 1000);
+            var waited = latch.Wait(new TimeSpan(0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
 
             Assert.Null(template.ReceiveAndConvert(queue.Name));
@@ -248,8 +251,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>The test listener recovers from closed connection.</summary>
         [Test]
-        [Ignore("Need to fix")]
-        public void testListenerRecoversFromClosedConnection()
+        public void TestListenerRecoversFromClosedConnection()
         {
             var template = new RabbitTemplate(this.CreateConnectionFactory());
 
@@ -261,9 +263,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 template.ConvertAndSend(queue.Name, i + "foo");
             }
 
-            var timeout = Math.Min(4 + this.messageCount / (4 * this.concurrentConsumers), 30);
+            var timeout = Math.Min(4 + (this.messageCount / (4 * this.concurrentConsumers)), 30);
             Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
-            var waited = latch.Wait(timeout * 1000);
+            var waited = latch.Wait(new TimeSpan(0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
 
             Assert.Null(template.ReceiveAndConvert(queue.Name));
@@ -271,7 +273,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>The test listener recovers and template shares connection factory.</summary>
         [Test]
-        [Ignore("Need to fix")]
         public void TestListenerRecoversAndTemplateSharesConnectionFactory()
         {
             var connectionFactory = this.CreateConnectionFactory();
@@ -288,7 +289,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             var timeout = this.GetTimeout();
             Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
-            var waited = latch.Wait(timeout * 1000);
+            var waited = latch.Wait(new TimeSpan(0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
 
             Assert.Null(template.ReceiveAndConvert(queue.Name));
@@ -312,7 +313,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>The test single listener does not recover from missing queue.</summary>
         [Test]
-        public void testSingleListenerDoesNotRecoverFromMissingQueue()
+        public void TestSingleListenerDoesNotRecoverFromMissingQueue()
         {
             try
             {
@@ -334,7 +335,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// Gets the timeout.
         /// </summary>
         /// <returns>The timeout.</returns>
-        private int GetTimeout() { return Math.Min(15 + this.messageCount / (4 * this.concurrentConsumers), 30); }
+        private int GetTimeout()
+        {
+            // return 1000;
+            return Math.Min(15 + this.messageCount / (4 * this.concurrentConsumers), 30);
+        }
 
         /// <summary>Creates the container.</summary>
         /// <param name="queueName">Name of the queue.</param>
@@ -428,11 +433,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             var value = Encoding.UTF8.GetString(message.Body);
             try
             {
-                Logger.Debug("Received: " + value + " Sending: bar");
+                Logger.Debug(m => m("Received: {0} Sending: bar", value));
                 channel.BasicPublish(string.Empty, this.queueName, null, Encoding.UTF8.GetBytes("bar"));
                 if (this.fail)
                 {
-                    Logger.Debug("Failing (planned)");
+                    Logger.Debug(m => m("Failing (planned)"));
 
                     // intentional error (causes exception on connection thread):
                     throw new Exception("Planned");
@@ -443,6 +448,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 if (this.latch.CurrentCount > 0)
                 {
                     this.latch.Signal();
+                    Logger.Debug(m => m("Latch Count: {0}", this.latch.CurrentCount));
                 }
             }
         }
@@ -469,7 +475,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
-            Logger.Debug("Receiving: " + value);
+            Logger.Debug(m => m("Receiving: {0}", value));
             if (this.failed.CompareAndSet(false, true))
             {
                 // intentional error (causes exception on connection thread):
@@ -480,6 +486,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 if (this.latch.CurrentCount > 0)
                 {
                     this.latch.Signal();
+                    Logger.Debug(m => m("Latch Count: {0}", this.latch.CurrentCount));
                 }
             }
         }
@@ -513,7 +520,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
-            Logger.Debug("Receiving: " + value);
+            Logger.Debug(m => m("Receiving: {0}", value));
             if (this.failed.CompareAndSet(false, true))
             {
                 // intentional error (causes exception on connection thread):
@@ -524,6 +531,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 if (this.latch.CurrentCount > 0)
                 {
                     this.latch.Signal();
+                    Logger.Debug(m => m("Latch Count: {0}", this.latch.CurrentCount));
                 }
             }
         }
