@@ -34,7 +34,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>The message listener container multiple queue integration tests.</summary>
     [TestFixture]
     [Category(TestCategory.Integration)]
-    [Ignore("Need to fix")]
     public class MessageListenerContainerMultipleQueueIntegrationTests : AbstractRabbitIntegrationTest
     {
         private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
@@ -148,8 +147,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             template.MessageConverter = messageConverter;
             for (var i = 0; i < messageCount; i++)
             {
-                template.ConvertAndSend(queue1.Name, i.ToString());
-                template.ConvertAndSend(queue2.Name, i.ToString());
+                template.ConvertAndSend(queue1.Name, i);
+                template.ConvertAndSend(queue2.Name, i);
             }
 
             var container = new SimpleMessageListenerContainer(connectionFactory);
@@ -213,7 +212,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
-        public void HandleMessage(int value)
+        public void HandleMessage(int value) // TODO: This is supposed to be public void HandleMessage(int value)
         {
             Logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
             this.latch.Signal();
