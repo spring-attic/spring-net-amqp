@@ -293,8 +293,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 this.template.ConvertAndSend(this.queue.Name, i + "foo");
             }
 
-            Logger.Debug(m => m("Waiting {0} seconds for messages to be received.", (5 + Math.Max(2, this.messageCount / 20)) * 2));
-            var waited = latch.Wait(new TimeSpan(0, 0, 0, (5 + Math.Max(2, this.messageCount / 20)) * 2));
+            Logger.Debug(m => m("Waiting {0} seconds for messages to be received.", Math.Max(2, this.messageCount / 20)));
+            var waited = latch.Wait(new TimeSpan(0, 0, 0, Math.Max(2, this.messageCount / 20)));
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
         }

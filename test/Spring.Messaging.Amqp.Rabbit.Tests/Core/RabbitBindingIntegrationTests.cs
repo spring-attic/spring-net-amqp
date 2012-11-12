@@ -339,7 +339,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <returns>The result.</returns>
         private string GetResult(BlockingQueueConsumer consumer)
         {
-            var response = consumer.NextMessage(new TimeSpan(0, 0, 0, 20));
+            var response = consumer.NextMessage(200);
             if (response == null)
             {
                 return null;

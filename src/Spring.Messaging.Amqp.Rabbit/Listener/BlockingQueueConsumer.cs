@@ -42,7 +42,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         // This must be an unbounded queue or we risk blocking the Connection thread.
-        internal readonly ConcurrentQueue<Delivery> queue = new ConcurrentQueue<Delivery>();
+        internal readonly BlockingCollection<Delivery> queue = new BlockingCollection<Delivery>();
 
         // When this is non-null the connection has been closed (should never happen in normal operation).
         internal volatile ShutdownEventArgs shutdown;
@@ -193,21 +193,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             return this.Handle(this.queue.Take());
         }
 
-        /// <summary>The next message.</summary>
-        /// <param name="timeout">The timeout.</param>
-        /// <returns>The Spring.Messaging.Amqp.Core.Message.</returns>
-        public Message NextMessage(long timeout) { return this.NextMessage(new TimeSpan(0, 0, 0, 0, (int)timeout)); }
-
         /// <summary>Main application-side API: wait for the next message delivery and return it.</summary>
         /// <param name="timeout">The timeout.</param>
         /// <returns>The next message.</returns>
-        public Message NextMessage(TimeSpan timeout)
+        public Message NextMessage(long timeout)
         {
             Logger.Debug(m => m("Retrieving delivery for {0}", this));
 
             this.CheckShutdown();
             Delivery delivery;
-            this.queue.Poll(timeout, out delivery);
+            var result = this.queue.TryTake(out delivery, (int)timeout);
             var message = this.Handle(delivery);
             if (message == null && this.cancelReceived.Value)
             {
@@ -218,8 +213,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         }
 
         /// <summary>The start.</summary>
-        /// <exception cref="Exception"></exception>
-        /// <exception cref="SystemException"></exception>
         public void Start()
         {
             Logger.Debug(m => m("Starting consumer {0}", this));
@@ -495,7 +488,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 // N.B. we can't use a bounded queue and offer() here with a timeout
                 // in case the connection thread gets blocked
-                this.outer.queue.Enqueue(new Delivery(envelope, properties, body));
+                this.outer.queue.Add(new Delivery(envelope, properties, body));
             }
             catch (ThreadInterruptedException e)
             {

@@ -572,7 +572,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             for (var i = 0; i < this.txSize; i++)
             {
                 Logger.Trace(m => m("Waiting for message from consumer."));
-                var message = consumer.NextMessage(new TimeSpan(0, 0, 0, 0, (int)this.receiveTimeout));
+                var message = consumer.NextMessage(this.receiveTimeout);
                 if (message == null)
                 {
                     break;
