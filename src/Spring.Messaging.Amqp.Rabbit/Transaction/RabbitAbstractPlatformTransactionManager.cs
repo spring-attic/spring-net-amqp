@@ -253,7 +253,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
                     // through the SavepointManager API implemented by TransactionStatus.
                     // Usually uses JDBC 3.0 savepoints. Never activates Spring synchronization.
                     var status = this.PrepareTransactionStatus(definition, transaction, false, false, debugEnabled, null);
-                    status.CreateAndHoldSavepoint("DefaultName"); // TODO: Java equivalent does not require name
+                    status.CreateAndHoldSavepoint(Guid.NewGuid().ToString()); // TODO: Java equivalent does not require name
                     return status;
                 }
                 else
