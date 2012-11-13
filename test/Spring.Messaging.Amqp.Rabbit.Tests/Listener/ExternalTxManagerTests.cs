@@ -50,21 +50,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         private int timeout = 5000;
 
-        private SimpleMessageListenerContainer container;
+        // private SimpleMessageListenerContainer container;
 
         [TearDown]
         public void TearDown()
         {
-            if (TransactionSynchronizationManager.ActualTransactionActive)
-            {
-                TransactionSynchronizationManager.Clear();   
-            }
+            // if (TransactionSynchronizationManager.ActualTransactionActive)
+            // {
+            //     TransactionSynchronizationManager.Clear();   
+            // }
 
-            if (container != null)
-            {
-                container.Dispose();
-                container = null;
-            }
+            // if (container != null)
+            // {
+            //     container.Dispose();
+            //     container = null;
+            // }
         }
 
         /// <summary>Verifies that an up-stack RabbitTemplate uses the listener's channel (MessageListener).</summary>
@@ -115,7 +115,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 });
 
             var latch = new CountdownEvent(1);
-            container = new SimpleMessageListenerContainer(cachingConnectionFactory);
+            var container = new SimpleMessageListenerContainer(cachingConnectionFactory);
             container.MessageListener = new Action<Message>(
                 message =>
                 {
@@ -161,6 +161,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Assert.AreEqual(0, channels.Count);
 
             container.Stop();
+            container.Dispose();
+            container = null;
         }
 
         /// <summary>Verifies that an up-stack RabbitTemplate uses the listener's channel (ChannelAwareMessageListener).</summary>
@@ -212,7 +214,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             var latch = new CountdownEvent(1);
             var exposed = new AtomicReference<IModel>();
-            container = new SimpleMessageListenerContainer(singleConnectionFactory);
+            var container = new SimpleMessageListenerContainer(singleConnectionFactory);
             var mockListener = new Mock<IChannelAwareMessageListener>();
             mockListener.Setup(m => m.OnMessage(It.IsAny<Message>(), It.IsAny<IModel>())).Callback<Message, IModel>(
                 (message, channel) =>
@@ -258,6 +260,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             onlyChannel.Verify(m => m.Close(), Times.Never());
 
             container.Stop();
+            container.Dispose();
+            container = null;
 
             Assert.AreSame(onlyChannel.Object, exposed.Value);
         }
@@ -311,7 +315,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
             var latch = new CountdownEvent(1);
             var exposed = new AtomicReference<IModel>();
-            container = new SimpleMessageListenerContainer(singleConnectionFactory);
+            var container = new SimpleMessageListenerContainer(singleConnectionFactory);
             var mockListener = new Mock<IChannelAwareMessageListener>();
             mockListener.Setup(m => m.OnMessage(It.IsAny<Message>(), It.IsAny<IModel>())).Callback<Message, IModel>(
                 (message, channel) =>
@@ -358,6 +362,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             onlyChannel.Verify(m => m.Close(), Times.Never());
 
             container.Stop();
+            container.Dispose();
+            container = null;
 
             Assert.AreSame(onlyChannel.Object, exposed.Value);
         }
@@ -410,7 +416,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 });
 
             var latch = new CountdownEvent(1);
-            container = new SimpleMessageListenerContainer(cachingConnectionFactory);
+            var container = new SimpleMessageListenerContainer(cachingConnectionFactory);
 
             var mockListener = new Mock<IMessageListener>();
             mockListener.Setup(m => m.OnMessage(It.IsAny<Message>())).Callback<Message>(
@@ -458,12 +464,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Assert.AreEqual(0, channels.Count);
 
             container.Stop();
+            container.Dispose();
+            container = null;
         }
     }
 
     internal class DummyTxManager : RabbitAbstractPlatformTransactionManager
     {
-        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly DummyTxManager instance = new DummyTxManager();
 

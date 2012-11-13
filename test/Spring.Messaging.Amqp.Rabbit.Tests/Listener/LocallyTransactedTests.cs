@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -41,6 +42,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Unit)]
     public class LocallyTransactedTests
     {
+        private static int timeout = 5000;
+
         /// <summary>Verifies that an up-stack RabbitTemplate uses the listener's channel (MessageListener).</summary>
         [Test]
         public void TestMessageListener()
@@ -56,7 +59,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
             mockConnection.Setup(m => m.IsOpen).Returns(true);
 
-            var tooManyChannels = new AtomicReference<Exception>();
+            var tooManyChannels = new BlockingCollection<Exception>(1);
             var done = false;
             mockConnection.Setup(m => m.CreateModel()).Returns(
                 () =>
@@ -67,16 +70,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                         return onlyChannel.Object;
                     }
 
-                    tooManyChannels.LazySet(new Exception("More than one channel requested"));
+                    tooManyChannels.Add(new Exception("More than one channel requested"));
                     var channel = new Mock<IModel>();
                     channel.Setup(m => m.IsOpen).Returns(true);
                     return channel.Object;
                 });
 
-            var consumer = new AtomicReference<IBasicConsumer>();
+            var consumer = new BlockingCollection<IBasicConsumer>(1);
 
             onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicConsumer>())).Callback<string, bool, IBasicConsumer>(
-                (a1, a2, a3) => consumer.LazySet(a3));
+                (a1, a2, a3) => consumer.Add(a3));
 
             var commitLatch = new CountdownEvent(1);
             onlyChannel.Setup(m => m.TxCommit()).Callback(() => commitLatch.Signal());
@@ -99,14 +102,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.AfterPropertiesSet();
             container.Start();
 
-            consumer.Value.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
+            IBasicConsumer currentConsumer;
+            consumer.TryTake(out currentConsumer, timeout);
+            Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
+            currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
             Assert.IsTrue(latch.Wait(new TimeSpan(0, 0, 10)));
 
-            var e = tooManyChannels.Value;
-            if (e != null)
+            var e = tooManyChannels.Count;
+            if (e > 0)
             {
-                throw e;
+                throw tooManyChannels.Take();
             }
 
             mockConnection.Verify(m => m.CreateModel(), Times.Once());
@@ -137,7 +143,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
             mockConnection.Setup(m => m.IsOpen).Returns(true);
 
-            var tooManyChannels = new AtomicReference<Exception>();
+            var tooManyChannels = new BlockingCollection<Exception>(1);
             var done = false;
             mockConnection.Setup(m => m.CreateModel()).Returns(
                 () =>
@@ -148,16 +154,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                         return onlyChannel.Object;
                     }
 
-                    tooManyChannels.LazySet(new Exception("More than one channel requested"));
+                    tooManyChannels.Add(new Exception("More than one channel requested"));
                     var channel = new Mock<IModel>();
                     channel.Setup(m => m.IsOpen).Returns(true);
                     return channel.Object;
                 });
 
-            var consumer = new AtomicReference<IBasicConsumer>();
+            var consumer = new BlockingCollection<IBasicConsumer>(1);
 
             onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicConsumer>())).Callback<string, bool, IBasicConsumer>(
-                (a1, a2, a3) => consumer.LazySet(a3));
+                (a1, a2, a3) => consumer.Add(a3));
 
             var commitLatch = new CountdownEvent(1);
             onlyChannel.Setup(m => m.TxCommit()).Callback(() => commitLatch.Signal());
@@ -185,14 +191,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.AfterPropertiesSet();
             container.Start();
 
-            consumer.Value.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
+            IBasicConsumer currentConsumer;
+            consumer.TryTake(out currentConsumer, timeout);
+            Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
+            currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
             Assert.IsTrue(latch.Wait(new TimeSpan(0, 0, 10)));
 
-            var e = tooManyChannels.Value;
-            if (e != null)
+            var e = tooManyChannels.Count;
+            if (e > 0)
             {
-                throw e;
+                throw tooManyChannels.Take();
             }
 
             mockConnection.Verify(m => m.CreateModel(), Times.Once());
@@ -228,7 +237,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
             mockConnection.Setup(m => m.IsOpen).Returns(true);
 
-            var tooManyChannels = new AtomicReference<Exception>();
+            var tooManyChannels = new BlockingCollection<Exception>(1);
             var done = false;
             mockConnection.Setup(m => m.CreateModel()).Returns(
                 () =>
@@ -242,10 +251,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                     return secondChannel.Object;
                 });
 
-            var consumer = new AtomicReference<IBasicConsumer>();
+            var consumer = new BlockingCollection<IBasicConsumer>(1);
 
             firstChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicConsumer>())).Callback<string, bool, IBasicConsumer>(
-                (a1, a2, a3) => consumer.LazySet(a3));
+                (a1, a2, a3) => consumer.Add(a3));
 
             var commitLatch = new CountdownEvent(1);
             firstChannel.Setup(m => m.TxCommit()).Callback(() => commitLatch.Signal());
@@ -274,14 +283,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.AfterPropertiesSet();
             container.Start();
 
-            consumer.Value.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
+            IBasicConsumer currentConsumer;
+            consumer.TryTake(out currentConsumer, timeout);
+            Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
+            currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
             Assert.IsTrue(latch.Wait(new TimeSpan(0, 0, 10)));
 
-            var e = tooManyChannels.Value;
-            if (e != null)
+            var e = tooManyChannels.Count;
+            if (e > 0)
             {
-                throw e;
+                throw tooManyChannels.Take();
             }
 
             // once for listener, once for exposed + 0 for template (used bound)
