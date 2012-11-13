@@ -70,7 +70,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <param name="builder">The builder.</param>
         protected override void DoParse(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder)
         {
-            if (element.HasAttribute(HOST_ATTRIBUTE) || element.HasAttribute(PORT_ATTRIBUTE))
+            if (element.HasAttribute(ADDRESSES) && (element.HasAttribute(HOST_ATTRIBUTE) || element.HasAttribute(PORT_ATTRIBUTE)))
             {
                 parserContext.ReaderContext.ReportFatalException(element, "If the 'addresses' attribute is provided, a connection factory can not have 'host' or 'port' attributes.");
             }
@@ -82,7 +82,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, USER_ATTRIBUTE);
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, PASSWORD_ATTRIBUTE);
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, VIRTUAL_HOST_ATTRIBUTE);
-            NamespaceUtils.SetReferenceIfAttributeDefined(builder, element, EXECUTOR_ATTRIBUTE);
+
+            // TODO: Currently no .NET equivalent to the Java Task Executor that can be used by RabbitMQ.Client
+            // NamespaceUtils.SetReferenceIfAttributeDefined(builder, element, EXECUTOR_ATTRIBUTE);
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, ADDRESSES);
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, PUBLISHER_CONFIRMS);
             NamespaceUtils.SetValueIfAttributeDefined(builder, element, PUBLISHER_RETURNS);

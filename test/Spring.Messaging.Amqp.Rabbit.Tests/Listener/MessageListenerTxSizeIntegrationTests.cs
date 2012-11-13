@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Integration)]
     public class MessageListenerTxSizeIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerTxSizeIntegrationTests));
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly Queue queue = new Queue("test.queue");
 
@@ -92,7 +92,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         {
             // Wait for broker communication to finish before trying to stop container
             Thread.Sleep(300);
-            logger.Debug("Shutting down at end of test");
+            Logger.Debug("Shutting down at end of test");
             if (this.container != null)
             {
                 this.container.Shutdown();
@@ -111,8 +111,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 this.template.ConvertAndSend(this.queue.Name, i + "foo");
             }
 
-            int timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            var timeout = Math.Min(1 + (this.messageCount / (4 * this.concurrentConsumers)), 30);
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(new TimeSpan(0, 0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
@@ -120,7 +120,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>The test listener transactional fails.</summary>
         [Test]
-        [Ignore("Need to fix")]
         public void TestListenerTransactionalFails()
         {
             this.transactional = true;
@@ -131,8 +130,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 this.template.ConvertAndSend(this.queue.Name, i + "foo");
             }
 
-            var timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            var timeout = Math.Min(1 + (this.messageCount / (4 * this.concurrentConsumers)), 30);
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(new TimeSpan(0, 0, 0, timeout));
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(this.queue.Name));
@@ -157,10 +156,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A Tx Test Listener
     /// </summary>
-    /// <remarks></remarks>
     public class TxTestListener : IChannelAwareMessageListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(TestListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly ThreadLocal<int> count = new ThreadLocal<int>();
         private readonly MessageListenerTxSizeIntegrationTests outer;
 
@@ -172,7 +170,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <param name="latch">The latch.</param>
         /// <param name="fail">if set to <c>true</c> [fail].</param>
         /// <param name="outer">The outer.</param>
-        /// <remarks></remarks>
         public TxTestListener(CountdownEvent latch, bool fail, MessageListenerTxSizeIntegrationTests outer)
         {
             this.latch = latch;
@@ -182,19 +179,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
-        /// <remarks></remarks>
         public void HandleMessage(string value) { }
 
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
             try
             {
-                logger.Debug("Received: " + value);
+                Logger.Debug("Received: " + value);
                 if (this.count.Value == null)
                 {
                     this.count.Value = 1;
@@ -206,7 +201,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
                 if (this.count.Value == this.outer.txSize && this.fail)
                 {
-                    logger.Debug("Failing: " + value);
+                    Logger.Debug("Failing: " + value);
                     this.count.Value = 0;
                     throw new SystemException("Planned");
                 }

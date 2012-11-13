@@ -36,7 +36,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the setting of null rabbit template.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSettingOfNullRabbitTemplate()
         {
@@ -55,7 +54,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the no fail on startup with missing broker.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestNoFailOnStartupWithMissingBroker()
         {
@@ -72,7 +70,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the fail on first use with missing broker.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestFailOnFirstUseWithMissingBroker()
         {
@@ -91,8 +88,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             }
             catch (Exception ex)
             {
-                // TODO: Should this be an ArgumentException instead of an AmqpIOException??
-                // Assert.True(ex is ArgumentException, "Expecting an ArgumentException");
                 Assert.True(ex is AmqpIOException, "Expecting an AmqpIOException");
             }
         }

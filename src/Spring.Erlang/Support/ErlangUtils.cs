@@ -29,7 +29,6 @@ namespace Spring.Erlang.Support
     {
         /// <summary>Releases the connection.</summary>
         /// <param name="con">The con.</param>
-        /// <remarks></remarks>
         public static void ReleaseConnection(OtpConnection con)
         {
             if (con == null)
@@ -43,7 +42,6 @@ namespace Spring.Erlang.Support
         /// <summary>Converts the otp access exception.</summary>
         /// <param name="ex">The ex.</param>
         /// <returns>The exception.</returns>
-        /// <remarks></remarks>
         public static OtpException ConvertOtpAccessException(Exception ex)
         {
             AssertUtils.ArgumentNotNull(ex, "Exception must not be null");

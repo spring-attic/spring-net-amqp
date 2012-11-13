@@ -16,6 +16,7 @@
 #region Using Directives
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using AopAlliance.Aop;
@@ -39,7 +40,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     /// A simple message listener container.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public class SimpleMessageListenerContainer : AbstractMessageListenerContainer, IContainerDelegate
+    public class SimpleMessageListenerContainer : AbstractMessageListenerContainer
     {
         #region Logging
 
@@ -108,7 +109,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The consumers.
         /// </summary>
-        private IList<BlockingQueueConsumer> consumers;
+        private ISet<BlockingQueueConsumer> consumers;
 
         /// <summary>
         /// The consumers monitor.
@@ -123,7 +124,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The transaction attribute.
         /// </summary>
-        private ITransactionAttribute transactionAttribute = new DefaultTransactionAttribute();
+        private ITransactionAttribute transactionAttribute = new DefaultTransactionAttribute { TransactionIsolationLevel = IsolationLevel.Unspecified };
 
         /// <summary>
         /// The advice chain.
@@ -388,7 +389,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     return;
                 }
 
-                var processors = new List<AsyncMessageProcessingConsumer>();
+                var processors = new HashSet<AsyncMessageProcessingConsumer>();
 
                 foreach (var consumer in this.consumers)
                 {
@@ -460,7 +461,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 if (this.consumers == null)
                 {
                     this.cancellationLock.Dispose();
-                    this.consumers = new List<BlockingQueueConsumer>();
+                    this.consumers = new HashSet<BlockingQueueConsumer>();
                     for (var i = 0; i < this.concurrentConsumers; i++)
                     {
                         var consumer = this.CreateBlockingQueueConsumer();
@@ -524,6 +525,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
                     var processor = new AsyncMessageProcessingConsumer(consumer, this);
                     var taskExecutor = new Task(processor.Run);
+                    taskExecutor.Start();
                 }
             }
         }
@@ -537,8 +539,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 try
                 {
-                    return (bool)new TransactionTemplate(this.transactionManager).Execute(
-                        delegate
+                    var transactionTemplate = new TransactionTemplate(this.transactionManager);
+                    transactionTemplate.PropagationBehavior = this.transactionAttribute.PropagationBehavior;
+                    transactionTemplate.TransactionIsolationLevel = IsolationLevel.Unspecified; // TODO: revert to transactionAttribute once we take dependency on SPRNET 2.0
+                    transactionTemplate.TransactionTimeout = this.transactionAttribute.TransactionTimeout;
+                    transactionTemplate.ReadOnly = this.transactionAttribute.ReadOnly;
+                    transactionTemplate.Name = this.transactionAttribute.Name;
+
+                    return (bool)transactionTemplate.Execute(
+                        status =>
                         {
                             ConnectionFactoryUtils.BindResourceToTransaction(new RabbitResourceHolder(consumer.Channel, false), this.ConnectionFactory, true);
                             return this.DoReceiveAndExecute(consumer);
@@ -564,7 +573,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             for (var i = 0; i < this.txSize; i++)
             {
                 Logger.Trace(m => m("Waiting for message from consumer."));
-                var message = consumer.NextMessage(new TimeSpan(0, 0, 0, 0, (int)this.receiveTimeout));
+                var message = consumer.NextMessage(this.receiveTimeout);
                 if (message == null)
                 {
                     break;
@@ -581,7 +590,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception ex)
                 {
-                    consumer.RollbackOnExceptionIfNecessary(channel, message, ex);
+                    consumer.RollbackOnExceptionIfNecessary(ex);
                     throw;
                 }
             }
@@ -593,6 +602,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <param name="channel">The channel.</param>
         /// <param name="message">The message.</param>
         public override void InvokeListener(IModel channel, Message message) { this.proxy.InvokeListener(channel, message); }
+
+        internal void InvokeListenerBase(IModel channel, Message message) { base.InvokeListener(channel, message); }
 
         /// <summary>Handle a startup failure.
         /// Wait for a period determined by the {@link #setRecoveryInterval(long) recoveryInterval} to give the container a
@@ -625,7 +636,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(AsyncMessageProcessingConsumer));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The consumer.
@@ -818,7 +829,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>Invoke the listener.</summary>
         /// <param name="channel">The channel.</param>
         /// <param name="message">The message.</param>
-        public void InvokeListener(IModel channel, Message message) { this.outer.InvokeListener(channel, message); }
+        public void InvokeListener(IModel channel, Message message) { this.outer.InvokeListenerBase(channel, message); }
     }
 
     /// <summary>The wrapped transaction exception.</summary>

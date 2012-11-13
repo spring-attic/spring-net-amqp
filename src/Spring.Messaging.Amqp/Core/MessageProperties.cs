@@ -89,7 +89,16 @@ namespace Spring.Messaging.Amqp.Core
         /// <summary>The set header.</summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        public void SetHeader(string key, object value) { this.headers.Add(key, value); }
+        public void SetHeader(string key, object value)
+        {
+            if (this.headers.ContainsKey(key))
+            {
+                this.headers[key] = value;
+                return;
+            }
+
+            this.headers.Add(key, value);
+        }
 
         /// <summary>
         /// Gets Headers.

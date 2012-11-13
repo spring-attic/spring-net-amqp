@@ -39,10 +39,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private readonly ILog logger = LogManager.GetLogger(typeof(BlockingQueueConsumer));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         // This must be an unbounded queue or we risk blocking the Connection thread.
-        internal readonly ConcurrentQueue<Delivery> queue = new ConcurrentQueue<Delivery>();
+        internal readonly BlockingCollection<Delivery> queue = new BlockingCollection<Delivery>();
 
         // When this is non-null the connection has been closed (should never happen in normal operation).
         internal volatile ShutdownEventArgs shutdown;
@@ -175,9 +175,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             var messageProperties = this.messagePropertiesConverter.ToMessageProperties(delivery.Properties, envelope, "UTF-8");
             messageProperties.MessageCount = 0;
             var message = new Message(body, messageProperties);
-            this.logger.Debug(m => m("Received message: {0}", message));
+            Logger.Debug(m => m("Received message: {0}", message.ToString()));
 
-            this.deliveryTags.AddLast(messageProperties.DeliveryTag);
+            this.deliveryTags.AddOrUpdate(messageProperties.DeliveryTag);
             return message;
         }
 
@@ -189,29 +189,33 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// </returns>
         public Message NextMessage()
         {
-            this.logger.Debug(m => m("Retrieving delivery for {0}", this));
+            Logger.Trace(m => m("Retrieving delivery for {0}", this));
             return this.Handle(this.queue.Take());
         }
 
         /// <summary>Main application-side API: wait for the next message delivery and return it.</summary>
         /// <param name="timeout">The timeout.</param>
         /// <returns>The next message.</returns>
-        public Message NextMessage(TimeSpan timeout)
+        public Message NextMessage(long timeout)
         {
-            this.logger.Debug(m => m("Retrieving delivery for {0}", this));
+            Logger.Debug(m => m("Retrieving delivery for {0}", this));
 
             this.CheckShutdown();
             Delivery delivery;
-            this.queue.Poll(timeout, out delivery);
-            return this.Handle(delivery);
+            var result = this.queue.TryTake(out delivery, (int)timeout);
+            var message = this.Handle(delivery);
+            if (message == null && this.cancelReceived.Value)
+            {
+                throw new ConsumerCancelledException();
+            }
+
+            return message;
         }
 
         /// <summary>The start.</summary>
-        /// <exception cref="Exception"></exception>
-        /// <exception cref="SystemException"></exception>
         public void Start()
         {
-            this.logger.Debug(m => m("Starting consumer {0}", this));
+            Logger.Debug(m => m("Starting consumer {0}", this));
 
             this.channel = ConnectionFactoryUtils.GetTransactionalResourceHolder(this.connectionFactory, this.transactional).Channel;
             this.consumer = new InternalConsumer(this.channel, this);
@@ -235,12 +239,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     {
                         this.channel.QueueDeclarePassive(t);
                     }
+
+                    passiveDeclareTries = 0;
                 }
                 catch (Exception e)
                 {
                     if (passiveDeclareTries > 0 && this.channel.IsOpen)
                     {
-                        this.logger.Warn(m => m("Reconnect failed; retries left=" + (passiveDeclareTries - 1)), e);
+                        Logger.Warn(m => m("Reconnect failed; retries left=" + (passiveDeclareTries - 1)), e);
                         try
                         {
                             Thread.Sleep(5000);
@@ -263,7 +269,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 foreach (var t in this.queues)
                 {
                     this.channel.BasicConsume(t, this.acknowledgeMode.IsAutoAck(), this.consumer);
-                    this.logger.Debug(m => m("Started on queue '{0}': {1}", t, this));
+                    Logger.Debug(m => m("Started on queue '{0}': {1}", t, this));
                 }
             }
             catch (Exception e)
@@ -286,11 +292,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 }
                 catch (Exception ex)
                 {
-                    this.logger.Debug(m => m("Error closing consumer"), ex);
+                    Logger.Debug(m => m("Error closing consumer"), ex);
                 }
             }
 
-            this.logger.Debug("Closing Rabbit Channel: " + this.channel);
+            Logger.Debug("Closing Rabbit Channel: " + this.channel);
+            RabbitUtils.SetPhysicalCloseRequired(true);
 
             // This one never throws exceptions...
             RabbitUtils.CloseChannel(this.channel);
@@ -300,27 +307,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
 
         /// <summary>The to string.</summary>
         /// <returns>The System.String.</returns>
-        public override string ToString() { return "Consumer: tag=[" + (this.consumer != null ? this.consumer.ConsumerTag : null) + "], channel=" + this.channel + ", acknowledgeMode=" + this.acknowledgeMode + " local queue size=" + this.queue.Count; }
+        public override string ToString() { return string.Format("Consumer: tag=[{0}], channel={1}, acknowledgeMode={2}, local queue size={3}", this.consumer != null ? this.consumer.ConsumerTag : null, this.channel, this.acknowledgeMode, this.queue.Count); }
 
-        /// <summary>Perform a rollback, handling rollback excepitons properly.</summary>
-        /// <param name="channel">The channel to rollback.</param>
-        /// <param name="message">The message.</param>
+        /// <summary>Perform a rollback, handling rollback exceptions properly.</summary>
         /// <param name="ex">The thrown application exception.</param>
-        public virtual void RollbackOnExceptionIfNecessary(IModel channel, Message message, Exception ex)
+        public virtual void RollbackOnExceptionIfNecessary(Exception ex)
         {
             var ackRequired = !this.acknowledgeMode.IsAutoAck() && !this.acknowledgeMode.IsManual();
             try
             {
                 if (this.transactional)
                 {
-                    this.logger.Debug(m => m("Initiating transaction rollback on application exception"), ex);
-
-                    RabbitUtils.RollbackIfNecessary(channel);
+                    Logger.Debug(m => m("Initiating transaction rollback on application exception"), ex);
+                    RabbitUtils.RollbackIfNecessary(this.channel);
                 }
 
                 if (ackRequired)
                 {
-                    this.logger.Debug(m => m("Rejecting message"));
+                    Logger.Debug(m => m("Rejecting message"));
 
                     var shouldRequeue = this.defaultRequeueRejected;
                     var t = ex;
@@ -337,22 +341,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     foreach (var deliveryTag in this.deliveryTags)
                     {
                         // With newer RabbitMQ brokers could use basicNack here...
-                        // channel.BasicReject((ulong)message.MessageProperties.DeliveryTag, true);
-
-                        // ... So we will.
-                        channel.BasicNack((ulong)message.MessageProperties.DeliveryTag, true, true);
+                        this.channel.BasicReject((ulong)deliveryTag, shouldRequeue);
                     }
 
                     if (this.transactional)
                     {
                         // Need to commit the reject (=nack)
-                        RabbitUtils.CommitIfNecessary(channel);
+                        RabbitUtils.CommitIfNecessary(this.channel);
                     }
                 }
             }
             catch (Exception e)
             {
-                this.logger.Error(m => m("Application exception overriden by rollback exception"), ex);
+                Logger.Error(m => m("Application exception overriden by rollback exception"), ex);
                 throw;
             }
             finally
@@ -423,7 +424,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(InternalConsumer));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The outer blocking queue consumer.
@@ -441,9 +442,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public override void HandleModelShutdown(IModel channel, ShutdownEventArgs reason)
         {
             Logger.Warn(m => m("Received shutdown signal for consumer tag {0}, cause: {1}", this.ConsumerTag, reason.Cause));
-            base.HandleModelShutdown(channel, reason);
 
             this.outer.shutdown = reason;
+
+            // The delivery tags will be invalid if the channel shuts down
             this.outer.deliveryTags.Clear();
         }
 
@@ -452,7 +454,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public override void HandleBasicCancel(string consumerTag)
         {
             Logger.Warn(m => m("Cancel received"));
-            base.HandleBasicCancel(consumerTag);
             this.outer.cancelReceived.LazySet(true);
         }
 
@@ -461,7 +462,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         public override void HandleBasicCancelOk(string consumerTag)
         {
             Logger.Debug(m => m("Received cancellation notice for {0}", this.outer.ToString()));
-            base.HandleBasicCancelOk(consumerTag);
 
             // Signal to the container that we have been cancelled
             this.outer.activeObjectCounter.Release(this.outer);
@@ -488,7 +488,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 // N.B. we can't use a bounded queue and offer() here with a timeout
                 // in case the connection thread gets blocked
-                this.outer.queue.Enqueue(new Delivery(envelope, properties, body));
+                this.outer.queue.Add(new Delivery(envelope, properties, body));
             }
             catch (ThreadInterruptedException e)
             {

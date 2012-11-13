@@ -16,12 +16,14 @@
 #region Using Directives
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using AopAlliance.Intercept;
 using Common.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Impl;
 using Spring.Aop.Framework;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Util;
 #endregion
 
@@ -190,11 +192,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             if (channel != null)
             {
-                this.Logger.Trace(m => m("Found cached Rabbit Channel"));
+                Logger.Trace(m => m("Found cached Rabbit Channel"));
             }
             else
             {
-                this.Logger.Debug(m => m("Creating cached Rabbit Channel"));
+                Logger.Debug(m => m("Creating cached Rabbit Channel"));
 
                 channel = this.GetCachedChannelProxy(channelList, transactional);
             }
@@ -211,26 +213,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         protected virtual IChannelProxy GetCachedChannelProxy(LinkedList<IChannelProxy> channelList, bool transactional)
         {
             var targetChannel = this.CreateBareChannel(transactional);
-            this.Logger.Debug(m => m("Creating cached Rabbit Channel from {0}", targetChannel));
+            Logger.Debug(m => m("Creating cached Rabbit Channel from {0}", targetChannel));
 
             this.ChannelListener.OnCreate(targetChannel, transactional);
 
-            /*
-             * TODO: Pending Completion of PublisherCallbackChannelImpl
-             * 
             IList<Type> interfaces;
-            if(this.publisherConfirms || this.publisherReturns)
+            if (this.publisherConfirms || this.publisherReturns)
             {
-                interfaces = new List<Type>() { typeof(IChannelProxy), typeof(IPublisherCallbackChannel) };
+                interfaces = new List<Type> { typeof(IChannelProxy), typeof(IPublisherCallbackChannel) };
             }
             else
             {
-                interfaces = new List<Type>() { typeof(IChannelProxy) };
+                interfaces = new List<Type> { typeof(IChannelProxy) };
             }
-            */
-            var factory = new ProxyFactory(typeof(IChannelProxy), new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this));
 
-            // factory.Interfaces = interfaces.ToArray();
+            var handler = new CachedChannelInvocationHandler(targetChannel, channelList, transactional, this);
+            var factory = new ProxyFactory(typeof(IChannelProxy), handler);
+            factory.Target = handler;
+            factory.Interfaces = interfaces.ToArray();
             var channelProxy = (IChannelProxy)factory.GetProxy();
             return channelProxy;
         }
@@ -250,8 +250,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             var channel = this.connection.CreateBareChannel(transactional);
 
-            /*
-             * TODO: Pending Completion of PublisherCallbackChannelImpl
             if (this.publisherConfirms)
             {
                 try
@@ -260,9 +258,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 }
                 catch (Exception ex)
                 {
-                    this.Logger.Error(m => m("Could not configure the channel to receive publisher confirms"), ex);
+                    Logger.Error(m => m("Could not configure the channel to receive publisher confirms"), ex);
                 }
             }
+
             if (this.publisherConfirms || this.publisherReturns)
             {
                 if (!(channel is PublisherCallbackChannelImpl))
@@ -270,7 +269,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                     channel = new PublisherCallbackChannelImpl(channel);
                 }
             }
-            */
+
             return channel;
         }
 
@@ -327,7 +326,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                     }
                     catch (Exception ex)
                     {
-                        this.Logger.Trace("Could not close cached Rabbit Channel", ex);
+                        Logger.Trace("Could not close cached Rabbit Channel", ex);
                     }
                 }
 
@@ -344,7 +343,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                     }
                     catch (Exception ex)
                     {
-                        this.Logger.Trace("Could not close cached Rabbit Channel", ex);
+                        Logger.Trace("Could not close cached Rabbit Channel", ex);
                     }
                 }
 
@@ -375,7 +374,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// </summary>
     internal class CachedChannelInvocationHandler : IMethodInterceptor
     {
-        private readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private volatile IModel target;
 
@@ -410,7 +409,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// throws an exception.</exception>
         public object Invoke(IMethodInvocation invocation)
         {
-            this.Logger.Info(string.Format("Method Intercepted: {0}", invocation.Method.Name));
+            Logger.Trace(m => m("Method Intercepted: {0}", invocation.Method.Name));
 
             var methodName = invocation.Method.Name;
             if (methodName == "TxSelect" && !this.transactional)
@@ -432,6 +431,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 return "Cached Rabbit Channel: " + this.target;
             }
+            else if (methodName == "GetTargetChannel")
+            {
+                return this.target;
+            }
             else if (methodName == "GetConnection")
             {
                 return ((ModelBase)this.target).m_session.Connection;
@@ -443,7 +446,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 {
                     lock (this.channelList)
                     {
-                        if (this.channelList.Count < this.outer.ChannelCacheSize)
+                        if (!RabbitUtils.IsPhysicalCloseRequired() && this.channelList.Count < this.outer.ChannelCacheSize)
                         {
                             this.LogicalClose((IChannelProxy)invocation.Proxy);
 
@@ -490,8 +493,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 if (this.target == null || !this.target.IsOpen)
                 {
                     // Basic re-connection logic...
+                    Logger.Debug(m => m("Detected closed channel on exception. Re-initializing: {0}", this.target));
                     this.target = null;
-                    this.Logger.Debug(m => m("Detected closed channel on exception. Re-initializing: {0}", this.target));
                     lock (this.targetMonitor)
                     {
                         if (this.target == null)
@@ -513,7 +516,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 lock (this.targetMonitor)
                 {
-                    if (!this.target.IsOpen)
+                    if (this.target != null && !this.target.IsOpen)
                     {
                         this.target = null;
                         return;
@@ -524,7 +527,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             // Allow for multiple close calls...
             if (!this.channelList.Contains(proxy))
             {
-                this.Logger.Trace(m => m("Returning cached Channel: {0}", this.target));
+                Logger.Trace(m => m("Returning cached Channel: {0}", this.target));
                 this.channelList.AddLast(proxy);
             }
         }
@@ -534,10 +537,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         private void PhysicalClose()
         {
-            if (this.Logger.IsDebugEnabled)
-            {
-                this.Logger.Debug(m => m("Closing cached Channel: " + this.target));
-            }
+            Logger.Debug(m => m("Closing cached Channel: " + this.target));
 
             if (this.target == null)
             {
@@ -557,6 +557,26 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 }
             }
         }
+
+        /// <summary>The get target.</summary>
+        /// <returns>The System.Object.</returns>
+        public object GetTarget() { return this.target; }
+
+        /// <summary>Gets a value indicating whether is static.</summary>
+        public bool IsStatic { get { return false; } }
+
+        /// <summary>The release target.</summary>
+        /// <param name="target">The target.</param>
+        public void ReleaseTarget(object target)
+        {
+            if (target != null && target == this.target)
+            {
+                this.target = null;
+            }
+        }
+
+        /// <summary>Gets the target type.</summary>
+        public Type TargetType { get { return typeof(IModel); } }
     }
     #endregion
 

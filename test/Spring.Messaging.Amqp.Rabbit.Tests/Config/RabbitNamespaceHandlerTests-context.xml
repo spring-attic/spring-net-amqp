@@ -17,6 +17,7 @@
             <binding queue="bar" pattern="bar.#" />
             <binding queue="spam" pattern="spam.#" />
             <binding queue="bucket" pattern="bucket.#" />
+            <binding exchange="direct-test" pattern="qux" />
         </bindings>
     </topic-exchange>
 
@@ -40,7 +41,7 @@
 
     <rabbit:queue id="foo" name="foo" />
 
-    <rabbit:queue id="bar" name="bar" />
+    <rabbit:queue id="bar" name="bar" /> <!-- TODO: Fix SPRNET 2.0 To Register Objects by ID _OR_ Name -->
 
     <rabbit:queue id="spam" name="bar" />
 

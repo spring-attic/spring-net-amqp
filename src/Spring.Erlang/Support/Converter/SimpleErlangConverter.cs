@@ -14,7 +14,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System;
 using System.Collections.Generic;
 using Erlang.NET;
 #endregion
@@ -87,7 +86,6 @@ namespace Spring.Erlang.Support.Converter
         /// <summary>Converts the basic type to erlang.</summary>
         /// <param name="obj">The obj.</param>
         /// <returns>The object.</returns>
-        /// <remarks></remarks>
         private OtpErlangObject ConvertBasicTypeToErlang(object obj)
         {
             if (obj is byte[])
@@ -141,7 +139,6 @@ namespace Spring.Erlang.Support.Converter
         /// <summary>Converts the type of the erlang to basic.</summary>
         /// <param name="erlangObject">The erlang object.</param>
         /// <returns>The object.</returns>
-        /// <remarks></remarks>
         private object ConvertErlangToBasicType(OtpErlangObject erlangObject)
         {
             try
@@ -220,7 +217,6 @@ namespace Spring.Erlang.Support.Converter
         /// <summary>Extracts the boolean.</summary>
         /// <param name="erlangObject">The erlang object.</param>
         /// <returns>The boolean.</returns>
-        /// <remarks></remarks>
         public static bool ExtractBoolean(OtpErlangObject erlangObject)
         {
             // TODO Erlang.NET has wrong capitilization
@@ -235,7 +231,6 @@ namespace Spring.Erlang.Support.Converter
         /// <summary>Extracts the long.</summary>
         /// <param name="value">The value.</param>
         /// <returns>The long.</returns>
-        /// <remarks></remarks>
         public static long ExtractLong(OtpErlangObject value) { return ((OtpErlangLong)value).longValue(); }
     }
 }

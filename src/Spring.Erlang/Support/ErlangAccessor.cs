@@ -29,9 +29,9 @@ namespace Spring.Erlang.Support
     public abstract class ErlangAccessor : IInitializingObject
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
-        protected static readonly ILog logger = LogManager.GetLogger(typeof(ErlangAccessor));
+        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The connection factory.
@@ -42,7 +42,6 @@ namespace Spring.Erlang.Support
         /// Gets or sets the connection factory.
         /// </summary>
         /// <value>The connection factory.</value>
-        /// <remarks></remarks>
         public IConnectionFactory ConnectionFactory { get { return this.connectionFactory; } set { this.connectionFactory = value; } }
 
         /// <summary>
@@ -54,7 +53,6 @@ namespace Spring.Erlang.Support
         /// Creates the connection.
         /// </summary>
         /// <returns>The connection.</returns>
-        /// <remarks></remarks>
         protected IConnection CreateConnection() { return this.ConnectionFactory.CreateConnection(); }
     }
 }

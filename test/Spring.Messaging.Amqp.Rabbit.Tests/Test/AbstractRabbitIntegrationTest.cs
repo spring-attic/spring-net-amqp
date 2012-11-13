@@ -28,6 +28,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
     public abstract class AbstractRabbitIntegrationTest
     {
         public static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
         public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
         protected RabbitBrokerAdmin brokerAdmin;

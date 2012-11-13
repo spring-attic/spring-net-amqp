@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using Common.Logging;
 using RabbitMQ.Client;
-using Spring.Transaction.Support;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Util;
 #endregion
 
@@ -29,12 +29,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
     /// </summary>
     /// <author>Mark Pollack</author>
     /// <author>Joe Fitzgerald (.NET)</author>
-    public class RabbitResourceHolder : ResourceHolderSupport
+    public class RabbitResourceHolder : RabbitResourceHolderSupport
     {
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ResourceHolderSupport));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The frozen flag.
@@ -54,12 +54,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// The channels per connection.
         /// </summary>
-        private readonly IDictionary<IConnection, List<IModel>> channelsPerConnection = new Dictionary<IConnection, List<IModel>>();
+        private readonly IDictionary<IConnection, LinkedList<IModel>> channelsPerConnection = new Dictionary<IConnection, LinkedList<IModel>>();
 
         /// <summary>
         /// The delivery tags.
         /// </summary>
-        private readonly IDictionary<IModel, List<long>> deliveryTags = new Dictionary<IModel, List<long>>();
+        private readonly IDictionary<IModel, LinkedList<long>> deliveryTags = new Dictionary<IModel, LinkedList<long>>();
 
         /// <summary>
         /// The transactional flag.
@@ -106,7 +106,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             AssertUtils.ArgumentNotNull(connection, "Connection must not be null");
             if (!this.connections.Contains(connection))
             {
-                this.connections.AddLast(connection);
+                this.connections.AddOrUpdate(connection);
             }
         }
 
@@ -123,19 +123,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             AssertUtils.ArgumentNotNull(channel, "Channel must not be null");
             if (!this.channels.Contains(channel))
             {
-                this.channels.AddLast(channel);
+                this.channels.AddOrUpdate(channel);
                 if (connection != null)
                 {
-                    List<IModel> tempChannels;
-                    this.channelsPerConnection.TryGetValue(connection, out tempChannels);
-
-                    if (tempChannels == null)
-                    {
-                        tempChannels = new List<IModel>();
-                        this.channelsPerConnection.Add(connection, tempChannels);
-                    }
-
-                    this.channels.AddLast(channel);
+                    // .NET: Moved Extra Code Into Extension Method AddListValue
+                    this.channelsPerConnection.AddListValue(connection, channel);
                 }
             }
         }
@@ -161,13 +153,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </returns>
         public IConnection GetConnection<T>() where T : IConnection
         {
-            Type type = typeof(T);
+            var type = typeof(T);
             return (IConnection)CollectionUtils.FindValueOfType(this.connections, type);
         }
 
         /// <summary>The get connection.</summary>
         /// <param name="connectionType">The connection type.</param>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Type T</typeparam>
         /// <returns>The Spring.Messaging.Amqp.Rabbit.Connection.IConnection.</returns>
         public IConnection GetConnection<T>(Type connectionType) where T : IConnection { return (T)CollectionUtils.FindValueOfType(this.connections, connectionType); }
 
@@ -179,8 +171,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// Commit all delivery tags.
         /// </summary>
-        /// <exception cref="AmqpException">
-        /// </exception>
         public void CommitAll()
         {
             try
@@ -213,7 +203,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 try
                 {
-                    channel.Close();
+                    if (channel != ConnectionFactoryUtils.GetConsumerChannel())
+                    {
+                        channel.Close();
+                    }
+                    else
+                    {
+                        Logger.Debug(m => m("Skipping close of consumer channel: {0}", channel.ToString()));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -234,25 +231,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>Add a delivery tag to the channel.</summary>
         /// <param name="channel">The channel.</param>
         /// <param name="deliveryTag">The delivery tag.</param>
-        public void AddDeliveryTag(IModel channel, long deliveryTag)
-        {
-            if (this.deliveryTags.ContainsKey(channel))
-            {
-                var existingTags = this.deliveryTags[channel];
-                existingTags.Add(deliveryTag);
-                this.deliveryTags[channel] = existingTags;
-            }
-            else
-            {
-                this.deliveryTags.Add(channel, new List<long> { deliveryTag });
-            }
-        }
+        public void AddDeliveryTag(IModel channel, long deliveryTag) { this.deliveryTags.AddListValue(channel, deliveryTag); }
 
         /// <summary>
         /// Rollback all.
         /// </summary>
-        /// <exception cref="AmqpException">
-        /// </exception>
         public void RollbackAll()
         {
             foreach (var channel in this.channels)

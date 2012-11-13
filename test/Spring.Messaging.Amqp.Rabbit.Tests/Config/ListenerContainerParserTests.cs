@@ -14,6 +14,8 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AopAlliance.Aop;
@@ -25,6 +27,7 @@ using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+using Spring.Objects.Factory;
 using Spring.Objects.Factory.Xml;
 #endregion
 
@@ -53,7 +56,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test parse with queue names.</summary>
         [Test]
-        public void testParseWithQueueNames()
+        public void TestParseWithQueueNames()
         {
             var container = this.objectFactory.GetObject<SimpleMessageListenerContainer>("container1");
             Assert.AreEqual(AcknowledgeModeUtils.AcknowledgeMode.Manual, container.AcknowledgeMode);
@@ -74,14 +77,30 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             Assert.AreEqual("[foo, " + queue.Name + "]", queueNamesForVerification);
         }
 
+        /// <summary>The test parse with queues.</summary>
+        [Test]
+        public void TestParseWithQueues()
+        {
+            var container = this.objectFactory.GetObject<SimpleMessageListenerContainer>("container2");
+            var queue = this.objectFactory.GetObject<Queue>("bar");
+            var queueNamesForVerification = "[";
+            foreach (var queueName in container.QueueNames)
+            {
+                queueNamesForVerification += queueNamesForVerification == "[" ? queueName : ", " + queueName;
+            }
+
+            queueNamesForVerification += "]";
+            Assert.AreEqual("[foo, " + queue.Name + "]", queueNamesForVerification);
+        }
+
         /// <summary>The test parse with advice chain.</summary>
         [Test]
-        [Ignore("Need to determine how to allow injection of IAdvice[] via config...")]
-        public void testParseWithAdviceChain()
+        public void TestParseWithAdviceChain()
         {
             var container = this.objectFactory.GetObject<SimpleMessageListenerContainer>("container3");
             var fields = typeof(SimpleMessageListenerContainer).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
             var adviceChainField = typeof(SimpleMessageListenerContainer).GetField("adviceChain", BindingFlags.NonPublic | BindingFlags.Instance);
+            var list = new List<IAdvice>();
 
             var adviceChain = adviceChainField.GetValue(container);
             Assert.IsNotNull(adviceChain);
@@ -90,13 +109,64 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test parse with defaults.</summary>
         [Test]
-        public void testParseWithDefaults()
+        public void TestParseWithDefaults()
         {
             var container = this.objectFactory.GetObject<SimpleMessageListenerContainer>("container4");
             var concurrentConsumersField = typeof(SimpleMessageListenerContainer).GetField("concurrentConsumers", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var concurrentConsumers = concurrentConsumersField.GetValue(container);
             Assert.AreEqual(1, concurrentConsumers);
+        }
+
+        /// <summary>The test parse with default queue rejected false.</summary>
+        [Test]
+        public void TestParseWithDefaultQueueRejectedFalse()
+        {
+            var container = this.objectFactory.GetObject<SimpleMessageListenerContainer>("container5");
+            var concurrentConsumersField = typeof(SimpleMessageListenerContainer).GetField("concurrentConsumers", BindingFlags.NonPublic | BindingFlags.Instance);
+            var concurrentConsumers = concurrentConsumersField.GetValue(container);
+            var defaultRequeueRejectedField = typeof(SimpleMessageListenerContainer).GetField("defaultRequeueRejected", BindingFlags.NonPublic | BindingFlags.Instance);
+            var defaultRequeueRejected = defaultRequeueRejectedField.GetValue(container);
+            Assert.AreEqual(1, (int)concurrentConsumers);
+            Assert.AreEqual(false, (bool)defaultRequeueRejected);
+            Assert.IsFalse(container.ChannelTransacted);
+        }
+
+        /// <summary>The test parse with tx.</summary>
+        [Test]
+        public void TestParseWithTx()
+        {
+            var container = this.objectFactory.GetObject<SimpleMessageListenerContainer>("container6");
+            Assert.IsTrue(container.ChannelTransacted);
+            var txSizeField = typeof(SimpleMessageListenerContainer).GetField("txSize", BindingFlags.NonPublic | BindingFlags.Instance);
+            var txSize = txSizeField.GetValue(container);
+            Assert.AreEqual(5, (int)txSize);
+        }
+
+        /// <summary>The test incompatible tx atts.</summary>
+        [Test]
+        public void TestIncompatibleTxAtts()
+        {
+            var resourceName =
+                @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
+                + typeof(ListenerContainerParserTests).Name + "-fail-context.xml";
+            var resource = new AssemblyResource(resourceName);
+
+            Assert.Throws<ObjectDefinitionStoreException>(
+                () =>
+                {
+                    try
+                    {
+                        var result = new XmlObjectFactory(resource);
+                        Assert.Fail("Expected an exception.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Assert.That(ex.InnerException.Message, Is.StringStarting("Listener Container - cannot set channel-transacted with acknowledge='NONE'"));
+                        throw;
+                    }
+                }, 
+                "Expected an exception.");
         }
     }
 }

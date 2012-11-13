@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
+
+    <rabbit:queue-arguments id="args">
+        <entry key="foo" value="bar" />
+    </rabbit:queue-arguments>
+
+    <rabbit:queue id="queue1">
+        <rabbit:queue-arguments>
+            <entry key="baz" value="qux" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+    <rabbit:queue id="queue2" queue-arguments="args" />
+
+</objects>

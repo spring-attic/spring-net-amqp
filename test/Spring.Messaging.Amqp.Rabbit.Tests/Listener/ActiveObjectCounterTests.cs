@@ -39,14 +39,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Sets up.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void SetUp() { this.counter = new ActiveObjectCounter<object>(); }
 
         /// <summary>
         /// Tests the active count.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestActiveCount()
         {
@@ -65,7 +63,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the wait for locks.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestWaitForLocks()
         {
@@ -89,9 +86,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the timeout wait for locks.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
-        // [Ignore("Need to fix this test")]
         public void TestTimeoutWaitForLocks()
         {
             var object1 = new object();

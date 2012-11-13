@@ -27,14 +27,13 @@ namespace Spring.Erlang.Connection
     public class ConnectionFactoryUtils
     {
         /// <summary>
-        /// The logger.
+        /// The Logger.
         /// </summary>
-        protected static readonly ILog logger = LogManager.GetLogger(typeof(ConnectionFactoryUtils));
+        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>Releases the connection.</summary>
         /// <param name="con">The con.</param>
         /// <param name="cf">The cf.</param>
-        /// <remarks></remarks>
         public static void ReleaseConnection(IConnection con, IConnectionFactory cf)
         {
             if (con == null)
@@ -48,7 +47,7 @@ namespace Spring.Erlang.Connection
             }
             catch (Exception ex)
             {
-                logger.Debug("Could not close Otp Connection", ex);
+                Logger.Debug("Could not close Otp Connection", ex);
             }
         }
     }

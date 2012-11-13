@@ -58,98 +58,84 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// Gets or sets the transactions.
         /// </summary>
         /// <value>The transactions.</value>
-        /// <remarks></remarks>
         public long Transactions { get { return this.transactions; } set { this.transactions = value; } }
 
         /// <summary>
         /// Gets or sets the acks uncommitted.
         /// </summary>
         /// <value>The acks uncommitted.</value>
-        /// <remarks></remarks>
         public long AcksUncommitted { get { return this.acksUncommitted; } set { this.acksUncommitted = value; } }
 
         /// <summary>
         /// Gets or sets the consumers.
         /// </summary>
         /// <value>The consumers.</value>
-        /// <remarks></remarks>
         public long Consumers { get { return this.consumers; } set { this.consumers = value; } }
 
         /// <summary>
         /// Gets or sets the pid.
         /// </summary>
         /// <value>The pid.</value>
-        /// <remarks></remarks>
         public string Pid { get { return this.pid; } set { this.pid = value; } }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="QueueInfo"/> is durable.
         /// </summary>
         /// <value><c>true</c> if durable; otherwise, <c>false</c>.</value>
-        /// <remarks></remarks>
         public bool Durable { get { return this.durable; } set { this.durable = value; } }
 
         /// <summary>
         /// Gets or sets the messages.
         /// </summary>
         /// <value>The messages.</value>
-        /// <remarks></remarks>
         public long Messages { get { return this.messages; } set { this.messages = value; } }
 
         /// <summary>
         /// Gets or sets the memory.
         /// </summary>
         /// <value>The memory.</value>
-        /// <remarks></remarks>
         public long Memory { get { return this.memory; } set { this.memory = value; } }
 
         /// <summary>
         /// Gets or sets a value indicating whether [auto delete].
         /// </summary>
         /// <value><c>true</c> if [auto delete]; otherwise, <c>false</c>.</value>
-        /// <remarks></remarks>
         public bool AutoDelete { get { return this.autoDelete; } set { this.autoDelete = value; } }
 
         /// <summary>
         /// Gets or sets the messages ready.
         /// </summary>
         /// <value>The messages ready.</value>
-        /// <remarks></remarks>
         public long MessagesReady { get { return this.messagesReady; } set { this.messagesReady = value; } }
 
         /// <summary>
         /// Gets or sets the arguments.
         /// </summary>
         /// <value>The arguments.</value>
-        /// <remarks></remarks>
         public string[] Arguments { get { return this.arguments; } set { this.arguments = value; } }
 
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
-        /// <remarks></remarks>
         public string Name { get { return this.name; } set { this.name = value; } }
 
         /// <summary>
         /// Gets or sets the messages unacknowledged.
         /// </summary>
         /// <value>The messages unacknowledged.</value>
-        /// <remarks></remarks>
         public long MessagesUnacknowledged { get { return this.messagesUnacknowledged; } set { this.messagesUnacknowledged = value; } }
 
         /// <summary>
         /// Gets or sets the message uncommitted.
         /// </summary>
         /// <value>The message uncommitted.</value>
-        /// <remarks></remarks>
         public long MessageUncommitted { get { return this.messageUncommitted; } set { this.messageUncommitted = value; } }
 
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-        /// <remarks></remarks>
         public override string ToString()
         {
             return

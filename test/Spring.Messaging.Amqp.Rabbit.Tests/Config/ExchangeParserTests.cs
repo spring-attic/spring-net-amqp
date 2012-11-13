@@ -45,7 +45,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test direct exchange.</summary>
         [Test]
-        public void testDirectExchange()
+        public void TestDirectExchange()
         {
             var exchange = this.objectFactory.GetObject<DirectExchange>("direct");
             Assert.IsNotNull(exchange);
@@ -56,7 +56,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test alias direct exchange.</summary>
         [Test]
-        public void testAliasDirectExchange()
+        public void TestAliasDirectExchange()
         {
             var exchange = this.objectFactory.GetObject<DirectExchange>("alias");
             Assert.IsNotNull(exchange);
@@ -67,7 +67,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test topic exchange.</summary>
         [Test]
-        public void testTopicExchange()
+        public void TestTopicExchange()
         {
             var exchange = this.objectFactory.GetObject<TopicExchange>("topic");
             Assert.IsNotNull(exchange);
@@ -78,7 +78,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test fanout exchange.</summary>
         [Test]
-        public void testFanoutExchange()
+        public void TestFanoutExchange()
         {
             var exchange = this.objectFactory.GetObject<FanoutExchange>("fanout");
             Assert.IsNotNull(exchange);
@@ -89,7 +89,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test headers exchange.</summary>
         [Test]
-        public void testHeadersExchange()
+        public void TestHeadersExchange()
         {
             var exchange = this.objectFactory.GetObject<HeadersExchange>("headers");
             Assert.IsNotNull(exchange);
@@ -100,25 +100,76 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test direct exchange override.</summary>
         [Test]
-        public void testDirectExchangeOverride()
+        public void TestDirectExchangeOverride()
         {
             var exchange = this.objectFactory.GetObject<DirectExchange>("direct-override");
             Assert.IsNotNull(exchange);
             Assert.AreEqual("direct-override", exchange.Name);
-            Assert.True(exchange.Durable);
-            Assert.False(exchange.AutoDelete);
+            Assert.False(exchange.Durable);
+            Assert.True(exchange.AutoDelete);
         }
 
         /// <summary>The test direct exchange with arguments.</summary>
         [Test]
-        public void testDirectExchangeWithArguments()
+        public void TestDirectExchangeWithArguments()
         {
             var exchange = this.objectFactory.GetObject<DirectExchange>("direct-arguments");
-
             Assert.IsNotNull(exchange);
             Assert.AreEqual("direct-arguments", exchange.Name);
+            Assert.AreEqual(1, exchange.Arguments.Count);
             Assert.AreEqual("bar", exchange.Arguments["foo"]);
-            Assert.AreEqual("baz", exchange.Arguments["bar"]);
+        }
+
+        /// <summary>The test federated direct exchange.</summary>
+        [Test]
+        public void TestFederatedDirectExchange()
+        {
+            var exchange = this.objectFactory.GetObject<FederatedExchange>("fedDirect");
+            Assert.NotNull(exchange);
+            Assert.AreEqual("fedDirect", exchange.Name);
+            Assert.True(exchange.Durable);
+            Assert.False(exchange.AutoDelete);
+            Assert.AreEqual("direct", exchange.Arguments["type"]);
+            Assert.AreEqual("upstream-set1", exchange.Arguments["upstream-set"]);
+        }
+
+        /// <summary>The test federated topic exchange.</summary>
+        [Test]
+        public void TestFederatedTopicExchange()
+        {
+            var exchange = this.objectFactory.GetObject<FederatedExchange>("fedTopic");
+            Assert.NotNull(exchange);
+            Assert.AreEqual("fedTopic", exchange.Name);
+            Assert.True(exchange.Durable);
+            Assert.False(exchange.AutoDelete);
+            Assert.AreEqual("topic", exchange.Arguments["type"]);
+            Assert.AreEqual("upstream-set2", exchange.Arguments["upstream-set"]);
+        }
+
+        /// <summary>The test federated fanout exchange.</summary>
+        [Test]
+        public void TestFederatedFanoutExchange()
+        {
+            var exchange = this.objectFactory.GetObject<FederatedExchange>("fedFanout");
+            Assert.NotNull(exchange);
+            Assert.AreEqual("fedFanout", exchange.Name);
+            Assert.True(exchange.Durable);
+            Assert.False(exchange.AutoDelete);
+            Assert.AreEqual("fanout", exchange.Arguments["type"]);
+            Assert.AreEqual("upstream-set3", exchange.Arguments["upstream-set"]);
+        }
+
+        /// <summary>The test federated headers exchange.</summary>
+        [Test]
+        public void TestFederatedHeadersExchange()
+        {
+            var exchange = this.objectFactory.GetObject<FederatedExchange>("fedHeaders");
+            Assert.NotNull(exchange);
+            Assert.AreEqual("fedHeaders", exchange.Name);
+            Assert.True(exchange.Durable);
+            Assert.False(exchange.AutoDelete);
+            Assert.AreEqual("headers", exchange.Arguments["type"]);
+            Assert.AreEqual("upstream-set4", exchange.Arguments["upstream-set"]);
         }
     }
 }

@@ -7,14 +7,15 @@
     <rabbit:queue id="bar" name="bar" />
 
     <rabbit:listener-container id="container1" connection-factory="connectionFactory" acknowledge="manual" concurrency="5">
-        <rabbit:listener id="testListener" queue-names="foo, bar" ref="testObject" method="Handle" />
+        <rabbit:listener id="testListener" queue-names="foo, bar" ref="testObject" method="Handle" />  <!--  vvvvvvvv - expression -->
+        <!-- No Object Expression Resolver In SPRNET <rabbit:listener id="testListener" queue-names="foo, #{bar.name}" ref="testBean" method="handle"/> -->
     </rabbit:listener-container>
 
     <rabbit:listener-container id="container2" connection-factory="connectionFactory" acknowledge="manual" concurrency="5">
         <rabbit:listener id="testListener" queues="foo, bar" ref="testObject" method="Handle" />
     </rabbit:listener-container>
 
-    <rabbit:listener-container id="container3" connection-factory="connectionFactory"> <!-- TODO: advice-chain="adviceChain"> -->
+    <rabbit:listener-container id="container3" connection-factory="connectionFactory" advice-chain="adviceChain">
         <rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle" />
     </rabbit:listener-container>
 
@@ -22,15 +23,23 @@
         <rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle" />
     </rabbit:listener-container>
 
-    <!--
-  TODO
-  <list id="adviceChain">
-		<object type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests"/>
-		<object type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests"/>
-		<object type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests"/>
-	</list>
-  
-  -->
+    <rabbit:listener-container id="container5" connection-factory="connectionFactory" requeue-rejected="false">
+        <rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle" />
+    </rabbit:listener-container>
+
+    <rabbit:listener-container id="container6" connection-factory="connectionFactory" channel-transacted="true" transaction-size="5">
+        <rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle" />
+    </rabbit:listener-container>
+
+    <object id="adviceChain" type="System.Collections.Generic.List&lt;AopAlliance.Aop.IAdvice>">
+        <constructor-arg name="collection" type="System.Collections.Generic.IEnumerable&lt;AopAlliance.Aop.IAdvice>">
+            <list element-type="AopAlliance.Aop.IAdvice, Spring.Aop">
+                <object id="testAdvice1" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
+                <object id="testAdvice2" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
+                <object id="testAdvice3" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
+            </list>
+        </constructor-arg>
+    </object>
 
     <object type="Spring.Messaging.Amqp.Rabbit.Core.RabbitAdmin, Spring.Messaging.Amqp.Rabbit">
         <constructor-arg name="connectionFactory" ref="connectionFactory" />

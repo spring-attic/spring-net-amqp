@@ -14,7 +14,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System.Collections;
+using System.Collections.Generic;
 #endregion
 
 namespace Spring.Messaging.Amqp.Core
@@ -51,7 +51,7 @@ namespace Spring.Messaging.Amqp.Core
         /// <param name="durable">The durable.</param>
         /// <param name="autoDelete">The auto delete.</param>
         /// <param name="arguments">The arguments.</param>
-        public DirectExchange(string name, bool durable, bool autoDelete, IDictionary arguments) : base(name, durable, autoDelete, arguments) { }
+        public DirectExchange(string name, bool durable, bool autoDelete, IDictionary<string, object> arguments) : base(name, durable, autoDelete, arguments) { }
 
         /// <summary>Gets the exchange type.</summary>
         public override string Type { get { return ExchangeTypes.Direct; } }

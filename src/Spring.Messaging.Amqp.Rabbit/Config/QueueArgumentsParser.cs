@@ -36,9 +36,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         protected override void DoParse(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder)
         {
             var parser = new ObjectDefinitionParserHelper(parserContext);
-            var map = parser.ParseMapElementToTypedDictionary(element, builder.RawObjectDefinition);
+            var map = parser.ParseMapElement(element, builder.RawObjectDefinition);
 
-            builder.AddConstructorArg(map);
+            builder.AddPropertyValue("SourceDictionary", map);
         }
 
         /// <summary>The get object type name.</summary>

@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// The Logger
         /// </summary>
-        protected static readonly ILog logger = LogManager.GetLogger(typeof(RabbitControlErlangConverter));
+        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The converter map.
@@ -49,7 +49,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
         /// <summary>Initializes a new instance of the <see cref="RabbitControlErlangConverter"/> class.</summary>
         /// <param name="moduleAdapter">The module adapter.</param>
-        /// <remarks></remarks>
         public RabbitControlErlangConverter(IDictionary<string, string> moduleAdapter)
         {
             this.moduleAdapter = moduleAdapter;
@@ -62,7 +61,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="erlangObject">The erlang object that is passed in as a parameter</param>
         /// <returns>The converted .NET object return value from the RPC call.</returns>
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
-        /// <remarks></remarks>
         public override object FromErlangRpc(string module, string function, OtpErlangObject erlangObject)
         {
             var converter = this.GetConverter(module, function);
@@ -80,7 +78,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="module">The module.</param>
         /// <param name="function">The function.</param>
         /// <returns>The converter.</returns>
-        /// <remarks></remarks>
         protected virtual IErlangConverter GetConverter(string module, string function)
         {
             var key = this.GenerateKey(module, function);
@@ -95,7 +92,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Initializes the converter map.
         /// </summary>
-        /// <remarks></remarks>
         protected void InitializeConverterMap()
         {
             this.RegisterConverter("rabbit_auth_backend_internal", "list_users", new ListUsersConverter());
@@ -108,7 +104,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="module">The module.</param>
         /// <param name="function">The function.</param>
         /// <param name="listUsersConverter">The list users converter.</param>
-        /// <remarks></remarks>
         protected void RegisterConverter(string module, string function, IErlangConverter listUsersConverter)
         {
             var key = this.GenerateKey(module, function);
@@ -128,21 +123,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="module">The module.</param>
         /// <param name="function">The function.</param>
         /// <returns>The key.</returns>
-        /// <remarks></remarks>
         protected string GenerateKey(string module, string function) { return module + "%" + function; }
     }
 
     /// <summary>
     /// List users converter.
     /// </summary>
-    /// <remarks></remarks>
     public class ListUsersConverter : SimpleErlangConverter
     {
         /// <summary>Convert from an Erlang data type to a .NET data type.</summary>
         /// <param name="erlangObject">The erlang object.</param>
         /// <returns>The converted .NET object</returns>
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
-        /// <remarks></remarks>
         public override object FromErlang(OtpErlangObject erlangObject)
         {
             var users = new List<string>();
@@ -168,7 +160,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>Extracts the string.</summary>
         /// <param name="obj">The obj.</param>
         /// <returns>The string.</returns>
-        /// <remarks></remarks>
         private string ExtractString(OtpErlangObject obj)
         {
             if (obj is OtpErlangBinary)
@@ -189,14 +180,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <summary>
     /// A status converter.
     /// </summary>
-    /// <remarks></remarks>
     public class RabbitStatusConverter : SimpleErlangConverter
     {
         /// <summary>Convert from an Erlang data type to a .NET data type.</summary>
         /// <param name="erlangObject">The erlang object.</param>
         /// <returns>The converted .NET object</returns>
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
-        /// <remarks></remarks>
         public override object FromErlang(OtpErlangObject erlangObject)
         {
             var applications = new List<Application>();
@@ -233,14 +222,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <summary>
     /// A status converter.
     /// </summary>
-    /// <remarks></remarks>
     public class RabbitMnesiaStatusConverter : SimpleErlangConverter
     {
         /// <summary>Convert from an Erlang data type to a .NET data type.</summary>
         /// <param name="erlangObject">The erlang object.</param>
         /// <returns>The converted .NET object</returns>
         /// <exception cref="ErlangConversionException">in case of conversion failures</exception>
-        /// <remarks></remarks>
         public override object FromErlang(OtpErlangObject erlangObject)
         {
             var applications = new List<Application>();
@@ -265,7 +252,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>Extracts the nodes.</summary>
         /// <param name="nodes">The nodes.</param>
         /// <param name="nodesList">The nodes list.</param>
-        /// <remarks></remarks>
         private void ExtractNodes(IList<Node> nodes, OtpErlangList nodesList)
         {
             foreach (var erlangNodeName in nodesList)
@@ -279,7 +265,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <summary>
     /// Queue info field enumeraton.
     /// </summary>
-    /// <remarks></remarks>
     public enum QueueInfoField
     {
         /// <summary>
@@ -356,13 +341,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     /// <summary>
     /// A queue info all converter.
     /// </summary>
-    /// <remarks></remarks>
     public class QueueInfoAllConverter : SimpleErlangConverter
     {
         /// <summary>Toes the queue info field.</summary>
         /// <param name="str">The string.</param>
         /// <returns>The queue info field value.</returns>
-        /// <remarks></remarks>
         public static QueueInfoField ToQueueInfoField(string str)
         {
             try
@@ -464,13 +447,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>Extracts the atom boolean.</summary>
         /// <param name="value">The value.</param>
         /// <returns>The atom boolean.</returns>
-        /// <remarks></remarks>
         private bool ExtractAtomBoolean(OtpErlangObject value) { return ((OtpErlangAtom)value).boolValue(); }
 
         /// <summary>Extracts the name value from tuple.</summary>
         /// <param name="value">The value.</param>
         /// <returns>The name value.</returns>
-        /// <remarks></remarks>
         private string ExtractNameValueFromTuple(OtpErlangTuple value)
         {
             object nameElement = value.elementAt(3);

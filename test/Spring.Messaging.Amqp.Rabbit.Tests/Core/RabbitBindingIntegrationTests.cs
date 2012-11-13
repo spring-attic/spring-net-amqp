@@ -15,8 +15,9 @@
 
 #region Using Directives
 using System;
+using System.Threading;
+using Common.Logging;
 using NUnit.Framework;
-using RabbitMQ.Client;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
@@ -35,6 +36,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     [Category(TestCategory.Integration)]
     public class RabbitBindingIntegrationTests : AbstractRabbitIntegrationTest
     {
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// The queue.
         /// </summary>
@@ -86,8 +89,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         [SetUp]
         public void SetUp()
         {
-            var brokerRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
-            if (!brokerRunning.Apply())
+            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue);
+            if (!this.brokerIsRunning.Apply())
             {
                 Assert.Ignore("Cannot execute test as the broker is not running with empty queues.");
             }
@@ -98,7 +101,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive with topic single callback.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveWithTopicSingleCallback()
         {
@@ -110,7 +112,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange).With("*.end"));
 
             this.template.Execute<object>(
-                delegate(IModel channel)
+                delegate
                 {
                     var consumer = this.CreateConsumer(this.template);
                     var tag = consumer.ConsumerTag;
@@ -129,15 +131,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     }
                     finally
                     {
-                        try
-                        {
-                            channel.BasicCancel(tag);
-                        }
-                        catch (Exception e)
-                        {
-                            // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                            Console.WriteLine(e.Message);
-                        }
+                        consumer.Channel.BasicCancel(tag);
                     }
 
                     return null;
@@ -147,7 +141,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive with non default exchange.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveWithNonDefaultExchange()
         {
@@ -158,7 +151,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange).With("*.end"));
 
             this.template.Execute<object>(
-                delegate(IModel channel)
+                delegate
                 {
                     var consumer = this.CreateConsumer(this.template);
                     var tag = consumer.ConsumerTag;
@@ -177,15 +170,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     }
                     finally
                     {
-                        try
-                        {
-                            channel.BasicCancel(tag);
-                        }
-                        catch (Exception e)
-                        {
-                            // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                            Console.WriteLine(e.Message);
-                        }
+                        consumer.Channel.BasicCancel(tag);
                     }
 
                     return null;
@@ -195,7 +180,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive with topic consume in background.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveWithTopicConsumeInBackground()
         {
@@ -227,23 +211,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             result = this.GetResult(consumer);
             Assert.AreEqual("message", result);
 
-            try
-            {
-                consumer.Channel.BasicCancel(consumer.ConsumerTag);
-            }
-            catch (Exception e)
-            {
-                // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                Console.WriteLine(e.Message);
-            }
+            consumer.Stop();
         }
 
         /// <summary>
         /// Tests the send and receive with topic two callbacks.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
-        [Ignore("Need to fix")]
         public void TestSendAndReceiveWithTopicTwoCallbacks()
         {
             var admin = new RabbitAdmin(this.connectionFactory);
@@ -254,7 +228,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange).With("*.end"));
 
             this.template.Execute<object>(
-                delegate(IModel channel)
+                delegate
                 {
                     var consumer = this.CreateConsumer(this.template);
                     var tag = consumer.ConsumerTag;
@@ -268,22 +242,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     }
                     finally
                     {
-                        try
-                        {
-                            channel.BasicCancel(tag);
-                        }
-                        catch (Exception e)
-                        {
-                            // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                            Console.WriteLine(e.Message);
-                        }
+                        consumer.Stop();
                     }
 
                     return null;
                 });
 
             this.template.Execute<object>(
-                delegate(IModel channel)
+                delegate
                 {
                     var consumer = this.CreateConsumer(this.template);
                     var tag = consumer.ConsumerTag;
@@ -291,22 +257,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
 
                     try
                     {
-                        // TODO: Bug here somewhere...
                         this.template.ConvertAndSend("foo.end", "message");
                         var result = this.GetResult(consumer);
                         Assert.AreEqual("message", result);
                     }
                     finally
                     {
-                        try
-                        {
-                            channel.BasicCancel(tag);
-                        }
-                        catch (Exception e)
-                        {
-                            // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                            Console.WriteLine(e.Message);
-                        }
+                        consumer.Stop();
                     }
 
                     return null;
@@ -316,7 +273,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>
         /// Tests the send and receive with fanout.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveWithFanout()
         {
@@ -328,7 +284,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange));
 
             this.template.Execute<object>(
-                delegate(IModel channel)
+                delegate
                 {
                     var consumer = this.CreateConsumer(this.template);
                     var tag = consumer.ConsumerTag;
@@ -342,15 +298,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
                     }
                     finally
                     {
-                        try
-                        {
-                            channel.BasicCancel(tag);
-                        }
-                        catch (Exception e)
-                        {
-                            // TODO: this doesn't make sense. Looks like there is a bug in the rabbitmq.client code here: http://hg.rabbitmq.com/rabbitmq-dotnet-client/file/2f12b3b4d6bd/projects/client/RabbitMQ.Client/src/client/impl/ModelBase.cs#l1018
-                            Console.WriteLine(e.Message);
-                        }
+                        consumer.Stop();
                     }
 
                     return null;
@@ -360,21 +308,38 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <summary>Creates the consumer.</summary>
         /// <param name="accessor">The accessor.</param>
         /// <returns>The consumer.</returns>
-        /// <remarks></remarks>
         private BlockingQueueConsumer CreateConsumer(RabbitAccessor accessor)
         {
             var consumer = new BlockingQueueConsumer(accessor.ConnectionFactory, new DefaultMessagePropertiesConverter(), new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeModeUtils.AcknowledgeMode.Auto, true, 1, queue.Name);
             consumer.Start();
+
+            // wait for consumeOk...
+            var n = 0;
+            while (n++ < 100)
+            {
+                if (consumer.ConsumerTag == null)
+                {
+                    try
+                    {
+                        Thread.Sleep(100);
+                    }
+                    catch (ThreadInterruptedException e)
+                    {
+                        Thread.CurrentThread.Interrupt();
+                        break;
+                    }
+                }
+            }
+
             return consumer;
         }
 
         /// <summary>Gets the result.</summary>
         /// <param name="consumer">The consumer.</param>
         /// <returns>The result.</returns>
-        /// <remarks></remarks>
         private string GetResult(BlockingQueueConsumer consumer)
         {
-            var response = consumer.NextMessage(new TimeSpan(0, 0, 0, 20));
+            var response = consumer.NextMessage(200);
             if (response == null)
             {
                 return null;

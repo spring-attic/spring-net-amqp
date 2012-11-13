@@ -52,13 +52,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes
         /// </summary>
         public T Value { get { return this._reference; } set { this._reference = value; } }
 
-        /// <summary>
-        /// Eventually sets to the given value.</summary>
+        /// <summary>Eventually sets to the given value.</summary>
         /// <param name="newValue">the new value</param>
         public void LazySet(T newValue) { this._reference = newValue; }
 
-        /// <summary>
-        /// Atomically sets the value to the <paramref name="newValue"/>
+        /// <summary>Atomically sets the value to the <paramref name="newValue"/>
         /// if the current value equals the <paramref name="expectedValue"/>.</summary>
         /// <param name="expectedValue">The expected value</param>
         /// <param name="newValue">The new value to use of the current value equals the expected value.</param>
@@ -70,8 +68,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes
                 Interlocked.CompareExchange(ref this._reference, newValue, expectedValue));
         }
 
-        /// <summary>
-        /// Atomically sets the value to the <paramref name="newValue"/>
+        /// <summary>Atomically sets the value to the <paramref name="newValue"/>
         /// if the current value equals the <paramref name="expectedValue"/>.
         /// May fail spuriously.</summary>
         /// <param name="expectedValue">The expected value</param>
@@ -84,11 +81,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes
                 Interlocked.CompareExchange(ref this._reference, newValue, expectedValue));
         }
 
-        /// <summary>
-        /// Atomically sets to the given value and returns the previous value.</summary>
+        /// <summary>Atomically sets to the given value and returns the previous value.</summary>
         /// <param name="newValue">The new value for the instance.</param>
-        /// <returns>
-        /// the previous value of the instance.</returns>
+        /// <returns>the previous value of the instance.</returns>
         public T Exchange(T newValue) { return Interlocked.Exchange(ref this._reference, newValue); }
 
         /// <summary> 

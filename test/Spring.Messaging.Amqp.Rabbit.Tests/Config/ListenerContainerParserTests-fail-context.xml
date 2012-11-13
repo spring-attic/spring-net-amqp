@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
+
+    <rabbit:queue id="foo" name="foo" />
+
+    <rabbit:queue id="bar" />
+
+    <rabbit:listener-container id="container6" connection-factory="connectionFactory" channel-transacted="true" acknowledge="none">
+        <rabbit:listener id="testListener" queues="foo" ref="testObject" method="Handle" />
+    </rabbit:listener-container>
+
+    <object id="adviceChain" type="System.Collections.Generic.List&lt;AopAlliance.Aop.IAdvice>">
+        <constructor-arg name="collection" type="System.Collections.Generic.IEnumerable&lt;AopAlliance.Aop.IAdvice>">
+            <list element-type="AopAlliance.Aop.IAdvice, Spring.Aop">
+                <object id="testAdvice1" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
+                <object id="testAdvice2" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
+                <object id="testAdvice3" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestAdvice, Spring.Messaging.Amqp.Rabbit.Tests" />
+            </list>
+        </constructor-arg>
+    </object>
+
+    <object id="rabbitAdmin" type="Spring.Messaging.Amqp.Rabbit.Core.RabbitAdmin, Spring.Messaging.Amqp.Rabbit">
+        <constructor-arg name="connectionFactory" ref="connectionFactory" />
+    </object>
+
+    <object id="connectionFactory" type="Spring.Messaging.Amqp.Rabbit.Connection.CachingConnectionFactory, Spring.Messaging.Amqp.Rabbit" />
+
+    <object id="testObject" type="Spring.Messaging.Amqp.Rabbit.Tests.Config.TestObject, Spring.Messaging.Amqp.Rabbit.Tests" />
+
+</objects>

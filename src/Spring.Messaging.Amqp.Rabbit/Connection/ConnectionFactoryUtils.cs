@@ -36,7 +36,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectionFactoryUtils));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly ThreadLocal<IModel> consumerChannel = new ThreadLocal<IModel>();
 
@@ -61,6 +61,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
             consumerChannel.Value = null;
         }
+
+        /// <summary>The get consumer channel.</summary>
+        /// <returns>The RabbitMQ.Client.IModel.</returns>
+        public static IModel GetConsumerChannel() { return consumerChannel.Value; }
 
         /// <summary>Determine whether the given RabbitMQ Channel is transactional, that is, bound to the current thread by Spring's transaction facilities.</summary>
         /// <param name="channel">The channel.</param>
@@ -144,7 +148,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 RabbitUtils.CloseChannel(channel);
                 RabbitUtils.CloseConnection(connection);
-                throw new AmqpException(ex);
+                throw new AmqpIOException(ex);
             }
         }
 

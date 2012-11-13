@@ -14,7 +14,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System;
 using System.Threading;
 using NUnit.Framework;
 using Spring.Core.IO;
@@ -73,7 +72,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test arguments queue.</summary>
         [Test]
-        public void testArgumentsQueue()
+        public void TestArgumentsQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("arguments");
             Assert.IsNotNull(queue);
@@ -87,7 +86,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             template.ConvertAndSend(queue.Name, "message");
 
             Thread.Sleep(200);
-            var result = (String)template.ReceiveAndConvert(queue.Name);
+            var result = (string)template.ReceiveAndConvert(queue.Name);
             Assert.AreEqual(null, result);
         }
     }

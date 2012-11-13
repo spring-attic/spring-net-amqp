@@ -27,12 +27,10 @@ namespace Spring.Erlang.Support.Converter
     {
         /// <summary>Initializes a new instance of the <see cref="ErlangConversionException"/> class. 
         /// Initializes a new instance of the <see cref="T:System.Object"/> class.</summary>
-        /// <remarks></remarks>
         public ErlangConversionException() { }
 
         /// <summary>Initializes a new instance of the <see cref="ErlangConversionException"/> class.</summary>
         /// <param name="msg">The MSG.</param>
-        /// <remarks></remarks>
         public ErlangConversionException(string msg) : base(msg) { }
     }
 }

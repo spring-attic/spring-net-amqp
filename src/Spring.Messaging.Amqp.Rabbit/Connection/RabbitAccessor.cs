@@ -34,7 +34,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// Logger available to subclasses.
         /// </summary>
-        protected static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitAccessor));
+        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The connection factory.
@@ -93,6 +93,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>Converts a rabbit access exception.</summary>
         /// <param name="ex">The ex.</param>
         /// <returns>The system exception.</returns>
-        protected SystemException ConvertRabbitAccessException(Exception ex) { return RabbitUtils.ConvertRabbitAccessException(ex); }
+        protected Exception ConvertRabbitAccessException(Exception ex) { return RabbitUtils.ConvertRabbitAccessException(ex); }
     }
 }

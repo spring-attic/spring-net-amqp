@@ -53,7 +53,7 @@ namespace Spring.Messaging.Amqp.Support.Converter
         /// <summary>
         /// Gets the name of the type id field.
         /// </summary>
-        public string TypeIdFieldName { get { return DEFAULT_TYPEID_FIELD_NAME; } }
+        public virtual string TypeIdFieldName { get { return DEFAULT_TYPEID_FIELD_NAME; } }
 
         /// <summary>
         /// Sets the id type mapping.
@@ -208,7 +208,15 @@ namespace Spring.Messaging.Amqp.Support.Converter
                 throw new MessageConversionException("failed to convert Message content. Could not resolve " + this.TypeIdFieldName + " in header");
             }
 
-            var typeIdFieldNameValue = headers[this.TypeIdFieldName];
+            object typeIdFieldNameValue;
+            try
+            {
+                typeIdFieldNameValue = headers[this.TypeIdFieldName];
+            }
+            catch (Exception)
+            {
+                typeIdFieldNameValue = null;
+            }
 
             string typeId = null;
             if (typeIdFieldNameValue != null)

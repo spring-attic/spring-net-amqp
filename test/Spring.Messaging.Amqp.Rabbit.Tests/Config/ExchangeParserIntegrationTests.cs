@@ -15,9 +15,11 @@
 
 #region Using Directives
 using System;
+using System.Collections;
 using System.Threading;
 using Common.Logging;
 using NUnit.Framework;
+using Spring.Context;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Admin;
 using Spring.Messaging.Amqp.Rabbit.Config;
@@ -26,6 +28,7 @@ using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Objects.Factory.Xml;
 using Spring.Testing.NUnit;
+using Queue = Spring.Messaging.Amqp.Core.Queue;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
@@ -37,7 +40,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     [Category(TestCategory.Integration)]
     public class ExchangeParserIntegrationTests : AbstractDependencyInjectionSpringContextTests
     {
-        public static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
@@ -96,20 +99,67 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             }
         }
 
+        /// <summary>The fixture tear down.</summary>
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            var admin = this.applicationContext.GetObject<RabbitAdmin>();
+            var bindings = this.applicationContext.GetObjectsOfType<Binding>();
+            var exchanges = this.applicationContext.GetObjectsOfType<IExchange>();
+            var queues = this.applicationContext.GetObjectsOfType<Queue>();
+
+            foreach (DictionaryEntry item in bindings)
+            {
+                try
+                {
+                    admin.RemoveBinding(item.Value as Binding);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(m => m("Could not remove object."), ex);
+                    throw;
+                }
+            }
+
+            foreach (DictionaryEntry item in queues)
+            {
+                try
+                {
+                    admin.DeleteQueue(((Queue)item.Value).Name);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(m => m("Could not remove object."), ex);
+                    throw;
+                }
+            }
+
+            foreach (DictionaryEntry item in exchanges)
+            {
+                try
+                {
+                    admin.DeleteExchange(((IExchange)item.Value).Name);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(m => m("Could not remove object."), ex);
+                    throw;
+                }
+            }
+        }
+
         /// <summary>The test bindings declared.</summary>
         [Test]
-        public void testBindingsDeclared()
+        public void TestBindingsDeclared()
         {
-            const string messagePayload = "message";
-
             var template = new RabbitTemplate(this.connectionFactory);
-            template.ConvertAndSend(this.fanoutTest.Name, string.Empty, messagePayload);
+            template.ConvertAndSend(this.fanoutTest.Name, string.Empty, "message");
             Thread.Sleep(200);
 
             // The queue is anonymous so it will be deleted at the end of the test, but it should get the message as long as
             // we use the same connection
-            var result = (String)template.ReceiveAndConvert(this.bucket.Name);
-            Assert.AreEqual(messagePayload, result);
+            var result = (string)template.ReceiveAndConvert(this.bucket.Name);
+            Assert.AreEqual("message", result);
         }
     }
 }

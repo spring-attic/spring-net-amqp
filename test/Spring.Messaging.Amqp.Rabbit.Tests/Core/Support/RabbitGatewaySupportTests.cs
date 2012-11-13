@@ -15,7 +15,7 @@
 
 #region Using Directives
 using System.Collections.Generic;
-using AutoMoq;
+using Moq;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
@@ -35,13 +35,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core.Support
         /// <summary>
         /// Tests the rabbit gateway support with connection factory.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestRabbitGatewaySupportWithConnectionFactory()
         {
-            var mocker = new AutoMoqer();
-
-            var mockConnectionFactory = mocker.GetMock<IConnectionFactory>();
+            var mockConnectionFactory = new Mock<IConnectionFactory>();
             var test = new List<string>();
             var gateway = new TestGateway(test);
 
@@ -55,7 +52,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core.Support
         /// <summary>
         /// Tests the rabbit gateway support with JMS template.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestRabbitGatewaySupportWithJmsTemplate()
         {
@@ -71,7 +67,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core.Support
         /// <summary>
         /// A stup test gateway.
         /// </summary>
-        /// <remarks></remarks>
         internal class TestGateway : RabbitGatewaySupport
         {
             /// <summary>
@@ -81,14 +76,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core.Support
 
             /// <summary>Initializes a new instance of the <see cref="TestGateway"/> class.</summary>
             /// <param name="testList">The test list.</param>
-            /// <remarks></remarks>
             public TestGateway(List<string> testList) { this.testList = testList; }
 
             /// <summary>
             /// Subclasses can override this for custom initialization behavior.
             /// Gets called after population of this instance's properties.
             /// </summary>
-            /// <remarks></remarks>
             protected override void InitGateway() { this.testList.Add("test"); }
         }
     }

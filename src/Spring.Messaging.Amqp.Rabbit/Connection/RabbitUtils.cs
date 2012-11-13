@@ -16,6 +16,7 @@
 #region Using Directives
 using System;
 using System.IO;
+using System.Threading;
 using Common.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
@@ -39,7 +40,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitUtils));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
+        private static readonly ThreadLocal<bool> physicalCloseRequired = new ThreadLocal<bool>();
 
         /// <summary>Closes the given Rabbit Connection and ignore any thrown exception.</summary>
         /// <remarks>This is useful for typical 'finally' blocks in manual Rabbit
@@ -87,8 +90,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         /// <summary>Commit the transaction if necessary.</summary>
         /// <param name="channel">The channel.</param>
-        /// <exception cref="AmqpException"></exception>
-        /// <exception cref="AmqpIOException"></exception>
         public static void CommitIfNecessary(IModel channel)
         {
             AssertUtils.ArgumentNotNull(channel, "Channel must not be null");
@@ -96,6 +97,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 channel.TxCommit();
             }
+            catch (IOException ioex)
+            {
+                throw new AmqpIOException(ioex);
+            }
+                
+                
+                // TODO: Do we need the next two catch clauses?
             catch (OperationInterruptedException oiex)
             {
                 throw new AmqpException("An error occurred committing the transaction.", oiex);
@@ -108,8 +116,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         /// <summary>Rollback the transaction if necessary.</summary>
         /// <param name="channel">The channel.</param>
-        /// <exception cref="AmqpException"></exception>
-        /// <exception cref="AmqpIOException"></exception>
         public static void RollbackIfNecessary(IModel channel)
         {
             AssertUtils.ArgumentNotNull(channel, "Channel must not be null");
@@ -117,6 +123,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 channel.TxRollback();
             }
+            catch (IOException ioex)
+            {
+                throw new AmqpIOException(ioex);
+            }
+                
+                
+                // TODO: Do we need the next two catch clauses?
             catch (OperationInterruptedException oiex)
             {
                 throw new AmqpException("An error occurred rolling back the transaction.", oiex);
@@ -130,12 +143,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>Convert Rabbit Exceptions to Amqp Exceptions.</summary>
         /// <param name="ex">The ex.</param>
         /// <returns>The Exception.</returns>
-        public static SystemException ConvertRabbitAccessException(Exception ex)
+        public static Exception ConvertRabbitAccessException(Exception ex)
         {
             AssertUtils.ArgumentNotNull(ex, "Exception must not be null");
             if (ex is AmqpException)
             {
-                return (AmqpException)ex;
+                return ex;
             }
 
             if (ex is IOException)
@@ -173,7 +186,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <param name="channel">The channel.</param>
         /// <param name="consumerTag">The consumer tag.</param>
         /// <param name="transactional">The transactional.</param>
-        /// <exception cref="SystemException"></exception>
         public static void CloseMessageConsumer(IModel channel, string consumerTag, bool transactional)
         {
             if (!channel.IsOpen)
@@ -201,7 +213,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
 
         /// <summary>Declare to that broker that a channel is going to be used transactionally, and convert exceptions that arise.</summary>
         /// <param name="channel">The channel to use.</param>
-        /// <exception cref="SystemException"></exception>
         public static void DeclareTransactional(IModel channel)
         {
             try
@@ -212,6 +223,37 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             {
                 throw ConvertRabbitAccessException(e);
             }
+        }
+
+        /**
+ * Sets a ThreadLocal indicating the channel MUST be physically closed.
+ * @param b
+ */
+
+        /// <summary>The set physical close required.</summary>
+        /// <param name="b">The b.</param>
+        public static void SetPhysicalCloseRequired(bool b) { physicalCloseRequired.Value = b; }
+
+        /**
+         * Gets and removes a ThreadLocal indicating the channel MUST be physically closed.
+         * @return
+         */
+
+        /// <summary>The is physical close required.</summary>
+        /// <returns>The System.Boolean.</returns>
+        public static bool IsPhysicalCloseRequired()
+        {
+            var mustClose = physicalCloseRequired.Value;
+            if (mustClose == null)
+            {
+                mustClose = false;
+            }
+            else
+            {
+                physicalCloseRequired.Value = false;
+            }
+
+            return mustClose;
         }
     }
 }

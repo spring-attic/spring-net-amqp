@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System.Xml;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
@@ -61,8 +62,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, DURABLE_ATTRIBUTE, true);
             NamespaceUtils.AddConstructorArgBooleanValueIfAttributeDefined(builder, element, AUTO_DELETE_ATTRIBUTE, false);
 
-            var argumentsElements = element.GetElementsByTagName(ARGUMENTS_ELEMENT);
-            var argumentsElement = argumentsElements.Count == 1 ? argumentsElements[0] as XmlElement : null;
+            var argumentsElement = element.SelectChildElementByTagName(ARGUMENTS_ELEMENT);
 
             if (argumentsElement != null)
             {
@@ -80,10 +80,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <param name="exchangeName">The exchange name.</param>
         protected virtual void ParseBindings(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder, string exchangeName)
         {
-            var bindings = element.GetElementsByTagName(BINDINGS_ELE);
-            var bindingElement = bindings.Count == 1 ? bindings[0] as XmlElement : null;
-
-            this.DoParseBindings(parserContext, exchangeName, bindingElement, this);
+            var bindings = element.SelectChildElementByTagName(BINDINGS_ELE);
+            this.DoParseBindings(parserContext, exchangeName, bindings, this);
         }
 
         /// <summary>The do parse bindings.</summary>
@@ -95,9 +93,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         {
             if (bindings != null)
             {
-                foreach (var binding in bindings.GetElementsByTagName(BINDING_ELE))
+                foreach (var binding in bindings.SelectChildElementsByTagName(BINDING_ELE))
                 {
-                    var objectDefinition = this.ParseBinding(exchangeName, binding as XmlElement, parserContext);
+                    var objectDefinition = parser.ParseBinding(exchangeName, binding as XmlElement, parserContext);
                     this.RegisterObjectDefinition(new ObjectDefinitionHolder(objectDefinition, parserContext.ReaderContext.GenerateObjectName(objectDefinition)), parserContext.Registry);
                 }
             }
@@ -118,8 +116,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         {
             var queueAttribute = binding.GetAttribute(BINDING_QUEUE_ATTR);
             var exchangeAttribute = binding.GetAttribute(BINDING_EXCHANGE_ATTR);
-            var hasQueueAttribute = string.IsNullOrWhiteSpace(queueAttribute);
-            var hasExchangeAttribute = string.IsNullOrWhiteSpace(exchangeAttribute);
+            var hasQueueAttribute = !string.IsNullOrWhiteSpace(queueAttribute);
+            var hasExchangeAttribute = !string.IsNullOrWhiteSpace(exchangeAttribute);
             if (!(hasQueueAttribute ^ hasExchangeAttribute))
             {
                 parserContext.ReaderContext.ReportFatalException(binding, "Binding must have exactly one of 'queue' or 'exchange'");
@@ -127,12 +125,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
 
             if (hasQueueAttribute)
             {
-                builder.AddPropertyReference("destinationQueue", queueAttribute);
+                builder.AddPropertyReference("DestinationQueue", queueAttribute);
             }
 
             if (hasExchangeAttribute)
             {
-                builder.AddPropertyReference("destinationExchange", exchangeAttribute);
+                builder.AddPropertyReference("DestinationExchange", exchangeAttribute);
             }
         }
     }

@@ -26,12 +26,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
     /// <summary>
     /// A producer.
     /// </summary>
-    /// <remarks></remarks>
     public class Producer
     {
         /// <summary>Mains the specified args.</summary>
         /// <param name="args">The args.</param>
-        /// <remarks></remarks>
         public static void Main(string[] args)
         {
             var connectionFactory = new SingleConnectionFactory("localhost");
@@ -55,7 +53,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Core
         /// <param name="exchange">The exchange.</param>
         /// <param name="routingKey">The routing key.</param>
         /// <param name="numMessages">The num messages.</param>
-        /// <remarks></remarks>
         private static void SendMessages(RabbitTemplate template, string exchange, string routingKey, int numMessages)
         {
             for (int i = 1; i <= numMessages; i++)

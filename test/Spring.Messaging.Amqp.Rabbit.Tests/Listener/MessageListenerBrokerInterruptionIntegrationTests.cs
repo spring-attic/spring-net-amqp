@@ -41,7 +41,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerBrokerInterruptionIntegrationTests));
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The queue. Ensure it is durable or it won't survive the broker restart.
@@ -79,7 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         private SimpleMessageListenerContainer container;
 
         // @Rule
-        public static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
+        public new static EnvironmentAvailable environment = new EnvironmentAvailable("BROKER_INTEGRATION_TEST");
 
         /*
          * Ensure broker dies if a test fails (otherwise the erl process might have to be killed manually)
@@ -131,13 +131,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 Logger.Error("Could not delete directory. Assuming broker is running.");
             }
 
-            this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);
+            // this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);
+            // this.brokerIsRunning.Apply();
         }
 
         /// <summary>
         /// Creates the connection factory.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void CreateConnectionFactory()
         {
@@ -145,14 +145,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 var connectionFactory = new CachingConnectionFactory();
                 connectionFactory.ChannelCacheSize = this.concurrentConsumers;
+                connectionFactory.Port = BrokerTestUtils.GetAdminPort();
                 this.connectionFactory = connectionFactory;
+                this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(this.queue);
+                this.brokerIsRunning.Apply();
             }
         }
 
         /// <summary>
         /// Clears this instance.
         /// </summary>
-        /// <remarks></remarks>
         [TearDown]
         public void Clear()
         {
@@ -160,7 +162,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             {
                 // Wait for broker communication to finish before trying to stop container
                 Thread.Sleep(300);
-                logger.Debug("Shutting down at end of test");
+                Logger.Debug("Shutting down at end of test");
                 if (this.container != null)
                 {
                     this.container.Shutdown();
@@ -180,13 +182,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the listener recovers from dead broker.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
-        [Ignore("Need to fix")]
         public void TestListenerRecoversFromDeadBroker()
         {
             var queues = this.brokerAdmin.GetQueues();
-            logger.Info("Queues: " + queues);
+            Logger.Info("Queues: " + queues);
             Assert.AreEqual(1, queues.Count);
             Assert.True(queues[0].Durable);
 
@@ -213,13 +213,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Logger.Info(string.Format("Latch.CurrentCount After Container Stop: {0}", latch.CurrentCount));
             this.brokerAdmin.StartBrokerApplication();
             queues = this.brokerAdmin.GetQueues();
-            logger.Info("Queues: " + queues);
+            Logger.Info("Queues: " + queues);
             this.container.Start();
             Logger.Info(string.Format("Concurrent Consumers After Container Start: {0}", this.container.ActiveConsumerCount));
             Assert.AreEqual(this.concurrentConsumers, this.container.ActiveConsumerCount);
             Logger.Info(string.Format("Latch.CurrentCount After Container Start: {0}", latch.CurrentCount));
-            var timeout = Math.Min(4 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            var timeout = Math.Min((4 + this.messageCount) / (4 * this.concurrentConsumers), 30);
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
 
@@ -231,7 +231,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <param name="listener">The listener.</param>
         /// <param name="connectionFactory">The connection factory.</param>
         /// <returns>The container.</returns>
-        /// <remarks></remarks>
         private SimpleMessageListenerContainer CreateContainer(string queueName, object listener, IConnectionFactory connectionFactory)
         {
             var container = new SimpleMessageListenerContainer(connectionFactory);
@@ -251,13 +250,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A vanilla message listener.
     /// </summary>
-    /// <remarks></remarks>
     public class VanillaListener : IChannelAwareMessageListener
     {
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog logger = LogManager.GetLogger(typeof(VanillaListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The latch.
@@ -266,18 +264,15 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Initializes a new instance of the <see cref="VanillaListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public VanillaListener(CountdownEvent latch) { this.latch = latch; }
 
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
-            logger.Debug("Receiving: " + value);
-            Thread.Sleep(75);
+            Logger.Debug("Receiving: " + value);
             if (this.latch.CurrentCount > 0)
             {
                 this.latch.Signal();

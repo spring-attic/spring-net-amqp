@@ -23,6 +23,5 @@ namespace Spring.Erlang.Core
     /// <typeparam name="T">Type T.</typeparam>
     /// <param name="channel">The channel.</param>
     /// <returns>Object of Type T.</returns>
-    /// <remarks></remarks>
     public delegate T ConnectionCallbackDelegate<T>(IConnection channel);
 }

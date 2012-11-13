@@ -37,7 +37,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <summary>
         /// The Logger.
         /// </summary>
-        protected readonly ILog Logger = LogManager.GetLogger(typeof(AbstractConnectionFactory));
+        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         /// <summary>
@@ -93,6 +93,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// </summary>
         public int Port { get { return this.rabbitConnectionFactory.Port; } set { this.rabbitConnectionFactory.Port = value; } }
 
+        /// <summary>Gets the amqp tcp endpoints.</summary>
+        public AmqpTcpEndpoint[] AmqpTcpEndpoints { get { return this.addresses; } }
+
         /// <summary>Sets the addresses.</summary>
         public string Addresses
         {
@@ -140,6 +143,31 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
         /// <param name="channelListener">The listener.</param>
         public virtual void AddChannelListener(IChannelListener channelListener) { this.channelListener.AddDelegate(channelListener); }
 
+        /*
+        public void IExecutor Executor
+        {
+            set
+            {
+                // Provide an Executor for
+                // use by the Rabbit ConnectionFactory when creating connections.
+                // Can either be an ExecutorService or a Spring
+                // ThreadPoolTaskExecutor, as defined by a &lt;task:executor/&gt; element.
+                // @param executor The executor.
+                var isExecutorService = value is ExecutorService;
+                var isThreadPoolTaskExecutor = value is ThreadPoolTaskExecutor;
+                AssertUtils.IsTrue(isExecutorService || isThreadPoolTaskExecutor);
+                if (isExecutorService)
+                {
+                    this.executorService = (ExecutorService)executor;
+                }
+                else
+                {
+                    this.executorService = ((ThreadPoolTaskExecutor)executor).getThreadPoolExecutor();
+                }
+            }
+        }
+        */
+
         /// <summary>
         /// Create a connection.
         /// </summary>
@@ -157,11 +185,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
                 if (this.addresses != null)
                 {
                     // TODO: Waiting on RabbitMQ.Client to catch up to the Java equivalent here.
-                    // return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection(this.addresses));
+                    // return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection(this.executorService, this.addresses));
                     return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection());
                 }
                 else
                 {
+                    // TODO: Waiting on RabbitMQ.Client to catch up to the Java equivalent here.
+                    // return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection(this.executorService));
                     return new SimpleConnection(this.rabbitConnectionFactory.CreateConnection());
                 }
             }
@@ -181,11 +211,11 @@ namespace Spring.Messaging.Amqp.Rabbit.Connection
             try
             {
                 temp = Dns.GetHostName().ToUpper();
-                this.Logger.Debug("Using hostname [" + temp + "] for hostname.");
+                Logger.Debug("Using hostname [" + temp + "] for hostname.");
             }
             catch (Exception e)
             {
-                this.Logger.Warn("Could not get host name, using 'localhost' as default value", e);
+                Logger.Warn("Could not get host name, using 'localhost' as default value", e);
                 temp = "localhost";
             }
 

@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Ignore("Ignored in the spring-amqp also. Initiated discussion with the rabbitmq folks to determine why publish/consume/reject/consume won't work as expected...")]
     public class UnackedRawIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private readonly ILog logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private readonly ConnectionFactory factory = new ConnectionFactory();
         private IConnection conn;
@@ -107,7 +107,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 }
                 catch (Exception e)
                 {
-                    this.logger.Error("An error occurred closing the channel", e);
+                    Logger.Error("An error occurred closing the channel", e);
                 }
             }
 
@@ -119,7 +119,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 }
                 catch (Exception e)
                 {
-                    this.logger.Error("An error occurred deleting the queue 'test.queue'", e);
+                    Logger.Error("An error occurred deleting the queue 'test.queue'", e);
                 }
 
                 this.noTxChannel.Close();

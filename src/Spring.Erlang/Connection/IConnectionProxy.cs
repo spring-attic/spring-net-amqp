@@ -23,7 +23,6 @@ namespace Spring.Erlang.Connection
     /// Subinterface of {@link IConnection} to be implemented by Connection proxies.
     /// Allows access to the underlying target Connection.
     /// </summary>
-    /// <remarks></remarks>
     /// <author>Mark Pollack</author>
     /// <author>Joe Fitzgerald (.NET)</author>
     public interface IConnectionProxy : IConnection
@@ -32,7 +31,6 @@ namespace Spring.Erlang.Connection
         /// Gets the target connection.
         /// </summary>
         /// <returns>The connection.</returns>
-        /// <remarks></remarks>
         OtpConnection GetTargetConnection();
     }
 }

@@ -16,6 +16,7 @@
 #region Using Directives
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Tests.Test;
 #endregion
 
 namespace Spring.Messaging.Amqp.Tests.Core
@@ -23,16 +24,18 @@ namespace Spring.Messaging.Amqp.Tests.Core
     /// <summary>
     /// Address tests.
     /// </summary>
-    /// <remarks></remarks>
+    /// <author>Mark Pollack</author>
+    /// <author>Mark Fisher</author>
+    /// <author>Joe Fitzgerald (.NET)</author>
     [TestFixture]
+    [Category(TestCategory.Unit)]
     public class AddressTests
     {
         /// <summary>
         /// Toes the string.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
-        public void ToString()
+        public void ToStringCheck()
         {
             var address = new Address(ExchangeTypes.Direct, "my-exchange", "routing-key");
             var replyToUri = "direct://my-exchange/routing-key";
@@ -42,7 +45,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Parses this instance.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void Parse()
         {
@@ -56,7 +58,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Unstructureds the with routing key only.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void UnstructuredWithRoutingKeyOnly()
         {
@@ -68,7 +69,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Withouts the routing key.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void WithoutRoutingKey()
         {
@@ -82,7 +82,6 @@ namespace Spring.Messaging.Amqp.Tests.Core
         /// <summary>
         /// Withes the default exchange and routing key.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void WithDefaultExchangeAndRoutingKey()
         {

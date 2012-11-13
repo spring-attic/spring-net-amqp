@@ -14,14 +14,18 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
+using System.Reflection;
+using Moq;
 using NUnit.Framework;
 using Spring.Core.IO;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Config;
 using Spring.Messaging.Amqp.Rabbit.Core;
+using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
 using Spring.Messaging.Amqp.Support.Converter;
 using Spring.Objects.Factory.Xml;
+using Spring.Util;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
@@ -51,19 +55,66 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test template.</summary>
         [Test]
-        public void testTemplate()
+        public void TestTemplate()
         {
             var template = this.objectFactory.GetObject<IAmqpTemplate>("template");
             Assert.IsNotNull(template);
+            Assert.AreEqual(false, ReflectionUtils.GetInstanceFieldValue(template, "mandatory"));
+            Assert.AreEqual(false, ReflectionUtils.GetInstanceFieldValue(template, "immediate"));
+            Assert.IsNull(ReflectionUtils.GetInstanceFieldValue(template, "returnCallback"));
+            Assert.IsNull(ReflectionUtils.GetInstanceFieldValue(template, "confirmCallback"));
+        }
+
+        /// <summary>The test template with callbacks.</summary>
+        [Test]
+        public void TestTemplateWithCallbacks()
+        {
+            var template = this.objectFactory.GetObject<IAmqpTemplate>("withCallbacks");
+            Assert.IsNotNull(template);
+            Assert.AreEqual(true, ReflectionUtils.GetInstanceFieldValue(template, "mandatory"));
+            Assert.AreEqual(true, ReflectionUtils.GetInstanceFieldValue(template, "immediate"));
+            Assert.IsNotNull(ReflectionUtils.GetInstanceFieldValue(template, "returnCallback"));
+            Assert.IsNotNull(ReflectionUtils.GetInstanceFieldValue(template, "confirmCallback"));
         }
 
         /// <summary>The test kitchen sink.</summary>
         [Test]
-        public void testKitchenSink()
+        public void TestKitchenSink()
         {
             var template = this.objectFactory.GetObject<RabbitTemplate>("kitchenSink");
             Assert.IsNotNull(template);
             Assert.True(template.MessageConverter is SimpleMessageConverter);
         }
+
+        /// <summary>The test with reply q.</summary>
+        [Test]
+        public void TestWithReplyQ()
+        {
+            var template = this.objectFactory.GetObject<IAmqpTemplate>("withReplyQ");
+            Assert.IsNotNull(template);
+            var queue = (Queue)ReflectionUtils.GetInstanceFieldValue(template, "replyQueue");
+            Assert.IsNotNull(queue);
+
+            // TODO: Once GetObject<T>(nameValue) works correctly var queueObject = this.objectFactory.GetObject<Queue>("reply.queue");
+            var queueObject = this.objectFactory.GetObject<Queue>("replyQId");
+            Assert.AreSame(queueObject, queue);
+            var container = this.objectFactory.GetObject<SimpleMessageListenerContainer>("withReplyQ.ReplyListener");
+            Assert.IsNotNull(container);
+            var messageListenerField = typeof(AbstractMessageListenerContainer).GetField("messageListener", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.AreSame(template, messageListenerField.GetValue(container));
+            var messageListenerContainer = this.objectFactory.GetObject<SimpleMessageListenerContainer>();
+            var queueNamesField = typeof(AbstractMessageListenerContainer).GetField("queueNames", BindingFlags.NonPublic | BindingFlags.Instance);
+            var queueNames = (string[])queueNamesField.GetValue(messageListenerContainer);
+            Assert.AreEqual(queueObject.Name, queueNames[0]);
+        }
+    }
+
+    /// <summary>The mock callback factory.</summary>
+    public class MockCallbackFactory
+    {
+        /// <summary>The get mock.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>The T.</returns>
+        public T GetMock<T>() where T : class { return new Mock<T>().Object; }
     }
 }

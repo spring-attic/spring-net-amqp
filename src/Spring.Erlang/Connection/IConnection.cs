@@ -26,7 +26,6 @@ namespace Spring.Erlang.Connection
     /// for the Spring AMQP admin project.  To access the underlying OtpConnection, use the method GetTargetConnection
     /// on the interface ConnectionProxy that is implemented by DefaultConnection.
     /// </summary>
-    /// <remarks></remarks>
     public interface IConnection
     {
         /// <summary>
@@ -66,7 +65,6 @@ namespace Spring.Erlang.Connection
         /// <param name="mod">The mod.</param>
         /// <param name="fun">The fun.</param>
         /// <param name="args">The args.</param>
-        /// <remarks></remarks>
         void SendRPC(string mod, string fun, OtpErlangList args);
 
         /**
@@ -99,7 +97,6 @@ namespace Spring.Erlang.Connection
         /// Receives the RPC.
         /// </summary>
         /// <returns>The second element of the tuple if the received message is a two-tuple, otherwise null. No further error checking is performed.</returns>
-        /// <remarks></remarks>
         OtpErlangObject ReceiveRPC();
     }
 }

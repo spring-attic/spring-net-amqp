@@ -14,6 +14,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
+using Common.Logging;
 using NUnit.Framework;
 using Spring.Core.IO;
 using Spring.Messaging.Amqp.Core;
@@ -29,9 +30,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
     /// RabbitNamespaceHandler Tests
     /// </summary>
     [TestFixture]
-    [Category(TestCategory.Unit)]
+    [Category(TestCategory.Integration)]
     public class RabbitNamespaceHandlerTests
     {
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private XmlObjectFactory objectFactory;
 
         /// <summary>
@@ -41,16 +43,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         public void Setup()
         {
             NamespaceParserRegistry.RegisterParser(typeof(RabbitNamespaceHandler));
-            var resourceName =
-                @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/"
-                + typeof(RabbitNamespaceHandlerTests).Name + "-context.xml";
+            var resourceName = @"assembly://Spring.Messaging.Amqp.Rabbit.Tests/Spring.Messaging.Amqp.Rabbit.Tests.Config/" + typeof(RabbitNamespaceHandlerTests).Name + "-context.xml";
             var resource = new AssemblyResource(resourceName);
             this.objectFactory = new XmlObjectFactory(resource);
         }
 
         /// <summary>The test queue.</summary>
         [Test]
-        public void testQueue()
+        public void TestQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("foo");
             Assert.IsNotNull(queue);
@@ -59,7 +59,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test alias queue.</summary>
         [Test]
-        public void testAliasQueue()
+        public void TestAliasQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("spam");
             Assert.IsNotNull(queue);
@@ -69,7 +69,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test anonymous queue.</summary>
         [Test]
-        public void testAnonymousQueue()
+        public void TestAnonymousQueue()
         {
             var queue = this.objectFactory.GetObject<Queue>("bucket");
             Assert.IsNotNull(queue);
@@ -79,7 +79,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test exchanges.</summary>
         [Test]
-        public void testExchanges()
+        public void TestExchanges()
         {
             Assert.IsNotNull(this.objectFactory.GetObject<DirectExchange>("direct-test"));
             Assert.IsNotNull(this.objectFactory.GetObject<TopicExchange>("topic-test"));
@@ -89,16 +89,16 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test bindings.</summary>
         [Test]
-        public void testBindings()
+        public void TestBindings()
         {
             var bindings = this.objectFactory.GetObjectsOfType<Binding>();
 
             // 4 for each exchange type
-            Assert.AreEqual(16, bindings.Count);
+            Assert.AreEqual(17, bindings.Count);
         }
 
         /// <summary>The test admin.</summary>
         [Test]
-        public void testAdmin() { Assert.IsNotNull(this.objectFactory.GetObject<RabbitAdmin>("admin-test")); }
+        public void TestAdmin() { Assert.IsNotNull(this.objectFactory.GetObject<RabbitAdmin>("admin-test")); }
     }
 }

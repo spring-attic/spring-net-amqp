@@ -39,7 +39,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Ignore("Spring.NET doesn't support retry yet...")]
     public class MessageListenerContainerRetryIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerContainerRetryIntegrationTests));
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue = new Queue("test.queue");
 
@@ -89,7 +89,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Creates the template.</summary>
         /// <param name="concurrentConsumers">The concurrent consumers.</param>
         /// <returns>The template.</returns>
-        /// <remarks></remarks>
         private RabbitTemplate CreateTemplate(int concurrentConsumers)
         {
             var template = new RabbitTemplate();
@@ -240,7 +239,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                 var timeout = Math.Min(1 + messageCount / concurrentConsumers, 30);
 
                 var count = messageCount;
-                logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+                Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
                 Task.Factory.StartNew(
                     () =>
                     {
@@ -271,7 +270,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                         }
                     });
                 var waited = latch.Wait(timeout * 1000);
-                logger.Info("All messages recovered: " + waited);
+                Logger.Info("All messages recovered: " + waited);
                 Assert.AreEqual(concurrentConsumers, container.ActiveConsumerCount);
                 Assert.True(waited, "Timed out waiting for messages");
 
@@ -292,24 +291,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A retry poco listener.
     /// </summary>
-    /// <remarks></remarks>
     public class RetryPocoListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(RetryPocoListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly AtomicInteger count = new AtomicInteger();
         private readonly int failFrequency;
 
         /// <summary>Initializes a new instance of the <see cref="RetryPocoListener"/> class.</summary>
         /// <param name="failFrequency">The fail frequency.</param>
-        /// <remarks></remarks>
         public RetryPocoListener(int failFrequency) { this.failFrequency = failFrequency; }
 
         /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
-        /// <remarks></remarks>
         public void HandleMessage(int value)
         {
-            logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
+            Logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
             if (value % this.failFrequency == 0)
             {
                 throw new Exception("Planned");
@@ -319,7 +315,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Gets the count.
         /// </summary>
-        /// <remarks></remarks>
         public int Count { get { return this.count.Value; } }
     }
 }

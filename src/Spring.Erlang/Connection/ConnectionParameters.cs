@@ -23,7 +23,6 @@ namespace Spring.Erlang.Connection
     /// <summary>
     /// Encapsulate properties to create a OtpConnection
     /// </summary>
-    /// <remarks></remarks>
     /// <author>Mark Pollack</author>
     /// <author>Joe Fitzgerald (.NET)</author>
     public class ConnectionParameters
@@ -41,7 +40,6 @@ namespace Spring.Erlang.Connection
         /// <summary>Initializes a new instance of the <see cref="ConnectionParameters"/> class.</summary>
         /// <param name="otpSelf">The otp self.</param>
         /// <param name="otpPeer">The otp peer.</param>
-        /// <remarks></remarks>
         public ConnectionParameters(OtpSelf otpSelf, OtpPeer otpPeer)
         {
             AssertUtils.ArgumentNotNull(otpSelf, "OtpSelf must be non-null");
@@ -54,14 +52,12 @@ namespace Spring.Erlang.Connection
         /// Gets the otp self.
         /// </summary>
         /// <returns>The otp self.</returns>
-        /// <remarks></remarks>
         public OtpSelf GetOtpSelf() { return this.otpSelf; }
 
         /// <summary>
         /// Gets the otp peer.
         /// </summary>
         /// <returns>The otp peer.</returns>
-        /// <remarks></remarks>
         public OtpPeer GetOtpPeer() { return this.otpPeer; }
     }
 }

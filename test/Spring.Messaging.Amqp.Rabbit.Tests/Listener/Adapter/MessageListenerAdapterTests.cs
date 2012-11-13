@@ -22,6 +22,7 @@ using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Core;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Test;
+using Spring.Messaging.Amqp.Rabbit.Threading.AtomicTypes;
 using Spring.Messaging.Amqp.Support.Converter;
 #endregion
 
@@ -34,13 +35,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
     {
         private MessageProperties messageProperties;
         private MessageListenerAdapter adapter;
-        private SimpleService service;
 
         /// <summary>The init.</summary>
         [SetUp]
         public void Init()
         {
-            this.service = new SimpleService();
+            SimpleService.Called = false;
 
             this.messageProperties = new MessageProperties();
             this.messageProperties.ContentType = MessageProperties.CONTENT_TYPE_TEXT_PLAIN;
@@ -52,86 +52,92 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// <summary>
         /// Tests the default listener method.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestDefaultListenerMethod()
         {
-            var handler = new HandlerDelegate(this.service);
+            var called = new AtomicBoolean(false);
+            var handlerDelegate = new HandlerDelegate(called);
 
-            this.adapter.HandlerObject = handler;
-
+            this.adapter.HandlerObject = handlerDelegate;
             this.adapter.OnMessage(new Message(Encoding.UTF8.GetBytes("foo"), this.messageProperties));
-            Assert.True(SimpleService.called);
+            Assert.True(handlerDelegate.Called);
+        }
+
+        /// <summary>The test func listener method.</summary>
+        [Test]
+        public void TestFuncListenerMethod()
+        {
+            var called = new AtomicBoolean(false);
+            var handlerDelegate = new Func<string, string>(
+                input =>
+                {
+                    called.LazySet(true);
+                    return "processed" + input;
+                });
+
+            this.adapter.HandlerObject = handlerDelegate;
+            this.adapter.OnMessage(new Message(Encoding.UTF8.GetBytes("foo"), this.messageProperties));
+            Assert.True(called.Value);
         }
 
         /// <summary>
         /// Tests the explicit listener method.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestExplicitListenerMethod()
         {
             this.adapter.DefaultListenerMethod = "Handle";
-            this.adapter.HandlerObject = this.service;
+            this.adapter.HandlerObject = new SimpleService();
             this.adapter.OnMessage(new Message(Encoding.UTF8.GetBytes("foo"), this.messageProperties));
-            Assert.True(SimpleService.called);
+            Assert.True(SimpleService.Called);
         }
 
         /// <summary>
         /// Tests the proxy listener.
         /// </summary>
         [Test]
-        // [Ignore("Need Steve or Mark to look at this... Validated that the proxied type does get called, but this.service.called doesn't return true...?")]
         public void TestProxyListener()
         {
             this.adapter.DefaultListenerMethod = "NotDefinedOnInterface";
-            var factory = new ProxyFactory();
-            factory.Target = this.service;
+            var factory = new ProxyFactory(new SimpleService());
             factory.ProxyTargetType = true;
             this.adapter.HandlerObject = factory.GetProxy();
             this.adapter.OnMessage(new Message(Encoding.UTF8.GetBytes("foo"), this.messageProperties));
-            Assert.True(SimpleService.called);
+            Assert.True(SimpleService.Called);
         }
 
         /// <summary>
         /// Tests the JDK proxy listener.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestJdkProxyListener()
         {
             this.adapter.DefaultListenerMethod = "Handle";
-            var factory = new ProxyFactory(this.service);
+            var factory = new ProxyFactory(new SimpleService());
             factory.ProxyTargetType = false;
             this.adapter.HandlerObject = factory.GetProxy();
             this.adapter.OnMessage(new Message(Encoding.UTF8.GetBytes("foo"), this.messageProperties));
-            Assert.True(SimpleService.called);
+            Assert.True(SimpleService.Called);
         }
     }
 
     /// <summary>
     /// A handler delegate.
     /// </summary>
-    /// <remarks></remarks>
     internal class HandlerDelegate
     {
-        /// <summary>
-        /// The service.
-        /// </summary>
-        private SimpleService service;
+        public AtomicBoolean Called;
 
         /// <summary>Initializes a new instance of the <see cref="HandlerDelegate"/> class.</summary>
-        /// <param name="service">The service.</param>
-        /// <remarks></remarks>
-        public HandlerDelegate(SimpleService service) { this.service = service; }
+        /// <param name="called">The called.</param>
+        public HandlerDelegate(AtomicBoolean called) { this.Called = called; }
 
         /// <summary>Handles the message.</summary>
         /// <param name="input">The input.</param>
         /// <returns>The handled message.</returns>
-        /// <remarks></remarks>
         public string HandleMessage(string input)
         {
-            SimpleService.called = true;
+            this.Called.LazySet(true);
             return "processed" + input;
         }
     }
@@ -139,54 +145,44 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
     /// <summary>
     /// An IService inteface.
     /// </summary>
-    /// <remarks></remarks>
     public interface IService
     {
         /// <summary>Handles the specified input.</summary>
         /// <param name="input">The input.</param>
         /// <returns>The handled input.</returns>
-        /// <remarks></remarks>
         string Handle(string input);
     }
 
     /// <summary>
     /// A simple service.
     /// </summary>
-    /// <remarks></remarks>
     public class SimpleService : IService
     {
         /// <summary>
         /// Whether this has been called.
         /// </summary>
-        public static bool called;
-
-        /// <summary>Gets or sets a value indicating whether called.</summary>
-        public bool Called { get { return called; } set { called = value; } }
+        public static bool Called;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleService"/> class. 
         /// </summary>
-        /// <remarks>
-        /// </remarks>
-        public SimpleService() { called = false; }
+        public SimpleService() { Called = false; }
 
         /// <summary>Handles the specified input.</summary>
         /// <param name="input">The input.</param>
         /// <returns>The handled input.</returns>
-        /// <remarks></remarks>
         public string Handle(string input)
         {
-            called = true;
+            Called = true;
             return "processed" + input;
         }
 
         /// <summary>Nots the defined on interface.</summary>
         /// <param name="input">The input.</param>
         /// <returns>Whether the input is defined on the interface.</returns>
-        /// <remarks></remarks>
         public string NotDefinedOnInterface(string input)
         {
-            called = true;
+            Called = true;
             return "processed" + input;
         }
     }
@@ -194,7 +190,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
     /// <summary>
     /// A mock message listener adapter.
     /// </summary>
-    /// <remarks></remarks>
     internal class MockMessageListenerAdapter : MessageListenerAdapter
     {
         /// <summary>Handle the given exception that arose during listener execution.
@@ -204,7 +199,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener.Adapter
         /// exceptions get handled by the caller instead.</para>
         /// </summary>
         /// <param name="ex">The exception to handle.</param>
-        /// <remarks></remarks>
         protected override void HandleListenerException(Exception ex)
         {
             if (ex is SystemException)

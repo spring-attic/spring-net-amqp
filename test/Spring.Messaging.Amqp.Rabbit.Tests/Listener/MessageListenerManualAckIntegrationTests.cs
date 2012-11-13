@@ -35,7 +35,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Integration)]
     public class MessageListenerManualAckIntegrationTests : AbstractRabbitIntegrationTest
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(MessageListenerManualAckIntegrationTests));
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly Queue queue = new Queue("test.queue");
 
@@ -77,7 +77,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Creates the connection factory.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void CreateConnectionFactory()
         {
@@ -92,13 +91,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Clears this instance.
         /// </summary>
-        /// <remarks></remarks>
         [TearDown]
         public void Clear()
         {
             // Wait for broker communication to finish before trying to stop container
             Thread.Sleep(300);
-            logger.Debug("Shutting down at end of test");
+            Logger.Debug("Shutting down at end of test");
             if (this.container != null)
             {
                 this.container.Shutdown();
@@ -108,7 +106,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the listener with manual ack non transactional.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestListenerWithManualAckNonTransactional()
         {
@@ -120,7 +117,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(queue.Name));
@@ -129,7 +126,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the listener with manual ack transactional.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestListenerWithManualAckTransactional()
         {
@@ -142,7 +138,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             var timeout = Math.Min(1 + this.messageCount / (4 * this.concurrentConsumers), 30);
-            logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
+            Logger.Debug("Waiting for messages with timeout = " + timeout + " (s)");
             var waited = latch.Wait(timeout * 1000);
             Assert.True(waited, "Timed out waiting for message");
             Assert.Null(this.template.ReceiveAndConvert(queue.Name));
@@ -151,7 +147,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>Creates the container.</summary>
         /// <param name="listener">The listener.</param>
         /// <returns>The container.</returns>
-        /// <remarks></remarks>
         private SimpleMessageListenerContainer CreateContainer(object listener)
         {
             var container = new SimpleMessageListenerContainer(this.template.ConnectionFactory);
@@ -171,32 +166,28 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     /// <summary>
     /// A test listener.
     /// </summary>
-    /// <remarks></remarks>
     public class TestListener : IChannelAwareMessageListener
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(TestListener));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         private readonly CountdownEvent latch;
 
         /// <summary>Initializes a new instance of the <see cref="TestListener"/> class.</summary>
         /// <param name="latch">The latch.</param>
-        /// <remarks></remarks>
         public TestListener(CountdownEvent latch) { this.latch = latch; }
 
         /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
-        /// <remarks></remarks>
         public void HandleMessage(string value) { }
 
         /// <summary>Called when [message].</summary>
         /// <param name="message">The message.</param>
         /// <param name="channel">The channel.</param>
-        /// <remarks></remarks>
         public void OnMessage(Message message, IModel channel)
         {
             var value = Encoding.UTF8.GetString(message.Body);
             try
             {
-                logger.Debug("Acking: " + value);
+                Logger.Debug("Acking: " + value);
                 channel.BasicAck((ulong)message.MessageProperties.DeliveryTag, false);
             }
             finally

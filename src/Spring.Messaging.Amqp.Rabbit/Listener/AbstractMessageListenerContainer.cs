@@ -33,12 +33,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
     ///  An abstract message listener container.
     /// </summary>
     /// <author>Mark Pollack</author>
-    public abstract class AbstractMessageListenerContainer : RabbitAccessor, IDisposable, IContainerDelegate, IObjectNameAware, ILifecycle, IInitializingObject
+    public abstract class AbstractMessageListenerContainer : RabbitAccessor, IDisposable, IObjectNameAware, ILifecycle, IInitializingObject
     {
         /// <summary>
         /// Logger available to subclasses.
         /// </summary>
-        protected new static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitAccessor));
+        protected new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The object name.
@@ -202,9 +202,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         protected virtual void CheckMessageListener(object messageListener)
         {
             AssertUtils.ArgumentNotNull(messageListener, "IMessage Listener can not be null");
-            if (!(messageListener is IMessageListener || messageListener is IChannelAwareMessageListener))
+            if (!(messageListener is IMessageListener || messageListener is IChannelAwareMessageListener || messageListener is Action<Message>))
             {
-                throw new ArgumentException("messageListener needs to be of type [" + typeof(IMessageListener).FullName + "] or [" + typeof(IChannelAwareMessageListener).FullName + "]");
+                throw new ArgumentException("messageListener needs to be of type [" + typeof(IMessageListener).FullName + "] or [" + typeof(IChannelAwareMessageListener).FullName + "] or [" + typeof(Action<Message>) + "]");
             }
         }
 
@@ -488,17 +488,26 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             {
                 this.DoInvokeListener((IChannelAwareMessageListener)listener, channel, message);
             }
-            else if (listener is IMessageListener)
+            else if (listener is IMessageListener || listener is Action<Message>)
             {
                 var bindChannel = this.ExposeListenerChannel && this.IsChannelLocallyTransacted(channel);
                 if (bindChannel)
                 {
-                    TransactionSynchronizationManager.BindResource(this.ConnectionFactory, new RabbitResourceHolder(channel, false));
+                    var resourceHolder = new RabbitResourceHolder(channel, false);
+                    resourceHolder.SynchronizedWithTransaction = true;
+                    TransactionSynchronizationManager.BindResource(this.ConnectionFactory, resourceHolder);
                 }
 
                 try
                 {
-                    this.DoInvokeListener((IMessageListener)listener, message);
+                    if (listener is IMessageListener)
+                    {
+                        this.DoInvokeListener((IMessageListener)listener, message);
+                    }
+                    else if (listener is Action<Message>)
+                    {
+                        this.DoInvokeListener((Action<Message>)listener, message);
+                    }
                 }
                 finally
                 {
@@ -544,6 +553,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     if (this.IsChannelLocallyTransacted(channelToUse) &&
                         !TransactionSynchronizationManager.ActualTransactionActive)
                     {
+                        resourceHolder.SynchronizedWithTransaction = true;
                         TransactionSynchronizationManager.BindResource(
                             this.ConnectionFactory, 
                             resourceHolder);
@@ -555,7 +565,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     // if locally transacted, bind the current channel to make it available to RabbitTemplate
                     if (this.IsChannelLocallyTransacted(channel))
                     {
-                        TransactionSynchronizationManager.BindResource(this.ConnectionFactory, new RabbitResourceHolder(channelToUse, false));
+                        var localResourceHolder = new RabbitResourceHolder(channelToUse, false);
+                        localResourceHolder.SynchronizedWithTransaction = true;
+                        TransactionSynchronizationManager.BindResource(this.ConnectionFactory, localResourceHolder);
                         boundHere = true;
                     }
                 }
@@ -572,6 +584,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             finally
             {
+                if (resourceHolder != null && boundHere)
+                {
+                    // so the channel exposed (because exposeListenerChannel is false) will be closed
+                    resourceHolder.SynchronizedWithTransaction = false;
+                }
+
                 ConnectionFactoryUtils.ReleaseResources(resourceHolder);
                 if (boundHere)
                 {
@@ -605,7 +623,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
             catch (Exception e)
             {
-                this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
+                throw this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
+            }
+        }
+
+        /// <summary>The do invoke listener.</summary>
+        /// <param name="listener">The listener.</param>
+        /// <param name="message">The message.</param>
+        /// <exception cref="Exception"></exception>
+        protected virtual void DoInvokeListener(Action<Message> listener, Message message)
+        {
+            try
+            {
+                listener.Invoke(message);
+            }
+            catch (Exception e)
+            {
+                throw this.WrapToListenerExecutionFailedExceptionIfNeeded(e);
             }
         }
 

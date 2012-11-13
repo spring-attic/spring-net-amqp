@@ -37,7 +37,6 @@ namespace Spring.Erlang.Core
 
         /// <summary>Initializes a new instance of the <see cref="ErlangTemplate"/> class.</summary>
         /// <param name="connectionFactory">The connection factory.</param>
-        /// <remarks></remarks>
         public ErlangTemplate(IConnectionFactory connectionFactory)
         {
             this.ConnectionFactory = connectionFactory;
@@ -48,7 +47,6 @@ namespace Spring.Erlang.Core
         /// Gets or sets the erlang converter.
         /// </summary>
         /// <value>The erlang converter.</value>
-        /// <remarks></remarks>
         public IErlangConverter ErlangConverter { get { return this.erlangConverter; } set { this.erlangConverter = value; } }
 
         /// <summary>Executes the erlang RPC.</summary>
@@ -56,16 +54,15 @@ namespace Spring.Erlang.Core
         /// <param name="function">The function.</param>
         /// <param name="args">The args.</param>
         /// <returns>The OtpErlangObject.</returns>
-        /// <remarks></remarks>
         public OtpErlangObject ExecuteErlangRpc(string module, string function, OtpErlangList args)
         {
             return this.Execute(
                 delegate(IConnection connection)
                 {
-                    logger.Debug("Sending RPC for module [" + module + "] function [" + function + "] args [" + args);
+                    Logger.Debug("Sending RPC for module [" + module + "] function [" + function + "] args [" + args);
                     connection.SendRPC(module, function, args);
                     var response = connection.ReceiveRPC();
-                    logger.Debug("Response received = " + response);
+                    Logger.Debug("Response received = " + response);
                     this.HandleResponseError(module, function, response);
                     return response;
                 });
@@ -75,7 +72,6 @@ namespace Spring.Erlang.Core
         /// <param name="module">The module.</param>
         /// <param name="function">The function.</param>
         /// <param name="result">The result.</param>
-        /// <remarks></remarks>
         public void HandleResponseError(string module, string function, OtpErlangObject result)
         {
             /* {badrpc,{'EXIT',{undef,[{rabbit_access_control,list_users,[[]]},{rpc,'-handle_call/3-fun-0-',5}]}}} */
@@ -118,7 +114,6 @@ namespace Spring.Erlang.Core
         /// <param name="function">The function.</param>
         /// <param name="args">The args.</param>
         /// <returns>The OtpErlangObject.</returns>
-        /// <remarks></remarks>
         public OtpErlangObject ExecuteErlangRpc(string module, string function, params OtpErlangObject[] args) { return this.ExecuteRpc(module, function, new OtpErlangList(args)); }
 
         /// <summary>Executes the RPC.</summary>
@@ -126,7 +121,6 @@ namespace Spring.Erlang.Core
         /// <param name="function">The function.</param>
         /// <param name="args">The args.</param>
         /// <returns>The OtpErlangObject.</returns>
-        /// <remarks></remarks>
         public OtpErlangObject ExecuteRpc(string module, string function, params object[] args) { return this.ExecuteErlangRpc(module, function, (OtpErlangList)this.erlangConverter.ToErlang(args)); }
 
         /// <summary>Executes the and convert RPC.</summary>
@@ -135,7 +129,6 @@ namespace Spring.Erlang.Core
         /// <param name="converterToUse">The converter to use.</param>
         /// <param name="args">The args.</param>
         /// <returns>The OtpErlangObject.</returns>
-        /// <remarks></remarks>
         public object ExecuteAndConvertRpc(string module, string function, IErlangConverter converterToUse, params object[] args) { return converterToUse.FromErlang(this.ExecuteRpc(module, function, converterToUse.ToErlang(args))); }
 
         /// <summary>Executes the and convert RPC.</summary>
@@ -143,14 +136,12 @@ namespace Spring.Erlang.Core
         /// <param name="function">The function.</param>
         /// <param name="args">The args.</param>
         /// <returns>The object.</returns>
-        /// <remarks></remarks>
         public object ExecuteAndConvertRpc(string module, string function, params object[] args) { return this.erlangConverter.FromErlangRpc(module, function, this.ExecuteErlangRpc(module, function, (OtpErlangList)this.erlangConverter.ToErlang(args))); }
 
         /// <summary>Executes the specified action.</summary>
         /// <typeparam name="T">Type T.</typeparam>
         /// <param name="action">The action.</param>
         /// <returns>Object of Type T.</returns>
-        /// <remarks></remarks>
         public T Execute<T>(ConnectionCallbackDelegate<T> action)
         {
             AssertUtils.ArgumentNotNull(action, "Callback object must not be null");
@@ -166,7 +157,7 @@ namespace Spring.Erlang.Core
             }
             catch (Exception ex)
             {
-                logger.Error("An error occurred executing the action", ex);
+                Logger.Error("An error occurred executing the action", ex);
                 throw this.ConvertOtpAccessException(ex);
             }
             finally
@@ -180,7 +171,6 @@ namespace Spring.Erlang.Core
         /// <summary>Converts the otp access exception.</summary>
         /// <param name="ex">The ex.</param>
         /// <returns>The Erlang.NET.OtpException.</returns>
-        /// <remarks></remarks>
         protected OtpException ConvertOtpAccessException(Exception ex) { return ErlangUtils.ConvertOtpAccessException(ex); }
     }
 }

@@ -30,7 +30,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
     [Category(TestCategory.LifecycleIntegration)]
     public class RabbitBrokerAdminLifecycleIntegrationTests
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(RabbitBrokerAdminLifecycleIntegrationTests));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly string NODE_NAME = "spring@" + Dns.GetHostName().ToUpper();
 
@@ -55,7 +55,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Inits this instance.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void Init()
         {
@@ -124,7 +123,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>
         /// Tests the stop and start broker.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestStopAndStartBroker()
         {
@@ -161,7 +159,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
 
                 // if (i % 5 == 0)
                 // {
-                logger.Debug("i = " + i);
+                Logger.Debug("i = " + i);
 
                 // }
             }

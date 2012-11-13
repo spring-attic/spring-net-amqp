@@ -54,27 +54,15 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMoq, Version=1.6.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AutoMoq.1.6.1\lib\AutoMoq.dll</HintPath>
-    </Reference>
     <Reference Include="Common.Logging">
       <HintPath>..\..\packages\Common.Logging.2.1.1\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.Unity">
-      <HintPath>..\..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.Unity.Configuration">
-      <HintPath>..\..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.6.1.12217, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="RabbitMQ.Client, Version=2.8.7.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -110,8 +98,10 @@
     <Compile Include="Config\ConnectionFactoryParserTests.cs" />
     <Compile Include="Config\ExchangeParserIntegrationTests.cs" />
     <Compile Include="Config\ExchangeParserTests.cs" />
+    <Compile Include="Config\FederatedExchangeParserIntegrationTests.cs" />
     <Compile Include="Config\ListenerContainerParserTests.cs" />
     <Compile Include="Config\ListenerContainerPlaceholderParserTests.cs" />
+    <Compile Include="Config\QueueArgumentsParserTests.cs" />
     <Compile Include="Config\QueueParserIntegrationTests.cs" />
     <Compile Include="Config\QueueParserPlaceholderTests.cs" />
     <Compile Include="Config\QueueParserTests.cs" />
@@ -130,12 +120,18 @@
     <Compile Include="Core\RabbitAdminIntegrationTests.cs" />
     <Compile Include="Core\RabbitAdminTests.cs" />
     <Compile Include="Core\RabbitBindingIntegrationTests.cs" />
+    <Compile Include="Core\RabbitTemplateHeaderTests.cs" />
     <Compile Include="Core\RabbitTemplateIntegrationTests.cs" />
     <Compile Include="Core\RabbitTemplatePerformanceIntegrationTests.cs" />
+    <Compile Include="Core\RabbitTemplateTests.cs" />
     <Compile Include="Core\Support\RabbitGatewaySupportTests.cs" />
     <Compile Include="Core\TestConstants.cs" />
     <Compile Include="Listener\ActiveObjectCounterTests.cs" />
     <Compile Include="Listener\Adapter\MessageListenerAdapterTests.cs" />
+    <Compile Include="Listener\BlockingQueueConsumerIntegrationTests.cs" />
+    <Compile Include="Listener\BlockingQueueConsumerTests.cs" />
+    <Compile Include="Listener\ExternalTxManagerTests.cs" />
+    <Compile Include="Listener\LocallyTransactedTests.cs" />
     <Compile Include="Listener\MessageListenerBrokerInterruptionIntegrationTests.cs" />
     <Compile Include="Listener\MessageListenerContainerErrorHandlerIntegrationTests.cs" />
     <Compile Include="Listener\MessageListenerContainerLifecycleIntegrationTests.cs" />
@@ -146,10 +142,11 @@
     <Compile Include="Listener\MessageListenerRecoverySingleConnectionIntegrationTests.cs" />
     <Compile Include="Listener\MessageListenerTxSizeIntegrationTests.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainerIntegrationTests.cs" />
-    <Compile Include="Listener\SimpleMessageListenerContainerSunnyDayTest.cs" />
     <Compile Include="Listener\SimpleMessageListenerContainerTests.cs" />
+    <Compile Include="Listener\StopStartIntegrationTests.cs" />
     <Compile Include="Listener\UnackedRawIntegrationTests.cs" />
     <Compile Include="Support\MoqExtensions.cs" />
+    <Compile Include="Test\BrokerFederated.cs" />
     <Compile Include="Test\BrokerPanic.cs" />
     <Compile Include="Test\BrokerRunning.cs" />
     <Compile Include="Test\BrokerTestUtils.cs" />
@@ -194,9 +191,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Gateways\" />
     <Folder Include="Properties\" />
-    <Folder Include="Support\Converter\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -233,7 +228,22 @@
       <Name>Spring.Messaging.Amqp.2010</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Config\FederatedExchangeParserIntegrationTests-context.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Config\ListenerContainerParserTests-fail-context.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Config\QueueArgumentsParserTests-context.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Listener\StopStartIntegrationTests-context.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\Tools\StyleCop\StyleCop.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

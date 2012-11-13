@@ -16,6 +16,7 @@
 #region Using Directives
 using System;
 using System.Collections;
+using Common.Logging;
 using Moq.Language.Flow;
 #endregion
 
@@ -24,28 +25,37 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Support
     /// <summary>
     /// Moq Extension methods.
     /// </summary>
-    /// <remarks></remarks>
     public static class MoqExtensions
     {
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>Returnses the in order.</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Type T</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="setup">The setup.</param>
         /// <param name="results">The results.</param>
-        /// <remarks></remarks>
         public static void ReturnsInOrder<T, TResult>(this ISetup<T, TResult> setup, params object[] results) where T : class
         {
             var queue = new Queue(results);
             setup.Returns(
                 () =>
                 {
-                    var result = queue.Dequeue();
-                    if (result is Exception)
+                    try
                     {
-                        throw result as Exception;
-                    }
+                        var result = queue.Dequeue();
+                        if (result is Exception)
+                        {
+                            throw result as Exception;
+                        }
 
-                    return (TResult)result;
+                        queue.Enqueue(result);
+                        return (TResult)result;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(m => m("Error occurred dequeuing object."), ex);
+                        throw;
+                    }
                 });
         }
     }

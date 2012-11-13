@@ -16,7 +16,9 @@
 #region Using Directives
 using System;
 using System.Xml;
+using RabbitMQ.Client.Exceptions;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
 #endregion
@@ -62,38 +64,34 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         protected override void ParseBindings(XmlElement element, ParserContext parserContext, ObjectDefinitionBuilder builder, string exchangeName)
         {
             var backingType = element.GetAttribute(BACKING_TYPE_ATTRIBUTE);
-            var bindingsElements = element.GetElementsByTagName(DIRECT_BINDINGS_ELE);
-            var bindingsElement = bindingsElements.Count == 1 ? bindingsElements[0] as XmlElement : null;
-            if (bindingsElement != null && ExchangeTypes.Direct != backingType)
+            var bindings = element.SelectChildElementByTagName(DIRECT_BINDINGS_ELE);
+            if (bindings != null && ExchangeTypes.Direct != backingType)
             {
                 parserContext.ReaderContext.ReportFatalException(element, "Cannot have direct-bindings if backing-type not 'direct'");
             }
 
-            if (bindingsElement == null)
+            if (bindings == null)
             {
-                bindingsElements = element.GetElementsByTagName(TOPIC_BINDINGS_ELE);
-                bindingsElement = bindingsElements.Count == 1 ? bindingsElements[0] as XmlElement : null;
-                if (bindingsElement != null && !ExchangeTypes.Topic.Equals(backingType))
+                bindings = element.SelectChildElementByTagName(TOPIC_BINDINGS_ELE);
+                if (bindings != null && !ExchangeTypes.Topic.Equals(backingType))
                 {
                     parserContext.ReaderContext.ReportFatalException(element, "Cannot have topic-bindings if backing-type not 'topic'");
                 }
             }
 
-            if (bindingsElement == null)
+            if (bindings == null)
             {
-                bindingsElements = element.GetElementsByTagName(TOPIC_FANOUT_ELE);
-                bindingsElement = bindingsElements.Count == 1 ? bindingsElements[0] as XmlElement : null;
-                if (bindingsElement != null && !ExchangeTypes.Fanout.Equals(backingType))
+                bindings = element.SelectChildElementByTagName(TOPIC_FANOUT_ELE);
+                if (bindings != null && !ExchangeTypes.Fanout.Equals(backingType))
                 {
                     parserContext.ReaderContext.ReportFatalException(element, "Cannot have fanout-bindings if backing-type not 'fanout'");
                 }
             }
 
-            if (bindingsElement == null)
+            if (bindings == null)
             {
-                bindingsElements = element.GetElementsByTagName(TOPIC_HEADERS_ELE);
-                bindingsElement = bindingsElements.Count == 1 ? bindingsElements[0] as XmlElement : null;
-                if (bindingsElement != null && !ExchangeTypes.Headers.Equals(backingType))
+                bindings = element.SelectChildElementByTagName(TOPIC_HEADERS_ELE);
+                if (bindings != null && !ExchangeTypes.Headers.Equals(backingType))
                 {
                     parserContext.ReaderContext.ReportFatalException(element, "Cannot have headers-bindings if backing-type not 'headers'");
                 }
@@ -103,19 +101,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
             {
                 if (ExchangeTypes.Direct.Equals(backingType))
                 {
-                    this.DoParseBindings(parserContext, exchangeName, bindingsElement, new DirectExchangeParser());
+                    this.DoParseBindings(parserContext, exchangeName, bindings, new DirectExchangeParser());
                 }
                 else if (ExchangeTypes.Topic.Equals(backingType))
                 {
-                    this.DoParseBindings(parserContext, exchangeName, bindingsElement, new TopicExchangeParser());
+                    this.DoParseBindings(parserContext, exchangeName, bindings, new TopicExchangeParser());
                 }
                 else if (ExchangeTypes.Fanout.Equals(backingType))
                 {
-                    this.DoParseBindings(parserContext, exchangeName, bindingsElement, new FanoutExchangeParser());
+                    this.DoParseBindings(parserContext, exchangeName, bindings, new FanoutExchangeParser());
                 }
                 else if (ExchangeTypes.Headers.Equals(backingType))
                 {
-                    this.DoParseBindings(parserContext, exchangeName, bindingsElement, new HeadersExchangeParser());
+                    this.DoParseBindings(parserContext, exchangeName, bindings, new HeadersExchangeParser());
                 }
             }
         }
@@ -125,7 +123,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
         /// <param name="binding">The binding.</param>
         /// <param name="parserContext">The parser context.</param>
         /// <returns>The Spring.Objects.Factory.Support.AbstractObjectDefinition.</returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        protected override AbstractObjectDefinition ParseBinding(string exchangeName, XmlElement binding, ParserContext parserContext) { throw new InvalidOperationException("Not supported for federated exchange"); }
+        protected override AbstractObjectDefinition ParseBinding(string exchangeName, XmlElement binding, ParserContext parserContext) { throw new UnsupportedMethodException("Not supported for federated exchange"); }
     }
 }

@@ -45,20 +45,76 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
 
         /// <summary>The test kitchen sink.</summary>
         [Test]
-        public void testKitchenSink()
+        public void TestKitchenSink()
         {
             var connectionFactory = this.objectFactory.GetObject<CachingConnectionFactory>("kitchenSink");
             Assert.IsNotNull(connectionFactory);
             Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
+
+            // assertNull(dfa.getPropertyValue("executorService"));
+            Assert.AreEqual(true, connectionFactory.IsPublisherConfirms);
+            Assert.AreEqual(true, connectionFactory.IsPublisherReturns);
         }
 
         /// <summary>The test native.</summary>
         [Test]
-        public void testNative()
+        public void TestNative()
         {
             var connectionFactory = this.objectFactory.GetObject<CachingConnectionFactory>("native");
             Assert.IsNotNull(connectionFactory);
             Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
+        }
+
+        /// <summary>The test with executor.</summary>
+        [Test]
+        public void TestWithExecutor()
+        {
+            var connectionFactory = this.objectFactory.GetObject<CachingConnectionFactory>("withExecutor");
+            Assert.NotNull(connectionFactory);
+            Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
+
+            // var executor = new DirectFieldAccessor(connectionFactory).getPropertyValue("executorService");
+            // Assert.NotNull(executor);
+            // var exec = this.objectFactory.GetObject<IThreadPoolTaskExecutor>("exec");
+            // Assert.AreSame(exec.getThreadPoolExecutor(), executor);
+            // var dfa = new DirectFieldAccessor(connectionFactory);
+            Assert.AreEqual(false, connectionFactory.IsPublisherConfirms);
+            Assert.AreEqual(false, connectionFactory.IsPublisherReturns);
+        }
+
+        /// <summary>The test with executor service.</summary>
+        [Test]
+        public void TestWithExecutorService()
+        {
+            var connectionFactory = this.objectFactory.GetObject<CachingConnectionFactory>("withExecutorService");
+            Assert.NotNull(connectionFactory);
+            Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
+
+            // var executor = new DirectFieldAccessor(connectionFactory).getPropertyValue("executorService");
+            // Assert.NotNull(executor);
+            // var exec = this.objectFactory.GetObject<IExecutorService>("execService");
+            // Assert.AreSame(exec, executor);
+        }
+
+        /// <summary>The test multi host.</summary>
+        [Test]
+        public void TestMultiHost()
+        {
+            var connectionFactory = this.objectFactory.GetObject<CachingConnectionFactory>("multiHost");
+            Assert.NotNull(connectionFactory);
+            Assert.AreEqual(10, connectionFactory.ChannelCacheSize);
+
+            // DirectFieldAccessor dfa =  new DirectFieldAccessor(connectionFactory);
+            var addresses = connectionFactory.AmqpTcpEndpoints;
+            Assert.AreEqual(3, addresses.Length);
+            Assert.AreEqual("host1", addresses[0].HostName);
+            Assert.AreEqual(1234, addresses[0].Port);
+            Assert.AreEqual("host2", addresses[1].HostName);
+
+            // Assert.AreEqual(-1, addresses[1].Port);
+            Assert.AreEqual(5672, addresses[1].Port);
+            Assert.AreEqual("host3", addresses[2].HostName);
+            Assert.AreEqual(4567, addresses[2].Port);
         }
     }
 }

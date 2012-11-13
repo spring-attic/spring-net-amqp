@@ -16,7 +16,6 @@
 #region Using Directives
 using System;
 using System.Data;
-using AutoMoq;
 using Moq;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Rabbit.Connection;
@@ -77,8 +76,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitTransactionManagerIntegrationTests"/> class. 
         /// </summary>
-        /// <remarks>
-        /// </remarks>
         public RabbitTransactionManagerIntegrationTests()
         {
             this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(ROUTE);
@@ -88,7 +85,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Inits this instance.
         /// </summary>
-        /// <remarks></remarks>
         [SetUp]
         public void Init()
         {
@@ -103,13 +99,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Tests the send and receive in transaction.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendAndReceiveInTransaction()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
                 () =>
                 {
@@ -126,13 +119,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Tests the receive in transaction.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestReceiveInTransaction()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(() => (string)this.template.ReceiveAndConvert(ROUTE));
             this.template.ConvertAndSend(ROUTE, "message");
             var result = (string)this.transactionTemplate.Execute(mockCallback.Object);
@@ -145,13 +135,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Tests the receive in transaction with rollback.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestReceiveInTransactionWithRollback()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
                 () =>
                 {
@@ -181,13 +168,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Tests the send in transaction.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendInTransaction()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
                 () =>
                 {
@@ -205,13 +189,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Tests the send in transaction with rollback.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestSendInTransactionWithRollback()
         {
-            var mocker = new AutoMoqer();
-
-            var mockCallback = mocker.GetMock<ITransactionCallback>();
+            var mockCallback = new Mock<ITransactionCallback>();
             mockCallback.Setup(c => c.DoInTransaction(It.IsAny<ITransactionStatus>())).Returns(
                 () =>
                 {
@@ -237,7 +218,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
     /// <summary>
     /// A planned exception.
     /// </summary>
-    /// <remarks></remarks>
     internal class PlannedException : Exception
     {
         /// <summary>

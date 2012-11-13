@@ -15,8 +15,10 @@
 
 #region Using Directives
 using System;
+using System.Reflection;
 using NUnit.Framework;
 using Spring.Messaging.Amqp.Core;
+using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Listener;
 using Spring.Messaging.Amqp.Rabbit.Listener.Adapter;
 using Spring.Messaging.Amqp.Rabbit.Tests.Connection;
@@ -41,7 +43,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the inconsistent transaction configuration.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestInconsistentTransactionConfiguration()
         {
@@ -65,7 +66,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the inconsistent acknowledge configuration.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestInconsistentAcknowledgeConfiguration()
         {
@@ -88,7 +88,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the default consumer count.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestDefaultConsumerCount()
         {
@@ -103,16 +102,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         /// <summary>
         /// Tests the lazy consumer count.
         /// </summary>
-        /// <remarks></remarks>
         [Test]
         public void TestLazyConsumerCount()
         {
-            var container = new SimpleMessageListenerContainer(new SingleConnectionFactory());
-
-            // TODO: I added this, but should we be setting a default queue name, instead of blowing up when queueNames is empty?
-            container.QueueNames = new[] { "foo" };
+            var container = new TestSimpleMessageListenerContainer(new SingleConnectionFactory());
             container.Start();
-            Assert.AreEqual(1, ReflectionUtils.GetInstanceFieldValue(container, "concurrentConsumers"));
+            var concurrentConsumersField = typeof(SimpleMessageListenerContainer).GetField("concurrentConsumers", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.AreEqual(1, concurrentConsumersField.GetValue(container));
+        }
+    }
+
+    /// <summary>The test simple message listener container.</summary>
+    public class TestSimpleMessageListenerContainer : SimpleMessageListenerContainer
+    {
+        /// <summary>Initializes a new instance of the <see cref="TestSimpleMessageListenerContainer"/> class.</summary>
+        /// <param name="connectionFactory">The connection factory.</param>
+        public TestSimpleMessageListenerContainer(IConnectionFactory connectionFactory) : base(connectionFactory) { }
+
+        /// <summary>The do start.</summary>
+        protected override void DoStart()
+        {
+            // Do Nothing
         }
     }
 

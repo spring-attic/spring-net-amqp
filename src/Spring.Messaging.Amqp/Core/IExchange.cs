@@ -14,7 +14,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System.Collections;
+using System.Collections.Generic;
 #endregion
 
 namespace Spring.Messaging.Amqp.Core
@@ -55,6 +55,6 @@ namespace Spring.Messaging.Amqp.Core
         /// A dictionary of arguments used to declare the exchange. These are stored by the broker, but do not necessarily have any
         /// meaning to the broker (depending on the exchange type).
         /// </summary>
-        IDictionary Arguments { get; }
+        IDictionary<string, object> Arguments { get; }
     }
 }

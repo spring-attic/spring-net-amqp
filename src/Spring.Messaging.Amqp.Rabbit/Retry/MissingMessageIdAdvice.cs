@@ -25,7 +25,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Retry
 {
     /// <summary>
     /// *** NOTE: This cannot be used until Retry is implemented, perhaps as part of SPRNET 2.0 ***
-    /// 
     /// Advice that can be placed in the listener delegate's advice chain to
     /// enhance the message with an ID if not present.
     /// If an exception is caught on a redelivered message, rethrows it as an {@link AmqpRejectAndDontRequeueException}
@@ -53,7 +52,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Retry
         /// <summary>The invoke.</summary>
         /// <param name="invocation">The invocation.</param>
         /// <returns>The System.Object.</returns>
-        /// <exception cref="ListenerExecutionFailedException"></exception>
         public object Invoke(IMethodInvocation invocation)
         {
             var id = string.Empty;

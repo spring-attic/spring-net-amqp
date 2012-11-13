@@ -26,37 +26,6 @@ using Spring.Transaction.Support;
 
 namespace Spring.Messaging.Amqp.Rabbit.Transaction
 {
-    /**
-/// <para>
-/// {@link org.springframework.transaction.PlatformTransactionManager} implementation for a single Rabbit
-/// {@link ConnectionFactory}. Binds a Rabbit Channel from the specified ConnectionFactory to the thread, potentially
-/// allowing for one thread-bound channel per ConnectionFactory.
-/// </para>
-/// <para>
-/// This local strategy is an alternative to executing Rabbit operations within, and synchronized with, external
-/// transactions. This strategy is <i>not</i> able to provide XA transactions, for example in order to share transactions
-/// between messaging and database access.
-/// </para>
-/// <para>
-/// Application code is required to retrieve the transactional Rabbit resources via
-/// {@link ConnectionFactoryUtils#getTransactionalResourceHolder(ConnectionFactory, boolean)} instead of a standard
-/// {@link Connection#createChannel()} call with subsequent Channel creation. Spring's {@link RabbitTemplate} will
-/// autodetect a thread-bound Channel and automatically participate in it.
-/// </para>
-/// <para>
-/// <b>The use of {@link CachingConnectionFactory} as a target for this transaction manager is strongly recommended.</b>
-/// CachingConnectionFactory uses a single Rabbit Connection for all Rabbit access in order to avoid the overhead of
-/// repeated Connection creation, as well as maintaining a cache of Channels. Each transaction will then share the same
-/// Rabbit Connection, while still using its own individual Rabbit Channel.
-/// </para>
-/// <para>
-/// Transaction synchronization is turned off by default, as this manager might be used alongside a datastore-based
-/// Spring transaction manager such as the JDBC {@link org.springframework.jdbc.datasource.DataSourceTransactionManager},
-/// which has stronger needs for synchronization.
-/// </para>
- * @author Dave Syer
- */
-
     /// <summary>
     /// A rabbit transaction manager.
     /// </summary>
@@ -91,14 +60,14 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
     /// </remarks>
     /// <author>Dave Syer</author>
     /// <author>Joe Fitzgerald (.NET)</author>
-    public class RabbitTransactionManager : AbstractPlatformTransactionManager, IResourceTransactionManager, IInitializingObject
+    public class RabbitTransactionManager : RabbitAbstractPlatformTransactionManager, IResourceTransactionManager, IInitializingObject
     {
         #region Logging
 
         /// <summary>
         /// The Logger.
         /// </summary>
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(RabbitTransactionManager));
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         /// <summary>
@@ -181,7 +150,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /// <param name="definition">The definition.</param>
         protected override void DoBegin(object transaction, ITransactionDefinition definition)
         {
-            // TODO: Figure out the right isolation level. https://jira.springsource.org/browse/SPRNET-1444
+            // https://jira.springsource.org/browse/SPRNET-1444 (SPRNET 2.0) has default TransactionIsolationLevel as IsolationLevel.Unspecified, letting this work. Will not work for SPRNET <= 1.3.2.
             if (definition.TransactionIsolationLevel != IsolationLevel.Unspecified)
             {
                 throw new InvalidIsolationLevelException("AMQP does not support an isolation level concept");
@@ -263,7 +232,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
 
         /// <summary>Do cleanup after completion.</summary>
         /// <param name="transaction">The transaction.</param>
-        protected void DoCleanupAfterCompletion(object transaction)
+        protected override void DoCleanupAfterCompletion(object transaction)
         {
             var transactionObject = (RabbitTransactionObject)transaction;
             TransactionSynchronizationManager.UnbindResource(this.ConnectionFactory);
