@@ -923,6 +923,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
             status.Completed = true;
             if (status.IsNewTransaction)
             {
+                this.LogSynchronizations("New Transaction being cleaned up.");
                 TransactionSynchronizationManager.Clear();
             }
 
@@ -939,6 +940,17 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
                 }
 
                 this.Resume(status.Transaction, (SuspendedResourcesHolder)status.SuspendedResources);
+            }
+        }
+
+        private void LogSynchronizations(string message)
+        {
+            Logger.Debug(m => m(message));
+            var count = 1;
+            foreach (var item in TransactionSynchronizationManager.Synchronizations.ToGenericList<ITransactionSynchronization>())
+            {
+                Logger.Debug(m => m("SynchronizationItem {0}: {1}", count, item.ToString()));
+                count++;
             }
         }
 

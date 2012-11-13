@@ -39,12 +39,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Core
         /// <summary>
         /// The connection factory.
         /// </summary>
-        private IConnectionFactory connectionFactory;
+        private volatile IConnectionFactory connectionFactory;
 
         /// <summary>
         /// The transactional flag.
         /// </summary>
-        private bool transactional;
+        private volatile bool transactional;
 
         /// <summary>
         /// Gets or sets ConnectionFactory.
