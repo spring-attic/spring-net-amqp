@@ -15,6 +15,7 @@
 
 #region Using Directives
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
@@ -30,6 +31,21 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     public static class CollectionExtensions
     {
         internal static readonly TimeSpan MaxValue = TimeSpan.FromMilliseconds(int.MaxValue);
+
+        public static IList<T> ToGenericList<T>(this IList list)
+        {
+            IList<T> result = new List<T>();
+
+            if (list != null)
+            {
+                foreach (T item in list)
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result;
+        }
 
         /// <summary>The take.</summary>
         /// <param name="queue">The queue.</param>

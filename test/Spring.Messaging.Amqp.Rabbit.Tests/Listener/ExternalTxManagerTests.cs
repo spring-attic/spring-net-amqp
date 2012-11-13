@@ -15,9 +15,11 @@
 
 #region Using Directives
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using Common.Logging;
 using Moq;
 using NUnit.Framework;
 using RabbitMQ.Client;
@@ -44,6 +46,27 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
     [Category(TestCategory.Unit)]
     public class ExternalTxManagerTests
     {
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
+        private int timeout = 5000;
+
+        private SimpleMessageListenerContainer container;
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TransactionSynchronizationManager.ActualTransactionActive)
+            {
+                TransactionSynchronizationManager.Clear();   
+            }
+
+            if (container != null)
+            {
+                container.Dispose();
+                container = null;
+            }
+        }
+
         /// <summary>Verifies that an up-stack RabbitTemplate uses the listener's channel (MessageListener).</summary>
         [Test]
         public void TestMessageListener()
@@ -76,16 +99,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                     return channel.Object;
                 });
 
-            var consumer = new AtomicReference<IBasicConsumer>();
+            var consumer = new BlockingCollection<IBasicConsumer>(1);
 
             onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicConsumer>())).Callback<string, bool, IBasicConsumer>(
-                (a1, a2, a3) => consumer.LazySet(a3));
+                (a1, a2, a3) => consumer.Add(a3));
 
             var commitLatch = new CountdownEvent(1);
-            onlyChannel.Setup(m => m.TxCommit()).Callback(() => commitLatch.Signal());
+            onlyChannel.Setup(m => m.TxCommit()).Callback(
+                () =>
+                {
+                    if (commitLatch.CurrentCount > 0)
+                    {
+                        commitLatch.Signal();
+                    }
+                });
 
             var latch = new CountdownEvent(1);
-            var container = new SimpleMessageListenerContainer(cachingConnectionFactory);
+            container = new SimpleMessageListenerContainer(cachingConnectionFactory);
             container.MessageListener = new Action<Message>(
                 message =>
                 {
@@ -94,17 +124,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
                     // should use same channel as container
                     rabbitTemplate.ConvertAndSend("foo", "bar", "baz");
-                    latch.Signal();
+                    if (latch.CurrentCount > 0)
+                    {
+                        latch.Signal();
+                    }
                 });
 
             container.QueueNames = new[] { "queue" };
             container.ChannelTransacted = true;
             container.ShutdownTimeout = 100;
-            container.TransactionManager = new DummyTxManager();
+            container.TransactionManager = DummyTxManager.Instance();
             container.AfterPropertiesSet();
             container.Start();
 
-            consumer.Value.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
+            IBasicConsumer currentConsumer;
+            consumer.TryTake(out currentConsumer, timeout);
+            Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
+            currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
             Assert.IsTrue(latch.Wait(new TimeSpan(0, 0, 10)));
 
@@ -159,17 +195,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                     return internalChannel.Object;
                 });
 
-            var consumer = new AtomicReference<IBasicConsumer>();
+            var consumer = new BlockingCollection<IBasicConsumer>(1);
 
             onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicConsumer>())).Callback<string, bool, IBasicConsumer>(
-                (a1, a2, a3) => consumer.LazySet(a3));
+                (a1, a2, a3) => consumer.Add(a3));
 
             var commitLatch = new CountdownEvent(1);
-            onlyChannel.Setup(m => m.TxCommit()).Callback(() => commitLatch.Signal());
+            onlyChannel.Setup(m => m.TxCommit()).Callback(
+                () =>
+                {
+                    if (commitLatch.CurrentCount > 0)
+                    {
+                        commitLatch.Signal();
+                    }
+                });
 
             var latch = new CountdownEvent(1);
             var exposed = new AtomicReference<IModel>();
-            var container = new SimpleMessageListenerContainer(singleConnectionFactory);
+            container = new SimpleMessageListenerContainer(singleConnectionFactory);
             var mockListener = new Mock<IChannelAwareMessageListener>();
             mockListener.Setup(m => m.OnMessage(It.IsAny<Message>(), It.IsAny<IModel>())).Callback<Message, IModel>(
                 (message, channel) =>
@@ -180,17 +223,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
                     // should use same channel as container
                     rabbitTemplate.ConvertAndSend("foo", "bar", "baz");
-                    latch.Signal();
+                    if (latch.CurrentCount > 0)
+                    {
+                        latch.Signal();
+                    }
                 });
             container.MessageListener = mockListener.Object;
             container.QueueNames = new[] { "queue" };
             container.ChannelTransacted = true;
             container.ShutdownTimeout = 100;
-            container.TransactionManager = new DummyTxManager();
+            container.TransactionManager = DummyTxManager.Instance();
             container.AfterPropertiesSet();
             container.Start();
 
-            consumer.Value.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
+            IBasicConsumer currentConsumer;
+            consumer.TryTake(out currentConsumer, timeout);
+            Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
+            currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
             Assert.IsTrue(latch.Wait(new TimeSpan(0, 0, 10)));
 
@@ -245,17 +294,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                     return internalChannel.Object;
                 });
 
-            var consumer = new AtomicReference<IBasicConsumer>();
+            var consumer = new BlockingCollection<IBasicConsumer>(1);
 
             onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicConsumer>())).Callback<string, bool, IBasicConsumer>(
-                (a1, a2, a3) => consumer.LazySet(a3));
+                (a1, a2, a3) => consumer.Add(a3));
 
             var commitLatch = new CountdownEvent(1);
-            onlyChannel.Setup(m => m.TxCommit()).Callback(() => commitLatch.Signal());
+            onlyChannel.Setup(m => m.TxCommit()).Callback(
+                () =>
+                {
+                    if (commitLatch.CurrentCount > 0)
+                    {
+                        commitLatch.Signal();
+                    }
+                });
 
             var latch = new CountdownEvent(1);
             var exposed = new AtomicReference<IModel>();
-            var container = new SimpleMessageListenerContainer(singleConnectionFactory);
+            container = new SimpleMessageListenerContainer(singleConnectionFactory);
             var mockListener = new Mock<IChannelAwareMessageListener>();
             mockListener.Setup(m => m.OnMessage(It.IsAny<Message>(), It.IsAny<IModel>())).Callback<Message, IModel>(
                 (message, channel) =>
@@ -266,18 +322,24 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
                     // should use same channel as container
                     rabbitTemplate.ConvertAndSend("foo", "bar", "baz");
-                    latch.Signal();
+                    if (latch.CurrentCount > 0)
+                    {
+                        latch.Signal();
+                    }
                 });
             container.MessageListener = mockListener.Object;
             container.QueueNames = new[] { "queue" };
             container.ChannelTransacted = true;
             container.ExposeListenerChannel = false;
             container.ShutdownTimeout = 100;
-            container.TransactionManager = new DummyTxManager();
+            container.TransactionManager = DummyTxManager.Instance();
             container.AfterPropertiesSet();
             container.Start();
 
-            consumer.Value.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
+            IBasicConsumer currentConsumer;
+            consumer.TryTake(out currentConsumer, timeout);
+            Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
+            currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
             Assert.IsTrue(latch.Wait(new TimeSpan(0, 0, 10)));
 
@@ -332,16 +394,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
                     return internalChannel.Object;
                 });
 
-            var consumer = new AtomicReference<IBasicConsumer>();
+            var consumer = new BlockingCollection<IBasicConsumer>(1);
 
             onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicConsumer>())).Callback<string, bool, IBasicConsumer>(
-                (a1, a2, a3) => consumer.LazySet(a3));
+                (a1, a2, a3) => consumer.Add(a3));
 
             var commitLatch = new CountdownEvent(1);
-            onlyChannel.Setup(m => m.TxCommit()).Callback(() => commitLatch.Signal());
+            onlyChannel.Setup(m => m.TxCommit()).Callback(
+                () =>
+                {
+                    if (commitLatch.CurrentCount > 0)
+                    {
+                        commitLatch.Signal();
+                    }
+                });
 
             var latch = new CountdownEvent(1);
-            var container = new SimpleMessageListenerContainer(cachingConnectionFactory);
+            container = new SimpleMessageListenerContainer(cachingConnectionFactory);
 
             var mockListener = new Mock<IMessageListener>();
             mockListener.Setup(m => m.OnMessage(It.IsAny<Message>())).Callback<Message>(
@@ -352,7 +421,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
                     // should use same channel as container
                     rabbitTemplate.ConvertAndSend("foo", "bar", "baz");
-                    latch.Signal();
+                    if (latch.CurrentCount > 0)
+                    {
+                        latch.Signal();
+                    }
                 });
             container.MessageListener = mockListener.Object;
             container.QueueNames = new[] { "queue" };
@@ -362,7 +434,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.AfterPropertiesSet();
             container.Start();
 
-            consumer.Value.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
+            IBasicConsumer currentConsumer;
+            consumer.TryTake(out currentConsumer, timeout);
+            Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
+            currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
             Assert.IsTrue(latch.Wait(new TimeSpan(0, 0, 10)));
 
@@ -386,10 +461,23 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         }
     }
 
-    internal class DummyTxManager : AbstractPlatformTransactionManager
+    internal class DummyTxManager : RabbitAbstractPlatformTransactionManager
     {
+        private static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+
+        private static readonly DummyTxManager instance = new DummyTxManager();
+
+        public static DummyTxManager Instance()
+        {
+            // return instance;
+            return new DummyTxManager();
+        }
+
         /// <summary>Initializes a new instance of the <see cref="DummyTxManager"/> class.</summary>
-        public DummyTxManager() { this.TransactionSynchronization = TransactionSynchronizationState.Always; }
+        public DummyTxManager()
+        {
+            this.TransactionSynchronization = TransactionSynchronizationState.Always;
+        }
 
         /// <summary>The do begin.</summary>
         /// <param name="transaction">The transaction.</param>

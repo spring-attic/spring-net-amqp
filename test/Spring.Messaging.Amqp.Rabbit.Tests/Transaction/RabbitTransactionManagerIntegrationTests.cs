@@ -76,8 +76,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Transaction
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitTransactionManagerIntegrationTests"/> class. 
         /// </summary>
-        /// <remarks>
-        /// </remarks>
         public RabbitTransactionManagerIntegrationTests()
         {
             this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(ROUTE);

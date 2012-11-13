@@ -60,7 +60,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
     /// </remarks>
     /// <author>Dave Syer</author>
     /// <author>Joe Fitzgerald (.NET)</author>
-    public class RabbitTransactionManager : AbstractPlatformTransactionManager, IResourceTransactionManager, IInitializingObject
+    public class RabbitTransactionManager : RabbitAbstractPlatformTransactionManager, IResourceTransactionManager, IInitializingObject
     {
         #region Logging
 
