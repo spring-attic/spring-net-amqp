@@ -59,7 +59,7 @@ namespace Spring.Messaging.Amqp.Tests.Core
         [Test]
         public void ToStringForNonStringMessageBody()
         {
-            var message = new Message(SerializationUtils.SerializeObject(DateTime.Now), null);
+            var message = new Message(SerializationUtils.SerializeObject(DateTime.UtcNow), null);
             Assert.NotNull(message.ToString());
         }
 
@@ -71,7 +71,7 @@ namespace Spring.Messaging.Amqp.Tests.Core
         {
             var messageProperties = new MessageProperties();
             messageProperties.ContentType = MessageProperties.CONTENT_TYPE_SERIALIZED_OBJECT;
-            var message = new Message(SerializationUtils.SerializeObject(DateTime.Now), messageProperties);
+            var message = new Message(SerializationUtils.SerializeObject(DateTime.UtcNow), messageProperties);
             Assert.NotNull(message.ToString());
         }
 

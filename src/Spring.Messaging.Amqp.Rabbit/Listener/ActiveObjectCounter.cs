@@ -76,9 +76,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <returns>True if timed out, else false.</returns>
         public bool Await(TimeSpan timeout)
         {
-            var t0 = DateTime.Now;
+            var t0 = DateTime.UtcNow;
             var t1 = t0.Add(timeout);
-            while (DateTime.Now <= t1)
+            while (DateTime.UtcNow <= t1)
             {
                 if (this.locks == null || this.locks.Count == 0)
                 {
@@ -104,7 +104,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                         continue;
                     }
 
-                    t0 = DateTime.Now;
+                    t0 = DateTime.UtcNow;
                     var t3 = t1.Subtract(t0);
                     if (latchLock.Wait(t3.Milliseconds > 0 ? t3.Milliseconds : 0))
                     {

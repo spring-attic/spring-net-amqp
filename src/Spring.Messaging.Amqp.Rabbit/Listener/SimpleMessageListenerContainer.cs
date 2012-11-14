@@ -432,7 +432,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             try
             {
                 Logger.Info(m => m("Waiting for workers to finish."));
-                var finished = this.cancellationLock.Await(new TimeSpan(this.shutdownTimeout * 10000));
+                var finished = this.cancellationLock.Await(new TimeSpan(0, 0, 0, 0, (int)this.shutdownTimeout));
                 Logger.Info(m => m(finished ? "Successfully waited for workers to finish." : "Workers not finished. Forcing connections to close."));
             }
             catch (ThreadInterruptedException e)
@@ -490,8 +490,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             // There's no point prefetching less than the tx size, otherwise the consumer will stall because the broker
             // didn't get an ack for delivered messages
             var actualPrefetchCount = this.prefetchCount > this.txSize ? this.prefetchCount : this.txSize;
-            return new BlockingQueueConsumer(
-                this.ConnectionFactory, this.messagePropertiesConverter, this.cancellationLock, this.AcknowledgeMode, this.ChannelTransacted, actualPrefetchCount, this.defaultRequeueRejected, this.GetRequiredQueueNames());
+            return new BlockingQueueConsumer(this.ConnectionFactory, this.messagePropertiesConverter, this.cancellationLock, this.AcknowledgeMode, this.ChannelTransacted, actualPrefetchCount, this.defaultRequeueRejected, this.GetRequiredQueueNames());
         }
 
         /// <summary>Restart the consumer.</summary>
@@ -614,8 +613,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         {
             try
             {
-                var timeout = DateTime.Now.AddMilliseconds(this.recoveryInterval);
-                while (this.IsActive && DateTime.Now < timeout)
+                var timeout = DateTime.UtcNow.AddMilliseconds(this.recoveryInterval);
+                while (this.IsActive && DateTime.UtcNow < timeout)
                 {
                     Thread.Sleep(200);
                 }
@@ -765,6 +764,13 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             catch (Exception t)
             {
                 Logger.Warn(m => m("Consumer raised exception, processing can restart if the connection factory supports it. " + "Exception summary: " + t));
+            }
+            finally
+            {
+                if (this.outer.transactionManager != null)
+                {
+                    ConnectionFactoryUtils.UnRegisterConsumerChannel();
+                }
             }
 
             // In all cases count down to allow container to progress beyond startup
