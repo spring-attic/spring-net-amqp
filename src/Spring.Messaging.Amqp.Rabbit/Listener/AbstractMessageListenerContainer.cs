@@ -478,17 +478,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
             }
         }
 
-        private void LogSynchronizations(string message)
-        {
-            Logger.Debug(m => m(message));
-            var count = 1;
-            foreach (var item in TransactionSynchronizationManager.Synchronizations.ToGenericList<ITransactionSynchronization>())
-            {
-                Logger.Debug(m => m("SynchronizationItem {0}: {1}", count, item.ToString()));
-                count++;
-            }
-        }
-
         /// <summary>Invokes the specified listener</summary>
         /// <param name="channel">The channel to operate on.</param>
         /// <param name="message">The received message.</param>
@@ -508,7 +497,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                     var resourceHolder = new RabbitResourceHolder(channel, false);
                     resourceHolder.SynchronizedWithTransaction = true;
                     TransactionSynchronizationManager.BindResource(this.ConnectionFactory, resourceHolder);
-                    this.LogSynchronizations("Bound connection factory to transaction.");
                 }
 
                 try
@@ -526,7 +514,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
                 {
                     if (bindChannel)
                     {
-                        this.LogSynchronizations("Bound connection factory to transaction.");
                         // unbind if we bound
                         TransactionSynchronizationManager.UnbindResource(this.ConnectionFactory);
                     }
