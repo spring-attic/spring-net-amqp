@@ -21,7 +21,7 @@ using System.Collections.Generic;
 namespace Spring.Messaging.Amqp.Support
 {
     /// <summary>
-    /// TODO: Update summary.
+    /// Dictionary Extensions
     /// </summary>
     public static class DictionaryExtensions
     {

@@ -212,7 +212,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         /// <summary>Handles the message.</summary>
         /// <param name="value">The value.</param>
-        public void HandleMessage(int value) // TODO: This is supposed to be public void HandleMessage(int value)
+        public void HandleMessage(int value)
         {
             Logger.Debug(value + ":" + this.count.ReturnValueAndIncrement());
             this.latch.Signal();

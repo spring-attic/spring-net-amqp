@@ -277,30 +277,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <summary>Adds the vhost.</summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>The value.</returns>
-        public int AddVhost(string vhostPath)
-        {
-            // TODO Auto-generated method stub
-            return 0;
-        }
+        public int AddVhost(string vhostPath) { return 0; }
 
         /// <summary>Deletes the vhost.</summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>The value.</returns>
-        public int DeleteVhost(string vhostPath)
-        {
-            // TODO Auto-generated method stub
-            return 0;
-        }
+        public int DeleteVhost(string vhostPath) { return 0; }
 
         /// <summary>Sets the permissions.</summary>
         /// <param name="username">The username.</param>
         /// <param name="configure">The configure.</param>
         /// <param name="read">The read.</param>
         /// <param name="write">The write.</param>
-        public void SetPermissions(string username, Regex configure, Regex read, Regex write)
-        {
-            // TODO Auto-generated method stub
-        }
+        public void SetPermissions(string username, Regex configure, Regex read, Regex write) { }
 
         /// <summary>Sets the permissions.</summary>
         /// <param name="username">The username.</param>
@@ -308,53 +297,32 @@ namespace Spring.Messaging.Amqp.Rabbit.Admin
         /// <param name="read">The read.</param>
         /// <param name="write">The write.</param>
         /// <param name="vhostPath">The vhost path.</param>
-        public void SetPermissions(string username, Regex configure, Regex read, Regex write, string vhostPath)
-        {
-            // TODO Auto-generated method stub
-        }
+        public void SetPermissions(string username, Regex configure, Regex read, Regex write, string vhostPath) { }
 
         /// <summary>Clears the permissions.</summary>
         /// <param name="username">The username.</param>
-        public void ClearPermissions(string username)
-        {
-            // TODO Auto-generated method stub
-        }
+        public void ClearPermissions(string username) { }
 
         /// <summary>Clears the permissions.</summary>
         /// <param name="username">The username.</param>
         /// <param name="vhostPath">The vhost path.</param>
-        public void ClearPermissions(string username, string vhostPath)
-        {
-            // TODO Auto-generated method stub
-        }
+        public void ClearPermissions(string username, string vhostPath) { }
 
         /// <summary>
         /// Lists the permissions.
         /// </summary>
         /// <returns>A list of permissions.</returns>
-        public IList<string> ListPermissions()
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
+        public IList<string> ListPermissions() { return null; }
 
         /// <summary>Lists the permissions.</summary>
         /// <param name="vhostPath">The vhost path.</param>
         /// <returns>A list of permissions.</returns>
-        public IList<string> ListPermissions(string vhostPath)
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
+        public IList<string> ListPermissions(string vhostPath) { return null; }
 
         /// <summary>Lists the user permissions.</summary>
         /// <param name="username">The username.</param>
         /// <returns>A list of user permissions.</returns>
-        public IList<string> ListUserPermissions(string username)
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
+        public IList<string> ListUserPermissions(string username) { return null; }
 
         /// <summary>
         /// Starts the broker application.

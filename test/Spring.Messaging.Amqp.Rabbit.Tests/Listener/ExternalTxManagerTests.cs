@@ -52,18 +52,19 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
         // private SimpleMessageListenerContainer container;
 
+        /// <summary>The tear down.</summary>
         [TearDown]
         public void TearDown()
         {
             // if (TransactionSynchronizationManager.ActualTransactionActive)
             // {
-            //     TransactionSynchronizationManager.Clear();   
+            // TransactionSynchronizationManager.Clear();   
             // }
 
             // if (container != null)
             // {
-            //     container.Dispose();
-            //     container = null;
+            // container.Dispose();
+            // container = null;
             // }
         }
 
@@ -138,7 +139,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.Start();
 
             IBasicConsumer currentConsumer;
-            consumer.TryTake(out currentConsumer, timeout);
+            consumer.TryTake(out currentConsumer, this.timeout);
             Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
             currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
@@ -239,7 +240,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.Start();
 
             IBasicConsumer currentConsumer;
-            consumer.TryTake(out currentConsumer, timeout);
+            consumer.TryTake(out currentConsumer, this.timeout);
             Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
             currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
@@ -341,7 +342,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.Start();
 
             IBasicConsumer currentConsumer;
-            consumer.TryTake(out currentConsumer, timeout);
+            consumer.TryTake(out currentConsumer, this.timeout);
             Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
             currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
@@ -441,7 +442,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             container.Start();
 
             IBasicConsumer currentConsumer;
-            consumer.TryTake(out currentConsumer, timeout);
+            consumer.TryTake(out currentConsumer, this.timeout);
             Assert.IsNotNull(currentConsumer, "Timed out getting consumer.");
             currentConsumer.HandleBasicDeliver("qux", 1, false, "foo", "bar", new BasicProperties(), new byte[] { 0 });
 
@@ -471,10 +472,12 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 
     internal class DummyTxManager : RabbitAbstractPlatformTransactionManager
     {
-        private static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        private new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly DummyTxManager instance = new DummyTxManager();
 
+        /// <summary>The instance.</summary>
+        /// <returns>The Spring.Messaging.Amqp.Rabbit.Tests.Listener.DummyTxManager.</returns>
         public static DummyTxManager Instance()
         {
             // return instance;
@@ -482,10 +485,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         }
 
         /// <summary>Initializes a new instance of the <see cref="DummyTxManager"/> class.</summary>
-        public DummyTxManager()
-        {
-            this.TransactionSynchronization = TransactionSynchronizationState.Always;
-        }
+        public DummyTxManager() { this.TransactionSynchronization = TransactionSynchronizationState.Always; }
 
         /// <summary>The do begin.</summary>
         /// <param name="transaction">The transaction.</param>

@@ -68,8 +68,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
     /// <author>Joe Fitzgerald (.NET)</author>
     public abstract class RabbitAbstractPlatformTransactionManager : IPlatformTransactionManager
     {
-        [NonSerialized]
-        protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        [NonSerialized] protected static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         private TransactionSynchronizationState transactionSynchronization = TransactionSynchronizationState.Always;
 
@@ -84,7 +83,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         private bool failEarlyOnGlobalRollbackOnly;
 
         private bool rollbackOnCommitFailure;
-        
+
         /// <summary>Gets or sets the transaction synchronization.</summary>
         public TransactionSynchronizationState TransactionSynchronization { get { return this.transactionSynchronization; } set { this.transactionSynchronization = value; } }
 
@@ -479,7 +478,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
                 }
             }
         }
-        
+
         // Resume outer transaction after inner transaction begin failed.
         private void ResumeAfterBeginException(object transaction, SuspendedResourcesHolder suspendedResources, Exception beginEx)
         {
@@ -500,7 +499,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
          * synchronization for the current thread.
          * @return the List of suspended TransactionSynchronization objects
          */
-
         private IList<ITransactionSynchronization> DoSuspendSynchronization()
         {
             var suspendedSynchronizations = TransactionSynchronizationManager.Synchronizations.ToGenericList<ITransactionSynchronization>();
@@ -518,7 +516,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
          * and resume all given synchronizations.
          * @param suspendedSynchronizations List of TransactionSynchronization objects
          */
-
         private void DoResumeSynchronization(IList<ITransactionSynchronization> suspendedSynchronizations)
         {
             TransactionSynchronizationManager.InitSynchronization();
@@ -580,7 +577,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
 	 * @param status object representing the transaction
 	 * @throws TransactionException in case of commit failure
 	 */
-
         private void ProcessCommit(DefaultTransactionStatus status)
         {
             try
@@ -692,7 +688,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
 	 * @param status object representing the transaction
 	 * @throws TransactionException in case of rollback failure
 	 */
-
         private void ProcessRollback(DefaultTransactionStatus status)
         {
             try
@@ -765,7 +760,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
          * @throws TransactionException in case of rollback failure
          * @see #doRollback
          */
-
         private void DoRollbackOnCommitException(DefaultTransactionStatus status, Exception ex)
         {
             try
@@ -843,7 +837,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
          * Trigger <code>afterCommit</code> callbacks.
          * @param status object representing the transaction
          */
-
         private void TriggerAfterCommit(DefaultTransactionStatus status)
         {
             if (status.NewSynchronization)
@@ -862,7 +855,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
          * @param status object representing the transaction
          * @param completionStatus completion status according to TransactionSynchronization constants
          */
-
         private void TriggerAfterCompletion(DefaultTransactionStatus status, TransactionSynchronizationStatus completionStatus)
         {
             if (status.NewSynchronization)
@@ -917,7 +909,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
 	 * @param status object representing the transaction
 	 * @see #doCleanupAfterCompletion
 	 */
-
         private void CleanupAfterCompletion(DefaultTransactionStatus status)
         {
             status.Completed = true;

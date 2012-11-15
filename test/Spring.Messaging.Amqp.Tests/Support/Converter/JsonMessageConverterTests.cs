@@ -85,7 +85,6 @@ namespace Spring.Messaging.Amqp.Tests.Support.Converter
 
         /// <summary>The hashtable.</summary>
         [Test]
-        // TODO: Test for Java / .NET Interop
         public void Hashtable()
         {
             var hashtable = new Dictionary<string, object>();

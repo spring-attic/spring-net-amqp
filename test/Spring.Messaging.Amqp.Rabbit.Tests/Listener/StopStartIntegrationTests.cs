@@ -32,7 +32,7 @@ using Spring.Testing.NUnit;
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
 {
     /// <summary>
-    /// TODO: Update summary.
+    /// Stop Start Integration Tests
     /// </summary>
     [TestFixture]
     [Category(TestCategory.Integration)]

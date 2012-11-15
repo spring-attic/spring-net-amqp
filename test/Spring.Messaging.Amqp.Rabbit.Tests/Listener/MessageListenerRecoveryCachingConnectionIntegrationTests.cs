@@ -94,10 +94,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
         [SetUp]
         public void SetUp()
         {
-            concurrentConsumers = 1;
-            messageCount = 10;
-            transactional = false;
-            acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
+            this.concurrentConsumers = 1;
+            this.messageCount = 10;
+            this.transactional = false;
+            this.acknowledgeMode = AcknowledgeModeUtils.AcknowledgeMode.Auto;
 
             this.brokerIsRunning = BrokerRunning.IsRunningWithEmptyQueues(queue, sendQueue);
             this.brokerIsRunning.Apply();
@@ -147,6 +147,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             Assert.True(waited, "Timed out waiting for message");
 
             Thread.Sleep(500);
+
             // All messages committed
             var bytes = (byte[])template.ReceiveAndConvert(sendQueue.Name);
             Assert.NotNull(bytes);
@@ -238,7 +239,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.container = this.CreateContainer(queue.Name, new AbortChannelListener(latch), this.CreateConnectionFactory());
 
             var n = 0;
-            while (n++ < 100 && container.ActiveConsumerCount != concurrentConsumers)
+            while (n++ < 100 && this.container.ActiveConsumerCount != this.concurrentConsumers)
             {
                 Thread.Sleep(50);
             }

@@ -147,7 +147,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             this.messageConverter = messageConverter;
 
             // Beware of context cache busting if retry policy fails...
-            /* TODO: Once Spring Batch is implemented.
+            /* TODO: Once Spring Retry is implemented.
              * this.retryTemplate = new RetryTemplate();
             this.retryTemplate.setRetryContextCache(new MapRetryContextCache(1));
              */

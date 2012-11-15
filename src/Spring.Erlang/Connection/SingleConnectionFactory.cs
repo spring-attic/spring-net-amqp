@@ -190,8 +190,6 @@ namespace Spring.Erlang.Connection
 
             try
             {
-                // TODO there are other close overloads close(int closeCode,
-                // java.lang.String closeMessage, int timeout)
                 connection.Close();
             }
             catch (Exception ex)

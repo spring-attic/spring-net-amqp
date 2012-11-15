@@ -22,7 +22,6 @@ using Spring.Context;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Connection;
 using Spring.Messaging.Amqp.Rabbit.Core;
-using Spring.Messaging.Amqp.Rabbit.Support;
 using Spring.Objects.Factory;
 using Spring.Transaction.Support;
 using Spring.Util;
@@ -39,7 +38,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener
         /// <summary>
         /// Logger available to subclasses.
         /// </summary>
-        protected static new readonly ILog Logger = LogManager.GetCurrentClassLogger();
+        protected new static readonly ILog Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The object name.

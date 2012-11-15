@@ -14,7 +14,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #region Using Directives
-using System;
 using System.Threading;
 using Common.Logging;
 using NUnit.Framework;

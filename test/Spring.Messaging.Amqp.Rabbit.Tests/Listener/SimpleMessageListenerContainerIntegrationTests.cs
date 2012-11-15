@@ -215,7 +215,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             }
 
             hasFixtureSetupBeenRun = true;
-            
+
             if (this.container != null)
             {
                 this.container.Shutdown();

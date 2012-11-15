@@ -231,7 +231,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Listener
             secondChannel.Setup(m => m.IsOpen).Returns(true);
             secondChannel.Setup(m => m.CreateBasicProperties()).Returns(() => new BasicProperties());
 
-
             var singleConnectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
 
             mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);

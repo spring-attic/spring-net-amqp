@@ -37,8 +37,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         private static readonly ThreadLocal<Dictionary<object, object>> resources = new ThreadLocal<Dictionary<object, object>>(); // NamedThreadLocal<Map<object, object>>("Transactional resources");
 
         private static readonly ThreadLocal<LinkedList<ITransactionSynchronization>> synchronizations = new ThreadLocal<LinkedList<ITransactionSynchronization>>();
-                                                                                     // new NamedThreadLocal<List<TransactionSynchronization>>("Transaction synchronizations");
 
+        // new NamedThreadLocal<List<TransactionSynchronization>>("Transaction synchronizations");
         private static readonly ThreadLocal<string> currentTransactionName = new ThreadLocal<string>(); // new NamedThreadLocal<string>("Current transaction name");
 
         private static readonly ThreadLocal<bool> currentTransactionReadOnly = new ThreadLocal<bool>(); // new NamedThreadLocal<bool>("Current transaction read-only status");
@@ -114,7 +114,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /**
 	 * Actually check the value of the resource that is bound for the given key.
 	 */
-
         private static object DoGetResource(object actualKey)
         {
             var map = resources.Value;
@@ -231,7 +230,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
         /**
 	 * Actually remove the value of the resource that is bound for the given key.
 	 */
-
         private static object DoUnbindResource(object actualKey)
         {
             var map = resources.Value;
@@ -272,10 +270,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
 	 * @see #registerSynchronization
 	 */
 
-        public static bool SynchronizationActive
-        {
-            get { return synchronizations.Value != null; }
-        }
+        /// <summary>Gets a value indicating whether synchronization active.</summary>
+        public static bool SynchronizationActive { get { return synchronizations.Value != null; } }
 
         /// <summary>The is synchronization active.</summary>
         /// <returns>The System.Boolean.</returns>
@@ -333,10 +329,8 @@ namespace Spring.Messaging.Amqp.Rabbit.Transaction
 	 * @see TransactionSynchronization
 	 */
 
-        public static LinkedList<ITransactionSynchronization> Synchronizations
-        {
-            get { return GetSynchronizations(); }
-        }
+        /// <summary>Gets the synchronizations.</summary>
+        public static LinkedList<ITransactionSynchronization> Synchronizations { get { return GetSynchronizations(); } }
 
         /// <summary>The get synchronizations.</summary>
         /// <returns>The System.Collections.Generic.LinkedList`1[T -&gt; Spring.Transaction.Support.ITransactionSynchronization].</returns>

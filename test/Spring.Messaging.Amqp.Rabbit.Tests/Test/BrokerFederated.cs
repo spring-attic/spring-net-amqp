@@ -27,7 +27,7 @@ using Spring.Messaging.Amqp.Rabbit.Support;
 namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
 {
     /// <summary>
-    /// TODO: Update summary.
+    /// Broker Federated
     /// </summary>
     public class BrokerFederated
     {

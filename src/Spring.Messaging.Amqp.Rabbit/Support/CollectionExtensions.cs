@@ -32,6 +32,10 @@ namespace Spring.Messaging.Amqp.Rabbit.Support
     {
         internal static readonly TimeSpan MaxValue = TimeSpan.FromMilliseconds(int.MaxValue);
 
+        /// <summary>The to generic list.</summary>
+        /// <param name="list">The list.</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>The System.Collections.Generic.IList`1[T -&gt; T].</returns>
         public static IList<T> ToGenericList<T>(this IList list)
         {
             IList<T> result = new List<T>();
