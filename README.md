@@ -64,7 +64,7 @@ Innovsys has kindly provided a license to generate the SDK documentation and sup
 
 ## License
 
-Spring AMQP for .nET is released under the terms of the Apache Software License Version 2.0 (see license.txt).
+Spring AMQP for .NET is released under the terms of the Apache Software License Version 2.0 (see license.txt).
 
 
 
