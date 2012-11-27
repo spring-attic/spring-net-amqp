@@ -150,31 +150,18 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         }
 
         [Test]
-        [Ignore("ignored until resolution of SPRNET-1527")]
         public void When_ExplicitIdSetWithoutExplicitName_ObjectRegistrationUsesIdAsObjectDefintionName()
         {
             Assert.That(objectFactory.ContainsObject("explicit-id-but-no-explicit-name"), Is.True);
         }
 
         [Test]
-        [Ignore("ignored until resolution of SPRNET-1527")]
-        public void When_ExplicitIdSetWithoutExplicitName_IdIsUsedAsQueueName()
-        {
-            const string objectIdentifier = "explicit-id-but-no-explicit-name";
-
-            var queue = objectFactory.GetObject<Queue>(objectIdentifier);
-            Assert.That(queue.Name, Is.EqualTo(objectIdentifier));
-        }
-
-        [Test]
-        [Ignore("ignored until resolution of SPRNET-1527")]
         public void When_ExplicitNameSetWithoutExplicitId_ObjectRegistrationUsesNameAsObjectDefintionName()
         {
             Assert.That(objectFactory.ContainsObject("explicit-name-but-no-explicit-id"), Is.True);
         }
 
         [Test]
-        [Ignore("ignored until resolution of SPRNET-1527")]
         public void When_ExplicitNameSetWithoutExplicitId_NameIsUsedAsQueueName()
         {
             const string objectIdentifier = "explicit-name-but-no-explicit-id";
@@ -184,7 +171,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         }
 
         [Test]
-        [Ignore("ignored until resolution of SPRNET-1527")]
         public void When_ExplicitIdAndExplicitNameSet_ObjectRegistrationUsesIdAsObjectDefintionName_and_NameIsUsedAsQueueName()
         {
             var queue = objectFactory.GetObject<Queue>("explicit-id-and-explicit-name");

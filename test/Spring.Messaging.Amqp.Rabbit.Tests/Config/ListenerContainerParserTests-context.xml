@@ -2,9 +2,9 @@
 
 <objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit">
 
-    <rabbit:queue id="foo" name="foo" />
+    <rabbit:queue name="foo" />
 
-    <rabbit:queue id="bar" name="bar" />
+    <rabbit:queue name="bar" />
 
     <rabbit:listener-container id="container1" connection-factory="connectionFactory" acknowledge="manual" concurrency="5">
         <rabbit:listener id="testListener" queue-names="foo, bar" ref="testObject" method="Handle" />  <!--  vvvvvvvv - expression -->

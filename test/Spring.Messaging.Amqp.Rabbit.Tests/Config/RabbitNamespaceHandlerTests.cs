@@ -64,7 +64,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
             var queue = this.objectFactory.GetObject<Queue>("spam");
             Assert.IsNotNull(queue);
             Assert.AreNotSame("spam", queue.Name);
-            Assert.AreEqual("bar", queue.Name);
+            Assert.AreEqual("baz", queue.Name);
         }
 
         /// <summary>The test anonymous queue.</summary>
@@ -91,7 +91,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         [Test]
         public void TestBindings()
         {
-            var bindings = this.objectFactory.GetObjectsOfType<Binding>();
+            var bindings = this.objectFactory.GetObjects<Binding>();
 
             // 4 for each exchange type
             Assert.AreEqual(17, bindings.Count);

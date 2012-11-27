@@ -54,6 +54,6 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         /// <param name="factory">The factory.</param>
         /// <typeparam name="T"></typeparam>
         /// <returns>The System.Collections.IDictionary.</returns>
-        public static IDictionary GetObjectsOfType<T>(this IListableObjectFactory factory) { return factory.GetObjectsOfType(typeof(T)); }
+        public static IDictionary GetObjects<T>(this IListableObjectFactory factory) { return factory.GetObjectsOfType(typeof(T)); }
     }
 }

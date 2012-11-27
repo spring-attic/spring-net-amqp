@@ -15,11 +15,15 @@
 
 #region Using Directives
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using Spring.Messaging.Amqp.Core;
 using Spring.Messaging.Amqp.Rabbit.Support;
+using Spring.Objects.Factory;
+using Spring.Objects.Factory.Config;
 using Spring.Objects.Factory.Support;
 using Spring.Objects.Factory.Xml;
+using Spring.Util;
 #endregion
 
 namespace Spring.Messaging.Amqp.Rabbit.Config
@@ -29,7 +33,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// </summary>
     /// <author>Dave Syer</author>
     /// <author>Joe Fitzgerald (.NET)</author>
-    public class QueueParser : AbstractSingleObjectDefinitionParser
+    public class QueueParser : AbstractNameAsAliasObjectDefinitionParser
     {
         private static readonly string ARGUMENTS = "queue-arguments"; // element OR attribute
 

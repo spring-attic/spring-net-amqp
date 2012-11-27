@@ -28,7 +28,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Config
     /// </summary>
     /// <author>Dave Syer</author>
     /// <author>Joe Fitzgerald (.NET)</author>
-    public abstract class AbstractExchangeParser : AbstractSingleObjectDefinitionParser
+    public abstract class AbstractExchangeParser : AbstractNameAsAliasObjectDefinitionParser
     {
         private static readonly string ARGUMENTS_ELEMENT = "exchange-arguments";
 

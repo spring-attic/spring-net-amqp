@@ -10,7 +10,7 @@
 
     <rabbit:queue id="stop.start.queue" name="stop.start.queue" />
 
-    <rabbit:direct-exchange id="stop.start.exchange" name="stop.start.exchange">
+    <rabbit:direct-exchange name="stop.start.exchange">
         <rabbit:bindings>
             <rabbit:binding queue="stop.start.queue" key="stop.start.binding" />
         </rabbit:bindings>

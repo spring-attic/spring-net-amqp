@@ -12,9 +12,9 @@
         </property>
     </object>
 
-    <rabbit:queue id="foo" name="foo" />
+    <rabbit:queue name="foo" />
 
-    <rabbit:queue id="bar" name="bar" />
+    <rabbit:queue name="bar" />
 
     <rabbit:listener-container id="container1" connection-factory="connectionFactory" acknowledge="manual" concurrency="${five}" transaction-size="${one}" auto-startup="${false}">
         <rabbit:listener id="testListener" queue-names="foo, bar" ref="testObject" method="Handle" />

@@ -99,6 +99,7 @@
     <Compile Include="Config\FederatedExchangeParser.cs" />
     <Compile Include="Config\HeadersExchangeParser.cs" />
     <Compile Include="Config\ListenerContainerParser.cs" />
+    <Compile Include="Config\AbstractNameAsAliasObjectDefinitionParser.cs" />
     <Compile Include="Config\ObjectDefinitionParserHelper.cs" />
     <Compile Include="Config\NamespaceUtils.cs" />
     <Compile Include="Config\QueueArgumentsParser.cs" />

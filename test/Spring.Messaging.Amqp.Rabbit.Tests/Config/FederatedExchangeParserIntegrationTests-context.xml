@@ -2,37 +2,37 @@
 
 <objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit" xmlns:objects="http://www.springframework.net">
 
-    <federated-exchange id="fedDirectTest" name="fedDirectTest" backing-type="direct" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
+    <federated-exchange name="fedDirectTest" backing-type="direct" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
         <direct-bindings>
             <binding queue="bucket" />
         </direct-bindings>
     </federated-exchange>
 
-    <federated-exchange id="fedTopicTest" name="fedTopicTest" backing-type="topic" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
+    <federated-exchange name="fedTopicTest" backing-type="topic" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
         <topic-bindings>
             <binding queue="bucket" pattern="bucket.#" />
         </topic-bindings>
     </federated-exchange>
 
-    <federated-exchange id="fedFanoutTest" name="fedFanoutTest" backing-type="fanout" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
+    <federated-exchange name="fedFanoutTest" backing-type="fanout" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
         <fanout-bindings>
             <binding queue="bucket" />
         </fanout-bindings>
     </federated-exchange>
 
-    <federated-exchange id="fedHeadersTest" name="fedHeadersTest" backing-type="headers" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
+    <federated-exchange name="fedHeadersTest" backing-type="headers" upstream-set="upstream-set" xmlns="http://www.springframework.net/schema/rabbit">
         <headers-bindings>
             <binding queue="bucket" key="type" value="bucket" />
         </headers-bindings>
     </federated-exchange>
 
-    <fanout-exchange id="fanoutTest" name="fanoutTest" xmlns="http://www.springframework.net/schema/rabbit">
+    <fanout-exchange name="fanoutTest" xmlns="http://www.springframework.net/schema/rabbit">
         <bindings>
             <binding queue="bucket" />
         </bindings>
     </fanout-exchange>
 
-    <queue id="bucket" name="bucket" xmlns="http://www.springframework.net/schema/rabbit" />
+    <queue name="bucket" xmlns="http://www.springframework.net/schema/rabbit" />
 
     <admin id="admin" connection-factory="connectionFactory" auto-startup="true" xmlns="http://www.springframework.net/schema/rabbit" />
 

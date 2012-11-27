@@ -104,9 +104,9 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Config
         public void FixtureTearDown()
         {
             var admin = this.applicationContext.GetObject<RabbitAdmin>();
-            var bindings = this.applicationContext.GetObjectsOfType<Binding>();
-            var exchanges = this.applicationContext.GetObjectsOfType<IExchange>();
-            var queues = this.applicationContext.GetObjectsOfType<Queue>();
+            var bindings = this.applicationContext.GetObjects<Binding>();
+            var exchanges = this.applicationContext.GetObjects<IExchange>();
+            var queues = this.applicationContext.GetObjects<Queue>();
 
             foreach (DictionaryEntry item in bindings)
             {

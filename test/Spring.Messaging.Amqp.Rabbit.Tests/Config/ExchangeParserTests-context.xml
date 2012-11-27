@@ -2,43 +2,43 @@
 
 <objects xmlns="http://www.springframework.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.net/schema/rabbit" xmlns:objects="http://www.springframework.net">
 
-    <rabbit:direct-exchange id="direct" name="direct" />
+    <rabbit:direct-exchange name="direct" />
 
     <rabbit:direct-exchange id="alias" name="direct-alias" />
 
-    <rabbit:direct-exchange id="direct-override" name="direct-override" auto-delete="true" durable="false" />
+    <rabbit:direct-exchange name="direct-override" auto-delete="true" durable="false" />
 
-    <direct-exchange id="direct-arguments" name="direct-arguments" xmlns="http://www.springframework.net/schema/rabbit">
+    <direct-exchange name="direct-arguments" xmlns="http://www.springframework.net/schema/rabbit">
         <exchange-arguments>
             <objects:entry key="foo" value="bar" />
         </exchange-arguments>
     </direct-exchange>
 
-    <rabbit:topic-exchange id="topic" name="topic" />
+    <rabbit:topic-exchange name="topic" />
 
-    <rabbit:fanout-exchange id="fanout" name="fanout" />
+    <rabbit:fanout-exchange name="fanout" />
 
-    <rabbit:headers-exchange id="headers" name="headers" xmlns="http://www.springframework.net/schema/rabbit" />
+    <rabbit:headers-exchange name="headers" xmlns="http://www.springframework.net/schema/rabbit" />
 
-    <rabbit:federated-exchange id="fedDirect" name="fedDirect" backing-type="direct" upstream-set="upstream-set1">
+    <rabbit:federated-exchange name="fedDirect" backing-type="direct" upstream-set="upstream-set1">
         <rabbit:direct-bindings>
             <rabbit:binding key="x" queue="dirQ" />
         </rabbit:direct-bindings>
     </rabbit:federated-exchange>
 
-    <rabbit:federated-exchange id="fedTopic" name="fedTopic" backing-type="topic" upstream-set="upstream-set2">
+    <rabbit:federated-exchange name="fedTopic" backing-type="topic" upstream-set="upstream-set2">
         <rabbit:topic-bindings>
             <rabbit:binding pattern="xx.*" queue="topic" />
         </rabbit:topic-bindings>
     </rabbit:federated-exchange>
 
-    <rabbit:federated-exchange id="fedFanout" name="fedFanout" backing-type="fanout" upstream-set="upstream-set3">
+    <rabbit:federated-exchange name="fedFanout" backing-type="fanout" upstream-set="upstream-set3">
         <rabbit:fanout-bindings>
             <rabbit:binding queue="fan" />
         </rabbit:fanout-bindings>
     </rabbit:federated-exchange>
 
-    <rabbit:federated-exchange id="fedHeaders" name="fedHeaders" backing-type="headers" upstream-set="upstream-set4">
+    <rabbit:federated-exchange name="fedHeaders" backing-type="headers" upstream-set="upstream-set4">
         <rabbit:headers-bindings>
             <rabbit:binding key="head" value="head" queue="head" />
         </rabbit:headers-bindings>
