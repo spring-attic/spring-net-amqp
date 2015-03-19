@@ -566,7 +566,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Listener.Adapter
 
             try
             {
-                Logger.Debug(m => m("Publishing response to exchanage = [{0}], routingKey = [{1}]", replyTo.ExchangeName, replyTo.RoutingKey));
+                Logger.Debug(m => m("Publishing response to exchange = [{0}], routingKey = [{1}]", replyTo.ExchangeName, replyTo.RoutingKey));
                 channel.BasicPublish(
                     replyTo.ExchangeName, replyTo.RoutingKey, this.mandatoryPublish, this.immediatePublish, this.messagePropertiesConverter.FromMessageProperties(channel, message.MessageProperties, this.encoding), message.Body);
             }
