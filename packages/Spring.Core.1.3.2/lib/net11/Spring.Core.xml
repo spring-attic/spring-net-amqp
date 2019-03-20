@@ -2979,7 +2979,7 @@
             <p>
             In addition to synchronizing reads, this implementation also fixes
             IEnumerator/ICollection issue described at 
-            http://msdn.microsoft.com/en-us/netframework/aa570326.aspx
+            https://msdn.microsoft.com/en-us/netframework/aa570326.aspx
             (search for SynchronizedHashtable for issue description), by implementing 
             <see cref="T:System.Collections.IEnumerator"/> interface explicitly, and returns thread safe enumerator
             implementations as well.
@@ -35894,7 +35894,7 @@
             </p>
             <p>
             This schema is <b>typically</b> located at
-            <a href="http://www.springframework.net/xsd/spring-objects.xsd">http://www.springframework.net/xsd/spring-objects.xsd</a>.
+            <a href="https://www.springframework.net/xsd/spring-objects.xsd">https://www.springframework.net/xsd/spring-objects.xsd</a>.
             </p>
             </remarks>
             <author>Rod Johnson</author>
@@ -41983,7 +41983,7 @@
             <para>
             This method mimics the behavior of the compiler that
             automatically performs casts like int to double in "Math.Sqrt(4)".<br/>
-            See about implicit, widening type conversions on <a href="http://social.msdn.microsoft.com/Search/en-US/?query=type conversion tables">MSDN - Type Conversion Tables</a>
+            See about implicit, widening type conversions on <a href="https://social.msdn.microsoft.com/Search/en-US/?query=type conversion tables">MSDN - Type Conversion Tables</a>
             </para>
             <para>
             Note: <paramref name="targetType"/> is expected to be a value type! 
@@ -42580,7 +42580,7 @@
             will be raised by the runtime.
             <p/>Spring.Threading classes usually call this method before entering a lock block, to mirror java code
             <p>Usually this is non issue because the same exception will be raised entering the monitor 
-            associated with the lock (<seealso href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfsystemthreadingmonitorclassentertopic.asp"/>) 
+            associated with the lock (<seealso href="https://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfsystemthreadingmonitorclassentertopic.asp"/>) 
             </p>
             </summary>
             <exception cref="T:System.Threading.ThreadInterruptedException">if the thread has been interrupted</exception>
@@ -44362,7 +44362,7 @@
             An implementation of the Java Properties class.
             </summary>
             <remarks>
-            For the complete syntax see <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Properties.html#load(java.io.InputStream)">java.util.Properties JavaDoc</a>.
+            For the complete syntax see <a href="https://java.sun.com/j2se/1.4.2/docs/api/java/util/Properties.html#load(java.io.InputStream)">java.util.Properties JavaDoc</a>.
             This class supports an extended syntax. There may also be sole keys on a line, in that case values are treated as <c>null</c>.
             <example>
             <code>
@@ -44556,7 +44556,7 @@
             Resolves a given <paramref name="methodInfo"/> to the <see cref="T:System.Reflection.MethodInfo"/> representing the actual implementation.
             </summary>
             <remarks>
-            see article <a href="http://weblog.ikvm.net/CommentView.aspx?guid=7356a87f-e5d7-4723-ae49-b263ab9e40ae">How To Get an Explicit Interface Implementation Method</a>.
+            see article <a href="https://weblog.ikvm.net/CommentView.aspx?guid=7356a87f-e5d7-4723-ae49-b263ab9e40ae">How To Get an Explicit Interface Implementation Method</a>.
             </remarks>
             <param name="methodInfo">a <see cref="T:System.Reflection.MethodInfo"/></param>
             <param name="implementingType">the type to lookup</param>

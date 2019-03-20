@@ -15,7 +15,7 @@
             string by setting the <see cref="P:log4net.Appender.AdoNetAppender.ConnectionString"/> property. 
             The connection type (provider) can be specified by setting the <see cref="P:log4net.Appender.AdoNetAppender.ConnectionType"/>
             property. For more information on database connection strings for
-            your specific database see <a href="http://www.connectionstrings.com/">http://www.connectionstrings.com/</a>.
+            your specific database see <a href="https://www.connectionstrings.com/">https://www.connectionstrings.com/</a>.
             </para>
             <para>
             Records are written into the database either using a prepared
@@ -1344,13 +1344,13 @@
             <example>Use the ODBC Provider. 
             <code>Microsoft.Data.Odbc.OdbcConnection,Microsoft.Data.Odbc,version=1.0.3300.0,publicKeyToken=b77a5c561934e089,culture=neutral</code>
             This is an optional package that you can download from 
-            <a href="http://msdn.microsoft.com/downloads">http://msdn.microsoft.com/downloads</a> 
+            <a href="https://msdn.microsoft.com/downloads">https://msdn.microsoft.com/downloads</a> 
             search for <b>ODBC .NET Data Provider</b>.
             </example>
             <example>Use the Oracle Provider. 
             <code>System.Data.OracleClient.OracleConnection, System.Data.OracleClient, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</code>
             This is an optional package that you can download from 
-            <a href="http://msdn.microsoft.com/downloads">http://msdn.microsoft.com/downloads</a> 
+            <a href="https://msdn.microsoft.com/downloads">https://msdn.microsoft.com/downloads</a> 
             search for <b>.NET Managed Provider for Oracle</b>.
             </example>
         </member>
@@ -5235,7 +5235,7 @@
             </list>
             </para>
             <para>
-            For more information see <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/netmgmt/netmgmt/security_requirements_for_the_network_management_functions.asp">Security Requirements for the Network Management Functions</a>.
+            For more information see <a href="https://msdn.microsoft.com/library/default.asp?url=/library/en-us/netmgmt/netmgmt/security_requirements_for_the_network_management_functions.asp">Security Requirements for the Network Management Functions</a>.
             </para>
             </remarks>
             <returns>
@@ -5654,7 +5654,7 @@
             </para>
             <para>
             A complete list of actually reserved multicast addresses and their owners in the ranges
-            defined by RFC 3171 can be found at the <A href="http://www.iana.org/assignments/multicast-addresses">IANA web site</A>. 
+            defined by RFC 3171 can be found at the <A href="https://www.iana.org/assignments/multicast-addresses">IANA web site</A>. 
             </para>
             <para>
             The address range 239.0.0.0 to 239.255.255.255 is reserved for administrative scope-relative 
@@ -16178,7 +16178,7 @@
             		This formatter passes the pattern string to the <see cref="T:System.DateTime"/> 
             		<see cref="M:System.DateTime.ToString(System.String)"/> method.
             		For details on valid patterns see 
-            		<a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfsystemglobalizationdatetimeformatinfoclasstopic.asp">DateTimeFormatInfo Class</a>.
+            		<a href="https://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfsystemglobalizationdatetimeformatinfoclasstopic.asp">DateTimeFormatInfo Class</a>.
             		</description>
             	</item>
             </list>
@@ -18266,7 +18266,7 @@
             
             &lt;!DOCTYPE log4net:events SYSTEM "log4net-events.dtd" [&lt;!ENTITY data SYSTEM "abc"&gt;]&gt;
             
-            &lt;log4net:events version="1.2" xmlns:log4net="http://logging.apache.org/log4net/schemas/log4net-events-1.2&gt;
+            &lt;log4net:events version="1.2" xmlns:log4net="https://logging.apache.org/log4net/schemas/log4net-events-1.2&gt;
                 &amp;data;
             &lt;/log4net:events&gt;
             </code>
@@ -18431,7 +18431,7 @@
             Not all characters may be expressed in XML. This property contains the
             string to replace those that can not with. This defaults to a ?. Set it
             to the empty string to simply remove offending characters. For more
-            details on the allowed character ranges see http://www.w3.org/TR/REC-xml/#charsets
+            details on the allowed character ranges see https://www.w3.org/TR/REC-xml/#charsets
             Character replacement will occur in  the log message, the property names 
             and the property values.
             </para>
@@ -18562,7 +18562,7 @@
             </summary>
             <remarks>
             <para>
-            Formats the log events according to the http://logging.apache.org/log4j schema.
+            Formats the log events according to the https://logging.apache.org/log4j schema.
             </para>
             </remarks>
             <author>Nicko Cadell</author>
@@ -21900,7 +21900,7 @@
             		This formatter passes the pattern string to the <see cref="T:System.DateTime"/> 
             		<see cref="M:System.DateTime.ToString(System.String)"/> method.
             		For details on valid patterns see 
-            		<a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfsystemglobalizationdatetimeformatinfoclasstopic.asp">DateTimeFormatInfo Class</a>.
+            		<a href="https://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfsystemglobalizationdatetimeformatinfoclasstopic.asp">DateTimeFormatInfo Class</a>.
             		</description>
             	</item>
             </list>
@@ -27235,7 +27235,7 @@
             <remarks>
             <para>
             Certain Unicode code points are not allowed in the XML InfoSet, for
-            details see: <a href="http://www.w3.org/TR/REC-xml/#charsets">http://www.w3.org/TR/REC-xml/#charsets</a>.
+            details see: <a href="https://www.w3.org/TR/REC-xml/#charsets">https://www.w3.org/TR/REC-xml/#charsets</a>.
             </para>
             <para>
             This method replaces any illegal characters in the input string

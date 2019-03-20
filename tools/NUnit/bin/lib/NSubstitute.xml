@@ -135,8 +135,8 @@
             <returns></returns>
             <remarks>
             This implementation was sanity-checked against the 
-            <a href="http://msmvps.com/blogs/jon_skeet/archive/2011/01/14/reimplementing-linq-to-objects-part-35-zip.aspx">Edulinq implementation</a> and
-            <a href="http://blogs.msdn.com/b/ericlippert/archive/2009/05/07/zip-me-up.aspx">Eric Lippert's implementation</a>.
+            <a href="https://msmvps.com/blogs/jon_skeet/archive/2011/01/14/reimplementing-linq-to-objects-part-35-zip.aspx">Edulinq implementation</a> and
+            <a href="https://blogs.msdn.com/b/ericlippert/archive/2009/05/07/zip-me-up.aspx">Eric Lippert's implementation</a>.
             </remarks>
         </member>
         <member name="M:NSubstitute.Core.Extensions.IsCompatibleWith(System.Object,System.Type)">
