@@ -3920,8 +3920,8 @@
             <summary>
             Provides partial evaluation of subtrees, whenever they can be evaluated locally.
             </summary>
-            <author>Matt Warren: http://blogs.msdn.com/mattwar</author>
-            <contributor>Documented by InSTEDD: http://www.instedd.org</contributor>
+            <author>Matt Warren: https://blogs.msdn.com/mattwar</author>
+            <contributor>Documented by InSTEDD: https://www.instedd.org/</contributor>
         </member>
         <member name="M:Moq.Evaluator.PartialEval(System.Linq.Expressions.Expression,System.Func{System.Linq.Expressions.Expression,System.Boolean})">
             <summary>
