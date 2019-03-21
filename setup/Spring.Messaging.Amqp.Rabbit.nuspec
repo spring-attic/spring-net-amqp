@@ -6,7 +6,7 @@
     <version>1.0.0.0</version>
     <projectUrl>http://www.springframework.net/</projectUrl>
     <licenseUrl>http://www.springframework.net/license.html</licenseUrl>
-    <iconUrl>http://springframework.net/images/SpringSource_Leaves100x100.png</iconUrl>
+    <iconUrl>https://springframework.net/images/SpringSource_Leaves100x100.png</iconUrl>
     <authors>SpringSource</authors>
     <description>The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions. We provide a "template" as a high-level abstraction for sending and receiving messages. We also provide support for Message-driven POCOs. These libraries facilitate management of AMQP resources while promoting the use of dependency injection and declarative configuration.</description>
     <summary>The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions. We provide a "template" as a high-level abstraction for sending and receiving messages. We also provide support for Message-driven POCOs. These libraries facilitate management of AMQP resources while promoting the use of dependency injection and declarative configuration.</summary>

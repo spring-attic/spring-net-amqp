@@ -20,7 +20,7 @@ namespace Spring.Erlang.Core
     /// of information that rabbitmq returns when performing a status request.
     /// </summary>
     /// <remarks>
-    /// See http://www.erlang.org/doc/man/app.html for full details
+    /// See https://www.erlang.org/doc/man/app.html for full details
     /// </remarks>
     /// <author>Mark Pollack</author>
     public class Application

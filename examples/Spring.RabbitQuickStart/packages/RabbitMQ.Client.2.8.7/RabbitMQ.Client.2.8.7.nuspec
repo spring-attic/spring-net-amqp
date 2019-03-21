@@ -6,9 +6,9 @@
     <title>RabbitMQ.Client</title>
     <authors>SpringSource joefitzgerald</authors>
     <owners>SpringSource joefitzgerald</owners>
-    <licenseUrl>http://www.rabbitmq.com/dotnet.html</licenseUrl>
-    <projectUrl>http://www.rabbitmq.com/dotnet.html</projectUrl>
-    <iconUrl>http://springframework.net/images/SpringSource_Leaves100x100.png</iconUrl>
+    <licenseUrl>https://www.rabbitmq.com/dotnet.html</licenseUrl>
+    <projectUrl>https://www.rabbitmq.com/dotnet.html</projectUrl>
+    <iconUrl>https://springframework.net/images/SpringSource_Leaves100x100.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>The RabbitMQ .NET client is an implementation of an AMQP client library for C# (and, implicitly, other .NET languages), and a binding exposing AMQP services via Microsoft's Windows Communication Foundation (WCF).</description>
     <language>en-US</language>
