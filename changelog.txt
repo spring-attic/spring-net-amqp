@@ -1,6 +1,6 @@
 SPRING AMQP .NET CHANGELOG
 ==================================
-http://springsource.org/spring-amqp
+https://springsource.org/spring-amqp
 
 Release Version 1.0.0 M1 July 15, 2010
 

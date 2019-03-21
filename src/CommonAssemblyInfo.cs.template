@@ -8,7 +8,7 @@ using System.Security.Permissions;
 [assembly: AllowPartiallyTrustedCallers]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum)]
 [assembly: ComVisibleAttribute(false)]
-[assembly: AssemblyCompanyAttribute("http://springframework.net")]
+[assembly: AssemblyCompanyAttribute("https://springframework.net")]
 [assembly: AssemblyCopyrightAttribute("Copyright 2011 SpringSource.")]
 [assembly: AssemblyTrademarkAttribute("Apache License, Version 2.0")]
 [assembly: AssemblyCultureAttribute("")]

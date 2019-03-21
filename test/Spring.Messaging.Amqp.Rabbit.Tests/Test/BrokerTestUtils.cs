@@ -73,7 +73,7 @@ namespace Spring.Messaging.Amqp.Rabbit.Tests.Test
         public static int GetAdminPort()
         {
             // This *used* to be some magic value of '15672' but this would require special config to *ever* work on any system
-            // as noted here http://lists.rabbitmq.com/pipermail/rabbitmq-discuss/2009-November/005501.html
+            // as noted here https://lists.rabbitmq.com/pipermail/rabbitmq-discuss/2009-November/005501.html
             // so am returning it to the default port for now to get tests to pass (reliably!)
             return DEFAULT_PORT;
         }

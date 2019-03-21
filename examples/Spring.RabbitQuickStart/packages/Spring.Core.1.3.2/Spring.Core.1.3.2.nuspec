@@ -8,7 +8,7 @@
     <owners>SpringSource</owners>
     <licenseUrl>http://www.springframework.net/license.html</licenseUrl>
     <projectUrl>http://www.springframework.net/</projectUrl>
-    <iconUrl>http://springframework.net/images/SpringSource_Leaves32x32.png</iconUrl>
+    <iconUrl>https://springframework.net/images/SpringSource_Leaves32x32.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Core functionality for Spring.Net IoC container</description>
     <summary>Core functionality for Spring.Net IoC container</summary>

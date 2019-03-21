@@ -6,8 +6,8 @@
     <title>Json.NET</title>
     <authors>James Newton-King</authors>
     <owners>James Newton-King</owners>
-    <licenseUrl>http://json.codeplex.com/license</licenseUrl>
-    <projectUrl>http://james.newtonking.com/projects/json-net.aspx</projectUrl>
+    <licenseUrl>https://json.codeplex.com/license</licenseUrl>
+    <projectUrl>https://www.newtonsoft.com/json</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Json.NET is a popular high-performance JSON framework for .NET</description>
     <language>en-US</language>
