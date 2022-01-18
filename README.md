@@ -1,3 +1,5 @@
+# spring-net-amqp is no longer actively maintained by VMware, Inc.
+
 Spring AMQP for .NET
 ====================
 
